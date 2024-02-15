@@ -1,0 +1,91 @@
+/*
+ * Copyright (c) "Neo4j"
+ * Neo4j Sweden AB [http://neo4j.com]
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package org.neo4j.importer.v1;
+
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import org.neo4j.importer.v1.actions.Action;
+import org.neo4j.importer.v1.sources.Source;
+import org.neo4j.importer.v1.targets.Targets;
+
+public class ImportSpecification {
+
+    private final Map<String, Object> configuration;
+
+    private final List<Source> sources;
+
+    private final Targets targets;
+
+    private final List<Action> actions;
+
+    @JsonCreator
+    public ImportSpecification(
+            @JsonProperty("config") Map<String, Object> configuration,
+            @JsonProperty(value = "sources", required = true) List<Source> sources,
+            @JsonProperty(value = "targets", required = true) Targets targets,
+            @JsonProperty("actions") List<Action> actions) {
+
+        this.configuration = configuration;
+        this.sources = sources;
+        this.targets = targets;
+        this.actions = actions;
+    }
+
+    public Map<String, Object> getConfiguration() {
+        return configuration;
+    }
+
+    public List<Source> getSources() {
+        return sources;
+    }
+
+    public Targets getTargets() {
+        return targets;
+    }
+
+    public List<Action> getActions() {
+        return actions;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ImportSpecification that = (ImportSpecification) o;
+        return Objects.equals(configuration, that.configuration)
+                && Objects.equals(sources, that.sources)
+                && Objects.equals(targets, that.targets)
+                && Objects.equals(actions, that.actions);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(configuration, sources, targets, actions);
+    }
+
+    @Override
+    public String toString() {
+        return "ImportSpecification{" + "configuration="
+                + configuration + ", sources="
+                + sources + ", targets="
+                + targets + ", actions="
+                + actions + '}';
+    }
+}

@@ -1,0 +1,1092 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://neo4j.com/docs/common-content-dataflow/_attachments/schemas/spec.v1.0.json",
+  "title": "Dataflow Flex Template for Google Cloud to Neo4j - Job Specification",
+  "description": "Neo4j Import Job Specification",
+  "type": "object",
+  "properties": {
+    "config": {
+      "description": "Global settings",
+      "type": "object"
+    },
+    "sources": {
+      "description": "Data sources",
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/source"
+      },
+      "minItems": 1
+    },
+    "targets": {
+      "description": "Import targets",
+      "type": "object",
+      "properties": {
+        "nodes": {
+          "description": "Target specification of the nodes to import in batch",
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/target.node"
+          }
+        },
+        "relationships": {
+          "description": "Target specification of the relationships to import in batch",
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/target.relationship"
+          }
+        },
+        "queries": {
+          "description": "Import queries to run in batch",
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/target.query"
+          }
+        }
+      }
+    },
+    "actions": {
+      "description": "One-off actions to execute",
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/action"
+      }
+    }
+  },
+  "required": [
+    "sources",
+    "targets"
+  ],
+  "$defs": {
+    "source": {
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "oneOf": [
+        {
+          "$ref": "#/$defs/source.bigQuery"
+        },
+        {
+          "$ref": "#/$defs/source.jdbc"
+        },
+        {
+          "$ref": "#/$defs/source.text"
+        }
+      ],
+      "required": [
+        "name"
+      ]
+    },
+    "source.bigQuery": {
+      "properties": {
+        "type": {
+          "const": "bigquery"
+        },
+        "query": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "type",
+        "query"
+      ],
+      "additionalProperties": false
+    },
+    "source.jdbc": {
+      "properties": {
+        "type": {
+          "const": "jdbc"
+        },
+        "data_source": {
+          "type": "string",
+          "minLength": 1
+        },
+        "query": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "type",
+        "data_source",
+        "query"
+      ],
+      "additionalProperties": false
+    },
+    "source.text": {
+      "properties": {
+        "type": {
+          "const": "text"
+        },
+        "header": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minLength": 1
+        },
+        "oneOf": [
+          {
+            "properties": {
+              "urls": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "minItems": 1
+              },
+              "format": {
+                "type": "string",
+                "enum": [
+                  "default",
+                  "DEFAULT",
+                  "excel",
+                  "EXCEL",
+                  "informix",
+                  "INFORMIX",
+                  "mongo",
+                  "MONGO",
+                  "mongo_tsv",
+                  "MONGO_TSV",
+                  "mysql",
+                  "MYSQL",
+                  "oracle",
+                  "ORACLE",
+                  "postgres",
+                  "POSTGRES",
+                  "postgresql_csv",
+                  "POSTGRESQL_CSV",
+                  "rfc4180",
+                  "RFC4180"
+                ]
+              },
+              "column_delimiter": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 1
+              },
+              "line_separator": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 1
+              }
+            },
+            "required": [
+              "urls"
+            ]
+          },
+          {
+            "properties": {
+              "data": {
+                "type": "array",
+                "items": {
+                  "type": "array"
+                }
+              }
+            },
+            "required": [
+              "header",
+              "data"
+            ]
+          }
+        ]
+      },
+      "required": [
+        "type"
+      ],
+      "additionalProperties": false
+    },
+    "target.node": {
+      "type": "object",
+      "properties": {
+        "write_mode": {
+          "enum": [
+            "create",
+            "CREATE",
+            "merge",
+            "MERGE"
+          ]
+        },
+        "source": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_transformations": {
+          "$ref": "#/$defs/target.entity.sourceTransformation"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "labels": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1
+        },
+        "properties": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/target.entity.propertyMapping"
+          },
+          "minItems": 1
+        },
+        "depends_on": {
+          "type": "string",
+          "minLength": 1
+        },
+        "schema": {
+          "type": "object",
+          "properties": {
+            "enable_type_constraints": {
+              "description": "whether or not to create type constraints based on the declared property types",
+              "type": "boolean"
+            },
+            "key_constraints": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/target.node.schema.constraints.key"
+              }
+            },
+            "unique_constraints": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/target.node.schema.constraints.unique"
+              }
+            },
+            "existence_constraints": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/target.node.schema.constraints.existence"
+              }
+            },
+            "range_indexes": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/target.node.schema.indexes.range"
+              }
+            },
+            "text_indexes": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/target.node.schema.indexes.text"
+              }
+            },
+            "point_indexes": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/target.node.schema.indexes.point"
+              }
+            },
+            "fulltext_indexes": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/target.node.schema.indexes.full-text"
+              }
+            },
+            "vector_indexes": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/target.node.schema.indexes.vector"
+              }
+            }
+          }
+        }
+      },
+      "required": [
+        "source",
+        "name",
+        "labels",
+        "properties"
+      ],
+      "additionalProperties": false
+    },
+    "target.relationship": {
+      "type": "object",
+      "properties": {
+        "active": {
+          "type": "boolean"
+        },
+        "write_mode": {
+          "enum": [
+            "create",
+            "CREATE",
+            "merge",
+            "MERGE"
+          ]
+        },
+        "node_match_mode": {
+          "enum": [
+            "create",
+            "CREATE",
+            "match",
+            "MATCH",
+            "merge",
+            "MERGE"
+          ]
+        },
+        "source": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_transformations": {
+          "$ref": "#/$defs/target.entity.sourceTransformation"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "type": {
+          "type": "string",
+          "minLength": 1
+        },
+        "start_node": {
+          "$ref": "#/$defs/target.relationship.node"
+        },
+        "start_node_reference": {
+          "type": "string",
+          "minLength": 1
+        },
+        "end_node": {
+          "$ref": "#/$defs/target.relationship.node"
+        },
+        "end_node_reference": {
+          "type": "string",
+          "minLength": 1
+        },
+        "properties": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/target.entity.propertyMapping"
+          },
+          "minItems": 1
+        },
+        "depends_on": {
+          "type": "string",
+          "minLength": 1
+        },
+        "schema": {
+          "type": "object",
+          "properties": {
+            "enable_type_constraints": {
+              "description": "whether or not to create type constraints based on the declared property types",
+              "type": "boolean"
+            },
+            "key_constraints": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/target.relationship.schema.constraints.key"
+              }
+            },
+            "unique_constraints": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/target.relationship.schema.constraints.unique"
+              }
+            },
+            "existence_constraints": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/target.relationship.schema.constraints.existence"
+              }
+            },
+            "range_indexes": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/target.relationship.schema.indexes.range"
+              }
+            },
+            "text_indexes": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/target.relationship.schema.indexes.text"
+              }
+            },
+            "point_indexes": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/target.relationship.schema.indexes.point"
+              }
+            },
+            "fulltext_indexes": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/target.relationship.schema.indexes.full-text"
+              }
+            },
+            "vector_indexes": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/target.relationship.schema.indexes.vector"
+              }
+            }
+          }
+        }
+      },
+      "required": [
+        "source",
+        "name",
+        "type"
+      ],
+      "oneOf": [
+        {"required": ["start_node", "end_node"]},
+        {"required": ["start_node", "end_node_reference"]},
+        {"required": ["start_node_reference", "end_node"]},
+        {"required": ["start_node_reference", "end_node_reference"]}
+      ],
+      "additionalProperties": false
+    },
+    "target.query": {
+      "type": "object",
+      "properties": {
+        "active": {
+          "type": "boolean"
+        },
+        "source": {
+          "type": "string",
+          "minLength": 1
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "query": {
+          "type": "string",
+          "minLength": 1
+        },
+        "depends_on": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "source",
+        "name",
+        "query"
+      ],
+      "additionalProperties": false
+    },
+    "action": {
+      "properties": {
+        "active": {
+          "type": "boolean"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "depends_on": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "const": "cypher"
+            },
+            "query": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "required": [
+            "type",
+            "query"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "enum": [
+                "http",
+                "HTTP"
+              ]
+            },
+            "method": {
+              "enum": [
+                "GET",
+                "get",
+                "POST",
+                "post"
+              ]
+            },
+            "url": {
+              "type": "string",
+              "minLength": 1
+            },
+            "headers": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "string"
+              }
+            }
+          },
+          "required": [
+            "type",
+            "method",
+            "url"
+          ]
+        }
+      ],
+      "required": [
+        "name"
+      ],
+      "additionalProperties": false
+    },
+    "target.entity.sourceTransformation": {
+      "type": "object",
+      "properties": {
+        "enable_grouping": {
+          "type": "boolean"
+        },
+        "aggregations": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "expression": {
+                "type": "string"
+              },
+              "field_name": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "expression",
+              "field_name"
+            ],
+            "additionalProperties": false
+          },
+          "minItems": 1
+        },
+        "where": {
+          "type": "string"
+        },
+        "order_by": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "expression": {
+                "type": "string"
+              },
+              "order": {
+                "enum": [
+                  "ASC",
+                  "asc",
+                  "DESC",
+                  "desc"
+                ]
+              }
+            },
+            "required": [
+              "expression"
+            ],
+            "additionalProperties": false
+          },
+          "minItems": 1
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      "additionalProperties": false
+    },
+    "target.entity.propertyMapping": {
+      "type": "object",
+      "properties": {
+        "source_field": {
+          "type": "string",
+          "minLength": 1
+        },
+        "target_property": {
+          "type": "string",
+          "minLength": 1
+        },
+        "target_property_type": {
+          "enum": [
+            "boolean",
+            "BOOLEAN",
+            "boolean_array",
+            "BOOLEAN_ARRAY",
+            "byte_array",
+            "BYTE_ARRAY",
+            "date",
+            "DATE",
+            "date_array",
+            "DATE_ARRAY",
+            "duration",
+            "DURATION",
+            "duration_array",
+            "DURATION_ARRAY",
+            "float",
+            "FLOAT",
+            "float_array",
+            "FLOAT_ARRAY",
+            "integer",
+            "INTEGER",
+            "integer_array",
+            "INTEGER_ARRAY",
+            "local_datetime",
+            "LOCAL_DATETIME",
+            "local_datetime_array",
+            "LOCAL_DATETIME_ARRAY",
+            "local_time",
+            "LOCAL_TIME",
+            "local_time_array",
+            "LOCAL_TIME_ARRAY",
+            "point",
+            "POINT",
+            "point_array",
+            "POINT_ARRAY",
+            "string",
+            "STRING",
+            "string_array",
+            "STRING_ARRAY",
+            "zoned_datetime",
+            "ZONED_DATETIME",
+            "zoned_datetime_array",
+            "ZONED_DATETIME_ARRAY",
+            "zoned_time",
+            "ZONED_TIME",
+            "zoned_time_array",
+            "ZONED_TIME_ARRAY"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "target.node.schema.constraints.key": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1
+        },
+        "properties": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1
+        },
+        "options": {
+          "type": "object"
+        }
+      },
+      "required": [
+        "name",
+        "label",
+        "properties"
+      ],
+      "additionalProperties": false
+    },
+    "target.node.schema.constraints.unique": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1
+        },
+        "properties": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1
+        },
+        "options": {
+          "type": "object"
+        }
+      },
+      "required": [
+        "name",
+        "label",
+        "properties"
+      ],
+      "additionalProperties": false
+    },
+    "target.node.schema.constraints.existence": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1
+        },
+        "property": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "label",
+        "property"
+      ],
+      "additionalProperties": false
+    },
+    "target.node.schema.indexes.range": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1
+        },
+        "properties": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1
+        }
+      },
+      "required": [
+        "name",
+        "label",
+        "properties"
+      ],
+      "additionalProperties": false
+    },
+    "target.node.schema.indexes.text": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1
+        },
+        "property": {
+          "type": "string",
+          "minLength": 1
+        },
+        "options": {
+          "type": "object"
+        }
+      },
+      "required": [
+        "name",
+        "label",
+        "property"
+      ],
+      "additionalProperties": false
+    },
+    "target.node.schema.indexes.point": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1
+        },
+        "property": {
+          "type": "string",
+          "minLength": 1
+        },
+        "options": {
+          "type": "object"
+        }
+      },
+      "required": [
+        "name",
+        "label",
+        "property"
+      ],
+      "additionalProperties": false
+    },
+    "target.node.schema.indexes.full-text": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "labels": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1
+        },
+        "properties": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1
+        },
+        "options": {
+          "type": "object"
+        }
+      },
+      "required": [
+        "name",
+        "labels",
+        "properties"
+      ],
+      "additionalProperties": false
+    },
+    "target.node.schema.indexes.vector": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1
+        },
+        "property": {
+          "type": "string",
+          "minLength": 1
+        },
+        "options": {
+          "type": "object"
+        }
+      },
+      "required": [
+        "name",
+        "label",
+        "property",
+        "options"
+      ],
+      "additionalProperties": false
+    },
+    "target.relationship.node": {
+      "type": "object",
+      "properties": {
+        "label": {
+          "type": "string",
+          "minLength": 1
+        },
+        "key_properties": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/target.entity.propertyMapping"
+          },
+          "minItems": 1
+        }
+      },
+      "required": [
+        "label",
+        "key_properties"
+      ],
+      "additionalProperties": false
+    },
+    "target.relationship.schema.constraints.key": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "properties": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1
+        },
+        "options": {
+          "type": "object"
+        }
+      },
+      "required": [
+        "name",
+        "properties"
+      ],
+      "additionalProperties": false
+    },
+    "target.relationship.schema.constraints.unique": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "properties": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1
+        },
+        "options": {
+          "type": "object"
+        }
+      },
+      "required": [
+        "name",
+        "properties"
+      ],
+      "additionalProperties": false
+    },
+    "target.relationship.schema.constraints.existence": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "property": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "property"
+      ],
+      "additionalProperties": false
+    },
+    "target.relationship.schema.indexes.range": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "properties": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1
+        }
+      },
+      "required": [
+        "name",
+        "properties"
+      ],
+      "additionalProperties": false
+    },
+    "target.relationship.schema.indexes.text": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "property": {
+          "type": "string",
+          "minLength": 1
+        },
+        "options": {
+          "type": "object"
+        }
+      },
+      "required": [
+        "name",
+        "property"
+      ],
+      "additionalProperties": false
+    },
+    "target.relationship.schema.indexes.point": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "property": {
+          "type": "string",
+          "minLength": 1
+        },
+        "options": {
+          "type": "object"
+        }
+      },
+      "required": [
+        "name",
+        "property"
+      ],
+      "additionalProperties": false
+    },
+    "target.relationship.schema.indexes.full-text": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "properties": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1
+        },
+        "options": {
+          "type": "object"
+        }
+      },
+      "required": [
+        "name",
+        "properties"
+      ],
+      "additionalProperties": false
+    },
+    "target.relationship.schema.indexes.vector": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "property": {
+          "type": "string",
+          "minLength": 1
+        },
+        "options": {
+          "type": "object"
+        }
+      },
+      "required": [
+        "name",
+        "property",
+        "options"
+      ],
+      "additionalProperties": false
+    }
+  }
+}
