@@ -109,12 +109,6 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
-    <pluginRepositories>
-        <pluginRepository>
-            <id>github</id>
-            <url>https://maven.pkg.github.com/neo4j/connectors-build-resources</url>
-        </pluginRepository>
-    </pluginRepositories>
     <build>
         <pluginManagement>
             <plugins>
@@ -219,42 +213,64 @@
                     </execution>
                 </executions>
             </plugin>
-            <plugin>
-                <groupId>com.mycila</groupId>
-                <artifactId>license-maven-plugin</artifactId>
-                <version>4.3</version>
-                <configuration>
-                    <strictCheck>true</strictCheck>
-                    <licenseSets>
-                        <licenseSet>
-                            <header>/headers/ASL-2-header.txt</header>
-                            <includes>
-                                <include>src/**/*.kt</include>
-                                <include>src/**/*.java</include>
-                            </includes>
-                        </licenseSet>
-                    </licenseSets>
-                    <mapping>
-                        <kotlin>SLASHSTAR_STYLE</kotlin>
-                    </mapping>
-                </configuration>
-                <dependencies>
-                    <dependency>
-                        <groupId>org.neo4j.connectors</groupId>
-                        <artifactId>build-resources</artifactId>
-                        <version>1.0.0</version>
-                    </dependency>
-                </dependencies>
-                <executions>
-                    <execution>
-                        <id>check-licenses</id>
-                        <goals>
-                            <goal>check</goal>
-                        </goals>
-                        <phase>compile</phase>
-                    </execution>
-                </executions>
-            </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>licensing</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <pluginRepositories>
+                <pluginRepository>
+                    <id>github</id>
+                    <url>https://maven.pkg.github.com/neo4j/connectors-build-resources</url>
+                </pluginRepository>
+            </pluginRepositories>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>com.mycila</groupId>
+                        <artifactId>license-maven-plugin</artifactId>
+                        <version>4.3</version>
+                        <configuration>
+                            <strictCheck>true</strictCheck>
+                            <licenseSets>
+                                <licenseSet>
+                                    <header>/headers/ASL-2-header.txt</header>
+                                    <includes>
+                                        <include>src/**/*.kt</include>
+                                        <include>src/**/*.java</include>
+                                    </includes>
+                                </licenseSet>
+                            </licenseSets>
+                            <mapping>
+                                <kotlin>SLASHSTAR_STYLE</kotlin>
+                            </mapping>
+                        </configuration>
+                        <dependencies>
+                            <dependency>
+                                <groupId>org.neo4j.connectors</groupId>
+                                <artifactId>build-resources</artifactId>
+                                <version>1.0.0</version>
+                            </dependency>
+                        </dependencies>
+                        <executions>
+                            <execution>
+                                <id>check-licenses</id>
+                                <goals>
+                                    <goal>check</goal>
+                                </goals>
+                                <phase>compile</phase>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>external</id>
+        </profile>
+    </profiles>
 </project>

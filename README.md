@@ -68,3 +68,31 @@ class GettingStarted {
 
  - Maven
  - JDK 21 (21 is used for tests, 11 for production sources)
+
+## Contributing
+
+If you have not configured access to the `build-resources` dependency of the licensing plugin, the build will fail as follows:
+
+```shell
+Execution check-licenses of goal com.mycila:license-maven-plugin:4.3:check failed: Plugin com.mycila:license-maven-plugin:4.3 or one of its dependencies could not be resolved: Failed to collect dependencies at com.mycila:license-maven-plugin:jar:4.3 -> org.neo4j.connectors:build-resources:jar:1.0.0: Failed to read artifact descriptor for org.neo4j.connectors:build-resources:jar:1.0.0: The following artifacts could not be resolved: org.neo4j.connectors:build-resources:pom:1.0.0 (absent): Could not transfer artifact org.neo4j.connectors:build-resources:pom:1.0.0 from/to github (https://maven.pkg.github.com/neo4j/connectors-build-resources): status code: 401, reason phrase: Unauthorized (401)
+```
+
+### Working for Neo4j
+Make sure to add the right server entry to your own `~/.m2/settings.xml`:
+
+```xml
+<servers>
+    <server>
+        <id>github</id>
+        <username>USERNAME</username>
+        <password>PASSWORD_OR_TOKEN</password>
+    </server>
+</servers>
+```
+
+### Working outside Neo4j
+You will have to build the project by disabling the licensing profile with `-P'!licensing'`, as in the following example:
+
+```shell
+mvn verify -P'!licensing'
+```
