@@ -26,23 +26,43 @@
           "type": "array",
           "items": {
             "$ref": "#/$defs/target.node"
-          }
+          },
+          "minItems": 1
         },
         "relationships": {
           "description": "Target specification of the relationships to import in batch",
           "type": "array",
           "items": {
             "$ref": "#/$defs/target.relationship"
-          }
+          },
+          "minItems": 1
         },
         "queries": {
           "description": "Import queries to run in batch",
           "type": "array",
           "items": {
             "$ref": "#/$defs/target.query"
-          }
+          },
+          "minItems": 1
         }
-      }
+      },
+      "anyOf": [
+        {
+          "required": [
+            "nodes"
+          ]
+        },
+        {
+          "required": [
+            "relationships"
+          ]
+        },
+        {
+          "required": [
+            "queries"
+          ]
+        }
+      ]
     },
     "actions": {
       "description": "One-off actions to execute",
@@ -58,32 +78,66 @@
   ],
   "$defs": {
     "source": {
+      "type": "object",
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "bigquery"
+              }
+            }
+          },
+          "then": {
+            "$ref": "#/$defs/source.bigQuery"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "jdbc"
+              }
+            }
+          },
+          "then": {
+            "$ref": "#/$defs/source.jdbc"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "text"
+              }
+            }
+          },
+          "then": {
+            "$ref": "#/$defs/source.text"
+          }
+        }
+      ]
+    },
+    "source.base": {
       "properties": {
         "name": {
           "type": "string",
-          "minLength": 1
+          "minLength": 1,
+          "pattern": "\\S+"
         }
       },
-      "oneOf": [
-        {
-          "$ref": "#/$defs/source.bigQuery"
-        },
-        {
-          "$ref": "#/$defs/source.jdbc"
-        },
-        {
-          "$ref": "#/$defs/source.text"
-        }
-      ],
       "required": [
         "name"
       ]
     },
     "source.bigQuery": {
+      "type": "object",
+      "allOf": [
+        {
+          "$ref": "#/$defs/source.base"
+        }
+      ],
       "properties": {
-        "type": {
-          "const": "bigquery"
-        },
         "query": {
           "type": "string",
           "minLength": 1
@@ -92,10 +146,15 @@
       "required": [
         "type",
         "query"
-      ],
-      "additionalProperties": false
+      ]
     },
     "source.jdbc": {
+      "type": "object",
+      "allOf": [
+        {
+          "$ref": "#/$defs/source.base"
+        }
+      ],
       "properties": {
         "type": {
           "const": "jdbc"
@@ -113,23 +172,16 @@
         "type",
         "data_source",
         "query"
-      ],
-      "additionalProperties": false
+      ]
     },
     "source.text": {
-      "properties": {
-        "type": {
-          "const": "text"
+      "type": "object",
+      "allOf": [
+        {
+          "$ref": "#/$defs/source.base"
         },
-        "header": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          },
-          "minLength": 1
-        },
-        "oneOf": [
-          {
+        {
+          "if": {
             "properties": {
               "urls": {
                 "type": "array",
@@ -138,97 +190,133 @@
                   "minLength": 1
                 },
                 "minItems": 1
-              },
-              "format": {
-                "type": "string",
-                "enum": [
-                  "default",
-                  "DEFAULT",
-                  "excel",
-                  "EXCEL",
-                  "informix",
-                  "INFORMIX",
-                  "mongo",
-                  "MONGO",
-                  "mongo_tsv",
-                  "MONGO_TSV",
-                  "mysql",
-                  "MYSQL",
-                  "oracle",
-                  "ORACLE",
-                  "postgres",
-                  "POSTGRES",
-                  "postgresql_csv",
-                  "POSTGRESQL_CSV",
-                  "rfc4180",
-                  "RFC4180"
-                ]
-              },
-              "column_delimiter": {
-                "type": "string",
-                "minLength": 1,
-                "maxLength": 1
-              },
-              "line_separator": {
-                "type": "string",
-                "minLength": 1,
-                "maxLength": 1
               }
-            },
-            "required": [
-              "urls"
-            ]
+            }
           },
-          {
+          "then": {
+            "$ref": "#/$defs/source.text.external"
+          }
+        },
+        {
+          "if": {
             "properties": {
               "data": {
                 "type": "array",
                 "items": {
-                  "type": "array"
-                }
+                  "type": "array",
+                  "minItems": 1
+                },
+                "minItems": 1
               }
-            },
-            "required": [
-              "header",
-              "data"
-            ]
+            }
+          },
+          "then": {
+            "$ref": "#/$defs/source.text.inline"
           }
-        ]
+        }
+      ]
+    },
+    "source.text.base": {
+      "type": "object",
+      "properties": {
+        "header": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minLength": 1
+        }
       },
       "required": [
         "type"
-      ],
-      "additionalProperties": false
+      ]
     },
-    "target.node": {
+    "source.text.external": {
+      "type": "object",
+      "allOf": [
+        {
+          "$ref": "#/$defs/source.text.base"
+        }
+      ],
+      "properties": {
+        "format": {
+          "type": "string",
+          "enum": [
+            "default",
+            "excel",
+            "informix",
+            "mongo",
+            "mongo_tsv",
+            "mysql",
+            "oracle",
+            "postgres",
+            "postgresql_csv",
+            "rfc4180"
+          ]
+        },
+        "column_delimiter": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1
+        },
+        "line_separator": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1
+        }
+      }
+    },
+    "source.text.inline": {
+      "type": "object",
+      "allOf": [
+        {
+          "$ref": "#/$defs/source.text.base"
+        }
+      ],
+      "required": [
+        "header"
+      ]
+    },
+    "target.base": {
       "type": "object",
       "properties": {
-        "write_mode": {
-          "enum": [
-            "create",
-            "CREATE",
-            "merge",
-            "MERGE"
-          ]
+        "active": {
+          "type": "boolean"
         },
         "source": {
           "type": "string",
           "minLength": 1
         },
-        "source_transformations": {
-          "$ref": "#/$defs/target.entity.sourceTransformation"
-        },
         "name": {
           "type": "string",
-          "minLength": 1
+          "minLength": 1,
+          "pattern": "\\S+"
         },
-        "labels": {
-          "type": "array",
-          "items": {
-            "type": "string",
-            "minLength": 1
-          },
-          "minItems": 1
+        "depends_on": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "name"
+      ]
+    },
+    "target.entity.base": {
+      "type": "object",
+      "allOf": [
+        {
+          "$ref": "#/$defs/target.base"
+        }
+      ],
+      "properties": {
+        "write_mode": {
+          "enum": [
+            "create",
+            "merge"
+          ]
+        },
+        "source_transformations": {
+          "$ref": "#/$defs/target.entity.sourceTransformation"
         },
         "properties": {
           "type": "array",
@@ -236,10 +324,27 @@
             "$ref": "#/$defs/target.entity.propertyMapping"
           },
           "minItems": 1
-        },
-        "depends_on": {
-          "type": "string",
-          "minLength": 1
+        }
+      },
+      "required": [
+        "source"
+      ]
+    },
+    "target.node": {
+      "type": "object",
+      "allOf": [
+        {
+          "$ref": "#/$defs/target.entity.base"
+        }
+      ],
+      "properties": {
+        "labels": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1
         },
         "schema": {
           "type": "object",
@@ -300,47 +405,24 @@
         }
       },
       "required": [
-        "source",
-        "name",
         "labels",
         "properties"
-      ],
-      "additionalProperties": false
+      ]
     },
     "target.relationship": {
       "type": "object",
+      "allOf": [
+        {
+          "$ref": "#/$defs/target.entity.base"
+        }
+      ],
       "properties": {
-        "active": {
-          "type": "boolean"
-        },
-        "write_mode": {
-          "enum": [
-            "create",
-            "CREATE",
-            "merge",
-            "MERGE"
-          ]
-        },
         "node_match_mode": {
           "enum": [
             "create",
-            "CREATE",
             "match",
-            "MATCH",
-            "merge",
-            "MERGE"
+            "merge"
           ]
-        },
-        "source": {
-          "type": "string",
-          "minLength": 1
-        },
-        "source_transformations": {
-          "$ref": "#/$defs/target.entity.sourceTransformation"
-        },
-        "name": {
-          "type": "string",
-          "minLength": 1
         },
         "type": {
           "type": "string",
@@ -357,17 +439,6 @@
           "$ref": "#/$defs/target.relationship.node"
         },
         "end_node_reference": {
-          "type": "string",
-          "minLength": 1
-        },
-        "properties": {
-          "type": "array",
-          "items": {
-            "$ref": "#/$defs/target.entity.propertyMapping"
-          },
-          "minItems": 1
-        },
-        "depends_on": {
           "type": "string",
           "minLength": 1
         },
@@ -430,118 +501,144 @@
         }
       },
       "required": [
-        "source",
-        "name",
         "type"
       ],
       "oneOf": [
-        {"required": ["start_node", "end_node"]},
-        {"required": ["start_node", "end_node_reference"]},
-        {"required": ["start_node_reference", "end_node"]},
-        {"required": ["start_node_reference", "end_node_reference"]}
-      ],
-      "additionalProperties": false
+        {
+          "required": [
+            "start_node",
+            "end_node"
+          ]
+        },
+        {
+          "required": [
+            "start_node",
+            "end_node_reference"
+          ]
+        },
+        {
+          "required": [
+            "start_node_reference",
+            "end_node"
+          ]
+        },
+        {
+          "required": [
+            "start_node_reference",
+            "end_node_reference"
+          ]
+        }
+      ]
     },
     "target.query": {
       "type": "object",
+      "allOf": [
+        {
+          "$ref": "#/$defs/target.base"
+        }
+      ],
       "properties": {
-        "active": {
-          "type": "boolean"
-        },
-        "source": {
-          "type": "string",
-          "minLength": 1
-        },
-        "name": {
-          "type": "string",
-          "minLength": 1
-        },
         "query": {
           "type": "string",
           "minLength": 1
-        },
-        "depends_on": {
-          "type": "string",
-          "minLength": 1
         }
       },
       "required": [
-        "source",
-        "name",
         "query"
-      ],
-      "additionalProperties": false
+      ]
     },
     "action": {
+      "type": "object",
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "http"
+              }
+            }
+          },
+          "then": {
+            "$ref": "#/$defs/action.http"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "cypher"
+              }
+            }
+          },
+          "then": {
+            "$ref": "#/$defs/action.cypher"
+          }
+        }
+      ]
+    },
+    "action.base": {
       "properties": {
         "active": {
           "type": "boolean"
         },
         "name": {
           "type": "string",
-          "minLength": 1
+          "minLength": 1,
+          "pattern": "\\S+"
         },
         "depends_on": {
           "type": "string",
           "minLength": 1
         }
       },
-      "oneOf": [
-        {
-          "type": "object",
-          "properties": {
-            "type": {
-              "const": "cypher"
-            },
-            "query": {
-              "type": "string",
-              "minLength": 1
-            }
-          },
-          "required": [
-            "type",
-            "query"
-          ]
-        },
-        {
-          "type": "object",
-          "properties": {
-            "type": {
-              "enum": [
-                "http",
-                "HTTP"
-              ]
-            },
-            "method": {
-              "enum": [
-                "GET",
-                "get",
-                "POST",
-                "post"
-              ]
-            },
-            "url": {
-              "type": "string",
-              "minLength": 1
-            },
-            "headers": {
-              "type": "object",
-              "additionalProperties": {
-                "type": "string"
-              }
-            }
-          },
-          "required": [
-            "type",
-            "method",
-            "url"
-          ]
-        }
-      ],
       "required": [
         "name"
+      ]
+    },
+    "action.http": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/action.base"
+        }
       ],
-      "additionalProperties": false
+      "properties": {
+        "method": {
+          "enum": [
+            "get",
+            "post"
+          ]
+        },
+        "url": {
+          "type": "string",
+          "minLength": 1
+        },
+        "headers": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "method",
+        "url"
+      ]
+    },
+    "action.cypher": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/action.base"
+        }
+      ],
+      "properties": {
+        "query": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "query"
+      ]
     },
     "target.entity.sourceTransformation": {
       "type": "object",
