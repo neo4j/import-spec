@@ -16,9 +16,25 @@
  */
 package org.neo4j.importer.v1.validation;
 
-import org.neo4j.importer.v1.ImportSpecification;
+import java.util.Map;
+import java.util.function.Consumer;
+import org.neo4j.importer.v1.actions.Action;
+import org.neo4j.importer.v1.sources.Source;
+import org.neo4j.importer.v1.targets.CustomQueryTarget;
+import org.neo4j.importer.v1.targets.NodeTarget;
+import org.neo4j.importer.v1.targets.RelationshipTarget;
 
-public interface SpecificationValidator {
+public interface SpecificationValidator extends Consumer<SpecificationValidationResult.Builder> {
 
-    SpecificationValidationResult validate(ImportSpecification specification);
+    default void visitConfiguration(Map<String, Object> configuration) {}
+
+    default void visitSource(int index, Source source) {}
+
+    default void visitNodeTarget(int index, NodeTarget target) {}
+
+    default void visitRelationshipTarget(int index, RelationshipTarget target) {}
+
+    default void visitCustomQueryTarget(int index, CustomQueryTarget target) {}
+
+    default void visitAction(int index, Action action) {}
 }

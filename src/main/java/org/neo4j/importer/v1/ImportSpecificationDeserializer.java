@@ -25,8 +25,11 @@ import com.networknt.schema.JsonSchemaFactory;
 import com.networknt.schema.SpecVersion.VersionFlag;
 import java.io.IOException;
 import java.io.Reader;
-import java.util.Iterator;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.ServiceLoader;
+import org.neo4j.importer.v1.actions.Action;
 import org.neo4j.importer.v1.validation.InvalidSpecificationException;
 import org.neo4j.importer.v1.validation.SpecificationException;
 import org.neo4j.importer.v1.validation.SpecificationValidationResult;
@@ -91,17 +94,49 @@ public class ImportSpecificationDeserializer {
     }
 
     private static void runExtraValidations(ImportSpecification spec) throws SpecificationException {
-        Iterator<SpecificationValidator> validators =
-                ServiceLoader.load(SpecificationValidator.class).iterator();
-        Builder builder = SpecificationValidationResult.builder();
-        while (validators.hasNext()) {
-            SpecificationValidator validator = validators.next();
-            builder.merge(validator.validate(spec));
+        var validators = loadValidators();
+        var configuration =
+                spec.getConfiguration() == null ? Collections.<String, Object>emptyMap() : spec.getConfiguration();
+        validators.forEach(validator -> validator.visitConfiguration(configuration));
+        var sources = spec.getSources();
+        for (int i = 0; i < sources.size(); i++) {
+            final int index = i;
+            validators.forEach(validator -> validator.visitSource(index, sources.get(index)));
         }
+        var targets = spec.getTargets();
+        var nodeTargets = targets.getNodes();
+        for (int i = 0; i < nodeTargets.size(); i++) {
+            final int index = i;
+            validators.forEach(validator -> validator.visitNodeTarget(index, nodeTargets.get(index)));
+        }
+        var relationshipTargets = targets.getRelationships();
+        for (int i = 0; i < relationshipTargets.size(); i++) {
+            final int index = i;
+            validators.forEach(validator -> validator.visitRelationshipTarget(index, relationshipTargets.get(index)));
+        }
+        var queryTargets = targets.getCustomQueries();
+        for (int i = 0; i < queryTargets.size(); i++) {
+            final int index = i;
+            validators.forEach(validator -> validator.visitCustomQueryTarget(index, queryTargets.get(index)));
+        }
+        var actions = spec.getActions() == null ? Collections.<Action>emptyList() : spec.getActions();
+        for (int i = 0; i < actions.size(); i++) {
+            final int index = i;
+            validators.forEach(validator -> validator.visitAction(index, actions.get(index)));
+        }
+
+        var builder = SpecificationValidationResult.builder();
+        validators.forEach(validator -> validator.accept(builder));
         SpecificationValidationResult result = builder.build();
         if (!result.passes()) {
             throw new InvalidSpecificationException(result);
         }
+    }
+
+    private static List<SpecificationValidator> loadValidators() {
+        List<SpecificationValidator> result = new ArrayList<>();
+        ServiceLoader.load(SpecificationValidator.class).forEach(result::add);
+        return result;
     }
 
     private static JsonNode parse(Reader spec) throws SpecificationException {

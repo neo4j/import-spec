@@ -588,4 +588,135 @@ class ImportSpecificationDeserializerTest {
                 .hasMessageContainingAll(
                         "1 error(s)", "0 warning(s)", "$.actions[0].name: does not match the regex pattern \\S+");
     }
+
+    @Test
+    void fails_if_source_name_is_duplicated_with_node_target() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+                {
+                    "sources": [{
+                        "type": "bigquery",
+                        "name": "duplicate",
+                        "query": "SELECT id, name FROM my.table"
+                    }],
+                    "targets": {
+                        "nodes": [{
+                            "name": "duplicate",
+                            "source": "duplicate",
+                            "labels": ["Label1", "Label2"],
+                            "write_mode": "create",
+                            "properties": [
+                                {"source_field": "field_1", "target_property": "property1"},
+                                {"source_field": "field_2", "target_property": "property2"}
+                            ]
+                        }]
+                    }
+                }
+                """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "Name \"duplicate\" is duplicated across the following paths: $.sources[0].name, $.targets.nodes[0].name");
+    }
+
+    @Test
+    void fails_if_source_name_is_duplicated_with_rel_target() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+                {
+                    "sources": [{
+                        "type": "bigquery",
+                        "name": "duplicate",
+                        "query": "SELECT id, name FROM my.table"
+                    }],
+                    "targets": {
+                        "relationships": [{
+                            "name": "duplicate",
+                            "source": "duplicate",
+                            "type": "TYPE",
+                            "start_node": {
+                                "label": "Label1",
+                                "key_properties": [
+                                    {"source_field": "field_1", "target_property": "property1"}
+                                ]
+                            },
+                            "end_node": {
+                                "label": "Label2",
+                                "key_properties": [
+                                    {"source_field": "field_2", "target_property": "property2"}
+                                ]
+                            }
+                        }]
+                    }
+                }
+                """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "Name \"duplicate\" is duplicated across the following paths: $.sources[0].name, $.targets.relationships[0].name");
+    }
+
+    @Test
+    void fails_if_source_name_is_duplicated_with_custom_query_target() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+                {
+                    "sources": [{
+                        "type": "bigquery",
+                        "name": "duplicate",
+                        "query": "SELECT id, name FROM my.table"
+                    }],
+                    "targets": {
+                        "queries": [{
+                            "name": "duplicate",
+                            "source": "duplicate",
+                            "query": "UNWIND $rows AS row CREATE (n:ANode) SET n = row"
+                        }]
+                    }
+                }
+                """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "Name \"duplicate\" is duplicated across the following paths: $.sources[0].name, $.targets.queries[0].name");
+    }
+
+    @Test
+    void fails_if_source_name_is_duplicated_with_action() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+                {
+                    "sources": [{
+                        "type": "bigquery",
+                        "name": "duplicate",
+                        "query": "SELECT id, name FROM my.table"
+                    }],
+                    "targets": {
+                        "queries": [{
+                            "name": "my-target",
+                            "source": "duplicate",
+                            "query": "UNWIND $rows AS row CREATE (n:ANode) SET n = row"
+                        }]
+                    },
+                    "actions": [{
+                        "name": "duplicate",
+                        "type": "http",
+                        "method": "get",
+                        "url": "https://example.com"
+                    }]
+                }
+                """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "Name \"duplicate\" is duplicated across the following paths: $.sources[0].name, $.actions[0].name");
+    }
 }
