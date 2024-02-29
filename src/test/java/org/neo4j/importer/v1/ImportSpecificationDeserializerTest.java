@@ -820,4 +820,139 @@ class ImportSpecificationDeserializerTest {
                         "$.targets.queries[0] refers to the non-existing source \"incorrect-source-name\". "
                                 + "Possible names are: \"a-source\"");
     }
+
+    @Test
+    void fails_if_node_target_depends_on_non_existing_target_or_action() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+        {
+            "sources": [{
+                "type": "bigquery",
+                "name": "a-source",
+                "query": "SELECT id, name FROM my.table"
+            }],
+            "targets": {
+                "nodes": [{
+                    "name": "a-target",
+                    "source": "a-source",
+                    "depends_on": "incorrect-dependent",
+                    "labels": ["Label1", "Label2"],
+                    "write_mode": "create",
+                    "properties": [
+                        {"source_field": "field_1", "target_property": "property1"},
+                        {"source_field": "field_2", "target_property": "property2"}
+                    ]
+                }]
+            }
+        }
+        """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "$.targets.nodes[0] depends on a non-existing action or target \"incorrect-dependent\"");
+    }
+
+    @Test
+    void fails_if_relationship_target_depends_on_non_existing_target_or_action() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+        {
+            "sources": [{
+                "type": "bigquery",
+                "name": "a-source",
+                "query": "SELECT id, name FROM my.table"
+            }],
+            "targets": {
+                "relationships": [{
+                    "name": "a-target",
+                    "source": "a-source",
+                    "depends_on": "incorrect-dependent",
+                    "type": "TYPE",
+                    "start_node": {
+                        "label": "Label1",
+                        "key_properties": [
+                            {"source_field": "field_1", "target_property": "property1"}
+                        ]
+                    },
+                    "end_node": {
+                        "label": "Label2",
+                        "key_properties": [
+                            {"source_field": "field_2", "target_property": "property2"}
+                        ]
+                    }
+                }]
+            }
+        }
+        """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "$.targets.relationships[0] depends on a non-existing action or target \"incorrect-dependent\"");
+    }
+
+    @Test
+    void fails_if_custom_query_target_depends_on_non_existing_target_or_action() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+        {
+            "sources": [{
+                "type": "bigquery",
+                "name": "a-source",
+                "query": "SELECT id, name FROM my.table"
+            }],
+            "targets": {
+                "queries": [{
+                    "name": "a-target",
+                    "source": "a-source",
+                    "depends_on": "incorrect-dependent",
+                    "query": "UNWIND $rows AS row CREATE (n:ANode) SET n = row"
+                }]
+            }
+        }
+"""
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "$.targets.queries[0] depends on a non-existing action or target \"incorrect-dependent\"");
+    }
+
+    @Test
+    void fails_if_action_depends_on_non_existing_target_or_action() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+        {
+            "sources": [{
+                "type": "bigquery",
+                "name": "a-source",
+                "query": "SELECT id, name FROM my.table"
+            }],
+            "targets": {
+                "queries": [{
+                    "name": "a-target",
+                    "source": "a-source",
+                    "query": "UNWIND $rows AS row CREATE (n:ANode) SET n = row"
+                }]
+            },
+            "actions": [{
+                "name": "an-action",
+                "depends_on": "incorrect-dependent",
+                "type": "http",
+                "method": "get",
+                "url": "https://example.com"
+            }]
+        }
+"""
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "$.actions[0] depends on a non-existing action or target \"incorrect-dependent\".");
+    }
 }
