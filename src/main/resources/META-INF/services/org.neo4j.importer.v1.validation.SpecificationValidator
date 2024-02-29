@@ -1,1 +1,2 @@
-org.neo4j.importer.v1.validation.NoDuplicatedNameValidator
+org.neo4j.importer.v1.validation.plugin.NoDuplicatedNameValidator
+org.neo4j.importer.v1.validation.plugin.NoDanglingSourceValidator

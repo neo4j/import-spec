@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.neo4j.importer.v1.validation;
+package org.neo4j.importer.v1.validation.plugin;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -26,6 +26,7 @@ import org.neo4j.importer.v1.targets.CustomQueryTarget;
 import org.neo4j.importer.v1.targets.NodeTarget;
 import org.neo4j.importer.v1.targets.RelationshipTarget;
 import org.neo4j.importer.v1.validation.SpecificationValidationResult.Builder;
+import org.neo4j.importer.v1.validation.SpecificationValidator;
 
 public class NoDuplicatedNameValidator implements SpecificationValidator {
 

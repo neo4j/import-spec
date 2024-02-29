@@ -719,4 +719,105 @@ class ImportSpecificationDeserializerTest {
                         "0 warning(s)",
                         "Name \"duplicate\" is duplicated across the following paths: $.sources[0].name, $.actions[0].name");
     }
+
+    @Test
+    void fails_if_node_target_does_not_refer_to_existing_source() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+        {
+            "sources": [{
+                "type": "bigquery",
+                "name": "a-source",
+                "query": "SELECT id, name FROM my.table"
+            }],
+            "targets": {
+                "nodes": [{
+                    "name": "a-target",
+                    "source": "incorrect-source-name",
+                    "labels": ["Label1", "Label2"],
+                    "write_mode": "create",
+                    "properties": [
+                        {"source_field": "field_1", "target_property": "property1"},
+                        {"source_field": "field_2", "target_property": "property2"}
+                    ]
+                }]
+            }
+        }
+        """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "$.targets.nodes[0] refers to the non-existing source \"incorrect-source-name\". "
+                                + "Possible names are: \"a-source\"");
+    }
+
+    @Test
+    void fails_if_relationship_target_does_not_refer_to_existing_source() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+        {
+            "sources": [{
+                "type": "bigquery",
+                "name": "a-source",
+                "query": "SELECT id, name FROM my.table"
+            }],
+            "targets": {
+                "relationships": [{
+                    "name": "a-target",
+                    "source": "incorrect-source-name",
+                    "type": "TYPE",
+                    "start_node": {
+                        "label": "Label1",
+                        "key_properties": [
+                            {"source_field": "field_1", "target_property": "property1"}
+                        ]
+                    },
+                    "end_node": {
+                        "label": "Label2",
+                        "key_properties": [
+                            {"source_field": "field_2", "target_property": "property2"}
+                        ]
+                    }
+                }]
+            }
+        }
+        """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "$.targets.relationships[0] refers to the non-existing source \"incorrect-source-name\". "
+                                + "Possible names are: \"a-source\"");
+    }
+
+    @Test
+    void fails_if_custom_query_target_does_not_refer_to_existing_source() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+        {
+            "sources": [{
+                "type": "bigquery",
+                "name": "a-source",
+                "query": "SELECT id, name FROM my.table"
+            }],
+            "targets": {
+                "queries": [{
+                    "name": "a-target",
+                    "source": "incorrect-source-name",
+                    "query": "UNWIND $rows AS row CREATE (n:ANode) SET n = row"
+                }]
+            }
+        }
+"""
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "$.targets.queries[0] refers to the non-existing source \"incorrect-source-name\". "
+                                + "Possible names are: \"a-source\"");
+    }
 }
