@@ -913,7 +913,7 @@ class ImportSpecificationDeserializerTest {
                 }]
             }
         }
-"""
+        """
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
@@ -947,12 +947,80 @@ class ImportSpecificationDeserializerTest {
                 "url": "https://example.com"
             }]
         }
-"""
+        """
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
                         "1 error(s)",
                         "0 warning(s)",
                         "$.actions[0] depends on a non-existing action or target \"incorrect-dependent\".");
+    }
+
+    @Test
+    void fails_if_relationship_refers_to_a_non_existing_node_target_for_start() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+        {
+            "sources": [{
+                "type": "bigquery",
+                "name": "a-source",
+                "query": "SELECT id, name FROM my.table"
+            }],
+            "targets": {
+                "relationships": [{
+                    "name": "a-target",
+                    "source": "a-source",
+                    "type": "TYPE",
+                    "start_node_reference": "incorrect-reference",
+                    "end_node": {
+                        "label": "Label2",
+                        "key_properties": [
+                            {"source_field": "field_2", "target_property": "property2"}
+                        ]
+                    }
+                }]
+            }
+        }
+        """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "$.targets.relationships[0].start_node_reference refers to a non-existing node target \"incorrect-reference\".");
+    }
+
+    @Test
+    void fails_if_relationship_refers_to_a_non_existing_node_target_for_end() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+                {
+                    "sources": [{
+                        "type": "bigquery",
+                        "name": "a-source",
+                        "query": "SELECT id, name FROM my.table"
+                    }],
+                    "targets": {
+                        "relationships": [{
+                            "name": "a-target",
+                            "source": "a-source",
+                            "type": "TYPE",
+                            "start_node": {
+                                "label": "Label1",
+                                "key_properties": [
+                                    {"source_field": "field_1", "target_property": "property1"}
+                                ]
+                            },
+                            "end_node_reference": "incorrect-reference"
+                        }]
+                    }
+                }
+                """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "$.targets.relationships[0].end_node_reference refers to a non-existing node target \"incorrect-reference\".");
     }
 }
