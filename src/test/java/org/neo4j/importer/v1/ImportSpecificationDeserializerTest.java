@@ -1023,4 +1023,101 @@ class ImportSpecificationDeserializerTest {
                         "0 warning(s)",
                         "$.targets.relationships[0].end_node_reference refers to a non-existing node target \"incorrect-reference\".");
     }
+
+    @Test
+    void fails_if_direct_dependency_cycle_is_detected() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+                {
+                    "sources": [{
+                        "type": "bigquery",
+                        "name": "a-source",
+                        "query": "SELECT id, name FROM my.table"
+                    }],
+                    "targets": {
+                        "relationships": [{
+                            "name": "a-target",
+                            "depends_on": "a-target",
+                            "source": "a-source",
+                            "type": "TYPE",
+                            "start_node": {
+                                "label": "Label1",
+                                "key_properties": [
+                                    {"source_field": "field_1", "target_property": "property1"}
+                                ]
+                            },
+                            "end_node": {
+                                "label": "Label2",
+                                "key_properties": [
+                                    {"source_field": "field_2", "target_property": "property2"}
+                                ]
+                            }
+                        }]
+                    }
+                }
+                """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "A dependency cycle has been detected",
+                        "\"a-target\" ($.targets.relationships[0]) depends on \"a-target\" ($.targets.relationships[0])");
+    }
+
+    @Test
+    void fails_if_longer_dependency_cycle_is_detected() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+                {
+                    "sources": [{
+                        "type": "bigquery",
+                        "name": "a-source",
+                        "query": "SELECT id, name FROM my.table"
+                    }],
+                    "targets": {
+                        "relationships": [{
+                            "name": "a-relationship-target",
+                            "depends_on": "an-action",
+                            "source": "a-source",
+                            "type": "TYPE",
+                            "start_node": {
+                                "label": "Label1",
+                                "key_properties": [
+                                    {"source_field": "field_1", "target_property": "property1"}
+                                ]
+                            },
+                            "end_node": {
+                                "label": "Label2",
+                                "key_properties": [
+                                    {"source_field": "field_2", "target_property": "property2"}
+                                ]
+                            }
+                        }],
+                        "queries": [{
+                            "name": "a-query-target",
+                            "source": "a-source",
+                            "depends_on": "a-relationship-target",
+                            "query": "UNWIND $rows AS row CREATE (n:ANode) SET n = row"
+                        }]
+                    },
+                    "actions": [{
+                        "name": "an-action",
+                        "depends_on": "a-query-target",
+                        "type": "http",
+                        "method": "get",
+                        "url": "https://example.com"
+                    }]
+                }
+                """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "A dependency cycle has been detected",
+                        "\"a-relationship-target\" ($.targets.relationships[0]) depends on \"an-action\" ($.actions[0])",
+                        "\"an-action\" ($.actions[0]) depends on \"a-query-target\" ($.targets.queries[0])",
+                        "\"a-query-target\" ($.targets.queries[0]) depends on \"a-relationship-target\" ($.targets.relationships[0])");
+    }
 }

@@ -46,8 +46,8 @@ class InvalidSpecificationExceptionTest {
                 \t- 0 warning(s)
 
                 === Errors ===
-                \t- [OOPSIE] something wrong occurred
-                \t- [WELP] something bad happened
+                \t- [OOPSIE][$.sources] something wrong occurred
+                \t- [WELP][$.targets] something bad happened
                 ===============================================================================\
                 """
                                 .stripIndent());
@@ -61,7 +61,7 @@ class InvalidSpecificationExceptionTest {
                         new SpecificationError("$.targets", "WELP", "something bad happened")),
                 newLinkedHashSet(
                         new SpecificationWarning("$.actions[0].name", "HMMM", "something is a bit strange"),
-                        new SpecificationWarning("$.targets[2].depend-on", "AHEM", "are you sure this is right")));
+                        new SpecificationWarning("$.targets[2].depends-on", "AHEM", "are you sure this is right")));
 
         var exception = new InvalidSpecificationException(result);
 
@@ -76,12 +76,12 @@ class InvalidSpecificationExceptionTest {
                 \t- 2 warning(s)
 
                 === Errors ===
-                \t- [OOPSIE] something wrong occurred
-                \t- [WELP] something bad happened
+                \t- [OOPSIE][$.sources] something wrong occurred
+                \t- [WELP][$.targets] something bad happened
 
                 === Warnings ===
-                \t- [HMMM] something is a bit strange
-                \t- [AHEM] are you sure this is right
+                \t- [HMMM][$.actions[0].name] something is a bit strange
+                \t- [AHEM][$.targets[2].depends-on] are you sure this is right
                 ===============================================================================\
                 """
                                 .stripIndent());

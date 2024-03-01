@@ -45,7 +45,8 @@ public class InvalidSpecificationException extends SpecificationException {
         StringBuilder builder = new StringBuilder();
         builder.append("=== Errors ===\n");
         errors.forEach((error) -> {
-            builder.append(String.format("\t- [%s] %s\n", error.getCode(), error.getMessage()));
+            builder.append(
+                    String.format("\t- [%s][%s] %s\n", error.getCode(), error.getElementPath(), error.getMessage()));
         });
         return builder.toString();
     }
@@ -57,7 +58,8 @@ public class InvalidSpecificationException extends SpecificationException {
         StringBuilder builder = new StringBuilder();
         builder.append("\n=== Warnings ===\n");
         warnings.forEach((warning) -> {
-            builder.append(String.format("\t- [%s] %s\n", warning.getCode(), warning.getMessage()));
+            builder.append(String.format(
+                    "\t- [%s][%s] %s\n", warning.getCode(), warning.getElementPath(), warning.getMessage()));
         });
         return builder.toString();
     }

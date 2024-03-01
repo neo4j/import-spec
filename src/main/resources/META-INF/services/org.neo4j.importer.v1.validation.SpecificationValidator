@@ -2,3 +2,4 @@ org.neo4j.importer.v1.validation.plugin.NoDuplicatedNameValidator
 org.neo4j.importer.v1.validation.plugin.NoDanglingSourceValidator
 org.neo4j.importer.v1.validation.plugin.NoDanglingDependsOnValidator
 org.neo4j.importer.v1.validation.plugin.NoDanglingNodeReferenceValidator
+org.neo4j.importer.v1.validation.plugin.NoDependencyCycleValidator
