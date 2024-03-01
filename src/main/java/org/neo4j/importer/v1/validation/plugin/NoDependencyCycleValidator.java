@@ -32,6 +32,8 @@ import org.neo4j.importer.v1.validation.SpecificationValidator;
 
 public class NoDependencyCycleValidator implements SpecificationValidator {
 
+    private static final String ERROR_CODE = "CYCL-001";
+
     private final Map<Element, String> dependencies;
     private final Map<String, String> namedPaths;
 
@@ -76,7 +78,7 @@ public class NoDependencyCycleValidator implements SpecificationValidator {
             Element cycleStart = cycle.get(0).getFirst();
             builder.addError(
                     cycleStart.getPath(),
-                    "CYCL-001",
+                    ERROR_CODE,
                     String.format("A dependency cycle has been detected:%n %s", cycleDescription));
         });
     }
