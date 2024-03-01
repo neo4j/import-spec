@@ -49,7 +49,7 @@ class GettingStarted {
 
     public static void main(String... args) {
 
-        try (Reader reader = createReader("json.spec")) {
+        try (Reader reader = createReader("spec.json")) {
             var importSpecification = ImportSpecificationDeserializer.deserialize(reader);
 
             var config = importSpecification.getConfiguration();
