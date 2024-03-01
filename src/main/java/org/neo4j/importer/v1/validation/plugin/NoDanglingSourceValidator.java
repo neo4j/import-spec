@@ -62,7 +62,7 @@ public class NoDanglingSourceValidator implements SpecificationValidator {
     }
 
     @Override
-    public void accept(Builder builder) {
+    public boolean report(Builder builder) {
         pathToSourceName.forEach((path, source) -> {
             builder.addError(
                     path,
@@ -71,6 +71,7 @@ public class NoDanglingSourceValidator implements SpecificationValidator {
                             "%s refers to the non-existing source \"%s\". Possible names are: \"%s\"",
                             path, source, String.join("\", \"", sourceNames)));
         });
+        return !pathToSourceName.isEmpty();
     }
 
     private void checkSource(Target target, Supplier<String> path) {

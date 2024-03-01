@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 import org.neo4j.importer.v1.actions.Action;
 import org.neo4j.importer.v1.sources.Source;
 import org.neo4j.importer.v1.targets.CustomQueryTarget;
@@ -62,8 +63,8 @@ public class NoDuplicatedNameValidator implements SpecificationValidator {
     }
 
     @Override
-    public void accept(Builder builder) {
-        nameCounter.reportErrorsIfAny(builder);
+    public boolean report(Builder builder) {
+        return nameCounter.reportErrorsIfAny(builder);
     }
 }
 
@@ -75,11 +76,13 @@ class NameCounter {
         pathsUsingName.computeIfAbsent(name, (ignored) -> new ArrayList<>()).add(String.format("%s.name", path));
     }
 
-    public void reportErrorsIfAny(Builder builder) {
+    public boolean reportErrorsIfAny(Builder builder) {
+        AtomicBoolean result = new AtomicBoolean(false);
         pathsUsingName.entrySet().stream()
                 .filter(entry -> entry.getValue().size() > 1)
                 .forEach(entry -> {
                     List<String> paths = entry.getValue();
+                    result.set(true);
                     builder.addError(
                             paths.get(0),
                             "DUPN",
@@ -87,5 +90,6 @@ class NameCounter {
                                     "Name \"%s\" is duplicated across the following paths: %s",
                                     entry.getKey(), String.join(", ", paths)));
                 });
+        return result.get();
     }
 }

@@ -25,11 +25,17 @@ import com.networknt.schema.JsonSchemaFactory;
 import com.networknt.schema.SpecVersion.VersionFlag;
 import java.io.IOException;
 import java.io.Reader;
-import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.ServiceLoader;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.stream.Collectors;
 import org.neo4j.importer.v1.actions.Action;
+import org.neo4j.importer.v1.graph.CycleDetector;
+import org.neo4j.importer.v1.graph.Pair;
 import org.neo4j.importer.v1.validation.InvalidSpecificationException;
 import org.neo4j.importer.v1.validation.SpecificationException;
 import org.neo4j.importer.v1.validation.SpecificationValidationResult;
@@ -125,18 +131,44 @@ public class ImportSpecificationDeserializer {
             validators.forEach(validator -> validator.visitAction(index, actions.get(index)));
         }
 
+        Set<Class<? extends SpecificationValidator>> failedValidations = new HashSet<>(validators.size());
         var builder = SpecificationValidationResult.builder();
-        validators.forEach(validator -> validator.accept(builder));
+        validators.forEach(validator -> {
+            for (Class<? extends SpecificationValidator> dependent : validator.requires()) {
+                if (failedValidations.contains(dependent)) {
+                    return;
+                }
+            }
+            if (validator.report(builder)) {
+                failedValidations.add(validator.getClass());
+            }
+        });
         SpecificationValidationResult result = builder.build();
         if (!result.passes()) {
             throw new InvalidSpecificationException(result);
         }
     }
 
-    private static List<SpecificationValidator> loadValidators() {
-        List<SpecificationValidator> result = new ArrayList<>();
+    private static Set<SpecificationValidator> loadValidators() {
+        Set<SpecificationValidator> result = new TreeSet<>();
         ServiceLoader.load(SpecificationValidator.class).forEach(result::add);
+        checkValidatorCycles(result);
         return result;
+    }
+
+    private static void checkValidatorCycles(Set<SpecificationValidator> validators) {
+        var validatorDependencyGraph = new HashMap<Class<?>, Class<?>>(validators.size());
+        validators.forEach((validator) -> {
+            for (Class<? extends SpecificationValidator> dependency : validator.requires()) {
+                validatorDependencyGraph.put(validator.getClass(), dependency);
+            }
+        });
+        var cycles = CycleDetector.run(validatorDependencyGraph);
+        if (!cycles.isEmpty()) {
+            throw new IllegalStateException(String.format(
+                    "%d validator dependency cycle(s) detected:%n%s",
+                    cycles.size(), validatorCycleDescription(cycles)));
+        }
     }
 
     private static JsonNode parse(Reader spec) throws SpecificationException {
@@ -145,5 +177,13 @@ public class ImportSpecificationDeserializer {
         } catch (IOException e) {
             throw new UnparseableSpecificationException(e);
         }
+    }
+
+    private static String validatorCycleDescription(List<List<Pair<Class<?>, Class<?>>>> cycles) {
+        return cycles.stream()
+                .map(cycle -> cycle.stream()
+                        .map(pair -> String.format("%s depends on %s", pair.getFirst(), pair.getSecond()))
+                        .collect(Collectors.joining(", ")))
+                .collect(Collectors.joining("\n\t- ", "\t-", ""));
     }
 }

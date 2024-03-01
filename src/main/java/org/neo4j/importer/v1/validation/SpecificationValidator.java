@@ -18,12 +18,13 @@ package org.neo4j.importer.v1.validation;
 
 import java.io.Reader;
 import java.util.Map;
-import java.util.function.Consumer;
+import java.util.Set;
 import org.neo4j.importer.v1.actions.Action;
 import org.neo4j.importer.v1.sources.Source;
 import org.neo4j.importer.v1.targets.CustomQueryTarget;
 import org.neo4j.importer.v1.targets.NodeTarget;
 import org.neo4j.importer.v1.targets.RelationshipTarget;
+import org.neo4j.importer.v1.validation.SpecificationValidationResult.Builder;
 
 /**
  * This is the SPI for custom validators.
@@ -37,13 +38,33 @@ import org.neo4j.importer.v1.targets.RelationshipTarget;
  * 4. visitRelationshipTarget (as many times as there are relationship targets)
  * 5. visitCustomQueryTarget (as many times as there are custom query targets)
  * 6. visitAction (as many times as there are actions)
- * Then {@link SpecificationValidator#accept} is called with a {@link SpecificationValidationResult.Builder}, where
+ * Then {@link SpecificationValidator#report(Builder)} is called with a {@link SpecificationValidationResult.Builder}, where
  * errors are reported via {@link SpecificationValidationResult.Builder#addError(String, String, String)} and warnings
  * via {@link SpecificationValidationResult.Builder#addWarning(String, String, String)}.
  * Implementations are not expected to be thread-safe.
  * Modifying the provided arguments via any of the visitXxx or accept calls is considered undefined behavior.
  */
-public interface SpecificationValidator extends Consumer<SpecificationValidationResult.Builder> {
+public interface SpecificationValidator extends Comparable<SpecificationValidator> {
+
+    /**
+     * Reports validation errors and warnings via {@link SpecificationValidationResult.Builder}
+     * @return true if at least 1 error was reported, false otherwise
+     */
+    boolean report(SpecificationValidationResult.Builder builder);
+
+    default int compareTo(SpecificationValidator other) {
+        if (this.requires().contains(other.getClass())) {
+            return 1;
+        }
+        if (other.requires().contains(this.getClass())) {
+            return -1;
+        }
+        return this.getClass().getName().compareTo(other.getClass().getName());
+    }
+
+    default Set<Class<? extends SpecificationValidator>> requires() {
+        return Set.of();
+    }
 
     default void visitConfiguration(Map<String, Object> configuration) {}
 

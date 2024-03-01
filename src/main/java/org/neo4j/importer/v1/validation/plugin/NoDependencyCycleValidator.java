@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 import org.neo4j.importer.v1.actions.Action;
 import org.neo4j.importer.v1.graph.CycleDetector;
@@ -43,6 +44,11 @@ public class NoDependencyCycleValidator implements SpecificationValidator {
     }
 
     @Override
+    public Set<Class<? extends SpecificationValidator>> requires() {
+        return Set.of(NoDuplicatedNameValidator.class, NoDanglingDependsOnValidator.class);
+    }
+
+    @Override
     public void visitNodeTarget(int index, NodeTarget target) {
         trackDependency(target, String.format("$.targets.nodes[%d]", index));
     }
@@ -63,9 +69,9 @@ public class NoDependencyCycleValidator implements SpecificationValidator {
     }
 
     @Override
-    public void accept(Builder builder) {
-        Map<Element, Element> graph = dependencyGraph();
-        CycleDetector.run(graph).forEach((cycle) -> {
+    public boolean report(Builder builder) {
+        var cycles = CycleDetector.run(dependencyGraph());
+        cycles.forEach((cycle) -> {
             String cycleDescription = cycle.stream()
                     .map(pair -> {
                         Element dependent = pair.getFirst();
@@ -81,6 +87,7 @@ public class NoDependencyCycleValidator implements SpecificationValidator {
                     ERROR_CODE,
                     String.format("A dependency cycle has been detected:%n %s", cycleDescription));
         });
+        return !cycles.isEmpty();
     }
 
     private void trackDependency(Target target, String path) {

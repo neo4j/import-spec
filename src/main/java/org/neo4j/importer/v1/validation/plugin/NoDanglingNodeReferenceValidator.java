@@ -56,12 +56,13 @@ public class NoDanglingNodeReferenceValidator implements SpecificationValidator 
     }
 
     @Override
-    public void accept(Builder builder) {
+    public boolean report(Builder builder) {
         invalidPathToNodeReferences.forEach((path, invalidNodeReference) -> {
             builder.addError(
                     path,
                     ERROR_CODE,
                     String.format("%s refers to a non-existing node target \"%s\".", path, invalidNodeReference));
         });
+        return !invalidPathToNodeReferences.isEmpty();
     }
 }

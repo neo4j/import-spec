@@ -20,6 +20,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 import org.neo4j.importer.v1.actions.Action;
 import org.neo4j.importer.v1.targets.CustomQueryTarget;
 import org.neo4j.importer.v1.targets.NodeTarget;
@@ -61,10 +62,12 @@ public class NoDanglingDependsOnValidator implements SpecificationValidator {
     }
 
     @Override
-    public void accept(Builder builder) {
+    public boolean report(Builder builder) {
+        AtomicBoolean result = new AtomicBoolean(false);
         pathToDependsOn.entrySet().stream()
                 .filter(entry -> !names.contains(entry.getValue()))
                 .forEachOrdered(entry -> {
+                    result.set(true);
                     String path = entry.getKey();
                     String invalidDependsOn = entry.getValue();
                     builder.addError(
@@ -73,6 +76,7 @@ public class NoDanglingDependsOnValidator implements SpecificationValidator {
                             String.format(
                                     "%s depends on a non-existing action or target \"%s\".", path, invalidDependsOn));
                 });
+        return result.get();
     }
 
     private void track(Target target, String path) {

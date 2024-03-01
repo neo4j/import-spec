@@ -1120,4 +1120,110 @@ class ImportSpecificationDeserializerTest {
                         "\"an-action\" ($.actions[0]) depends on \"a-query-target\" ($.targets.queries[0])",
                         "\"a-query-target\" ($.targets.queries[0]) depends on \"a-relationship-target\" ($.targets.relationships[0])");
     }
+
+    @Test
+    void does_not_report_cycles_if_names_are_duplicated() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+                {
+                    "sources": [{
+                        "type": "bigquery",
+                        "name": "a-source",
+                        "query": "SELECT id, name FROM my.table"
+                    }],
+                    "targets": {
+                        "relationships": [{
+                            "name": "a-target",
+                            "depends_on": "an-action",
+                            "source": "a-source",
+                            "type": "TYPE",
+                            "start_node": {
+                                "label": "Label1",
+                                "key_properties": [
+                                    {"source_field": "field_1", "target_property": "property1"}
+                                ]
+                            },
+                            "end_node": {
+                                "label": "Label2",
+                                "key_properties": [
+                                    {"source_field": "field_2", "target_property": "property2"}
+                                ]
+                            }
+                        }],
+                        "queries": [{
+                            "name": "a-target",
+                            "source": "a-source",
+                            "depends_on": "an-action",
+                            "query": "UNWIND $rows AS row CREATE (n:ANode) SET n = row"
+                        }]
+                    },
+                    "actions": [{
+                        "name": "an-action",
+                        "depends_on": "a-target",
+                        "type": "http",
+                        "method": "get",
+                        "url": "https://example.com"
+                    }]
+                }
+                """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "Name \"a-target\" is duplicated across the following paths: $.targets.relationships[0].name, $.targets.queries[0].name");
+    }
+
+    @Test
+    void does_not_report_cycles_if_depends_on_are_dangling() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+                {
+                    "sources": [{
+                        "type": "bigquery",
+                        "name": "a-source",
+                        "query": "SELECT id, name FROM my.table"
+                    }],
+                    "targets": {
+                        "relationships": [{
+                            "name": "a-target",
+                            "depends_on": "an-action",
+                            "source": "a-source",
+                            "type": "TYPE",
+                            "start_node": {
+                                "label": "Label1",
+                                "key_properties": [
+                                    {"source_field": "field_1", "target_property": "property1"}
+                                ]
+                            },
+                            "end_node": {
+                                "label": "Label2",
+                                "key_properties": [
+                                    {"source_field": "field_2", "target_property": "property2"}
+                                ]
+                            }
+                        }],
+                        "queries": [{
+                            "name": "a-query-target",
+                            "source": "a-source",
+                            "depends_on": "invalid-depends-on",
+                            "query": "UNWIND $rows AS row CREATE (n:ANode) SET n = row"
+                        }]
+                    },
+                    "actions": [{
+                        "name": "an-action",
+                        "depends_on": "a-target",
+                        "type": "http",
+                        "method": "get",
+                        "url": "https://example.com"
+                    }]
+                }
+                """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "$.targets.queries[0] depends on a non-existing action or target \"invalid-depends-on\"");
+    }
 }
