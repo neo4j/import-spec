@@ -37,7 +37,8 @@ import java.util.Optional;
 import java.util.function.Function;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.neo4j.driver.AuthTokens;
 import org.neo4j.driver.Driver;
 import org.neo4j.driver.GraphDatabase;
@@ -75,7 +76,8 @@ public class AdminImportIT {
 
     private static final String TARGET_DATABASE = "northwind";
     private static final String JDBC_POSTGRES_URL =
-            "jdbc:tc:postgresql:15.5-alpine:///%s?TC_INITSCRIPT=e2e/northwind_pg_dump.sql".formatted(TARGET_DATABASE);
+            "jdbc:tc:postgresql:15.5-alpine:///%s?TC_INITSCRIPT=e2e/admin-import/northwind_pg_dump.sql"
+                    .formatted(TARGET_DATABASE);
 
     private Driver neo4jDriver;
 
@@ -95,9 +97,11 @@ public class AdminImportIT {
      * This is **not** production-ready.
      * This only serves as a proof that the spec format is descriptive enough to run neo4j-admin imports.
      */
-    @Test
-    void runs_import() throws Exception {
-        var importSpec = read("/e2e/spec.json", ImportSpecificationDeserializer::deserialize);
+    @ParameterizedTest
+    @ValueSource(strings = {"json", "yaml"})
+    void runs_import(String extension) throws Exception {
+        var importSpec =
+                read("/e2e/admin-import/spec.%s".formatted(extension), ImportSpecificationDeserializer::deserialize);
         Map<String, Source> sources =
                 importSpec.getSources().stream().collect(toMap(Source::getName, Function.identity()));
         File csvFolder = csvFolderPathFor("/e2e/admin-import");
@@ -118,26 +122,30 @@ public class AdminImportIT {
             Neo4jAdmin.writeData(csvFolder, relationshipTarget, nodeTargets, SourceExecutor.read(source));
         }
         // note: custom query targets are ignored for now
+        var targetNeo4jDatabase = "%s-from-%s".formatted(TARGET_DATABASE, extension);
 
-        Neo4jAdmin.executeImport(NEO4J, neo4jDriver, importSpec, TARGET_DATABASE);
+        Neo4jAdmin.executeImport(NEO4J, neo4jDriver, importSpec, targetNeo4jDatabase);
 
         var productCount = neo4jDriver
                 .executableQuery("MATCH (p:Product) RETURN count(p) AS count")
-                .withConfig(QueryConfig.builder().withDatabase(TARGET_DATABASE).build())
+                .withConfig(
+                        QueryConfig.builder().withDatabase(targetNeo4jDatabase).build())
                 .execute()
                 .records();
         assertThat(productCount).hasSize(1);
         assertThat(productCount.getFirst().get("count").asLong()).isEqualTo(77L);
         var categoryCount = neo4jDriver
                 .executableQuery("MATCH (c:Category) RETURN count(c) AS count")
-                .withConfig(QueryConfig.builder().withDatabase(TARGET_DATABASE).build())
+                .withConfig(
+                        QueryConfig.builder().withDatabase(targetNeo4jDatabase).build())
                 .execute()
                 .records();
         assertThat(categoryCount).hasSize(1);
         assertThat(categoryCount.getFirst().get("count").asLong()).isEqualTo(8L);
         var productInCategoryCount = neo4jDriver
                 .executableQuery("MATCH (:Product)-[btc:BELONGS_TO_CATEGORY]->(:Category) RETURN count(btc) AS count")
-                .withConfig(QueryConfig.builder().withDatabase(TARGET_DATABASE).build())
+                .withConfig(
+                        QueryConfig.builder().withDatabase(targetNeo4jDatabase).build())
                 .execute()
                 .records();
         assertThat(productInCategoryCount).hasSize(1);
