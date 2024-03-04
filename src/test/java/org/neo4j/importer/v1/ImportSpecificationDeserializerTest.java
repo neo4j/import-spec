@@ -28,7 +28,7 @@ class ImportSpecificationDeserializerTest {
 
     @Test
     void fails_if_spec_is_unparseable() {
-        assertThatThrownBy(() -> deserialize(new StringReader("not-json")))
+        assertThatThrownBy(() -> deserialize(new StringReader("&*not-json-not-yaml*&")))
                 .isInstanceOf(UnparseableSpecificationException.class);
     }
 
