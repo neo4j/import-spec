@@ -81,6 +81,14 @@
       "type": "object",
       "allOf": [
         {
+          "properties": {
+            "type": {
+              "type": "string"
+            }
+          },
+          "required": ["type"]
+        },
+        {
           "if": {
             "properties": {
               "type": {
@@ -144,7 +152,6 @@
         }
       },
       "required": [
-        "type",
         "query"
       ]
     },
@@ -169,7 +176,6 @@
         }
       },
       "required": [
-        "type",
         "data_source",
         "query"
       ]
@@ -226,10 +232,7 @@
           },
           "minLength": 1
         }
-      },
-      "required": [
-        "type"
-      ]
+      }
     },
     "source.text.external": {
       "type": "object",
