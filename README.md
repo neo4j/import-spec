@@ -2,10 +2,20 @@
 
 [![CI](https://github.com/neo4j/import-spec/actions/workflows/CI.yml/badge.svg)](https://github.com/neo4j/import-spec/actions/workflows/CI.yml)
 
-This repository provides:
+## Scope
 
- - the schema for the import specification file
- - the corresponding Java deserializer
+This library provides a uniform configuration facade for tools running imports to Neo4j.
+In particular, it offers:
+
+ - a user-friendly configuration surface, backed by a JSON schema
+ - the Java equivalent of the import specification, a.k.a. `org.neo4j.importer.v1.ImportSpecification`
+ - validation plugins (soon)
+ - pre-processing plugins (soon)
+
+The library does **NOT**:
+
+ - implement any actual import to Neo4j (although some end-to-end tests just do that)
+ - expose any configuration to locate a Neo4j instance to import data to
 
 ## Getting Started
 
