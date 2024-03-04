@@ -108,6 +108,7 @@
         </dependency>
     </dependencies>
     <build>
+        <defaultGoal>sortpom:sort license:format spotless:apply verify</defaultGoal>
         <pluginManagement>
             <plugins>
                 <plugin>
@@ -213,7 +214,6 @@
             </plugin>
         </plugins>
     </build>
-
     <profiles>
         <profile>
             <id>licensing</id>
