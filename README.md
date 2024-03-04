@@ -7,7 +7,7 @@
 This library provides a uniform configuration facade for tools running imports to Neo4j.
 In particular, it offers:
 
- - a user-friendly configuration surface, backed by a JSON schema
+ - a user-friendly configuration surface (in JSON or YAML), called import specification, backed by a JSON schema
  - the Java equivalent of the import specification, a.k.a. `org.neo4j.importer.v1.ImportSpecification`
  - validation plugins (soon)
  - pre-processing plugins (soon)

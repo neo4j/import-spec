@@ -17,13 +17,13 @@
 package org.neo4j.importer.v1;
 
 import com.fasterxml.jackson.databind.MapperFeature;
-import com.fasterxml.jackson.databind.json.JsonMapper;
+import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
 import java.io.IOException;
 import java.io.Reader;
 
 public class ImportSpecificationDeserializer {
 
-    private static final JsonMapper MAPPER = JsonMapper.builder()
+    private static final YAMLMapper MAPPER = YAMLMapper.builder()
             .enable(MapperFeature.ACCEPT_CASE_INSENSITIVE_ENUMS)
             .build();
 
