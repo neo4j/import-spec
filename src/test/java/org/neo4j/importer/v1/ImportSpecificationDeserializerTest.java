@@ -24,6 +24,8 @@ import org.junit.jupiter.api.Test;
 import org.neo4j.importer.v1.validation.InvalidSpecificationException;
 import org.neo4j.importer.v1.validation.UnparseableSpecificationException;
 
+// This exercises the compliance of various import spec payloads with the JSON schema
+// The class focuses on the general structure of the spec.
 class ImportSpecificationDeserializerTest {
 
     @Test
@@ -46,8 +48,8 @@ class ImportSpecificationDeserializerTest {
                 {
                     "targets": {
                         "queries": [{
-                            "name": "my-query",
-                            "source": "my-bigquery-source",
+                            "name": "a-target",
+                            "source": "a-source",
                             "query": "UNWIND $rows AS row CREATE (n:ANode) SET n = row"
                         }]
                     }
@@ -66,8 +68,8 @@ class ImportSpecificationDeserializerTest {
                     "sources": 42,
                     "targets": {
                         "queries": [{
-                            "name": "my-query",
-                            "source": "my-bigquery-source",
+                            "name": "a-target",
+                            "source": "a-source",
                             "query": "UNWIND $rows AS row CREATE (n:ANode) SET n = row"
                         }]
                     }
@@ -86,8 +88,8 @@ class ImportSpecificationDeserializerTest {
                     "sources": [42],
                     "targets": {
                         "queries": [{
-                            "name": "my-query",
-                            "source": "my-bigquery-source",
+                            "name": "a-target",
+                            "source": "a-source",
                             "query": "UNWIND $rows AS row CREATE (n:ANode) SET n = row"
                         }]
                     }
@@ -106,8 +108,8 @@ class ImportSpecificationDeserializerTest {
                     "sources": [],
                     "targets": {
                         "queries": [{
-                            "name": "my-query",
-                            "source": "my-bigquery-source",
+                            "name": "a-target",
+                            "source": "a-source",
                             "query": "UNWIND $rows AS row CREATE (n:ANode) SET n = row"
                         }]
                     }
@@ -125,7 +127,7 @@ class ImportSpecificationDeserializerTest {
                         """
                 {
                     "sources": [{
-                        "name": "my-bigquery-source",
+                        "name": "a-source",
                         "type": "bigquery",
                         "query": "SELECT id, name FROM my.table"
                     }]
@@ -142,7 +144,7 @@ class ImportSpecificationDeserializerTest {
                         """
                 {
                     "sources": [{
-                        "name": "my-bigquery-source",
+                        "name": "a-source",
                         "type": "bigquery",
                         "query": "SELECT id, name FROM my.table"
                     }],
@@ -160,7 +162,7 @@ class ImportSpecificationDeserializerTest {
                         """
                 {
                     "sources": [{
-                        "name": "my-bigquery-source",
+                        "name": "a-source",
                         "type": "bigquery",
                         "query": "SELECT id, name FROM my.table"
                     }],
@@ -183,7 +185,7 @@ class ImportSpecificationDeserializerTest {
                         """
                 {
                     "sources": [{
-                        "name": "my-bigquery-source",
+                        "name": "a-source",
                         "type": "bigquery",
                         "query": "SELECT id, name FROM my.table"
                     }],
@@ -204,7 +206,7 @@ class ImportSpecificationDeserializerTest {
                         """
                 {
                     "sources": [{
-                        "name": "my-bigquery-source",
+                        "name": "a-source",
                         "type": "bigquery",
                         "query": "SELECT id, name FROM my.table"
                     }],
@@ -225,7 +227,7 @@ class ImportSpecificationDeserializerTest {
                         """
                 {
                     "sources": [{
-                        "name": "my-bigquery-source",
+                        "name": "a-source",
                         "type": "bigquery",
                         "query": "SELECT id, name FROM my.table"
                     }],
@@ -247,12 +249,12 @@ class ImportSpecificationDeserializerTest {
                 {
                     "sources": [{
                         "type": "bigquery",
-                        "name": "my-bigquery-source",
+                        "name": "a-source",
                         "query": "SELECT id, name FROM my.table"
                     }],
                     "targets": {
                         "queries": [{
-                            "name": "my-minimal-custom-query-target",
+                            "name": "a-target",
                             "source": "a-source",
                             "query": "UNWIND $rows AS row CREATE (n:ANode) SET n = row"
                         }]
@@ -272,12 +274,12 @@ class ImportSpecificationDeserializerTest {
                 {
                     "sources": [{
                         "type": "bigquery",
-                        "name": "my-bigquery-source",
+                        "name": "a-source",
                         "query": "SELECT id, name FROM my.table"
                     }],
                     "targets": {
                         "queries": [{
-                            "name": "my-minimal-custom-query-target",
+                            "name": "a-target",
                             "source": "a-source",
                             "query": "UNWIND $rows AS row CREATE (n:ANode) SET n = row"
                         }]
@@ -301,7 +303,7 @@ class ImportSpecificationDeserializerTest {
                     }],
                     "targets": {
                         "queries": [{
-                            "name": "my-minimal-custom-query-target",
+                            "name": "a-target",
                             "source": "a-source",
                             "query": "UNWIND $rows AS row CREATE (n:ANode) SET n = row"
                         }]
@@ -321,7 +323,7 @@ class ImportSpecificationDeserializerTest {
                 {
                     "sources": [{
                         "type": "bigquery",
-                        "name": "my-bigquery-source",
+                        "name": "a-source",
                         "query": "SELECT id, name FROM my.table"
                     }],
                     "targets": {
@@ -350,7 +352,7 @@ class ImportSpecificationDeserializerTest {
                 {
                     "sources": [{
                         "type": "bigquery",
-                        "name": "my-bigquery-source",
+                        "name": "a-source",
                         "query": "SELECT id, name FROM my.table"
                     }],
                     "targets": {
@@ -388,7 +390,7 @@ class ImportSpecificationDeserializerTest {
                 {
                     "sources": [{
                         "type": "bigquery",
-                        "name": "my-bigquery-source",
+                        "name": "a-source",
                         "query": "SELECT id, name FROM my.table"
                     }],
                     "targets": {
@@ -412,12 +414,12 @@ class ImportSpecificationDeserializerTest {
                 {
                     "sources": [{
                         "type": "bigquery",
-                        "name": "my-bigquery-source",
+                        "name": "a-source",
                         "query": "SELECT id, name FROM my.table"
                     }],
                     "targets": {
                         "queries": [{
-                            "name": "my-minimal-custom-query-target",
+                            "name": "a-target",
                             "source": "a-source",
                             "query": "UNWIND $rows AS row CREATE (n:ANode) SET n = row"
                         }]
@@ -447,7 +449,7 @@ class ImportSpecificationDeserializerTest {
                     }],
                     "targets": {
                         "queries": [{
-                            "name": "my-minimal-custom-query-target",
+                            "name": "a-target",
                             "source": "a-source",
                             "query": "UNWIND $rows AS row CREATE (n:ANode) SET n = row"
                         }]
@@ -467,7 +469,7 @@ class ImportSpecificationDeserializerTest {
                 {
                     "sources": [{
                         "type": "bigquery",
-                        "name": "my-bigquery-source",
+                        "name": "a-source",
                         "query": "SELECT id, name FROM my.table"
                     }],
                     "targets": {
@@ -497,7 +499,7 @@ class ImportSpecificationDeserializerTest {
                 {
                     "sources": [{
                         "type": "bigquery",
-                        "name": "my-bigquery-source",
+                        "name": "a-source",
                         "query": "SELECT id, name FROM my.table"
                     }],
                     "targets": {
@@ -538,7 +540,7 @@ class ImportSpecificationDeserializerTest {
                 {
                     "sources": [{
                         "type": "bigquery",
-                        "name": "my-bigquery-source",
+                        "name": "a-source",
                         "query": "SELECT id, name FROM my.table"
                     }],
                     "targets": {
@@ -565,12 +567,12 @@ class ImportSpecificationDeserializerTest {
                 {
                     "sources": [{
                         "type": "bigquery",
-                        "name": "my-bigquery-source",
+                        "name": "a-source",
                         "query": "SELECT id, name FROM my.table"
                     }],
                     "targets": {
                         "queries": [{
-                            "name": "my-minimal-custom-query-target",
+                            "name": "a-target",
                             "source": "a-source",
                             "query": "UNWIND $rows AS row CREATE (n:ANode) SET n = row"
                         }]

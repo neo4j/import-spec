@@ -23,6 +23,8 @@ import java.io.StringReader;
 import org.junit.jupiter.api.Test;
 import org.neo4j.importer.v1.validation.InvalidSpecificationException;
 
+// This exercises the compliance of various import spec payloads with the built-in validation plugins
+// All payloads here 100% comply to the JSON schema
 public class ImportSpecificationDeserializerExtraValidationTest {
 
     @Test
