@@ -119,6 +119,7 @@
         </dependency>
     </dependencies>
     <build>
+        <defaultGoal>sortpom:sort license:format spotless:apply verify</defaultGoal>
         <pluginManagement>
             <plugins>
                 <plugin>
