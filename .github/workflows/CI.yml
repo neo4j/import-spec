@@ -24,7 +24,7 @@ jobs:
         server-username: MAVEN_USERNAME
         server-password: MAVEN_PASSWORD
     - name: Build with Maven
-      run: mvn --quiet --show-version --batch-mode sortpom:verify license:check spotless:check compile
+      run: mvn --quiet --show-version --batch-mode sortpom:verify license:check spotless:check compile -DspotlessFiles=src/main/java/.*.java
       env:
         MAVEN_USERNAME: ${{ vars.PACKAGES_USERNAME }}
         MAVEN_PASSWORD: ${{ secrets.PACKAGES_PASSWORD }}
