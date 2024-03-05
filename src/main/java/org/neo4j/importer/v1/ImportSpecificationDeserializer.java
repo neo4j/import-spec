@@ -47,6 +47,7 @@ import org.neo4j.importer.v1.validation.UnparseableSpecificationException;
 public class ImportSpecificationDeserializer {
     private static final YAMLMapper MAPPER = YAMLMapper.builder()
             .enable(MapperFeature.ACCEPT_CASE_INSENSITIVE_ENUMS)
+            .disable(MapperFeature.AUTO_DETECT_CREATORS)
             .build();
 
     private static final JsonSchema SCHEMA = JsonSchemaFactory.getInstance(VersionFlag.V202012)

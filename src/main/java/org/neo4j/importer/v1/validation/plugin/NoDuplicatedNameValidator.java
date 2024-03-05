@@ -69,6 +69,7 @@ public class NoDuplicatedNameValidator implements SpecificationValidator {
 }
 
 class NameCounter {
+    private static final String ERROR_CODE = "DUPL-001";
 
     private final Map<String, List<String>> pathsUsingName = new LinkedHashMap<>();
 
@@ -85,7 +86,7 @@ class NameCounter {
                     result.set(true);
                     builder.addError(
                             paths.get(0),
-                            "DUPN",
+                            ERROR_CODE,
                             String.format(
                                     "Name \"%s\" is duplicated across the following paths: %s",
                                     entry.getKey(), String.join(", ", paths)));

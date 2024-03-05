@@ -2,15 +2,15 @@ sources:
   - name: "products"
     type: "jdbc"
     data_source: "northwind"
-    query: "SELECT productname, unitprice FROM products ORDER BY productname ASC"
+    sql: "SELECT productname, unitprice FROM products ORDER BY productname ASC"
   - name: "categories"
     type: "jdbc"
     data_source: "northwind"
-    query: "SELECT categoryname, description FROM categories ORDER BY categoryname ASC"
+    sql: "SELECT categoryname, description FROM categories ORDER BY categoryname ASC"
   - name: "products_in_categories"
     type: "jdbc"
     data_source: "northwind"
-    query: "SELECT p.productname AS productname, c.categoryname AS categoryname FROM products p NATURAL JOIN categories c ORDER BY p.productname ASC "
+    sql: "SELECT p.productname AS productname, c.categoryname AS categoryname FROM products p NATURAL JOIN categories c ORDER BY p.productname ASC "
 targets:
   nodes:
     - source: "products"

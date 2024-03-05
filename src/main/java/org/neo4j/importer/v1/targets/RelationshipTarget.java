@@ -16,6 +16,7 @@
  */
 package org.neo4j.importer.v1.targets;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Collections;
 import java.util.List;
@@ -33,6 +34,7 @@ public class RelationshipTarget extends Target {
     private final List<PropertyMapping> properties;
     private final RelationshipSchema schema;
 
+    @JsonCreator
     public RelationshipTarget(
             @JsonProperty(value = "active", defaultValue = DEFAULT_ACTIVE) Boolean active,
             @JsonProperty(value = "name", required = true) String name,

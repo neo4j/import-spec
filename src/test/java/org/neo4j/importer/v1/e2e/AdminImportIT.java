@@ -395,7 +395,7 @@ public class AdminImportIT {
                 case JDBC -> {
                     var jdbcSource = (NamedJdbcSource) source;
                     var connectionSupplier = JdbcContext.connectionSupplier(jdbcSource.getDataSource());
-                    return JdbcExecutor.execute(connectionSupplier, jdbcSource.getQuery());
+                    return JdbcExecutor.execute(connectionSupplier, jdbcSource.getSql());
                 }
                 case BIGQUERY, TEXT -> throw new RuntimeException("TODO: %s unsupported for now".formatted(sourceType));
             }

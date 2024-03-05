@@ -83,10 +83,17 @@
         {
           "properties": {
             "type": {
-              "type": "string"
+              "type": "string",
+              "enum": [
+                "bigquery",
+                "jdbc",
+                "text"
+              ]
             }
           },
-          "required": ["type"]
+          "required": [
+            "type"
+          ]
         },
         {
           "if": {
@@ -170,14 +177,14 @@
           "type": "string",
           "minLength": 1
         },
-        "query": {
+        "sql": {
           "type": "string",
           "minLength": 1
         }
       },
       "required": [
         "data_source",
-        "query"
+        "sql"
       ]
     },
     "source.text": {
@@ -187,17 +194,15 @@
           "$ref": "#/$defs/source.base"
         },
         {
+          "$ref": "#/$defs/source.text.base"
+        },
+        {
           "if": {
             "properties": {
               "urls": {
-                "type": "array",
-                "items": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "minItems": 1
               }
-            }
+            },
+            "required": ["urls"]
           },
           "then": {
             "$ref": "#/$defs/source.text.external"
@@ -207,14 +212,9 @@
           "if": {
             "properties": {
               "data": {
-                "type": "array",
-                "items": {
-                  "type": "array",
-                  "minItems": 1
-                },
-                "minItems": 1
               }
-            }
+            },
+            "required": ["data"]
           },
           "then": {
             "$ref": "#/$defs/source.text.inline"
@@ -228,20 +228,26 @@
         "header": {
           "type": "array",
           "items": {
-            "type": "string"
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S+"
           },
-          "minLength": 1
+          "minItems": 1
         }
       }
     },
     "source.text.external": {
       "type": "object",
-      "allOf": [
-        {
-          "$ref": "#/$defs/source.text.base"
-        }
-      ],
       "properties": {
+        "urls": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S+"
+          },
+          "minItems": 1
+        },
         "format": {
           "type": "string",
           "enum": [
@@ -267,17 +273,26 @@
           "minLength": 1,
           "maxLength": 1
         }
-      }
+      },
+      "required": [
+        "urls"
+      ]
     },
     "source.text.inline": {
       "type": "object",
-      "allOf": [
-        {
-          "$ref": "#/$defs/source.text.base"
+      "properties": {
+        "data": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "minItems": 1
+          },
+          "minItems": 1
         }
-      ],
+      },
       "required": [
-        "header"
+        "header",
+        "data"
       ]
     },
     "target.base": {
@@ -313,6 +328,7 @@
       ],
       "properties": {
         "write_mode": {
+          "type": "string",
           "enum": [
             "create",
             "merge"
@@ -421,6 +437,7 @@
       ],
       "properties": {
         "node_match_mode": {
+          "type": "string",
           "enum": [
             "create",
             "match",
@@ -606,6 +623,7 @@
       ],
       "properties": {
         "method": {
+          "type": "string",
           "enum": [
             "get",
             "post"
@@ -681,6 +699,7 @@
                 "type": "string"
               },
               "order": {
+                "type": "string",
                 "enum": [
                   "ASC",
                   "asc",
@@ -715,53 +734,31 @@
           "minLength": 1
         },
         "target_property_type": {
+          "type": "string",
           "enum": [
             "boolean",
-            "BOOLEAN",
             "boolean_array",
-            "BOOLEAN_ARRAY",
             "byte_array",
-            "BYTE_ARRAY",
             "date",
-            "DATE",
             "date_array",
-            "DATE_ARRAY",
             "duration",
-            "DURATION",
             "duration_array",
-            "DURATION_ARRAY",
             "float",
-            "FLOAT",
             "float_array",
-            "FLOAT_ARRAY",
             "integer",
-            "INTEGER",
             "integer_array",
-            "INTEGER_ARRAY",
             "local_datetime",
-            "LOCAL_DATETIME",
             "local_datetime_array",
-            "LOCAL_DATETIME_ARRAY",
             "local_time",
-            "LOCAL_TIME",
             "local_time_array",
-            "LOCAL_TIME_ARRAY",
             "point",
-            "POINT",
             "point_array",
-            "POINT_ARRAY",
             "string",
-            "STRING",
             "string_array",
-            "STRING_ARRAY",
             "zoned_datetime",
-            "ZONED_DATETIME",
             "zoned_datetime_array",
-            "ZONED_DATETIME_ARRAY",
             "zoned_time",
-            "ZONED_TIME",
-            "zoned_time_array",
-            "ZONED_TIME_ARRAY"
+            "zoned_time_array"
           ]
         }
       },
