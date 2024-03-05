@@ -5,3 +5,4 @@ org.neo4j.importer.v1.validation.plugin.NoDanglingNodeReferenceValidator
 org.neo4j.importer.v1.validation.plugin.NoDependencyCycleValidator
 org.neo4j.importer.v1.validation.plugin.NoDuplicatedSourceHeaderColumn
 org.neo4j.importer.v1.validation.plugin.NoInconsistentInlineSourceDataValidator
+org.neo4j.importer.v1.validation.plugin.AtLeastOneActiveTargetValidator

@@ -763,4 +763,42 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                         "0 warning(s)",
                         "[$.sources[0].data[0]] row defines 1 column(s), expected at least 2");
     }
+
+    @Test
+    void fails_if_all_targets_are_inactive() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+                        {
+                          "sources": [
+                            {
+                              "name": "a-source",
+                              "type": "text",
+                              "header": [
+                                "column1",
+                                "column2"
+                              ],
+                              "data": [
+                                [
+                                  "value1", "value2"
+                                ]
+                              ]
+                            }
+                          ],
+                          "targets": {
+                            "queries": [
+                              {
+                                "active": false,
+                                "name": "a-target",
+                                "source": "a-source",
+                                "query": "UNWIND $rows AS row CREATE (n:ANode) SET n = row"
+                              }
+                            ]
+                          }
+                        }
+                        """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)", "0 warning(s)", "[$.targets] at least one target must be active, none found");
+    }
 }
