@@ -206,17 +206,8 @@
           },
           "then": {
             "$ref": "#/$defs/source.text.external"
-          }
-        },
-        {
-          "if": {
-            "properties": {
-              "data": {
-              }
-            },
-            "required": ["data"]
           },
-          "then": {
+          "else": {
             "$ref": "#/$defs/source.text.inline"
           }
         }
