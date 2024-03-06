@@ -22,7 +22,6 @@ import static org.neo4j.importer.v1.ImportSpecificationDeserializer.deserialize;
 import java.io.StringReader;
 import org.junit.jupiter.api.Test;
 import org.neo4j.importer.v1.validation.InvalidSpecificationException;
-import org.neo4j.importer.v1.validation.UndeserializableSpecificationException;
 
 // This exercises the compliance of various import spec payloads with the JSON schema
 // The class focuses on (lack of) compliance the source side of the spec.
@@ -829,10 +828,9 @@ public class ImportSpecificationDeserializerSourceTest {
 }
 """
                                 .stripIndent())))
-                // no "urls", no "data", Jackson has no way to know it's an inline text source here
-                .isInstanceOf(UndeserializableSpecificationException.class)
-                .rootCause()
-                .hasMessageContaining("Cannot deduce unique subtype");
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)", "0 warning(s)", "$.sources[0]: required property 'data' not found");
     }
 
     @Test
