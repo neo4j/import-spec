@@ -105,6 +105,18 @@ public class RelationshipTarget extends Target {
     }
 
     @Override
+    public boolean dependsOn(Target target) {
+        if (super.dependsOn(target)) {
+            return true;
+        }
+        if (!(target instanceof NodeTarget)) {
+            return false;
+        }
+        String nodeTargetName = target.getName();
+        return nodeTargetName.equals(startNodeReference) || nodeTargetName.equals(endNodeReference);
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;

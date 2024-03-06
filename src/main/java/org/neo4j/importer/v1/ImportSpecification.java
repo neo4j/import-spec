@@ -18,6 +18,7 @@ package org.neo4j.importer.v1;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -25,7 +26,7 @@ import org.neo4j.importer.v1.actions.Action;
 import org.neo4j.importer.v1.sources.Source;
 import org.neo4j.importer.v1.targets.Targets;
 
-public class ImportSpecification {
+public class ImportSpecification implements Serializable {
 
     private final Map<String, Object> configuration;
 
@@ -62,6 +63,14 @@ public class ImportSpecification {
 
     public List<Action> getActions() {
         return actions;
+    }
+
+    public Source findSourceByName(String source) {
+        return sources.stream()
+                .filter((src) -> src.getName().equals(source))
+                .findFirst()
+                .orElseThrow(() ->
+                        new IllegalArgumentException(String.format("Could not find any source named %s", source)));
     }
 
     @Override

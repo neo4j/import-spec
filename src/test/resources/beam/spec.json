@@ -24,7 +24,6 @@
       {
         "source": "products",
         "name": "product_nodes",
-        "write_mode": "merge",
         "labels": [
           "Product"
         ],
@@ -53,7 +52,6 @@
       {
         "source": "categories",
         "name": "category_nodes",
-        "write_mode": "merge",
         "labels": [
           "Category"
         ],
@@ -86,9 +84,7 @@
         "name": "product_in_category_relationships",
         "type": "BELONGS_TO_CATEGORY",
         "start_node_reference": "product_nodes",
-        "end_node_reference": "category_nodes",
-        "write_mode": "merge",
-        "node_match_mode": "merge"
+        "end_node_reference": "category_nodes"
       }
     ]
   }

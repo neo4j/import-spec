@@ -20,6 +20,7 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
+import java.io.Serializable;
 import java.util.Objects;
 
 @JsonTypeInfo(use = Id.DEDUCTION)
@@ -29,7 +30,7 @@ import java.util.Objects;
     @Type(value = InlineTextSource.class),
     @Type(value = NamedJdbcSource.class),
 })
-public abstract class Source {
+public abstract class Source implements Serializable {
 
     private final String name;
 

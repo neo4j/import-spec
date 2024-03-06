@@ -18,11 +18,13 @@ package org.neo4j.importer.v1.targets;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-public class Targets {
+public class Targets implements Serializable {
 
     private final List<NodeTarget> nodes;
     private final List<RelationshipTarget> relationships;
@@ -37,6 +39,18 @@ public class Targets {
         this.nodes = nodes;
         this.relationships = relationships;
         this.customQueries = customQueries;
+    }
+
+    public List<Target> getAll() {
+        List<NodeTarget> nodeTargets = getNodes();
+        List<RelationshipTarget> relationshipTargets = getRelationships();
+        List<CustomQueryTarget> customQueryTargets = getCustomQueries();
+        List<Target> result =
+                new ArrayList<>(nodeTargets.size() + relationshipTargets.size() + customQueryTargets.size());
+        result.addAll(nodeTargets);
+        result.addAll(relationshipTargets);
+        result.addAll(customQueryTargets);
+        return result;
     }
 
     public List<NodeTarget> getNodes() {

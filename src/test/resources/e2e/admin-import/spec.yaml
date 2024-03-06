@@ -43,6 +43,13 @@ targets:
             label: "Category"
             properties:
               - "name"
+        unique_constraints:
+          - name: "description_constraint"
+            label: "Category"
+            properties:
+              - "description"
+              - "another"
+
   relationships:
     - source: "products_in_categories"
       name: "product_in_category_relationships"
