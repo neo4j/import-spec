@@ -158,7 +158,7 @@ public class AdminImportIT {
         return new File(localVolumeUrl.toURI());
     }
 
-    private <T> T read(String classpathResource, Function<Reader, T> fn) throws Exception {
+    private <T> T read(String classpathResource, ThrowingFunction<Reader, T> fn) throws Exception {
         InputStream stream = this.getClass().getResourceAsStream(classpathResource);
         assertThat(stream).isNotNull();
         try (var reader = new InputStreamReader(stream)) {
@@ -395,7 +395,7 @@ public class AdminImportIT {
                 case JDBC -> {
                     var jdbcSource = (NamedJdbcSource) source;
                     var connectionSupplier = JdbcContext.connectionSupplier(jdbcSource.getDataSource());
-                    return JdbcExecutor.execute(connectionSupplier, jdbcSource.getQuery());
+                    return JdbcExecutor.execute(connectionSupplier, jdbcSource.getSql());
                 }
                 case BIGQUERY, TEXT -> throw new RuntimeException("TODO: %s unsupported for now".formatted(sourceType));
             }
@@ -436,6 +436,11 @@ public class AdminImportIT {
                 return rows;
             }
         }
+    }
+
+    @FunctionalInterface
+    interface ThrowingFunction<I, O> {
+        public O apply(I input) throws Exception;
     }
 
     @FunctionalInterface

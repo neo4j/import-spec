@@ -22,11 +22,12 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 import java.util.Objects;
 
-@JsonTypeInfo(use = Id.NAME, property = "type")
+@JsonTypeInfo(use = Id.DEDUCTION)
 @JsonSubTypes({
-    @Type(value = BigQuerySource.class, name = "bigquery"),
-    @Type(value = NamedJdbcSource.class, name = "jdbc"),
-    @Type(value = TextSource.class, name = "text")
+    @Type(value = BigQuerySource.class),
+    @Type(value = ExternalTextSource.class),
+    @Type(value = InlineTextSource.class),
+    @Type(value = NamedJdbcSource.class),
 })
 public abstract class Source {
 

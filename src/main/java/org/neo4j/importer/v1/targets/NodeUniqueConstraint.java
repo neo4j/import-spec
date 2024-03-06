@@ -16,6 +16,7 @@
  */
 package org.neo4j.importer.v1.targets;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
 import java.util.Map;
@@ -26,6 +27,7 @@ public class NodeUniqueConstraint extends NodeConstraint {
     private final List<String> properties;
     private final Map<String, Object> options;
 
+    @JsonCreator
     public NodeUniqueConstraint(
             @JsonProperty(value = "name", required = true) String name,
             @JsonProperty(value = "label", required = true) String label,

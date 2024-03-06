@@ -23,25 +23,25 @@ import java.util.Objects;
 public class NamedJdbcSource extends Source {
 
     private final String dataSource;
-    private final String query;
+    private final String sql;
 
     @JsonCreator
     public NamedJdbcSource(
             @JsonProperty(value = "name", required = true) String name,
             @JsonProperty(value = "data_source", required = true) String dataSource,
-            @JsonProperty(value = "query", required = true) String query) {
+            @JsonProperty(value = "sql", required = true) String sql) {
 
         super(name, SourceType.JDBC);
         this.dataSource = dataSource;
-        this.query = query;
+        this.sql = sql;
     }
 
     public String getDataSource() {
         return dataSource;
     }
 
-    public String getQuery() {
-        return query;
+    public String getSql() {
+        return sql;
     }
 
     @Override
@@ -50,19 +50,19 @@ public class NamedJdbcSource extends Source {
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
         NamedJdbcSource that = (NamedJdbcSource) o;
-        return Objects.equals(dataSource, that.dataSource) && Objects.equals(query, that.query);
+        return Objects.equals(dataSource, that.dataSource) && Objects.equals(sql, that.sql);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), dataSource, query);
+        return Objects.hash(super.hashCode(), dataSource, sql);
     }
 
     @Override
     public String toString() {
         return "NamedJdbcSource{" + "dataSource='"
                 + dataSource + '\'' + ", query='"
-                + query + '\'' + "} "
+                + sql + '\'' + "} "
                 + super.toString();
     }
 }

@@ -16,16 +16,10 @@
  */
 package org.neo4j.importer.v1.sources;
 
-import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 import java.util.List;
 import java.util.Objects;
 
-@JsonTypeInfo(use = Id.DEDUCTION)
-@JsonSubTypes({@Type(value = ExternalTextSource.class), @Type(value = InlineTextSource.class)})
-abstract class TextSource extends Source {
+public abstract class TextSource extends Source {
 
     private final List<String> header;
 
