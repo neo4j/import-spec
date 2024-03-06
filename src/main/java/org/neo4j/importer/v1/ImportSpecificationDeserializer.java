@@ -35,7 +35,6 @@ import java.util.TreeSet;
 import java.util.stream.Collectors;
 import org.neo4j.importer.v1.actions.Action;
 import org.neo4j.importer.v1.graph.CycleDetector;
-import org.neo4j.importer.v1.graph.Pair;
 import org.neo4j.importer.v1.validation.InvalidSpecificationException;
 import org.neo4j.importer.v1.validation.SpecificationException;
 import org.neo4j.importer.v1.validation.SpecificationValidationResult;
@@ -180,11 +179,11 @@ public class ImportSpecificationDeserializer {
         }
     }
 
-    private static String validatorCycleDescription(List<List<Pair<Class<?>, Class<?>>>> cycles) {
+    private static String validatorCycleDescription(List<List<Class<?>>> cycles) {
         return cycles.stream()
                 .map(cycle -> cycle.stream()
-                        .map(pair -> String.format("%s depends on %s", pair.getFirst(), pair.getSecond()))
-                        .collect(Collectors.joining(", ")))
+                        .map(Class::getName)
+                        .reduce("", (type1, type2) -> String.format("%s->%s", type1, type2)))
                 .collect(Collectors.joining("\n\t- ", "\t-", ""));
     }
 }

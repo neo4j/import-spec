@@ -25,7 +25,7 @@ import java.util.Stack;
 
 public class CycleDetector {
 
-    public static <T> List<List<Pair<T, T>>> run(Map<T, T> graph) {
+    public static <T> List<List<T>> run(Map<T, T> graph) {
         List<List<T>> cycles = new ArrayList<>();
         Set<T> visitedNodes = new HashSet<>();
 
@@ -56,28 +56,6 @@ public class CycleDetector {
             }
         }
 
-        return cyclesToPairs(cycles);
-    }
-
-    private static <T> List<List<Pair<T, T>>> cyclesToPairs(List<List<T>> cycles) {
-        if (cycles.isEmpty()) {
-            return List.of();
-        }
-        var result = new ArrayList<List<Pair<T, T>>>(cycles.size());
-        cycles.forEach(cycle -> {
-            var pairs = new ArrayList<Pair<T, T>>(cycle.size());
-            for (int i = 0; i < cycle.size(); i++) {
-                T current = cycle.get(i);
-                T next;
-                if (i == cycle.size() - 1) {
-                    next = cycle.get(0);
-                } else {
-                    next = cycle.get(i + 1);
-                }
-                pairs.add(Pair.of(current, next));
-            }
-            result.add(pairs);
-        });
-        return result;
+        return cycles;
     }
 }

@@ -73,12 +73,6 @@ public class SpecificationValidationResult {
             return addWarning(new SpecificationWarning(elementPath, code, message));
         }
 
-        public Builder merge(SpecificationValidationResult other) {
-            errors.addAll(other.errors);
-            warnings.addAll(other.warnings);
-            return this;
-        }
-
         public SpecificationValidationResult build() {
             return new SpecificationValidationResult(errors, warnings);
         }

@@ -37,7 +37,7 @@ class CycleDetectorTest {
     void detects_direct_cycles() {
         var cycles = CycleDetector.run(linkedHashMap("task1", "task1", "task2", "task2"));
 
-        assertThat(cycles).isEqualTo(List.of(List.of(Pair.of("task1", "task1")), List.of(Pair.of("task2", "task2"))));
+        assertThat(cycles).isEqualTo(List.of(List.of("task1"), List.of("task2")));
     }
 
     @Test
@@ -56,13 +56,7 @@ class CycleDetectorTest {
 
         assertThat(cycles)
                 .isEqualTo(List.of(
-                        List.of(Pair.of("task1", "task2"), Pair.of("task2", "task3"), Pair.of("task3", "task1")),
-                        List.of(
-                                Pair.of("task7", "task8"),
-                                Pair.of("task8", "task9"),
-                                Pair.of("task9", "task10"),
-                                Pair.of("task10", "task11"),
-                                Pair.of("task11", "task7"))));
+                        List.of("task1", "task2", "task3"), List.of("task7", "task8", "task9", "task10", "task11")));
     }
 
     @SafeVarargs

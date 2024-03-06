@@ -497,10 +497,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
-                        "1 error(s)",
-                        "0 warning(s)",
-                        "A dependency cycle has been detected",
-                        "\"a-target\" ($.targets.relationships[0]) depends on \"a-target\" ($.targets.relationships[0])");
+                        "1 error(s)", "0 warning(s)", "A dependency cycle has been detected: a-target->a-target");
     }
 
     @Test
@@ -553,10 +550,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                 .hasMessageContainingAll(
                         "1 error(s)",
                         "0 warning(s)",
-                        "A dependency cycle has been detected",
-                        "\"a-relationship-target\" ($.targets.relationships[0]) depends on \"an-action\" ($.actions[0])",
-                        "\"an-action\" ($.actions[0]) depends on \"a-query-target\" ($.targets.queries[0])",
-                        "\"a-query-target\" ($.targets.queries[0]) depends on \"a-relationship-target\" ($.targets.relationships[0])");
+                        "A dependency cycle has been detected: a-relationship-target->an-action->a-query-target->a-relationship-target");
     }
 
     @Test

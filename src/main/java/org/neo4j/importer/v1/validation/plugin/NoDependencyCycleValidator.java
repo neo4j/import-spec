@@ -21,9 +21,10 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.concurrent.atomic.AtomicBoolean;
 import org.neo4j.importer.v1.actions.Action;
 import org.neo4j.importer.v1.graph.CycleDetector;
+import org.neo4j.importer.v1.graph.Pair;
 import org.neo4j.importer.v1.targets.CustomQueryTarget;
 import org.neo4j.importer.v1.targets.NodeTarget;
 import org.neo4j.importer.v1.targets.RelationshipTarget;
@@ -70,24 +71,25 @@ public class NoDependencyCycleValidator implements SpecificationValidator {
 
     @Override
     public boolean report(Builder builder) {
-        var cycles = CycleDetector.run(dependencyGraph());
-        cycles.forEach((cycle) -> {
-            String cycleDescription = cycle.stream()
-                    .map(pair -> {
-                        Element dependent = pair.getFirst();
-                        Element dependency = pair.getSecond();
-                        return String.format(
-                                "\"%s\" (%s) depends on \"%s\" (%s)",
-                                dependent.getName(), dependent.getPath(), dependency.getName(), dependency.getPath());
-                    })
-                    .collect(Collectors.joining("\n\t\t- ", "\t\t- ", ""));
-            Element cycleStart = cycle.get(0).getFirst();
-            builder.addError(
-                    cycleStart.getPath(),
-                    ERROR_CODE,
-                    String.format("A dependency cycle has been detected:%n %s", cycleDescription));
-        });
-        return !cycles.isEmpty();
+        AtomicBoolean result = new AtomicBoolean(false);
+        CycleDetector.run(dependencyGraph()).stream()
+                .map(cycle -> {
+                    Element cycleStart = cycle.get(0);
+                    String cycleDescription = cycle.stream()
+                            .map(Element::getName)
+                            .reduce((element1, element2) -> String.format("%s->%s", element1, element2))
+                            .get();
+                    String closedCycleDescription = String.format("%s->%s", cycleDescription, cycleStart.getName());
+                    return Pair.of(cycleStart.getPath(), closedCycleDescription);
+                })
+                .forEach((cycle) -> {
+                    result.set(true);
+                    builder.addError(
+                            cycle.getFirst(),
+                            ERROR_CODE,
+                            String.format("A dependency cycle has been detected: %s", cycle.getSecond()));
+                });
+        return result.get();
     }
 
     private void trackDependency(Target target, String path) {
