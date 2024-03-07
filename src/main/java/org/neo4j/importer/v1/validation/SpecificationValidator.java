@@ -65,6 +65,15 @@ public interface SpecificationValidator extends Comparable<SpecificationValidato
         return this.getClass().getName().compareTo(other.getClass().getName());
     }
 
+    /**
+     * Declares validators whose validation must be successful before
+     * this validator can report errors and warnings.
+     * In other words, if any of the validation of the returned validators do not pass,
+     * this validator's implementation {@link SpecificationValidator#report(Builder)} will not be called.
+     * It is however possible that this validator visit methods are called regardless.
+     *
+     * @return the set of validator implementations whose validation must pass before this validator reports anything
+     */
     default Set<Class<? extends SpecificationValidator>> requires() {
         return Set.of();
     }
