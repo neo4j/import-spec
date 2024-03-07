@@ -9,7 +9,7 @@ In particular, it offers:
 
  - a user-friendly configuration surface (in JSON or YAML), called import specification, backed by a JSON schema
  - the Java equivalent of the import specification, a.k.a. `org.neo4j.importer.v1.ImportSpecification`
- - validation plugins (soon)
+ - validation plugins (see [built-in plugins](https://github.com/neo4j/import-spec/tree/main/src/main/java/org/neo4j/importer/v1/validation/plugin))
  - pre-processing plugins (soon)
 
 The library does **NOT**:
