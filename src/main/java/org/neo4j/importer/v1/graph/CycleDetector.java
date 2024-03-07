@@ -16,46 +16,79 @@
  */
 package org.neo4j.importer.v1.graph;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Queue;
 import java.util.Set;
-import java.util.Stack;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class CycleDetector {
 
-    public static <T> List<List<T>> run(Map<T, T> graph) {
+    public static <T> List<List<T>> detectSimple(Map<T, T> matrix) {
+        return detect(mapValues(matrix, CycleDetector::valueAsSet));
+    }
+
+    public static <T> List<List<T>> detect(Map<T, Set<T>> matrix) {
         List<List<T>> cycles = new ArrayList<>();
         Set<T> visitedNodes = new HashSet<>();
 
-        for (T node : graph.keySet()) {
+        for (T node : matrix.keySet()) {
             if (visitedNodes.contains(node)) {
                 continue;
             }
-            List<T> path = new ArrayList<>();
-            Stack<T> stack = new Stack<>();
-            stack.push(node);
+            Map<T, List<T>> paths = new HashMap<>();
+            Queue<T> queue = new ArrayDeque<>();
+            queue.add(node);
 
-            while (!stack.isEmpty()) {
-                T currentNode = stack.pop();
+            while (!queue.isEmpty()) {
+                T currentNode = queue.poll();
+                List<T> path = paths.computeIfAbsent(currentNode, (key) -> new ArrayList<>());
                 path.add(currentNode);
                 visitedNodes.add(currentNode);
 
-                T dependency = graph.get(currentNode);
-                if (dependency == null) {
+                Set<T> dependencies = matrix.get(currentNode);
+                if (dependencies == null) {
                     continue;
                 }
-                int dependencyIndex = path.indexOf(dependency);
-                if (dependencyIndex > -1) {
-                    List<T> cycle = new ArrayList<>(path.subList(dependencyIndex, path.size()));
-                    cycles.add(cycle);
-                } else if (!visitedNodes.contains(dependency)) {
-                    stack.push(dependency);
+                for (T dependency : dependencies) {
+                    int dependencyIndex = path.indexOf(dependency);
+                    if (dependencyIndex > -1) {
+                        List<T> cycle = new ArrayList<>(path.subList(dependencyIndex, path.size()));
+                        cycles.add(cycle);
+                    } else if (!visitedNodes.contains(dependency)) {
+                        queue.add(dependency);
+                        paths.remove(currentNode);
+                        paths.put(dependency, new ArrayList<>(path));
+                    }
                 }
             }
         }
-
         return cycles;
+    }
+
+    private static <T> Set<T> valueAsSet(Entry<T, T> entry) {
+        T value = entry.getValue();
+        if (value == null) {
+            return Set.of();
+        }
+        return Set.of(value);
+    }
+
+    private static <T, V> Map<T, V> mapValues(Map<T, T> graph, Function<Entry<T, T>, V> valueMapper) {
+        return graph.entrySet().stream()
+                .collect(Collectors.toMap(
+                        Entry::getKey,
+                        valueMapper,
+                        (x, y) -> {
+                            throw new RuntimeException("did not expect duplicated keys");
+                        },
+                        () -> new LinkedHashMap<>(graph.size())));
     }
 }
