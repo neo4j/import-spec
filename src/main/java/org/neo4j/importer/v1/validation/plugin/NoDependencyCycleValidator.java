@@ -16,12 +16,16 @@
  */
 package org.neo4j.importer.v1.validation.plugin;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
 import org.neo4j.importer.v1.actions.Action;
 import org.neo4j.importer.v1.graph.CycleDetector;
 import org.neo4j.importer.v1.graph.Pair;
@@ -36,17 +40,20 @@ public class NoDependencyCycleValidator implements SpecificationValidator {
 
     private static final String ERROR_CODE = "CYCL-001";
 
-    private final Map<Element, String> dependencies;
+    private final Map<Element, List<String>> dependencyMatrix;
     private final Map<String, String> namedPaths;
 
     public NoDependencyCycleValidator() {
-        dependencies = new LinkedHashMap<>();
+        dependencyMatrix = new LinkedHashMap<>();
         namedPaths = new HashMap<>();
     }
 
     @Override
     public Set<Class<? extends SpecificationValidator>> requires() {
-        return Set.of(NoDuplicatedNameValidator.class, NoDanglingDependsOnValidator.class);
+        return Set.of(
+                NoDuplicatedNameValidator.class,
+                NoDanglingDependsOnValidator.class,
+                NoDanglingNodeReferenceValidator.class);
     }
 
     @Override
@@ -72,7 +79,7 @@ public class NoDependencyCycleValidator implements SpecificationValidator {
     @Override
     public boolean report(Builder builder) {
         AtomicBoolean result = new AtomicBoolean(false);
-        CycleDetector.run(dependencyGraph()).stream()
+        CycleDetector.detect(dependencyGraph()).stream()
                 .map(cycle -> {
                     Element cycleStart = cycle.get(0);
                     String cycleDescription = cycle.stream()
@@ -92,12 +99,24 @@ public class NoDependencyCycleValidator implements SpecificationValidator {
         return result.get();
     }
 
+    private void trackDependency(RelationshipTarget target, String path) {
+        trackDependency((Target) target, path);
+        String startNodeRef = target.getStartNodeReference();
+        if (startNodeRef != null) {
+            addDependency(new Element(target.getName(), path), startNodeRef);
+        }
+        String endNodeRef = target.getEndNodeReference();
+        if (endNodeRef != null) {
+            addDependency(new Element(target.getName(), path), endNodeRef);
+        }
+    }
+
     private void trackDependency(Target target, String path) {
         String targetName = target.getName();
         namedPaths.put(targetName, path);
         String dependencyName = target.getDependsOn();
         if (dependencyName != null) {
-            dependencies.put(new Element(targetName, path), dependencyName);
+            addDependency(new Element(targetName, path), dependencyName);
         }
     }
 
@@ -106,17 +125,23 @@ public class NoDependencyCycleValidator implements SpecificationValidator {
         namedPaths.put(targetName, path);
         String dependencyName = action.getDependsOn();
         if (dependencyName != null) {
-            dependencies.put(new Element(targetName, path), dependencyName);
+            addDependency(new Element(targetName, path), dependencyName);
         }
     }
 
-    private Map<Element, Element> dependencyGraph() {
-        var dependencyGraph = new LinkedHashMap<Element, Element>();
-        for (Element key : dependencies.keySet()) {
-            String dependencyName = dependencies.get(key);
-            dependencyGraph.put(key, new Element(dependencyName, namedPaths.get(dependencyName)));
+    private Map<Element, Set<Element>> dependencyGraph() {
+        var dependencyGraph = new LinkedHashMap<Element, Set<Element>>(dependencyMatrix.size());
+        for (Element key : dependencyMatrix.keySet()) {
+            Set<Element> dependencies = dependencyMatrix.get(key).stream()
+                    .map(name -> new Element(name, namedPaths.get(name)))
+                    .collect(Collectors.toCollection(() -> new LinkedHashSet<>(3)));
+            dependencyGraph.put(key, dependencies);
         }
         return dependencyGraph;
+    }
+
+    private void addDependency(Element key, String dependencyName) {
+        dependencyMatrix.computeIfAbsent(key, (ignored) -> new ArrayList<>(3)).add(dependencyName);
     }
 }
 

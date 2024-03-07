@@ -163,7 +163,7 @@ public class ImportSpecificationDeserializer {
                 validatorDependencyGraph.put(validator.getClass(), dependency);
             }
         });
-        var cycles = CycleDetector.run(validatorDependencyGraph);
+        var cycles = CycleDetector.detectSimple(validatorDependencyGraph);
         if (!cycles.isEmpty()) {
             throw new IllegalStateException(String.format(
                     "%d validator dependency cycle(s) detected:%n%s",

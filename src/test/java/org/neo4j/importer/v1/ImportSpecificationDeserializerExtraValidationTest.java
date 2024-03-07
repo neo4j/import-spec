@@ -554,6 +554,96 @@ public class ImportSpecificationDeserializerExtraValidationTest {
     }
 
     @Test
+    void fails_if_dependency_cycle_is_detected_via_start_node_reference() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+                {
+                    "sources": [{
+                        "type": "bigquery",
+                        "name": "a-source",
+                        "query": "SELECT id, name, description FROM my.table"
+                    }],
+                    "targets": {
+                        "nodes": [{
+                            "name": "a-node-target",
+                            "source": "a-source",
+                            "depends_on": "a-relationship-target",
+                            "labels": ["Label1"],
+                            "write_mode": "create",
+                            "properties": [
+                                {"source_field": "id", "target_property": "property1"},
+                                {"source_field": "name", "target_property": "property2"}
+                            ]
+                        }],
+                        "relationships": [{
+                            "name": "a-relationship-target",
+                            "source": "a-source",
+                            "type": "TYPE",
+                            "start_node_reference": "a-node-target",
+                            "end_node": {
+                                "label": "Label2",
+                                "key_properties": [
+                                    {"source_field": "description", "target_property": "property2"}
+                                ]
+                            }
+                        }]
+                    }
+                }
+                """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "A dependency cycle has been detected: a-node-target->a-relationship-target->a-node-target");
+    }
+
+    @Test
+    void fails_if_dependency_cycle_is_detected_via_end_node_reference() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+                {
+                    "sources": [{
+                        "type": "bigquery",
+                        "name": "a-source",
+                        "query": "SELECT id, name, description FROM my.table"
+                    }],
+                    "targets": {
+                        "nodes": [{
+                            "name": "a-node-target",
+                            "source": "a-source",
+                            "depends_on": "a-relationship-target",
+                            "labels": ["Label1"],
+                            "write_mode": "create",
+                            "properties": [
+                                {"source_field": "id", "target_property": "property1"},
+                                {"source_field": "name", "target_property": "property2"}
+                            ]
+                        }],
+                        "relationships": [{
+                            "name": "a-relationship-target",
+                            "source": "a-source",
+                            "type": "TYPE",
+                            "start_node": {
+                                "label": "Label1",
+                                "key_properties": [
+                                    {"source_field": "description", "target_property": "property1"}
+                                ]
+                            },
+                            "end_node_reference": "a-node-target"
+                        }]
+                    }
+                }
+                """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "A dependency cycle has been detected: a-node-target->a-relationship-target->a-node-target");
+    }
+
+    @Test
     void does_not_report_cycles_if_names_are_duplicated() {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
@@ -657,6 +747,58 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                         "1 error(s)",
                         "0 warning(s)",
                         "$.targets.queries[0] depends on a non-existing action or target \"invalid-depends-on\"");
+    }
+
+    @Test
+    void does_not_report_cycles_if_node_references_are_dangling() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+                {
+                    "sources": [{
+                        "type": "bigquery",
+                        "name": "a-source",
+                        "query": "SELECT id, name, description FROM my.table"
+                    }],
+                    "targets": {
+                        "nodes": [{
+                            "name": "a-node-target",
+                            "source": "a-source",
+                            "depends_on": "a-relationship-target",
+                            "labels": ["Label1"],
+                            "write_mode": "create",
+                            "properties": [
+                                {"source_field": "id", "target_property": "property1"},
+                                {"source_field": "name", "target_property": "property2"}
+                            ]
+                        }],
+                        "relationships": [{
+                            "name": "a-relationship-target",
+                            "source": "a-source",
+                            "type": "TYPE",
+                            "start_node": {
+                                "label": "Label1",
+                                "key_properties": [
+                                    {"source_field": "description", "target_property": "property1"}
+                                ]
+                            },
+                            "end_node_reference": "a-node-target"
+                        },{
+                            "name": "a-relationship-target-2",
+                            "source": "a-source",
+                            "type": "TYPE",
+                            "start_node_reference": "invalid-ref",
+                            "end_node_reference": "a-node-target"
+                        }
+                        ]
+                    }
+                }
+                """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "$.targets.relationships[1].start_node_reference refers to a non-existing node target \"invalid-ref\"");
     }
 
     @Test
