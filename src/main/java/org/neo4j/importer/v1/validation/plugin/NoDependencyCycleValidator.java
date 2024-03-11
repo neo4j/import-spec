@@ -53,7 +53,8 @@ public class NoDependencyCycleValidator implements SpecificationValidator {
         return Set.of(
                 NoDuplicatedNameValidator.class,
                 NoDanglingDependsOnValidator.class,
-                NoDanglingNodeReferenceValidator.class);
+                NoDanglingNodeReferenceValidator.class,
+                NoDuplicatedDependencyValidator.class);
     }
 
     @Override

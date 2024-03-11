@@ -897,4 +897,226 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                 .hasMessageContainingAll(
                         "1 error(s)", "0 warning(s)", "[$.targets] at least one target must be active, none found");
     }
+
+    @Test
+    void fails_if_node_target_duplicates_dependency() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+                        {
+                          "sources": [
+                            {
+                              "name": "a-source",
+                              "type": "text",
+                              "header": [
+                                "column1",
+                                "column2"
+                              ],
+                              "data": [
+                                [
+                                  "value1", "value2"
+                                ]
+                              ]
+                            }
+                          ],
+                          "targets": {
+                            "nodes": [{
+                                "name": "a-node-target",
+                                "source": "a-source",
+                                "labels": ["Label1", "Label2"],
+                                "depends_on": ["a-query-target", "a-query-target"],
+                                "write_mode": "create",
+                                "properties": [
+                                    {"source_field": "field_1", "target_property": "property1"},
+                                    {"source_field": "field_2", "target_property": "property2"}
+                                ]
+                            }],
+                            "queries": [
+                              {
+                                "name": "a-query-target",
+                                "source": "a-source",
+                                "query": "UNWIND $rows AS row CREATE (n:ANode) SET n = row"
+                              }
+                            ]
+                          }
+                        }
+                        """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "$.targets.nodes[0].depends_on defines dependency \"a-query-target\" 2 times, it must be defined at most once");
+    }
+
+    @Test
+    void fails_if_relationship_target_duplicates_dependency() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+                        {
+                          "sources": [
+                            {
+                              "name": "a-source",
+                              "type": "text",
+                              "header": [
+                                "column1",
+                                "column2"
+                              ],
+                              "data": [
+                                [
+                                  "value1", "value2"
+                                ]
+                              ]
+                            }
+                          ],
+                          "targets": {
+                            "relationships": [{
+                                "name": "a-relationship-target",
+                                "source": "a-source",
+                                "type": "TYPE",
+                                "depends_on": ["a-query-target", "a-query-target"],
+                                "start_node": {
+                                    "label": "Label1",
+                                    "key_properties": [
+                                        {"source_field": "field_1", "target_property": "property1"}
+                                    ]
+                                },
+                                "end_node": {
+                                    "label": "Label2",
+                                    "key_properties": [
+                                        {"source_field": "field_2", "target_property": "property2"}
+                                    ]
+                                }
+                            }],
+                            "queries": [
+                              {
+                                "name": "a-query-target",
+                                "source": "a-source",
+                                "query": "UNWIND $rows AS row CREATE (n:ANode) SET n = row"
+                              }
+                            ]
+                          }
+                        }
+                        """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "$.targets.relationships[0].depends_on defines dependency \"a-query-target\" 2 times, it must be defined at most once");
+    }
+
+    @Test
+    void fails_if_query_target_duplicates_dependency() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+                        {
+                          "sources": [
+                            {
+                              "name": "a-source",
+                              "type": "text",
+                              "header": [
+                                "column1",
+                                "column2"
+                              ],
+                              "data": [
+                                [
+                                  "value1", "value2"
+                                ]
+                              ]
+                            }
+                          ],
+                          "targets": {
+                            "queries": [
+                              {
+                                "name": "a-query-target",
+                                "source": "a-source",
+                                "depends_on": ["a-relationship-target", "a-relationship-target"],
+                                "query": "UNWIND $rows AS row CREATE (n:ANode) SET n = row"
+                              }
+                            ],
+                            "relationships": [{
+                                "name": "a-relationship-target",
+                                "source": "a-source",
+                                "type": "TYPE",
+                                "start_node": {
+                                    "label": "Label1",
+                                    "key_properties": [
+                                        {"source_field": "field_1", "target_property": "property1"}
+                                    ]
+                                },
+                                "end_node": {
+                                    "label": "Label2",
+                                    "key_properties": [
+                                        {"source_field": "field_2", "target_property": "property2"}
+                                    ]
+                                }
+                            }]
+                          }
+                        }
+                        """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "$.targets.queries[0].depends_on defines dependency \"a-relationship-target\" 2 times, it must be defined at most once");
+    }
+
+    @Test
+    void does_not_report_if_targets_duplicate_dependency() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+                        {
+                          "sources": [
+                            {
+                              "name": "a-source",
+                              "type": "text",
+                              "header": [
+                                "column1",
+                                "column2"
+                              ],
+                              "data": [
+                                [
+                                  "value1", "value2"
+                                ]
+                              ]
+                            }
+                          ],
+                          "targets": {
+                            "queries": [
+                              {
+                                "name": "a-query-target",
+                                "source": "a-source",
+                                "depends_on": ["a-relationship-target", "a-relationship-target"],
+                                "query": "UNWIND $rows AS row CREATE (n:ANode) SET n = row"
+                              }
+                            ],
+                            "relationships": [{
+                                "name": "a-relationship-target",
+                                "source": "a-source",
+                                "type": "TYPE",
+                                "depends_on": ["a-query-target"],
+                                "start_node": {
+                                    "label": "Label1",
+                                    "key_properties": [
+                                        {"source_field": "field_1", "target_property": "property1"}
+                                    ]
+                                },
+                                "end_node": {
+                                    "label": "Label2",
+                                    "key_properties": [
+                                        {"source_field": "field_2", "target_property": "property2"}
+                                    ]
+                                }
+                            }]
+                          }
+                        }
+                        """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "$.targets.queries[0].depends_on defines dependency \"a-relationship-target\" 2 times, it must be defined at most once");
+    }
 }
