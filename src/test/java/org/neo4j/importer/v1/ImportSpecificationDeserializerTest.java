@@ -427,6 +427,7 @@ class ImportSpecificationDeserializerTest {
                     "actions": [{
                         "type": "http",
                         "method": "get",
+                        "stage": "start",
                         "url": "https://example.com"
                     }]
                 }
@@ -581,6 +582,7 @@ class ImportSpecificationDeserializerTest {
                         "name": "   ",
                         "type": "http",
                         "method": "get",
+                        "stage": "post_nodes",
                         "url": "https://example.com"
                     }]
                 }

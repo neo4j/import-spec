@@ -39,7 +39,7 @@ public class RelationshipTarget extends Target {
             @JsonProperty(value = "active", defaultValue = DEFAULT_ACTIVE) Boolean active,
             @JsonProperty(value = "name", required = true) String name,
             @JsonProperty(value = "source", required = true) String source,
-            @JsonProperty("depends_on") String dependsOn,
+            @JsonProperty("depends_on") List<String> dependencies,
             @JsonProperty(value = "type", required = true) String type,
             @JsonProperty("write_mode") WriteMode writeMode,
             @JsonProperty("node_match_mode") NodeMatchMode nodeMatchMode,
@@ -51,7 +51,7 @@ public class RelationshipTarget extends Target {
             @JsonProperty("properties") List<PropertyMapping> properties,
             @JsonProperty("schema") RelationshipSchema schema) {
 
-        super(active, name, source, dependsOn);
+        super(active, name, source, dependencies);
         this.type = type;
         this.writeMode = writeMode;
         this.nodeMatchMode = nodeMatchMode;

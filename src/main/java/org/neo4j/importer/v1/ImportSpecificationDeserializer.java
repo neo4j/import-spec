@@ -17,6 +17,7 @@
 package org.neo4j.importer.v1;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.StreamReadFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
@@ -46,6 +47,7 @@ import org.neo4j.importer.v1.validation.UnparseableSpecificationException;
 public class ImportSpecificationDeserializer {
     private static final YAMLMapper MAPPER = YAMLMapper.builder()
             .enable(MapperFeature.ACCEPT_CASE_INSENSITIVE_ENUMS)
+            .enable(StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION)
             .disable(MapperFeature.AUTO_DETECT_CREATORS)
             .build();
 

@@ -18,6 +18,7 @@ package org.neo4j.importer.v1.targets;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import java.util.List;
 import java.util.Objects;
 
 public class CustomQueryTarget extends Target {
@@ -29,9 +30,9 @@ public class CustomQueryTarget extends Target {
             @JsonProperty(value = "active", defaultValue = DEFAULT_ACTIVE) Boolean active,
             @JsonProperty(value = "name", required = true) String name,
             @JsonProperty(value = "source", required = true) String source,
-            @JsonProperty("depends_on") String dependsOn,
+            @JsonProperty("depends_on") List<String> dependencies,
             @JsonProperty(value = "query", required = true) String query) {
-        super(active, name, source, dependsOn);
+        super(active, name, source, dependencies);
         this.query = query;
     }
 

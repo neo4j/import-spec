@@ -302,8 +302,11 @@
           "pattern": "\\S+"
         },
         "depends_on": {
-          "type": "string",
-          "minLength": 1
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
         }
       },
       "required": [
@@ -597,13 +600,23 @@
           "minLength": 1,
           "pattern": "\\S+"
         },
-        "depends_on": {
+        "stage": {
           "type": "string",
-          "minLength": 1
+          "enum": [
+            "start",
+            "pre_nodes",
+            "post_nodes",
+            "pre_relationships",
+            "post_relationships",
+            "pre_queries",
+            "post_queries",
+            "end"
+          ]
+
         }
       },
       "required": [
-        "name"
+        "name", "stage"
       ]
     },
     "action.http": {

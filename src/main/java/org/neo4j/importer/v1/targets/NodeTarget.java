@@ -33,13 +33,13 @@ public class NodeTarget extends Target {
             @JsonProperty(value = "active", defaultValue = DEFAULT_ACTIVE) Boolean active,
             @JsonProperty(value = "name", required = true) String name,
             @JsonProperty(value = "source", required = true) String source,
-            @JsonProperty("depends_on") String dependsOn,
+            @JsonProperty("depends_on") List<String> dependencies,
             @JsonProperty("write_mode") WriteMode writeMode,
             @JsonProperty("source_transformations") SourceTransformations sourceTransformations,
             @JsonProperty(value = "labels", required = true) List<String> labels,
             @JsonProperty(value = "properties", required = true) List<PropertyMapping> properties,
             @JsonProperty("schema") NodeSchema schema) {
-        super(active, name, source, dependsOn);
+        super(active, name, source, dependencies);
         this.writeMode = writeMode;
         this.sourceTransformations = sourceTransformations;
         this.labels = labels;
