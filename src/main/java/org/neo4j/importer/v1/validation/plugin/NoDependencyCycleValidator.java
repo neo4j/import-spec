@@ -26,7 +26,6 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
-import org.neo4j.importer.v1.actions.Action;
 import org.neo4j.importer.v1.graph.CycleDetector;
 import org.neo4j.importer.v1.graph.Pair;
 import org.neo4j.importer.v1.targets.CustomQueryTarget;
@@ -99,21 +98,18 @@ public class NoDependencyCycleValidator implements SpecificationValidator {
         trackDependency((Target) target, path);
         String startNodeRef = target.getStartNodeReference();
         if (startNodeRef != null) {
-            addDependency(new Element(target.getName(), path), startNodeRef);
+            addDependencies(new Element(target.getName(), path), List.of(startNodeRef));
         }
         String endNodeRef = target.getEndNodeReference();
         if (endNodeRef != null) {
-            addDependency(new Element(target.getName(), path), endNodeRef);
+            addDependencies(new Element(target.getName(), path), List.of(endNodeRef));
         }
     }
 
     private void trackDependency(Target target, String path) {
         String targetName = target.getName();
         namedPaths.put(targetName, path);
-        String dependencyName = target.getDependsOn();
-        if (dependencyName != null) {
-            addDependency(new Element(targetName, path), dependencyName);
-        }
+        addDependencies(new Element(targetName, path), target.getDependencies());
     }
 
     private Map<Element, Set<Element>> dependencyGraph() {
@@ -127,8 +123,8 @@ public class NoDependencyCycleValidator implements SpecificationValidator {
         return dependencyGraph;
     }
 
-    private void addDependency(Element key, String dependencyName) {
-        dependencyMatrix.computeIfAbsent(key, (ignored) -> new ArrayList<>(3)).add(dependencyName);
+    private void addDependencies(Element key, List<String> dependencyNames) {
+        dependencyMatrix.computeIfAbsent(key, (ignored) -> new ArrayList<>()).addAll(dependencyNames);
     }
 }
 

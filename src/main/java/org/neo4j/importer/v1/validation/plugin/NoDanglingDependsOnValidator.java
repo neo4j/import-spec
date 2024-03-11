@@ -18,9 +18,11 @@ package org.neo4j.importer.v1.validation.plugin;
 
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
+import org.neo4j.importer.v1.graph.Pair;
 import org.neo4j.importer.v1.targets.CustomQueryTarget;
 import org.neo4j.importer.v1.targets.NodeTarget;
 import org.neo4j.importer.v1.targets.RelationshipTarget;
@@ -33,11 +35,11 @@ public class NoDanglingDependsOnValidator implements SpecificationValidator {
     private static final String ERROR_CODE = "DANG-002";
 
     private final Set<String> names;
-    private final Map<String, String> pathToDependsOn;
+    private final Map<String, List<String>> pathToDependencies;
 
     public NoDanglingDependsOnValidator() {
         names = new LinkedHashSet<>();
-        pathToDependsOn = new LinkedHashMap<>();
+        pathToDependencies = new LinkedHashMap<>();
     }
 
     @Override
@@ -58,12 +60,13 @@ public class NoDanglingDependsOnValidator implements SpecificationValidator {
     @Override
     public boolean report(Builder builder) {
         AtomicBoolean result = new AtomicBoolean(false);
-        pathToDependsOn.entrySet().stream()
-                .filter(entry -> !names.contains(entry.getValue()))
-                .forEachOrdered(entry -> {
+        pathToDependencies.entrySet().stream()
+                .flatMap(entry -> entry.getValue().stream().map(dependency -> Pair.of(entry.getKey(), dependency)))
+                .filter(pair -> !names.contains(pair.getSecond()))
+                .forEachOrdered(pair -> {
                     result.set(true);
-                    String path = entry.getKey();
-                    String invalidDependsOn = entry.getValue();
+                    String path = pair.getFirst();
+                    String invalidDependsOn = pair.getSecond();
                     builder.addError(
                             path,
                             ERROR_CODE,
@@ -74,8 +77,6 @@ public class NoDanglingDependsOnValidator implements SpecificationValidator {
 
     private void track(Target target, String path) {
         names.add(target.getName());
-        target.getDependencies().forEach(dependency -> {
-            pathToDependsOn.put(path, dependency);
-        });
+        pathToDependencies.put(path, target.getDependencies());
     }
 }

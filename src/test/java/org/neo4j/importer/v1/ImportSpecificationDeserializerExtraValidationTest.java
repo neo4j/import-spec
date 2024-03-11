@@ -535,7 +535,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                         "nodes": [{
                             "name": "a-node-target",
                             "source": "a-source",
-                            "depends_on": "a-relationship-target",
+                            "depends_on": ["a-relationship-target"],
                             "labels": ["Label1"],
                             "write_mode": "create",
                             "properties": [
@@ -580,7 +580,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                         "nodes": [{
                             "name": "a-node-target",
                             "source": "a-source",
-                            "depends_on": "a-relationship-target",
+                            "depends_on": ["a-relationship-target"],
                             "labels": ["Label1"],
                             "write_mode": "create",
                             "properties": [
@@ -695,7 +695,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                                 {
                                     "name": "another-query-target",
                                     "source": "a-source",
-                                    "depends_on": ["invalid"],
+                                    "depends_on": ["invalid", "a-relationship-target"],
                                     "query": "UNWIND $rows AS row CREATE (n:ANode) SET n = row"
                                 }]
                             }
@@ -723,7 +723,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                         "nodes": [{
                             "name": "a-node-target",
                             "source": "a-source",
-                            "depends_on": "a-relationship-target",
+                            "depends_on": ["a-relationship-target"],
                             "labels": ["Label1"],
                             "write_mode": "create",
                             "properties": [
