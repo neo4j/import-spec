@@ -30,13 +30,13 @@ public abstract class Action {
     private final boolean active;
     private final String name;
     private final ActionType type;
-    private final String dependsOn;
+    private final ActionStage stage;
 
-    protected Action(Boolean active, String name, ActionType type, String dependsOn) {
+    protected Action(Boolean active, String name, ActionType type, ActionStage stage) {
         this.active = active != null ? active : Boolean.valueOf(DEFAULT_ACTIVE).booleanValue();
         this.name = name;
         this.type = type;
-        this.dependsOn = dependsOn;
+        this.stage = stage;
     }
 
     public boolean isActive() {
@@ -51,8 +51,8 @@ public abstract class Action {
         return type;
     }
 
-    public String getDependsOn() {
-        return dependsOn;
+    public ActionStage getStage() {
+        return stage;
     }
 
     @Override
@@ -63,12 +63,12 @@ public abstract class Action {
         return active == action.active
                 && Objects.equals(name, action.name)
                 && type == action.type
-                && Objects.equals(dependsOn, action.dependsOn);
+                && Objects.equals(stage, action.stage);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(active, name, type, dependsOn);
+        return Objects.hash(active, name, type, stage);
     }
 
     @Override
@@ -76,7 +76,7 @@ public abstract class Action {
         return "Action{" + "active="
                 + active + ", name='"
                 + name + '\'' + ", type="
-                + type + ", dependsOn='"
-                + dependsOn + '\'' + '}';
+                + type + ", stage='"
+                + stage + '\'' + '}';
     }
 }

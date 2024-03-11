@@ -62,7 +62,7 @@ class ActionTest {
             "method": "post",
             "url": "https://example.com",
             "headers": {"header_1": "value_1", "header_2": "value_2"},
-            "depends_on": "another-action"
+            "stage": "start"
         }
         """
                         .stripIndent();
@@ -75,7 +75,7 @@ class ActionTest {
         assertThat(action.getMethod()).isEqualTo(HttpMethod.POST);
         assertThat(action.getUrl()).isEqualTo("https://example.com");
         assertThat(action.getHeaders()).isEqualTo(Map.of("header_1", "value_1", "header_2", "value_2"));
-        assertThat(action.getDependsOn()).isEqualTo("another-action");
+        assertThat(action.getStage()).isEqualTo(ActionStage.START);
     }
 
     @Test
@@ -108,7 +108,7 @@ class ActionTest {
             "active": "false",
             "type": "cypher",
             "query": "CREATE ()",
-            "depends_on": "another-action",
+            "stage": "end",
             "execution_mode": "autocommit"
         }
         """
@@ -120,7 +120,7 @@ class ActionTest {
         assertThat(action.isActive()).isFalse();
         assertThat(action.getType()).isEqualTo(ActionType.CYPHER);
         assertThat(action.getQuery()).isEqualTo("CREATE ()");
-        assertThat(action.getDependsOn()).isEqualTo("another-action");
+        assertThat(action.getStage()).isEqualTo(ActionStage.END);
         assertThat(action.getExecutionMode()).isEqualTo(CypherExecutionMode.AUTOCOMMIT);
     }
 }

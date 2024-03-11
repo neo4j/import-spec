@@ -21,7 +21,6 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
-import org.neo4j.importer.v1.actions.Action;
 import org.neo4j.importer.v1.targets.CustomQueryTarget;
 import org.neo4j.importer.v1.targets.NodeTarget;
 import org.neo4j.importer.v1.targets.RelationshipTarget;
@@ -57,11 +56,6 @@ public class NoDanglingDependsOnValidator implements SpecificationValidator {
     }
 
     @Override
-    public void visitAction(int index, Action action) {
-        track(action, String.format("$.actions[%d]", index));
-    }
-
-    @Override
     public boolean report(Builder builder) {
         AtomicBoolean result = new AtomicBoolean(false);
         pathToDependsOn.entrySet().stream()
@@ -73,8 +67,7 @@ public class NoDanglingDependsOnValidator implements SpecificationValidator {
                     builder.addError(
                             path,
                             ERROR_CODE,
-                            String.format(
-                                    "%s depends on a non-existing action or target \"%s\".", path, invalidDependsOn));
+                            String.format("%s depends on a non-existing target \"%s\".", path, invalidDependsOn));
                 });
         return result.get();
     }
@@ -82,14 +75,6 @@ public class NoDanglingDependsOnValidator implements SpecificationValidator {
     private void track(Target target, String path) {
         names.add(target.getName());
         String dependsOn = target.getDependsOn();
-        if (dependsOn != null) {
-            pathToDependsOn.put(path, dependsOn);
-        }
-    }
-
-    private void track(Action action, String path) {
-        names.add(action.getName());
-        String dependsOn = action.getDependsOn();
         if (dependsOn != null) {
             pathToDependsOn.put(path, dependsOn);
         }

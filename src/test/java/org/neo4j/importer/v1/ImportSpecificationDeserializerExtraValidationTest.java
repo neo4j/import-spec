@@ -146,6 +146,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                                 "name": "duplicate",
                                 "type": "http",
                                 "method": "get",
+                                "stage": "pre_relationships",
                                 "url": "https://example.com"
                             }]
                         }
@@ -260,7 +261,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
     }
 
     @Test
-    void fails_if_node_target_depends_on_non_existing_target_or_action() {
+    void fails_if_node_target_depends_on_non_existing_target() {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
                         {
@@ -273,7 +274,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                                 "nodes": [{
                                     "name": "a-target",
                                     "source": "a-source",
-                                    "depends_on": "incorrect-dependent",
+                                    "depends_on": "invalid",
                                     "labels": ["Label1", "Label2"],
                                     "write_mode": "create",
                                     "properties": [
@@ -289,7 +290,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                 .hasMessageContainingAll(
                         "1 error(s)",
                         "0 warning(s)",
-                        "$.targets.nodes[0] depends on a non-existing action or target \"incorrect-dependent\"");
+                        "$.targets.nodes[0] depends on a non-existing target \"invalid\"");
     }
 
     @Test
@@ -306,7 +307,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                                 "relationships": [{
                                     "name": "a-target",
                                     "source": "a-source",
-                                    "depends_on": "incorrect-dependent",
+                                    "depends_on": "invalid",
                                     "type": "TYPE",
                                     "start_node": {
                                         "label": "Label1",
@@ -329,7 +330,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                 .hasMessageContainingAll(
                         "1 error(s)",
                         "0 warning(s)",
-                        "$.targets.relationships[0] depends on a non-existing action or target \"incorrect-dependent\"");
+                        "$.targets.relationships[0] depends on a non-existing target \"invalid\"");
     }
 
     @Test
@@ -346,7 +347,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                                 "queries": [{
                                     "name": "a-target",
                                     "source": "a-source",
-                                    "depends_on": "incorrect-dependent",
+                                    "depends_on": "invalid",
                                     "query": "UNWIND $rows AS row CREATE (n:ANode) SET n = row"
                                 }]
                             }
@@ -357,41 +358,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                 .hasMessageContainingAll(
                         "1 error(s)",
                         "0 warning(s)",
-                        "$.targets.queries[0] depends on a non-existing action or target \"incorrect-dependent\"");
-    }
-
-    @Test
-    void fails_if_action_depends_on_non_existing_target_or_action() {
-        assertThatThrownBy(() -> deserialize(new StringReader(
-                        """
-                        {
-                            "sources": [{
-                                "type": "bigquery",
-                                "name": "a-source",
-                                "query": "SELECT id, name FROM my.table"
-                            }],
-                            "targets": {
-                                "queries": [{
-                                    "name": "a-target",
-                                    "source": "a-source",
-                                    "query": "UNWIND $rows AS row CREATE (n:ANode) SET n = row"
-                                }]
-                            },
-                            "actions": [{
-                                "name": "an-action",
-                                "depends_on": "incorrect-dependent",
-                                "type": "http",
-                                "method": "get",
-                                "url": "https://example.com"
-                            }]
-                        }
-                        """
-                                .stripIndent())))
-                .isInstanceOf(InvalidSpecificationException.class)
-                .hasMessageContainingAll(
-                        "1 error(s)",
-                        "0 warning(s)",
-                        "$.actions[0] depends on a non-existing action or target \"incorrect-dependent\".");
+                        "$.targets.queries[0] depends on a non-existing target \"invalid\"");
     }
 
     @Test
@@ -513,7 +480,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                             "targets": {
                                 "relationships": [{
                                     "name": "a-relationship-target",
-                                    "depends_on": "an-action",
+                                    "depends_on": "a-query-target",
                                     "source": "a-source",
                                     "type": "TYPE",
                                     "start_node": {
@@ -529,20 +496,21 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                                         ]
                                     }
                                 }],
-                                "queries": [{
-                                    "name": "a-query-target",
-                                    "source": "a-source",
-                                    "depends_on": "a-relationship-target",
-                                    "query": "UNWIND $rows AS row CREATE (n:ANode) SET n = row"
-                                }]
-                            },
-                            "actions": [{
-                                "name": "an-action",
-                                "depends_on": "a-query-target",
-                                "type": "http",
-                                "method": "get",
-                                "url": "https://example.com"
-                            }]
+                                "queries": [
+                                    {
+                                        "name": "a-query-target",
+                                        "source": "a-source",
+                                        "depends_on": "another-query-target",
+                                        "query": "UNWIND $rows AS row CREATE (n:ANode) SET n = row"
+                                    },
+                                    {
+                                        "name": "another-query-target",
+                                        "source": "a-source",
+                                        "depends_on": "a-relationship-target",
+                                        "query": "UNWIND $rows AS row CREATE (n:AnotherNode) SET n = row"
+                                    }
+                                ]
+                            }
                         }
                         """
                                 .stripIndent())))
@@ -550,7 +518,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                 .hasMessageContainingAll(
                         "1 error(s)",
                         "0 warning(s)",
-                        "A dependency cycle has been detected: a-relationship-target->an-action->a-query-target->a-relationship-target");
+                        "A dependency cycle has been detected: a-relationship-target->a-query-target->another-query-target->a-relationship-target");
     }
 
     @Test
@@ -656,7 +624,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                             "targets": {
                                 "relationships": [{
                                     "name": "a-target",
-                                    "depends_on": "an-action",
+                                    "depends_on": "a-target",
                                     "source": "a-source",
                                     "type": "TYPE",
                                     "start_node": {
@@ -675,17 +643,10 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                                 "queries": [{
                                     "name": "a-target",
                                     "source": "a-source",
-                                    "depends_on": "an-action",
+                                    "depends_on": "a-target",
                                     "query": "UNWIND $rows AS row CREATE (n:ANode) SET n = row"
                                 }]
-                            },
-                            "actions": [{
-                                "name": "an-action",
-                                "depends_on": "a-target",
-                                "type": "http",
-                                "method": "get",
-                                "url": "https://example.com"
-                            }]
+                            }
                         }
                         """
                                 .stripIndent())))
@@ -708,8 +669,8 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                             }],
                             "targets": {
                                 "relationships": [{
-                                    "name": "a-target",
-                                    "depends_on": "an-action",
+                                    "name": "a-relationship-target",
+                                    "depends_on": "a-query-target",
                                     "source": "a-source",
                                     "type": "TYPE",
                                     "start_node": {
@@ -728,17 +689,16 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                                 "queries": [{
                                     "name": "a-query-target",
                                     "source": "a-source",
-                                    "depends_on": "invalid-depends-on",
+                                    "depends_on": "a-relationship-target",
+                                    "query": "UNWIND $rows AS row CREATE (n:ANode) SET n = row"
+                                },
+                                {
+                                    "name": "another-query-target",
+                                    "source": "a-source",
+                                    "depends_on": "invalid",
                                     "query": "UNWIND $rows AS row CREATE (n:ANode) SET n = row"
                                 }]
-                            },
-                            "actions": [{
-                                "name": "an-action",
-                                "depends_on": "a-target",
-                                "type": "http",
-                                "method": "get",
-                                "url": "https://example.com"
-                            }]
+                            }
                         }
                         """
                                 .stripIndent())))
@@ -746,7 +706,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                 .hasMessageContainingAll(
                         "1 error(s)",
                         "0 warning(s)",
-                        "$.targets.queries[0] depends on a non-existing action or target \"invalid-depends-on\"");
+                        "$.targets.queries[1] depends on a non-existing target \"invalid\"");
     }
 
     @Test

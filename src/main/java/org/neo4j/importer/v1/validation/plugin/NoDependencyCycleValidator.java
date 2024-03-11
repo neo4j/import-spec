@@ -72,11 +72,6 @@ public class NoDependencyCycleValidator implements SpecificationValidator {
     }
 
     @Override
-    public void visitAction(int index, Action action) {
-        trackDependency(action, String.format("$.actions[%d]", index));
-    }
-
-    @Override
     public boolean report(Builder builder) {
         AtomicBoolean result = new AtomicBoolean(false);
         CycleDetector.detect(dependencyGraph()).stream()
@@ -115,15 +110,6 @@ public class NoDependencyCycleValidator implements SpecificationValidator {
         String targetName = target.getName();
         namedPaths.put(targetName, path);
         String dependencyName = target.getDependsOn();
-        if (dependencyName != null) {
-            addDependency(new Element(targetName, path), dependencyName);
-        }
-    }
-
-    private void trackDependency(Action action, String path) {
-        String targetName = action.getName();
-        namedPaths.put(targetName, path);
-        String dependencyName = action.getDependsOn();
         if (dependencyName != null) {
             addDependency(new Element(targetName, path), dependencyName);
         }

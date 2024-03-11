@@ -29,12 +29,12 @@ public class HttpAction extends Action {
     public HttpAction(
             @JsonProperty(value = "active", defaultValue = DEFAULT_ACTIVE) Boolean active,
             @JsonProperty(value = "name", required = true) String name,
-            @JsonProperty("depends_on") String dependsOn,
+            @JsonProperty("stage") ActionStage stage,
             @JsonProperty(value = "url", required = true) String url,
             @JsonProperty(value = "method", required = true) HttpMethod method,
             @JsonProperty("headers") Map<String, String> headers) {
 
-        super(active, name, ActionType.HTTP, dependsOn);
+        super(active, name, ActionType.HTTP, stage);
         this.url = url;
         this.method = method;
         this.headers = headers;
