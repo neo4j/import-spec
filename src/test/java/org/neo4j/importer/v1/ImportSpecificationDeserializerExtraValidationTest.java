@@ -1063,7 +1063,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
     }
 
     @Test
-    void does_not_report_if_targets_duplicate_dependency() {
+    void does_not_report_cycles_if_targets_duplicate_dependency() {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
                         {
