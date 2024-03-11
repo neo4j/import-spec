@@ -16,6 +16,8 @@
  */
 package org.neo4j.importer.v1.targets;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 
 public abstract class Target {
@@ -24,13 +26,13 @@ public abstract class Target {
     private final boolean active;
     private final String name;
     private final String source;
-    private final String dependsOn;
+    private final List<String> dependencies;
 
-    Target(Boolean active, String name, String source, String dependsOn) {
+    Target(Boolean active, String name, String source, List<String> dependencies) {
         this.active = active != null ? active : Boolean.valueOf(DEFAULT_ACTIVE).booleanValue();
         this.name = name;
         this.source = source;
-        this.dependsOn = dependsOn;
+        this.dependencies = dependencies != null ? dependencies : Collections.emptyList();
     }
 
     public boolean isActive() {
@@ -45,8 +47,8 @@ public abstract class Target {
         return source;
     }
 
-    public String getDependsOn() {
-        return dependsOn;
+    public List<String> getDependencies() {
+        return dependencies;
     }
 
     @Override
@@ -57,12 +59,12 @@ public abstract class Target {
         return active == target.active
                 && Objects.equals(name, target.name)
                 && Objects.equals(source, target.source)
-                && Objects.equals(dependsOn, target.dependsOn);
+                && Objects.equals(dependencies, target.dependencies);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(active, name, source, dependsOn);
+        return Objects.hash(active, name, source, dependencies);
     }
 
     @Override
@@ -70,7 +72,7 @@ public abstract class Target {
         return "Target{" + "active="
                 + active + ", name='"
                 + name + '\'' + ", source='"
-                + source + '\'' + ", dependsOn='"
-                + dependsOn + '\'' + '}';
+                + source + '\'' + ", dependencies='"
+                + dependencies + '\'' + '}';
     }
 }

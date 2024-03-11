@@ -302,8 +302,11 @@
           "pattern": "\\S+"
         },
         "depends_on": {
-          "type": "string",
-          "minLength": 1
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
         }
       },
       "required": [

@@ -274,7 +274,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                                 "nodes": [{
                                     "name": "a-target",
                                     "source": "a-source",
-                                    "depends_on": "invalid",
+                                    "depends_on": ["invalid"],
                                     "labels": ["Label1", "Label2"],
                                     "write_mode": "create",
                                     "properties": [
@@ -307,7 +307,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                                 "relationships": [{
                                     "name": "a-target",
                                     "source": "a-source",
-                                    "depends_on": "invalid",
+                                    "depends_on": ["invalid"],
                                     "type": "TYPE",
                                     "start_node": {
                                         "label": "Label1",
@@ -347,7 +347,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                                 "queries": [{
                                     "name": "a-target",
                                     "source": "a-source",
-                                    "depends_on": "invalid",
+                                    "depends_on": ["invalid"],
                                     "query": "UNWIND $rows AS row CREATE (n:ANode) SET n = row"
                                 }]
                             }
@@ -442,7 +442,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                             "targets": {
                                 "relationships": [{
                                     "name": "a-target",
-                                    "depends_on": "a-target",
+                                    "depends_on": ["a-target"],
                                     "source": "a-source",
                                     "type": "TYPE",
                                     "start_node": {
@@ -480,7 +480,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                             "targets": {
                                 "relationships": [{
                                     "name": "a-relationship-target",
-                                    "depends_on": "a-query-target",
+                                    "depends_on": ["a-query-target"],
                                     "source": "a-source",
                                     "type": "TYPE",
                                     "start_node": {
@@ -500,13 +500,13 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                                     {
                                         "name": "a-query-target",
                                         "source": "a-source",
-                                        "depends_on": "another-query-target",
+                                        "depends_on": ["another-query-target"],
                                         "query": "UNWIND $rows AS row CREATE (n:ANode) SET n = row"
                                     },
                                     {
                                         "name": "another-query-target",
                                         "source": "a-source",
-                                        "depends_on": "a-relationship-target",
+                                        "depends_on": ["a-relationship-target"],
                                         "query": "UNWIND $rows AS row CREATE (n:AnotherNode) SET n = row"
                                     }
                                 ]
@@ -624,7 +624,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                             "targets": {
                                 "relationships": [{
                                     "name": "a-target",
-                                    "depends_on": "a-target",
+                                    "depends_on": ["a-target"],
                                     "source": "a-source",
                                     "type": "TYPE",
                                     "start_node": {
@@ -643,7 +643,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                                 "queries": [{
                                     "name": "a-target",
                                     "source": "a-source",
-                                    "depends_on": "a-target",
+                                    "depends_on": ["a-target"],
                                     "query": "UNWIND $rows AS row CREATE (n:ANode) SET n = row"
                                 }]
                             }
@@ -670,7 +670,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                             "targets": {
                                 "relationships": [{
                                     "name": "a-relationship-target",
-                                    "depends_on": "a-query-target",
+                                    "depends_on": ["a-query-target"],
                                     "source": "a-source",
                                     "type": "TYPE",
                                     "start_node": {
@@ -689,13 +689,13 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                                 "queries": [{
                                     "name": "a-query-target",
                                     "source": "a-source",
-                                    "depends_on": "a-relationship-target",
+                                    "depends_on": ["a-relationship-target"],
                                     "query": "UNWIND $rows AS row CREATE (n:ANode) SET n = row"
                                 },
                                 {
                                     "name": "another-query-target",
                                     "source": "a-source",
-                                    "depends_on": "invalid",
+                                    "depends_on": ["invalid"],
                                     "query": "UNWIND $rows AS row CREATE (n:ANode) SET n = row"
                                 }]
                             }

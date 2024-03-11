@@ -18,6 +18,7 @@ package org.neo4j.importer.v1.targets;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.fasterxml.jackson.core.StreamReadFeature;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import java.util.List;
@@ -28,6 +29,7 @@ class TargetTest {
 
     private final JsonMapper mapper = JsonMapper.builder()
             .enable(MapperFeature.ACCEPT_CASE_INSENSITIVE_ENUMS)
+            .enable(StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION)
             .build();
 
     @Test
@@ -58,7 +60,7 @@ class TargetTest {
             "name": "my-custom-query-target",
             "active": false,
             "source": "a-source",
-            "depends_on": "another-action-or-target",
+            "depends_on": ["another-action-or-target"],
             "query": "UNWIND $rows AS row CREATE (n:ANode) SET n = row"
         }
         """
@@ -69,7 +71,7 @@ class TargetTest {
         assertThat(target.getName()).isEqualTo("my-custom-query-target");
         assertThat(target.isActive()).isFalse();
         assertThat(target.getSource()).isEqualTo("a-source");
-        assertThat(target.getDependsOn()).isEqualTo("another-action-or-target");
+        assertThat(target.getDependencies()).isEqualTo(List.of("another-action-or-target"));
         assertThat(target.getQuery()).isEqualTo("UNWIND $rows AS row CREATE (n:ANode) SET n = row");
     }
 
@@ -109,7 +111,7 @@ class TargetTest {
             "name": "my-node-target",
             "active": false,
             "source": "a-source",
-            "depends_on": "an-action-or-target",
+            "depends_on": ["an-action-or-target"],
             "write_mode": "MERGE",
             "source_transformations": {
                 "enable_grouping": true,
@@ -172,7 +174,7 @@ class TargetTest {
         assertThat(target.getName()).isEqualTo("my-node-target");
         assertThat(target.isActive()).isFalse();
         assertThat(target.getSource()).isEqualTo("a-source");
-        assertThat(target.getDependsOn()).isEqualTo("an-action-or-target");
+        assertThat(target.getDependencies()).isEqualTo(List.of("an-action-or-target"));
         assertThat(target.getWriteMode()).isEqualTo(WriteMode.MERGE);
         assertThat(target.getSourceTransformations())
                 .isEqualTo(new SourceTransformations(
@@ -346,7 +348,7 @@ class TargetTest {
             "name": "my-relationship-target",
             "active": false,
             "source": "a-source",
-            "depends_on": "an-action-or-target",
+            "depends_on": ["an-action-or-target"],
             "write_mode": "MERGE",
             "node_match_mode": "MATCH",
             "source_transformations": {
@@ -422,7 +424,7 @@ class TargetTest {
         assertThat(target.getName()).isEqualTo("my-relationship-target");
         assertThat(target.isActive()).isFalse();
         assertThat(target.getSource()).isEqualTo("a-source");
-        assertThat(target.getDependsOn()).isEqualTo("an-action-or-target");
+        assertThat(target.getDependencies()).isEqualTo(List.of("an-action-or-target"));
         assertThat(target.getWriteMode()).isEqualTo(WriteMode.MERGE);
         assertThat(target.getNodeMatchMode()).isEqualTo(NodeMatchMode.MATCH);
         assertThat(target.getSourceTransformations())
