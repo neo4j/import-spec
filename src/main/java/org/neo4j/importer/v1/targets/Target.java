@@ -16,11 +16,12 @@
  */
 package org.neo4j.importer.v1.targets;
 
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-public abstract class Target {
+public abstract class Target implements Comparable<Target>, Serializable {
 
     protected static final String DEFAULT_ACTIVE = "true";
     private final boolean active;
@@ -49,6 +50,21 @@ public abstract class Target {
 
     public List<String> getDependencies() {
         return dependencies;
+    }
+
+    @Override
+    public int compareTo(Target other) {
+        if (other.dependsOn(this)) {
+            return -1;
+        }
+        if (this.dependsOn(other)) {
+            return 1;
+        }
+        return this.getName().compareTo(other.getName());
+    }
+
+    protected boolean dependsOn(Target target) {
+        return getDependencies().contains(target.getName());
     }
 
     @Override

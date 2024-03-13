@@ -20,11 +20,12 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
+import java.io.Serializable;
 import java.util.Objects;
 
 @JsonTypeInfo(use = Id.NAME, property = "type")
 @JsonSubTypes({@Type(value = HttpAction.class, name = "http"), @Type(value = CypherAction.class, name = "cypher")})
-public abstract class Action {
+public abstract class Action implements Serializable {
 
     protected static final String DEFAULT_ACTIVE = "true";
     private final boolean active;

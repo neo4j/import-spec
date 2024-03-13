@@ -16,9 +16,10 @@
  */
 package org.neo4j.importer.v1.targets;
 
+import java.io.Serializable;
 import java.util.Objects;
 
-abstract class Index {
+abstract class Index implements Serializable {
     private final String name;
 
     protected Index(String name) {

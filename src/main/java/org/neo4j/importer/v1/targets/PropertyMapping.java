@@ -18,9 +18,10 @@ package org.neo4j.importer.v1.targets;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import java.io.Serializable;
 import java.util.Objects;
 
-public class PropertyMapping {
+public class PropertyMapping implements Serializable {
 
     private final String sourceField;
     private final String targetProperty;

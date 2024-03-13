@@ -18,10 +18,11 @@ package org.neo4j.importer.v1.targets;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
 
-public class SourceTransformations {
+public class SourceTransformations implements Serializable {
     private final boolean enableGrouping;
     private final List<Aggregation> aggregations;
     private final String whereClause;

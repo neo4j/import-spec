@@ -18,10 +18,11 @@ package org.neo4j.importer.v1.targets;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
 
-public class RelationshipSchema {
+public class RelationshipSchema implements Serializable {
 
     private final boolean enableTypeConstraints;
     private final List<RelationshipKeyConstraint> nodeKeyConstraints;

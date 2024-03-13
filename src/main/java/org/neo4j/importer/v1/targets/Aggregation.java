@@ -18,9 +18,10 @@ package org.neo4j.importer.v1.targets;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import java.io.Serializable;
 import java.util.Objects;
 
-public class Aggregation {
+public class Aggregation implements Serializable {
 
     private final String expression;
     private final String fieldName;
