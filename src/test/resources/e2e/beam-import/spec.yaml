@@ -15,6 +15,7 @@ targets:
   nodes:
     - source: "products"
       name: "product_nodes"
+      write_mode: "merge"
       labels:
         - "Product"
       properties:
@@ -30,6 +31,7 @@ targets:
               - "name"
     - source: "categories"
       name: "category_nodes"
+      write_mode: "merge"
       labels:
         - "Category"
       properties:
@@ -47,6 +49,8 @@ targets:
   relationships:
     - source: "products_in_categories"
       name: "product_in_category_relationships"
+      write_mode: "merge"
+      node_match_mode: "merge"
       type: "BELONGS_TO_CATEGORY"
       start_node_reference: "product_nodes"
       end_node_reference: "category_nodes"

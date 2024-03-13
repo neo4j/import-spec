@@ -78,7 +78,7 @@ public class BeamIT {
     @ClassRule
     public static PostgreSQLContainer<?> POSTGRES = new PostgreSQLContainer<>(DockerImageName.parse("postgres:16.2"))
             .withDatabaseName("northwind")
-            .withInitScript("e2e/admin-import/northwind_pg_dump.sql");
+            .withInitScript("e2e/postgres-dump/northwind.sql");
 
     private Driver neo4jDriver;
 
@@ -94,9 +94,18 @@ public class BeamIT {
     }
 
     @Test
-    public void imports_data_via_Beam() throws Exception {
-        var importSpec = read("/e2e/admin-import/spec.json", ImportSpecificationDeserializer::deserialize);
+    public void imports_data_via_Beam_and_json_spec() throws Exception {
+        runBeamImport("json");
+    }
 
+    @Test
+    public void imports_data_via_Beam_and_yaml_spec() throws Exception {
+        runBeamImport("yaml");
+    }
+
+    private void runBeamImport(String extension) throws Exception {
+        var importSpec =
+                read("/e2e/beam-import/spec.%s".formatted(extension), ImportSpecificationDeserializer::deserialize);
         Map<String, PCollection<Row>> dependencies = new HashMap<>();
         Map<Source, PCollection<Row>> sourceTransforms =
                 new HashMap<>(importSpec.getSources().size());

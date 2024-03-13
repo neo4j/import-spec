@@ -76,7 +76,7 @@ public class AdminImportIT {
 
     private static final String TARGET_DATABASE = "northwind";
     private static final String JDBC_POSTGRES_URL =
-            "jdbc:tc:postgresql:15.5-alpine:///%s?TC_INITSCRIPT=e2e/admin-import/northwind_pg_dump.sql"
+            "jdbc:tc:postgresql:15.5-alpine:///%s?TC_INITSCRIPT=e2e/postgres-dump/northwind.sql"
                     .formatted(TARGET_DATABASE);
 
     private Driver neo4jDriver;
