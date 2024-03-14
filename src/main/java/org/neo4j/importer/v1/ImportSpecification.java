@@ -19,6 +19,7 @@ package org.neo4j.importer.v1;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -62,7 +63,7 @@ public class ImportSpecification implements Serializable {
     }
 
     public List<Action> getActions() {
-        return actions;
+        return actions != null ? actions : Collections.emptyList();
     }
 
     public Source findSourceByName(String source) {

@@ -14,16 +14,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.neo4j.importer.v1.actions;
+package org.neo4j.importer.v1.e2e;
 
-public enum ActionStage {
-    START,
-    POST_SOURCES,
-    PRE_NODES,
-    POST_NODES,
-    PRE_RELATIONSHIPS,
-    POST_RELATIONSHIPS,
-    PRE_QUERIES,
-    POST_QUERIES,
-    END
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+public class Maps {
+
+    public static <K, V1, V2> Map<K, V2> mapValues(Map<K, V1> map, Function<V1, V2> fn) {
+        return map.entrySet().stream()
+                .map(entry -> Map.entry(entry.getKey(), fn.apply(entry.getValue())))
+                .collect(Collectors.toMap(Entry::getKey, Entry::getValue));
+    }
 }

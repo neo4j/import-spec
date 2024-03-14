@@ -1,56 +1,99 @@
 sources:
-  - name: "products"
-    type: "jdbc"
-    data_source: "northwind"
-    sql: "SELECT productname, unitprice FROM products ORDER BY productname ASC"
-  - name: "categories"
-    type: "jdbc"
-    data_source: "northwind"
-    sql: "SELECT categoryname, description FROM categories ORDER BY categoryname ASC"
-  - name: "products_in_categories"
-    type: "jdbc"
-    data_source: "northwind"
-    sql: "SELECT p.productname AS productname, c.categoryname AS categoryname FROM products p NATURAL JOIN categories c ORDER BY p.productname ASC "
+  - name: products
+    type: jdbc
+    data_source: northwind
+    sql: SELECT productname, unitprice FROM products ORDER BY productname ASC
+  - name: categories
+    type: jdbc
+    data_source: northwind
+    sql: SELECT categoryname, description FROM categories ORDER BY categoryname ASC
+  - name: products_in_categories
+    type: jdbc
+    data_source: northwind
+    sql: SELECT p.productname AS productname, c.categoryname AS categoryname FROM products p NATURAL JOIN categories c ORDER BY p.productname ASC
 targets:
   nodes:
-    - source: "products"
-      name: "product_nodes"
-      write_mode: "merge"
+    - source: products
+      name: product_nodes
+      write_mode: merge
       labels:
-        - "Product"
+        - Product
       properties:
-        - source_field: "productname"
-          target_property: "name"
-        - source_field: "unitprice"
-          target_property: "unitPrice"
+        - source_field: productname
+          target_property: name
+        - source_field: unitprice
+          target_property: unitPrice
       schema:
         key_constraints:
-          - name: "name_key_constraint"
-            label: "Product"
+          - name: name_key_constraint
+            label: Product
             properties:
-              - "name"
-    - source: "categories"
-      name: "category_nodes"
-      write_mode: "merge"
+              - name
+    - source: categories
+      name: category_nodes
+      write_mode: merge
       labels:
-        - "Category"
+        - Category
       properties:
-        - source_field: "categoryname"
-          target_property: "name"
-        - source_field: "description"
-          target_property: "description"
+        - source_field: categoryname
+          target_property: name
+        - source_field: description
+          target_property: description
       schema:
         key_constraints:
-          - name: "name_key_constraint"
-            label: "Category"
+          - name: name_key_constraint
+            label: Category
             properties:
-              - "name"
-
+              - name
   relationships:
-    - source: "products_in_categories"
-      name: "product_in_category_relationships"
-      write_mode: "merge"
-      node_match_mode: "merge"
-      type: "BELONGS_TO_CATEGORY"
-      start_node_reference: "product_nodes"
-      end_node_reference: "category_nodes"
+    - source: products_in_categories
+      name: product_in_category_relationships
+      write_mode: merge
+      node_match_mode: merge
+      type: BELONGS_TO_CATEGORY
+      start_node_reference: product_nodes
+      end_node_reference: category_nodes
+  queries:
+    - source: products
+      name: product_clones
+      query: 'UNWIND $rows AS row MERGE (p:ClonedProduct {name: row.productname}) SET p = row'
+    - source: categories
+      name: category_clones
+      query: 'UNWIND $rows AS row MERGE (c:ClonedCategory {name: row.categoryname}) SET c = row'
+actions:
+  - name: count-start
+    type: cypher
+    stage: start
+    query: CREATE CONSTRAINT staged_counts FOR (c:Count) REQUIRE (c.stage) IS NODE KEY
+  - name: count-post-sources
+    type: cypher
+    stage: post_sources
+    query: 'MATCH (n:Product|Category|ClonedProduct|ClonedCategory) WITH count(n) AS count CREATE (:Count {stage: "post_sources", count: count})'
+  - name: count-pre-nodes
+    type: cypher
+    stage: pre_nodes
+    query: 'MATCH (n:Product|Category) WITH count(n) AS count CREATE (:Count {stage: "pre_nodes", count: count})'
+  - name: count-post-nodes
+    type: cypher
+    stage: post_nodes
+    query: 'MATCH (n:Product|Category) WITH count(n) AS count CREATE (:Count {stage: "post_nodes", count: count})'
+  - name: count-pre-rels
+    type: cypher
+    stage: pre_relationships
+    query: 'MATCH ()-[r:BELONGS_TO_CATEGORY]->() WITH count(r) AS count CREATE (:Count {stage: "pre_relationships", count: count})'
+  - name: count-post-rels
+    type: cypher
+    stage: post_relationships
+    query: 'MATCH ()-[r:BELONGS_TO_CATEGORY]->() WITH count(r) AS count CREATE (:Count {stage: "post_relationships", count: count})'
+  - name: count-pre-queries
+    type: cypher
+    stage: pre_queries
+    query: 'MATCH (n:ClonedProduct|ClonedCategory) WITH count(n) AS count CREATE (:Count {stage: "pre_queries", count: count})'
+  - name: count-post-queries
+    type: cypher
+    stage: post_queries
+    query: 'MATCH (n:ClonedProduct|ClonedCategory) WITH count(n) AS count CREATE (:Count {stage: "post_queries", count: count})'
+  - name: count-end
+    type: cypher
+    stage: end
+    query: 'MATCH (n:Product|Category|ClonedProduct|ClonedCategory) WITH count(n) AS count CREATE (:Count {stage: "end", count: count})'

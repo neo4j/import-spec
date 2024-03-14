@@ -22,6 +22,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -29,11 +31,15 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import org.apache.beam.sdk.coders.VarIntCoder;
 import org.apache.beam.sdk.io.jdbc.JdbcIO;
 import org.apache.beam.sdk.io.jdbc.JdbcIO.DataSourceConfiguration;
 import org.apache.beam.sdk.schemas.SchemaCoder;
 import org.apache.beam.sdk.testing.TestPipeline;
+import org.apache.beam.sdk.transforms.Create;
 import org.apache.beam.sdk.transforms.DoFn;
 import org.apache.beam.sdk.transforms.PTransform;
 import org.apache.beam.sdk.transforms.ParDo;
@@ -41,6 +47,7 @@ import org.apache.beam.sdk.transforms.Wait;
 import org.apache.beam.sdk.values.PBegin;
 import org.apache.beam.sdk.values.PCollection;
 import org.apache.beam.sdk.values.Row;
+import org.assertj.core.api.Assertions;
 import org.jetbrains.annotations.NotNull;
 import org.junit.After;
 import org.junit.Before;
@@ -50,8 +57,14 @@ import org.junit.Test;
 import org.neo4j.driver.AuthTokens;
 import org.neo4j.driver.Driver;
 import org.neo4j.driver.GraphDatabase;
+import org.neo4j.driver.Record;
+import org.neo4j.driver.Session;
+import org.neo4j.driver.SessionConfig;
 import org.neo4j.importer.v1.ImportSpecification;
 import org.neo4j.importer.v1.ImportSpecificationDeserializer;
+import org.neo4j.importer.v1.actions.Action;
+import org.neo4j.importer.v1.actions.ActionStage;
+import org.neo4j.importer.v1.actions.CypherAction;
 import org.neo4j.importer.v1.e2e.AdminImportIT.ThrowingFunction;
 import org.neo4j.importer.v1.sources.NamedJdbcSource;
 import org.neo4j.importer.v1.sources.Source;
@@ -86,6 +99,10 @@ public class BeamIT {
     public void prepare() {
         neo4jDriver = GraphDatabase.driver(NEO4J.getBoltUrl(), AuthTokens.basic("neo4j", NEO4J.getAdminPassword()));
         neo4jDriver.verifyConnectivity();
+        try (Session session = neo4jDriver.session(
+                SessionConfig.builder().withDatabase("system").build())) {
+            session.run("CREATE OR REPLACE DATABASE neo4j").consume();
+        }
     }
 
     @After
@@ -104,17 +121,32 @@ public class BeamIT {
     }
 
     private void runBeamImport(String extension) throws Exception {
+        String neo4jUrl = NEO4J.getBoltUrl();
+        String neo4jPassword = NEO4J.getAdminPassword();
         var importSpec =
                 read("/e2e/beam-import/spec.%s".formatted(extension), ImportSpecificationDeserializer::deserialize);
-        Map<String, PCollection<Row>> dependencies = new HashMap<>();
-        Map<Source, PCollection<Row>> sourceTransforms =
+        Map<Source, PCollection<Row>> sourceOutputs =
                 new HashMap<>(importSpec.getSources().size());
+        Map<String, PCollection<Row>> targetOutputs = new HashMap<>();
+
+        Map<ActionStage, List<PCollection<?>>> preActions = Maps.mapValues(
+                actionsByStage(
+                        importSpec, ActionStage.PRE_NODES, ActionStage.PRE_RELATIONSHIPS, ActionStage.PRE_QUERIES),
+                (actions) -> actions.stream()
+                        .map(action -> {
+                            assertThat(action).isInstanceOf(CypherAction.class);
+                            return applyPreAction(
+                                    action,
+                                    CypherActionFn.of(
+                                            (CypherAction) action, NEO4J.getBoltUrl(), NEO4J.getAdminPassword()));
+                        })
+                        .collect(Collectors.toList()));
 
         Set<Target> targets = new TreeSet<>(importSpec.getTargets().getAll());
         targets.forEach((target) -> {
             String targetName = target.getName();
             Source source = importSpec.findSourceByName(target.getSource());
-            PCollection<Row> sourceStart = sourceTransforms.computeIfAbsent(
+            PCollection<Row> sourceStart = sourceOutputs.computeIfAbsent(
                     source,
                     (ignored) -> pipeline.apply(
                             "Read rows from source %s".formatted(source.getName()),
@@ -123,13 +155,30 @@ public class BeamIT {
             PCollection<Row> targetOutput = sourceStart
                     .apply(
                             "Wait on %s dependencies".formatted(targetName),
-                            Wait.on(dependenciesOf(target, dependencies)))
+                            Wait.on(dependenciesOf(target, targetOutputs, preActions)))
                     .setCoder(SchemaCoder.of(sourceStart.getSchema()))
                     .apply(
                             "Perform %s import to Neo4j".formatted(targetName),
-                            TargetIO.writeAll(NEO4J.getBoltUrl(), NEO4J.getAdminPassword(), importSpec, target));
-            dependencies.put(targetName, targetOutput);
+                            TargetIO.writeAll(neo4jUrl, neo4jPassword, importSpec, target));
+            targetOutputs.put(targetName, targetOutput);
         });
+
+        actionsByStage(
+                        importSpec,
+                        ActionStage.POST_SOURCES,
+                        ActionStage.POST_NODES,
+                        ActionStage.POST_RELATIONSHIPS,
+                        ActionStage.POST_QUERIES,
+                        ActionStage.END)
+                .forEach((stage, actions) -> {
+                    List<PCollection<?>> stageDependencies =
+                            postActionDependencies(stage, importSpec, sourceOutputs, targetOutputs);
+                    actions.forEach(action -> {
+                        assertThat(action).isInstanceOf(CypherAction.class);
+                        CypherActionFn doFn = CypherActionFn.of((CypherAction) action, neo4jUrl, neo4jPassword);
+                        applyPostAction(action, stageDependencies, doFn);
+                    });
+                });
 
         pipeline.run();
 
@@ -151,10 +200,113 @@ public class BeamIT {
                 .records();
         assertThat(productInCategoryCount).hasSize(1);
         assertThat(productInCategoryCount.getFirst().get("count").asLong()).isEqualTo(77L);
+        var countRows = neo4jDriver
+                .executableQuery(
+                        """
+                                 MATCH (post_s:Count {stage: 'post_sources'})
+                                 MATCH  (pre_n:Count {stage: 'pre_nodes'})
+                                 MATCH (post_n:Count {stage: 'post_nodes'})
+                                 MATCH  (pre_r:Count {stage: 'pre_relationships'})
+                                 MATCH (post_r:Count {stage: 'post_relationships'})
+                                 MATCH  (pre_q:Count {stage: 'pre_queries'})
+                                 MATCH (post_q:Count {stage: 'post_queries'})
+                                 MATCH    (end:Count {stage: 'end'})
+                                 RETURN
+                                    post_s.count AS post_s_count,
+                                    pre_n.count  AS pre_n_count,
+                                    post_n.count AS post_n_count,
+                                    pre_r.count  AS pre_r_count,
+                                    post_r.count AS post_r_count,
+                                    pre_q.count  AS pre_q_count,
+                                    post_q.count AS post_q_count,
+                                    end.count    AS end_count
+                                 """
+                                .stripIndent())
+                .execute()
+                .records();
+        assertThat(countRows).hasSize(1);
+        Record counts = countRows.getFirst();
+        assertThat(counts.get("post_s_count").asLong())
+                .isGreaterThanOrEqualTo(0); // targets have likely already started
+        assertThat(counts.get("pre_n_count").asLong()).isEqualTo(0);
+        assertThat(counts.get("post_n_count").asLong()).isEqualTo(77L + 8L); // 77 (:Product) + 8 (:Category)
+        assertThat(counts.get("pre_r_count").asLong()).isEqualTo(0);
+        assertThat(counts.get("post_r_count").asLong()).isEqualTo(77L); // 77 -[:BELONGS_TO_CATEGORY]-> rels
+        assertThat(counts.get("pre_q_count").asLong()).isEqualTo(0);
+        assertThat(counts.get("post_q_count").asLong())
+                .isEqualTo(77L + 8L); // 77 (:ClonedProduct) + 8 (:ClonedCategory)
+        assertThat(counts.get("end_count").asLong())
+                .isEqualTo(77L + 8L + 77L
+                        + 8L); // 77 (:Product) + 8 (:Category) + 77 (:ClonedProduct) + 8 (:ClonedCategory)
     }
 
-    private List<PCollection<?>> dependenciesOf(Target target, Map<String, PCollection<Row>> processedTargets) {
-        return allDependenciesOf(target).stream().map(processedTargets::get).collect(Collectors.toList());
+    private static Map<ActionStage, List<Action>> actionsByStage(
+            ImportSpecification importSpec, ActionStage... stages) {
+        var allStages = EnumSet.copyOf(Arrays.asList(stages));
+        return importSpec.getActions().stream()
+                .filter(action -> allStages.contains(action.getStage()))
+                .collect(Collectors.groupingBy(Action::getStage));
+    }
+
+    private PCollection<?> applyPreAction(Action action, CypherActionFn fn) {
+        return pipeline.apply("Create synthetic single input for action %s".formatted(action.getName()), Create.of(1))
+                .setCoder(VarIntCoder.of())
+                .apply("Run action %s".formatted(action.getName()), ParDo.of(fn));
+    }
+
+    private void applyPostAction(Action action, List<PCollection<?>> stageDependencies, CypherActionFn fn) {
+        pipeline.apply("Create synthetic single input for action %s".formatted(action.getName()), Create.of(1))
+                .apply("Wait for dependencies of stage %s".formatted(action.getStage()), Wait.on(stageDependencies))
+                .setCoder(VarIntCoder.of())
+                .apply("Run action %s".formatted(action.getName()), ParDo.of(fn));
+    }
+
+    private List<PCollection<?>> postActionDependencies(
+            ActionStage stage,
+            ImportSpecification importSpec,
+            Map<Source, PCollection<Row>> sourceOutputs,
+            Map<String, PCollection<Row>> targetOutputs) {
+        var targets = importSpec.getTargets();
+        switch (stage) {
+            case POST_SOURCES -> {
+                return new ArrayList<>(sourceOutputs.values());
+            }
+            case POST_NODES -> {
+                return resolveTargetOutputs(targets.getNodes(), targetOutputs);
+            }
+            case POST_RELATIONSHIPS -> {
+                return resolveTargetOutputs(targets.getRelationships(), targetOutputs);
+            }
+            case POST_QUERIES -> {
+                return resolveTargetOutputs(targets.getCustomQueries(), targetOutputs);
+            }
+            case END -> {
+                return new ArrayList<>(targetOutputs.values());
+            }
+        }
+        Assertions.fail("unexpected stage %s", stage);
+        return null;
+    }
+
+    private static List<PCollection<?>> resolveTargetOutputs(
+            List<? extends Target> targets, Map<String, PCollection<Row>> namedOutputs) {
+        return targets.stream().map(Target::getName).map(namedOutputs::get).collect(Collectors.toList());
+    }
+
+    private List<PCollection<?>> dependenciesOf(
+            Target target,
+            Map<String, PCollection<Row>> processedTargets,
+            Map<ActionStage, List<PCollection<?>>> preActions) {
+        var result = allDependenciesOf(target).stream()
+                .map(name -> (PCollection<?>) processedTargets.get(name))
+                .collect(Collectors.toCollection((Supplier<ArrayList<PCollection<?>>>) ArrayList::new));
+        switch (target) {
+            case NodeTarget n -> result.addAll(preActions.get(ActionStage.PRE_NODES));
+            case RelationshipTarget r -> result.addAll(preActions.get(ActionStage.PRE_RELATIONSHIPS));
+            case CustomQueryTarget c -> result.addAll(preActions.get(ActionStage.PRE_QUERIES));
+            default -> Assertions.fail("unexpected target type %s", target.getClass());
+        }
+        return result;
     }
 
     private List<String> allDependenciesOf(Target target) {
@@ -239,6 +391,55 @@ class TargetIO extends PTransform<@NotNull PCollection<Row>, @NotNull PCollectio
     }
 }
 
+class CypherActionFn extends DoFn<Integer, Integer> {
+
+    private final AtomicBoolean called = new AtomicBoolean(false);
+    private final CypherAction action;
+    private final String url;
+    private final String password;
+    private Driver driver;
+
+    private CypherActionFn(CypherAction action, String url, String password) {
+        this.action = action;
+        this.url = url;
+        this.password = password;
+    }
+
+    public static CypherActionFn of(CypherAction action, String url, String password) {
+        return new CypherActionFn(action, url, password);
+    }
+
+    @Setup
+    public void setUp() {
+        driver = GraphDatabase.driver(url, AuthTokens.basic("neo4j", password));
+        driver.verifyConnectivity();
+    }
+
+    @ProcessElement
+    public void processElement(ProcessContext context) {
+        if (!called.compareAndSet(false, true)) {
+            return;
+        }
+        var query = action.getQuery();
+        switch (action.getExecutionMode()) {
+            case TRANSACTION -> driver.executableQuery(query).execute();
+            case AUTOCOMMIT -> {
+                try (Session session = driver.session()) {
+                    session.run(query).consume();
+                }
+            }
+        }
+        context.output(context.element());
+    }
+
+    @Teardown
+    public void tearDown() {
+        if (driver != null) {
+            driver.close();
+        }
+    }
+}
+
 class TargetWriteRowFn extends DoFn<Row, Row> {
 
     private final String url;
@@ -267,44 +468,45 @@ class TargetWriteRowFn extends DoFn<Row, Row> {
     @ProcessElement
     public void processElement(ProcessContext context) {
         Row row = context.element();
-        if (target instanceof CustomQueryTarget queryTarget) {
-            driver.executableQuery(queryTarget.getQuery()).execute();
-        }
-
-        if (target instanceof NodeTarget nodeTarget) {
-            driver.executableQuery("%s ".formatted(writeMode(nodeTarget))
+        switch (target) {
+            case CustomQueryTarget queryTarget -> driver.executableQuery(queryTarget.getQuery())
+                    .withParameters(Map.of("rows", List.of(properties(row))))
+                    .execute();
+            case NodeTarget nodeTarget -> driver.executableQuery("%s ".formatted(writeMode(nodeTarget))
                             + "(n:%s%s) "
                                     .formatted(
                                             String.join(":", nodeTarget.getLabels()), nodePattern(nodeTarget, "props"))
                             + "SET n += $props")
                     .withParameters(Map.of("props", propertiesFor(nodeTarget.getProperties(), row)))
                     .execute();
-        }
-
-        if (target instanceof RelationshipTarget relationshipTarget) {
-            NodeTarget start = importSpec.getTargets().getNodes().stream()
-                    .filter(node -> node.getName().equals(relationshipTarget.getStartNodeReference()))
-                    .findFirst()
-                    .orElseThrow();
-            NodeTarget end = importSpec.getTargets().getNodes().stream()
-                    .filter(node -> node.getName().equals(relationshipTarget.getEndNodeReference()))
-                    .findFirst()
-                    .orElseThrow();
-            driver.executableQuery(
-                            "%1$s (start:%2$s%3$s) %1$s (end:%4$s%5$s) %6$s (start)-[r:%7$s]->(end) SET r = $props"
-                                    .formatted(
-                                            nodeMatchMode(relationshipTarget),
-                                            String.join(":", start.getLabels()),
-                                            nodePattern(start, "start"),
-                                            String.join(":", end.getLabels()),
-                                            nodePattern(end, "end"),
-                                            writeMode(relationshipTarget),
-                                            relationshipTarget.getType()))
-                    .withParameters(Map.of(
-                            "start", nodeKeyValues(start, row),
-                            "end", nodeKeyValues(end, row),
-                            "props", propertiesFor(relationshipTarget.getProperties(), row)))
-                    .execute();
+            case RelationshipTarget relationshipTarget -> {
+                NodeTarget start = importSpec.getTargets().getNodes().stream()
+                        .filter(node -> node.getName().equals(relationshipTarget.getStartNodeReference()))
+                        .findFirst()
+                        .orElseThrow();
+                NodeTarget end = importSpec.getTargets().getNodes().stream()
+                        .filter(node -> node.getName().equals(relationshipTarget.getEndNodeReference()))
+                        .findFirst()
+                        .orElseThrow();
+                driver.executableQuery(
+                                "%1$s (start:%2$s%3$s) %1$s (end:%4$s%5$s) %6$s (start)-[r:%7$s]->(end) SET r = $props"
+                                        .formatted(
+                                                nodeMatchMode(relationshipTarget),
+                                                String.join(":", start.getLabels()),
+                                                nodePattern(start, "start"),
+                                                String.join(":", end.getLabels()),
+                                                nodePattern(end, "end"),
+                                                writeMode(relationshipTarget),
+                                                relationshipTarget.getType()))
+                        .withParameters(Map.of(
+                                "start", nodeKeyValues(start, row),
+                                "end", nodeKeyValues(end, row),
+                                "props", propertiesFor(relationshipTarget.getProperties(), row)))
+                        .execute();
+            }
+            default -> {
+                Assertions.fail("unsupported target type: %s", target.getClass());
+            }
         }
         context.output(row);
     }
@@ -360,6 +562,12 @@ class TargetWriteRowFn extends DoFn<Row, Row> {
     private Map<String, Object> propertiesFor(List<PropertyMapping> properties, Row row) {
         return properties.stream()
                 .map(mapping -> Map.entry(mapping.getTargetProperty(), propertyValue(mapping, row)))
+                .collect(Collectors.toMap(Entry::getKey, Entry::getValue));
+    }
+
+    private Map<String, Object> properties(Row row) {
+        return row.getSchema().getFieldNames().stream()
+                .map(name -> Map.entry(name, row.getValue(name)))
                 .collect(Collectors.toMap(Entry::getKey, Entry::getValue));
     }
 

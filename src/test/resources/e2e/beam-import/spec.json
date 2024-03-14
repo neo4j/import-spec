@@ -90,6 +90,74 @@
         "start_node_reference": "product_nodes",
         "end_node_reference": "category_nodes"
       }
+    ],
+    "queries": [
+      {
+        "source": "products",
+        "name": "product_clones",
+        "query": "UNWIND $rows AS row MERGE (p:ClonedProduct {name: row.productname}) SET p = row"
+      },
+      {
+        "source": "categories",
+        "name": "category_clones",
+        "query": "UNWIND $rows AS row MERGE (c:ClonedCategory {name: row.categoryname}) SET c = row"
+      }
     ]
-  }
+  },
+  "actions": [
+    {
+      "name": "count-start",
+      "type": "cypher",
+      "stage": "start",
+      "query": "CREATE CONSTRAINT staged_counts FOR (c:Count) REQUIRE (c.stage) IS NODE KEY"
+    },
+    {
+      "name": "count-post-sources",
+      "type": "cypher",
+      "stage": "post_sources",
+      "query": "MATCH (n:Product|Category|ClonedProduct|ClonedCategory) WITH count(n) AS count CREATE (:Count {stage: 'post_sources', count: count})"
+    },
+    {
+      "name": "count-pre-nodes",
+      "type": "cypher",
+      "stage": "pre_nodes",
+      "query": "MATCH (n:Product|Category) WITH count(n) AS count CREATE (:Count {stage: 'pre_nodes', count: count})"
+    },
+    {
+      "name": "count-post-nodes",
+      "type": "cypher",
+      "stage": "post_nodes",
+      "query": "MATCH (n:Product|Category) WITH count(n) AS count CREATE (:Count {stage: 'post_nodes', count: count})"
+    },
+    {
+      "name": "count-pre-rels",
+      "type": "cypher",
+      "stage": "pre_relationships",
+      "query": "MATCH ()-[r:BELONGS_TO_CATEGORY]->() WITH count(r) AS count CREATE (:Count {stage: 'pre_relationships', count: count})"
+    },
+    {
+      "name": "count-post-rels",
+      "type": "cypher",
+      "stage": "post_relationships",
+      "query": "MATCH ()-[r:BELONGS_TO_CATEGORY]->() WITH count(r) AS count CREATE (:Count {stage: 'post_relationships', count: count})"
+    },
+    {
+      "name": "count-pre-queries",
+      "type": "cypher",
+      "stage": "pre_queries",
+      "query": "MATCH (n:ClonedProduct|ClonedCategory) WITH count(n) AS count CREATE (:Count {stage: 'pre_queries', count: count})"
+    },
+    {
+      "name": "count-post-queries",
+      "type": "cypher",
+      "stage": "post_queries",
+      "query": "MATCH (n:ClonedProduct|ClonedCategory) WITH count(n) AS count CREATE (:Count {stage: 'post_queries', count: count})"
+    },
+    {
+      "name": "count-end",
+      "type": "cypher",
+      "stage": "end",
+      "query": "MATCH (n:Product|Category|ClonedProduct|ClonedCategory) WITH count(n) AS count CREATE (:Count {stage: 'end', count: count})"
+    }
+  ]
 }

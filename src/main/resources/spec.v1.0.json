@@ -604,6 +604,7 @@
           "type": "string",
           "enum": [
             "start",
+            "post_sources",
             "pre_nodes",
             "post_nodes",
             "pre_relationships",
@@ -612,7 +613,6 @@
             "post_queries",
             "end"
           ]
-
         }
       },
       "required": [
@@ -659,6 +659,13 @@
         "query": {
           "type": "string",
           "minLength": 1
+        },
+        "execution_mode": {
+          "type": "string",
+          "enum": [
+            "transaction",
+            "autocommit"
+          ]
         }
       },
       "required": [
