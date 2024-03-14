@@ -71,7 +71,7 @@ class ImportSpecificationTest {
                                 "my-bigquery-source",
                                 null,
                                 "UNWIND $rows AS row CREATE (n:ANode) SET n = row"))));
-        assertThat(spec.getActions()).isNull();
+        assertThat(spec.getActions()).isEmpty();
     }
 
     @Test
