@@ -20,14 +20,8 @@ jobs:
         java-version: ${{ matrix.java }}
         distribution: 'temurin'
         cache: maven
-        server-id: github
-        server-username: MAVEN_USERNAME
-        server-password: MAVEN_PASSWORD
     - name: Build with Maven
       run: mvn --quiet --show-version --batch-mode sortpom:verify license:check spotless:check compile -DspotlessFiles=src/main/java/.*.java
-      env:
-        MAVEN_USERNAME: ${{ vars.PACKAGES_USERNAME }}
-        MAVEN_PASSWORD: ${{ secrets.PACKAGES_PASSWORD }}
   e2e:
     needs: ['build']
     runs-on: ubuntu-latest
@@ -39,11 +33,5 @@ jobs:
         java-version: '21'
         distribution: 'temurin'
         cache: maven
-        server-id: github
-        server-username: MAVEN_USERNAME
-        server-password: MAVEN_PASSWORD
     - name: Build with Maven
       run: mvn --quiet --show-version --batch-mode verify
-      env:
-        MAVEN_USERNAME: ${{ vars.PACKAGES_USERNAME }}
-        MAVEN_PASSWORD: ${{ secrets.PACKAGES_PASSWORD }}
