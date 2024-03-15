@@ -101,7 +101,7 @@ public class BeamIT {
         neo4jDriver.verifyConnectivity();
         try (Session session = neo4jDriver.session(
                 SessionConfig.builder().withDatabase("system").build())) {
-            session.run("CREATE OR REPLACE DATABASE neo4j").consume();
+            session.run("CREATE OR REPLACE DATABASE neo4j WAIT 60 seconds").consume();
         }
     }
 
