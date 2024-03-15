@@ -24,7 +24,7 @@ import org.junit.jupiter.api.Test;
 import org.neo4j.importer.v1.validation.InvalidSpecificationException;
 
 // This exercises the compliance of various import spec payloads with the JSON schema
-// The class focuses on (lack of) compliance the source side of the spec.
+// The class focuses on (lack of) compliance of the source side of the spec.
 public class ImportSpecificationDeserializerSourceTest {
 
     @Test
