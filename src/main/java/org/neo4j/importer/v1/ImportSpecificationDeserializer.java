@@ -69,7 +69,6 @@ public class ImportSpecificationDeserializer {
      */
     public static ImportSpecification deserialize(Reader spec) throws SpecificationException {
         JsonNode json = parse(spec);
-        // TODO: pre-processing
         validate(SCHEMA, json);
         ImportSpecification result = deserialize(json);
         runExtraValidations(result);

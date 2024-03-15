@@ -11,7 +11,6 @@ In particular, it offers:
 - the Java equivalent of the import specification, a.k.a. `org.neo4j.importer.v1.ImportSpecification`
 - validation plugins (
   see [built-in plugins](https://github.com/neo4j/import-spec/tree/main/src/main/java/org/neo4j/importer/v1/validation/plugin))
-- pre-processing plugins (soon)
 
 The library does **NOT**:
 
