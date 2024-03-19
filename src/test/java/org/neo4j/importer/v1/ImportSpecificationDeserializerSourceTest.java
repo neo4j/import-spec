@@ -71,9 +71,7 @@ public class ImportSpecificationDeserializerSourceTest {
         """
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
-                .hasMessageContainingAll(
-                        "0 warning(s)",
-                        "$.sources[0].type: does not have a value in the enumeration [bigquery, jdbc, text]");
+                .hasMessageContainingAll("0 warning(s)", "$.sources[0].type: integer found, string expected");
     }
 
     @Test
