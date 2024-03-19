@@ -202,7 +202,9 @@
               "urls": {
               }
             },
-            "required": ["urls"]
+            "required": [
+              "urls"
+            ]
           },
           "then": {
             "$ref": "#/$defs/source.text.external"
@@ -565,6 +567,20 @@
       "type": "object",
       "allOf": [
         {
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": [
+                "http",
+                "cypher"
+              ]
+            }
+          },
+          "required": [
+            "type"
+          ]
+        },
+        {
           "if": {
             "properties": {
               "type": {
@@ -616,7 +632,8 @@
         }
       },
       "required": [
-        "name", "stage"
+        "name",
+        "stage"
       ]
     },
     "action.http": {
@@ -635,7 +652,8 @@
         },
         "url": {
           "type": "string",
-          "minLength": 1
+          "minLength": 1,
+          "pattern": "\\S+"
         },
         "headers": {
           "type": "object",
@@ -658,7 +676,8 @@
       "properties": {
         "query": {
           "type": "string",
-          "minLength": 1
+          "minLength": 1,
+          "pattern": "\\S+"
         },
         "execution_mode": {
           "type": "string",
