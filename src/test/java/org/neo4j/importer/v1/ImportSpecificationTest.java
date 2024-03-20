@@ -23,6 +23,7 @@ import com.fasterxml.jackson.databind.json.JsonMapper;
 import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
+import org.neo4j.importer.v1.actions.ActionStage;
 import org.neo4j.importer.v1.actions.HttpAction;
 import org.neo4j.importer.v1.actions.HttpMethod;
 import org.neo4j.importer.v1.sources.BigQuerySource;
@@ -100,7 +101,8 @@ class ImportSpecificationTest {
                     "name": "my-http-get-action",
                     "type": "http",
                     "method": "get",
-                    "url": "https://example.com"
+                    "url": "https://example.com",
+                    "stage": "start"
                 }]
             }
         """
@@ -123,7 +125,7 @@ class ImportSpecificationTest {
                                 null,
                                 "UNWIND $rows AS row CREATE (n:ANode) SET n = row"))));
         assertThat(spec.getActions())
-                .isEqualTo(List.of(
-                        new HttpAction(true, "my-http-get-action", null, "https://example.com", HttpMethod.GET, null)));
+                .isEqualTo(List.of(new HttpAction(
+                        true, "my-http-get-action", ActionStage.START, "https://example.com", HttpMethod.GET, null)));
     }
 }

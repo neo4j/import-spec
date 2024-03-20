@@ -198,7 +198,7 @@ public class ImportSpecificationDeserializerActionTest {
                 .hasMessageContainingAll(
                         "1 error(s)",
                         "0 warning(s)",
-                        "$.actions[0].type: does not have a value in the enumeration [http, cypher]");
+                        "$.actions[0].type: does not have a value in the enumeration [http, cypher, bigquery]");
     }
 
     @Test
@@ -676,5 +676,97 @@ public class ImportSpecificationDeserializerActionTest {
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
                         "1 error(s)", "0 warning(s)", "$.actions[0].headers.key: integer found, string expected");
+    }
+
+    @Test
+    void fails_if_BigQuery_SQL_is_wrongly_typed() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+                {
+                    "sources": [{
+                        "name": "a-source",
+                        "type": "bigquery",
+                        "query": "SELECT id, name FROM my.table"
+                    }],
+                    "targets": {
+                        "queries": [{
+                            "name": "a-target",
+                            "source": "a-source",
+                            "query": "UNWIND $rows AS row CREATE (n:ANode) SET n = row"
+                        }]
+                    },
+                    "actions": [{
+                        "name": "an-action",
+                        "type": "bigquery",
+                        "stage": "start",
+                        "sql": 42
+                    }]
+                }
+                """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)", "0 warning(s)", "$.actions[0].sql: integer found, string expected");
+    }
+
+    @Test
+    void fails_if_BigQuery_SQL_is_empty() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+                {
+                    "sources": [{
+                        "name": "a-source",
+                        "type": "bigquery",
+                        "query": "SELECT id, name FROM my.table"
+                    }],
+                    "targets": {
+                        "queries": [{
+                            "name": "a-target",
+                            "source": "a-source",
+                            "query": "UNWIND $rows AS row CREATE (n:ANode) SET n = row"
+                        }]
+                    },
+                    "actions": [{
+                        "name": "an-action",
+                        "type": "bigquery",
+                        "stage": "start",
+                        "sql": ""
+                    }]
+                }
+                """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll("0 warning(s)", "$.actions[0].sql: must be at least 1 characters long");
+    }
+
+    @Test
+    void fails_if_BigQuery_SQL_is_blank() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+                {
+                    "sources": [{
+                        "name": "a-source",
+                        "type": "bigquery",
+                        "query": "SELECT id, name FROM my.table"
+                    }],
+                    "targets": {
+                        "queries": [{
+                            "name": "a-target",
+                            "source": "a-source",
+                            "query": "UNWIND $rows AS row CREATE (n:ANode) SET n = row"
+                        }]
+                    },
+                    "actions": [{
+                        "name": "an-action",
+                        "type": "bigquery",
+                        "stage": "start",
+                        "sql": "  "
+                    }]
+                }
+                """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)", "0 warning(s)", "$.actions[0].sql: does not match the regex pattern \\S+");
     }
 }

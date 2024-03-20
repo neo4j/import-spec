@@ -18,5 +18,6 @@ package org.neo4j.importer.v1.actions;
 
 public enum ActionType {
     CYPHER,
-    HTTP
+    HTTP,
+    BIGQUERY
 }

@@ -24,7 +24,11 @@ import java.io.Serializable;
 import java.util.Objects;
 
 @JsonTypeInfo(use = Id.NAME, property = "type")
-@JsonSubTypes({@Type(value = HttpAction.class, name = "http"), @Type(value = CypherAction.class, name = "cypher")})
+@JsonSubTypes({
+    @Type(value = HttpAction.class, name = "http"),
+    @Type(value = CypherAction.class, name = "cypher"),
+    @Type(value = BigQueryAction.class, name = "bigquery")
+})
 public abstract class Action implements Serializable {
 
     protected static final String DEFAULT_ACTIVE = "true";

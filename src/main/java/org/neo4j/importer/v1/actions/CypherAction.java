@@ -30,7 +30,7 @@ public class CypherAction extends Action {
     public CypherAction(
             @JsonProperty(value = "active", defaultValue = DEFAULT_ACTIVE) Boolean active,
             @JsonProperty(value = "name", required = true) String name,
-            @JsonProperty("stage") ActionStage stage,
+            @JsonProperty(value = "stage", required = true) ActionStage stage,
             @JsonProperty(value = "query", required = true) String query,
             @JsonProperty(value = "execution_mode", defaultValue = DEFAULT_CYPHER_EXECUTION_MODE)
                     CypherExecutionMode executionMode) {
