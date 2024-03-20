@@ -572,7 +572,8 @@
               "type": "string",
               "enum": [
                 "http",
-                "cypher"
+                "cypher",
+                "bigquery"
               ]
             }
           },
@@ -602,6 +603,18 @@
           },
           "then": {
             "$ref": "#/$defs/action.cypher"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "bigquery"
+              }
+            }
+          },
+          "then": {
+            "$ref": "#/$defs/action.bigquery"
           }
         }
       ]
@@ -689,6 +702,23 @@
       },
       "required": [
         "query"
+      ]
+    },
+    "action.bigquery": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/action.base"
+        }
+      ],
+      "properties": {
+        "sql": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "\\S+"
+        }
+      },
+      "required": [
+        "sql"
       ]
     },
     "target.entity.sourceTransformation": {

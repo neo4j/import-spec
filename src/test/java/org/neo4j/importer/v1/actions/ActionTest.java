@@ -37,7 +37,8 @@ class ActionTest {
             "name": "my-minimal-http-get-action",
             "type": "http",
             "method": "get",
-            "url": "https://example.com"
+            "url": "https://example.com",
+            "stage": "post_relationships"
         }
         """
                         .stripIndent();
@@ -49,6 +50,7 @@ class ActionTest {
         assertThat(action.getType()).isEqualTo(ActionType.HTTP);
         assertThat(action.getMethod()).isEqualTo(HttpMethod.GET);
         assertThat(action.getUrl()).isEqualTo("https://example.com");
+        assertThat(action.getStage()).isEqualTo(ActionStage.POST_RELATIONSHIPS);
     }
 
     @Test
@@ -85,7 +87,8 @@ class ActionTest {
         {
             "name": "my-minimal-cypher-action",
             "type": "cypher",
-            "query": "CREATE ()"
+            "query": "CREATE ()",
+            "stage": "post_queries"
         }
         """
                         .stripIndent();
@@ -97,6 +100,7 @@ class ActionTest {
         assertThat(action.getType()).isEqualTo(ActionType.CYPHER);
         assertThat(action.getQuery()).isEqualTo("CREATE ()");
         assertThat(action.getExecutionMode()).isEqualTo(CypherExecutionMode.TRANSACTION);
+        assertThat(action.getStage()).isEqualTo(ActionStage.POST_QUERIES);
     }
 
     @Test
@@ -122,5 +126,50 @@ class ActionTest {
         assertThat(action.getQuery()).isEqualTo("CREATE ()");
         assertThat(action.getStage()).isEqualTo(ActionStage.END);
         assertThat(action.getExecutionMode()).isEqualTo(CypherExecutionMode.AUTOCOMMIT);
+    }
+
+    @Test
+    void deserializes_minimal_BigQuery_action() throws Exception {
+        var json =
+                """
+        {
+            "name": "my-minimal-bigquery-action",
+            "type": "bigquery",
+            "sql": "SELECT 42",
+            "stage": "post_nodes"
+        }
+        """
+                        .stripIndent();
+
+        var action = mapper.readValue(json, BigQueryAction.class);
+
+        assertThat(action.getName()).isEqualTo("my-minimal-bigquery-action");
+        assertThat(action.isActive()).isTrue();
+        assertThat(action.getType()).isEqualTo(ActionType.BIGQUERY);
+        assertThat(action.getSql()).isEqualTo("SELECT 42");
+        assertThat(action.getStage()).isEqualTo(ActionStage.POST_NODES);
+    }
+
+    @Test
+    void deserializes_BigQuery_action() throws Exception {
+        var json =
+                """
+        {
+            "name": "my-bigquery-action",
+            "active": false,
+            "type": "bigquery",
+            "sql": "SELECT 42",
+            "stage": "pre_queries"
+        }
+        """
+                        .stripIndent();
+
+        var action = mapper.readValue(json, BigQueryAction.class);
+
+        assertThat(action.getName()).isEqualTo("my-bigquery-action");
+        assertThat(action.isActive()).isFalse();
+        assertThat(action.getType()).isEqualTo(ActionType.BIGQUERY);
+        assertThat(action.getSql()).isEqualTo("SELECT 42");
+        assertThat(action.getStage()).isEqualTo(ActionStage.PRE_QUERIES);
     }
 }
