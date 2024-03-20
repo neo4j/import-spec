@@ -29,6 +29,7 @@ import org.neo4j.importer.v1.targets.Targets;
 
 public class ImportSpecification implements Serializable {
 
+    private final String version;
     private final Map<String, Object> configuration;
 
     private final List<Source> sources;
@@ -39,15 +40,21 @@ public class ImportSpecification implements Serializable {
 
     @JsonCreator
     public ImportSpecification(
+            @JsonProperty(value = "version", required = true) String version,
             @JsonProperty("config") Map<String, Object> configuration,
             @JsonProperty(value = "sources", required = true) List<Source> sources,
             @JsonProperty(value = "targets", required = true) Targets targets,
             @JsonProperty("actions") List<Action> actions) {
 
+        this.version = version;
         this.configuration = configuration;
         this.sources = sources;
         this.targets = targets;
         this.actions = actions;
+    }
+
+    public String getVersion() {
+        return version;
     }
 
     public Map<String, Object> getConfiguration() {
@@ -79,7 +86,8 @@ public class ImportSpecification implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ImportSpecification that = (ImportSpecification) o;
-        return Objects.equals(configuration, that.configuration)
+        return Objects.equals(version, that.version)
+                && Objects.equals(configuration, that.configuration)
                 && Objects.equals(sources, that.sources)
                 && Objects.equals(targets, that.targets)
                 && Objects.equals(actions, that.actions);
@@ -87,12 +95,13 @@ public class ImportSpecification implements Serializable {
 
     @Override
     public int hashCode() {
-        return Objects.hash(configuration, sources, targets, actions);
+        return Objects.hash(version, configuration, sources, targets, actions);
     }
 
     @Override
     public String toString() {
-        return "ImportSpecification{" + "configuration="
+        return "ImportSpecification{" + "version='"
+                + version + '\'' + ", configuration="
                 + configuration + ", sources="
                 + sources + ", targets="
                 + targets + ", actions="

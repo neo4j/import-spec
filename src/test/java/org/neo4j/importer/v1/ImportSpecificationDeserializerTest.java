@@ -42,10 +42,60 @@ class ImportSpecificationDeserializerTest {
     }
 
     @Test
+    void fails_if_version_is_missing() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+                {
+                    "sources": [{
+                        "name": "a-source",
+                        "type": "bigquery",
+                        "query": "SELECT id, name FROM my.table"
+                    }],
+                    "targets": {
+                        "queries": [{
+                            "name": "a-target",
+                            "source": "a-source",
+                            "query": "UNWIND $rows AS row CREATE (n:ANode) SET n = row"
+                        }]
+                    }
+                }
+                """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll("1 error(s)", "0 warning(s)", "$: required property 'version' not found");
+    }
+
+    @Test
+    void fails_if_version_is_invalid() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+                {
+                    "version": [],
+                    "sources": [{
+                        "name": "a-source",
+                        "type": "bigquery",
+                        "query": "SELECT id, name FROM my.table"
+                    }],
+                    "targets": {
+                        "queries": [{
+                            "name": "a-target",
+                            "source": "a-source",
+                            "query": "UNWIND $rows AS row CREATE (n:ANode) SET n = row"
+                        }]
+                    }
+                }
+                """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll("1 error(s)", "0 warning(s)", "$.version: must be the constant value '1'");
+    }
+
+    @Test
     void fails_if_sources_are_missing() {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
                 {
+                    "version": "1",
                     "targets": {
                         "queries": [{
                             "name": "a-target",
@@ -65,6 +115,7 @@ class ImportSpecificationDeserializerTest {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
                 {
+                    "version": "1",
                     "sources": 42,
                     "targets": {
                         "queries": [{
@@ -85,6 +136,7 @@ class ImportSpecificationDeserializerTest {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
                 {
+                    "version": "1",
                     "sources": [42],
                     "targets": {
                         "queries": [{
@@ -105,6 +157,7 @@ class ImportSpecificationDeserializerTest {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
                 {
+                    "version": "1",
                     "sources": [],
                     "targets": {
                         "queries": [{
@@ -126,6 +179,7 @@ class ImportSpecificationDeserializerTest {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
                 {
+                    "version": "1",
                     "sources": [{
                         "name": "a-source",
                         "type": "bigquery",
@@ -143,6 +197,7 @@ class ImportSpecificationDeserializerTest {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
                 {
+                    "version": "1",
                     "sources": [{
                         "name": "a-source",
                         "type": "bigquery",
@@ -161,6 +216,7 @@ class ImportSpecificationDeserializerTest {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
                 {
+                    "version": "1",
                     "sources": [{
                         "name": "a-source",
                         "type": "bigquery",
@@ -184,6 +240,7 @@ class ImportSpecificationDeserializerTest {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
                 {
+                    "version": "1",
                     "sources": [{
                         "name": "a-source",
                         "type": "bigquery",
@@ -205,6 +262,7 @@ class ImportSpecificationDeserializerTest {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
                 {
+                    "version": "1",
                     "sources": [{
                         "name": "a-source",
                         "type": "bigquery",
@@ -226,6 +284,7 @@ class ImportSpecificationDeserializerTest {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
                 {
+                    "version": "1",
                     "sources": [{
                         "name": "a-source",
                         "type": "bigquery",
@@ -247,6 +306,7 @@ class ImportSpecificationDeserializerTest {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
                 {
+                    "version": "1",
                     "sources": [{
                         "type": "bigquery",
                         "name": "a-source",
@@ -272,6 +332,7 @@ class ImportSpecificationDeserializerTest {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
                 {
+                    "version": "1",
                     "sources": [{
                         "type": "bigquery",
                         "name": "a-source",
@@ -297,6 +358,7 @@ class ImportSpecificationDeserializerTest {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
                 {
+                    "version": "1",
                     "sources": [{
                         "type": "bigquery",
                         "query": "SELECT id, name FROM my.table"
@@ -321,6 +383,7 @@ class ImportSpecificationDeserializerTest {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
                 {
+                    "version": "1",
                     "sources": [{
                         "type": "bigquery",
                         "name": "a-source",
@@ -350,6 +413,7 @@ class ImportSpecificationDeserializerTest {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
                 {
+                    "version": "1",
                     "sources": [{
                         "type": "bigquery",
                         "name": "a-source",
@@ -388,6 +452,7 @@ class ImportSpecificationDeserializerTest {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
                 {
+                    "version": "1",
                     "sources": [{
                         "type": "bigquery",
                         "name": "a-source",
@@ -412,6 +477,7 @@ class ImportSpecificationDeserializerTest {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
                 {
+                    "version": "1",
                     "sources": [{
                         "type": "bigquery",
                         "name": "a-source",
@@ -443,6 +509,7 @@ class ImportSpecificationDeserializerTest {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
                 {
+                    "version": "1",
                     "sources": [{
                         "name": "  ",
                         "type": "bigquery",
@@ -468,6 +535,7 @@ class ImportSpecificationDeserializerTest {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
                 {
+                    "version": "1",
                     "sources": [{
                         "type": "bigquery",
                         "name": "a-source",
@@ -498,6 +566,7 @@ class ImportSpecificationDeserializerTest {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
                 {
+                    "version": "1",
                     "sources": [{
                         "type": "bigquery",
                         "name": "a-source",
@@ -539,6 +608,7 @@ class ImportSpecificationDeserializerTest {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
                 {
+                    "version": "1",
                     "sources": [{
                         "type": "bigquery",
                         "name": "a-source",
@@ -566,6 +636,7 @@ class ImportSpecificationDeserializerTest {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
                 {
+                    "version": "1",
                     "sources": [{
                         "type": "bigquery",
                         "name": "a-source",

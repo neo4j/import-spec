@@ -5,6 +5,9 @@
   "description": "Neo4j Import Job Specification",
   "type": "object",
   "properties": {
+    "version": {
+      "const": "1"
+    },
     "config": {
       "description": "Global settings",
       "type": "object"
@@ -73,6 +76,7 @@
     }
   },
   "required": [
+    "version",
     "sources",
     "targets"
   ],

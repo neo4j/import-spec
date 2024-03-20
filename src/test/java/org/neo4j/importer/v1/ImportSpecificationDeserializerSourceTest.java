@@ -32,6 +32,7 @@ public class ImportSpecificationDeserializerSourceTest {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
         {
+            "version": "1",
             "sources": [{
                 "name": "a-source",
                 "query": "SELECT id, name FROM my.table"
@@ -55,6 +56,7 @@ public class ImportSpecificationDeserializerSourceTest {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
         {
+            "version": "1",
             "sources": [{
                 "name": "a-source",
                 "type": 42,
@@ -79,6 +81,7 @@ public class ImportSpecificationDeserializerSourceTest {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
         {
+            "version": "1",
             "sources": [{
                 "name": "a-source",
                 "type": "unsupported",
@@ -105,6 +108,7 @@ public class ImportSpecificationDeserializerSourceTest {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
         {
+            "version": "1",
             "sources": [{
                 "name": "a-source",
                 "type": "bigquery"
@@ -129,6 +133,7 @@ public class ImportSpecificationDeserializerSourceTest {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
         {
+            "version": "1",
             "sources": [{
                 "name": "a-source",
                 "type": "bigquery",
@@ -154,6 +159,7 @@ public class ImportSpecificationDeserializerSourceTest {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
         {
+            "version": "1",
             "sources": [{
                 "name": "a-source",
                 "type": "jdbc",
@@ -179,6 +185,7 @@ public class ImportSpecificationDeserializerSourceTest {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
         {
+            "version": "1",
             "sources": [{
                 "name": "a-source",
                 "type": "jdbc",
@@ -205,6 +212,7 @@ public class ImportSpecificationDeserializerSourceTest {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
         {
+            "version": "1",
             "sources": [{
                 "name": "a-source",
                 "type": "jdbc",
@@ -230,6 +238,7 @@ public class ImportSpecificationDeserializerSourceTest {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
         {
+            "version": "1",
             "sources": [{
                 "name": "a-source",
                 "type": "jdbc",
@@ -256,6 +265,7 @@ public class ImportSpecificationDeserializerSourceTest {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
         {
+            "version": "1",
             "sources": [{
                 "name": "a-source",
                 "type": "text",
@@ -284,6 +294,7 @@ public class ImportSpecificationDeserializerSourceTest {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
         {
+            "version": "1",
             "sources": [{
                 "name": "a-source",
                 "type": "text",
@@ -312,6 +323,7 @@ public class ImportSpecificationDeserializerSourceTest {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
         {
+            "version": "1",
             "sources": [{
                 "name": "a-source",
                 "type": "text",
@@ -340,6 +352,7 @@ public class ImportSpecificationDeserializerSourceTest {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
         {
+            "version": "1",
             "sources": [{
                 "name": "a-source",
                 "type": "text",
@@ -368,6 +381,7 @@ public class ImportSpecificationDeserializerSourceTest {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
         {
+            "version": "1",
             "sources": [{
                 "name": "a-source",
                 "type": "text",
@@ -399,6 +413,7 @@ public class ImportSpecificationDeserializerSourceTest {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
         {
+            "version": "1",
             "sources": [{
                 "name": "a-source",
                 "type": "text",
@@ -430,6 +445,7 @@ public class ImportSpecificationDeserializerSourceTest {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
         {
+            "version": "1",
             "sources": [{
                 "name": "a-source",
                 "type": "text",
@@ -458,6 +474,7 @@ public class ImportSpecificationDeserializerSourceTest {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
         {
+            "version": "1",
             "sources": [{
                 "name": "a-source",
                 "type": "text",
@@ -485,22 +502,23 @@ public class ImportSpecificationDeserializerSourceTest {
     void fails_if_external_text_source_urls_are_empty() {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
-{
-    "sources": [{
-        "name": "a-source",
-        "type": "text",
-        "header": ["column"],
-        "urls": []
-    }],
-    "targets": {
-        "queries": [{
-            "name": "a-target",
-            "source": "a-source",
-            "query": "UNWIND $rows AS row CREATE (n:ANode) SET n = row"
-        }]
-    }
-}
-"""
+            {
+                "version": "1",
+                "sources": [{
+                    "name": "a-source",
+                    "type": "text",
+                    "header": ["column"],
+                    "urls": []
+                }],
+                "targets": {
+                    "queries": [{
+                        "name": "a-target",
+                        "source": "a-source",
+                        "query": "UNWIND $rows AS row CREATE (n:ANode) SET n = row"
+                    }]
+                }
+            }
+            """
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
@@ -511,22 +529,23 @@ public class ImportSpecificationDeserializerSourceTest {
     void fails_if_external_text_source_urls_include_empty_string() {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
-{
-    "sources": [{
-        "name": "a-source",
-        "type": "text",
-        "header": ["column"],
-        "urls": [""]
-    }],
-    "targets": {
-        "queries": [{
-            "name": "a-target",
-            "source": "a-source",
-            "query": "UNWIND $rows AS row CREATE (n:ANode) SET n = row"
-        }]
-    }
-}
-"""
+            {
+                 "version": "1",
+                "sources": [{
+                    "name": "a-source",
+                    "type": "text",
+                    "header": ["column"],
+                    "urls": [""]
+                }],
+                "targets": {
+                    "queries": [{
+                        "name": "a-target",
+                        "source": "a-source",
+                        "query": "UNWIND $rows AS row CREATE (n:ANode) SET n = row"
+                    }]
+                }
+            }
+            """
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
@@ -540,22 +559,23 @@ public class ImportSpecificationDeserializerSourceTest {
     void fails_if_external_text_source_urls_include_blank_string() {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
-{
-    "sources": [{
-        "name": "a-source",
-        "type": "text",
-        "header": ["column"],
-        "urls": ["   "]
-    }],
-    "targets": {
-        "queries": [{
-            "name": "a-target",
-            "source": "a-source",
-            "query": "UNWIND $rows AS row CREATE (n:ANode) SET n = row"
-        }]
-    }
-}
-"""
+                {
+                    "version": "1",
+                    "sources": [{
+                        "name": "a-source",
+                        "type": "text",
+                        "header": ["column"],
+                        "urls": ["   "]
+                    }],
+                    "targets": {
+                        "queries": [{
+                            "name": "a-target",
+                            "source": "a-source",
+                            "query": "UNWIND $rows AS row CREATE (n:ANode) SET n = row"
+                        }]
+                    }
+                }
+                """
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
@@ -566,22 +586,23 @@ public class ImportSpecificationDeserializerSourceTest {
     void fails_if_external_text_source_format_is_wrongly_typed() {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
-{
-    "sources": [{
-        "name": "a-source",
-        "type": "text",
-        "urls": ["https://example.com/file.csv"],
-        "format": 42
-    }],
-    "targets": {
-        "queries": [{
-            "name": "a-target",
-            "source": "a-source",
-            "query": "UNWIND $rows AS row CREATE (n:ANode) SET n = row"
-        }]
-    }
-}
-"""
+                    {
+                        "version": "1",
+                        "sources": [{
+                            "name": "a-source",
+                            "type": "text",
+                            "urls": ["https://example.com/file.csv"],
+                            "format": 42
+                        }],
+                        "targets": {
+                            "queries": [{
+                                "name": "a-target",
+                                "source": "a-source",
+                                "query": "UNWIND $rows AS row CREATE (n:ANode) SET n = row"
+                            }]
+                        }
+                    }
+                    """
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
@@ -595,22 +616,23 @@ public class ImportSpecificationDeserializerSourceTest {
     void fails_if_external_text_source_format_is_unsupported() {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
-{
-    "sources": [{
-        "name": "a-source",
-        "type": "text",
-        "urls": ["https://example.com/file.csv"],
-        "format": "foobar"
-    }],
-    "targets": {
-        "queries": [{
-            "name": "a-target",
-            "source": "a-source",
-            "query": "UNWIND $rows AS row CREATE (n:ANode) SET n = row"
-        }]
-    }
-}
-"""
+                    {
+                        "version": "1",
+                        "sources": [{
+                            "name": "a-source",
+                            "type": "text",
+                            "urls": ["https://example.com/file.csv"],
+                            "format": "foobar"
+                        }],
+                        "targets": {
+                            "queries": [{
+                                "name": "a-target",
+                                "source": "a-source",
+                                "query": "UNWIND $rows AS row CREATE (n:ANode) SET n = row"
+                            }]
+                        }
+                    }
+                    """
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
@@ -623,22 +645,23 @@ public class ImportSpecificationDeserializerSourceTest {
     void fails_if_external_text_source_column_delimiter_is_wrongly_typed() {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
-{
-    "sources": [{
-        "name": "a-source",
-        "type": "text",
-        "urls": ["https://example.com/file.csv"],
-        "column_delimiter": 42
-    }],
-    "targets": {
-        "queries": [{
-            "name": "a-target",
-            "source": "a-source",
-            "query": "UNWIND $rows AS row CREATE (n:ANode) SET n = row"
-        }]
-    }
-}
-"""
+                    {
+                        "version": "1",
+                        "sources": [{
+                            "name": "a-source",
+                            "type": "text",
+                            "urls": ["https://example.com/file.csv"],
+                            "column_delimiter": 42
+                        }],
+                        "targets": {
+                            "queries": [{
+                                "name": "a-target",
+                                "source": "a-source",
+                                "query": "UNWIND $rows AS row CREATE (n:ANode) SET n = row"
+                            }]
+                        }
+                    }
+                    """
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
@@ -649,22 +672,23 @@ public class ImportSpecificationDeserializerSourceTest {
     void fails_if_external_text_source_column_delimiter_is_empty() {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
-{
-    "sources": [{
-        "name": "a-source",
-        "type": "text",
-        "urls": ["https://example.com/file.csv"],
-        "column_delimiter": ""
-    }],
-    "targets": {
-        "queries": [{
-            "name": "a-target",
-            "source": "a-source",
-            "query": "UNWIND $rows AS row CREATE (n:ANode) SET n = row"
-        }]
-    }
-}
-"""
+                    {
+                        "version": "1",
+                        "sources": [{
+                            "name": "a-source",
+                            "type": "text",
+                            "urls": ["https://example.com/file.csv"],
+                            "column_delimiter": ""
+                        }],
+                        "targets": {
+                            "queries": [{
+                                "name": "a-target",
+                                "source": "a-source",
+                                "query": "UNWIND $rows AS row CREATE (n:ANode) SET n = row"
+                            }]
+                        }
+                    }
+                    """
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
@@ -677,22 +701,23 @@ public class ImportSpecificationDeserializerSourceTest {
     void fails_if_external_text_source_column_delimiter_is_too_long() {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
-{
-    "sources": [{
-        "name": "a-source",
-        "type": "text",
-        "urls": ["https://example.com/file.csv"],
-        "column_delimiter": "--"
-    }],
-    "targets": {
-        "queries": [{
-            "name": "a-target",
-            "source": "a-source",
-            "query": "UNWIND $rows AS row CREATE (n:ANode) SET n = row"
-        }]
-    }
-}
-"""
+                    {
+                        "version": "1",
+                        "sources": [{
+                            "name": "a-source",
+                            "type": "text",
+                            "urls": ["https://example.com/file.csv"],
+                            "column_delimiter": "--"
+                        }],
+                        "targets": {
+                            "queries": [{
+                                "name": "a-target",
+                                "source": "a-source",
+                                "query": "UNWIND $rows AS row CREATE (n:ANode) SET n = row"
+                            }]
+                        }
+                    }
+                    """
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
@@ -705,22 +730,23 @@ public class ImportSpecificationDeserializerSourceTest {
     void fails_if_external_text_source_line_separator_is_wrongly_typed() {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
-{
-    "sources": [{
-        "name": "a-source",
-        "type": "text",
-        "urls": ["https://example.com/file.csv"],
-        "line_separator": 42
-    }],
-    "targets": {
-        "queries": [{
-            "name": "a-target",
-            "source": "a-source",
-            "query": "UNWIND $rows AS row CREATE (n:ANode) SET n = row"
-        }]
-    }
-}
-"""
+                    {
+                        "version": "1",
+                        "sources": [{
+                            "name": "a-source",
+                            "type": "text",
+                            "urls": ["https://example.com/file.csv"],
+                            "line_separator": 42
+                        }],
+                        "targets": {
+                            "queries": [{
+                                "name": "a-target",
+                                "source": "a-source",
+                                "query": "UNWIND $rows AS row CREATE (n:ANode) SET n = row"
+                            }]
+                        }
+                    }
+                    """
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
@@ -731,22 +757,23 @@ public class ImportSpecificationDeserializerSourceTest {
     void fails_if_external_text_source_line_separator_is_empty() {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
-{
-    "sources": [{
-        "name": "a-source",
-        "type": "text",
-        "urls": ["https://example.com/file.csv"],
-        "line_separator": ""
-    }],
-    "targets": {
-        "queries": [{
-            "name": "a-target",
-            "source": "a-source",
-            "query": "UNWIND $rows AS row CREATE (n:ANode) SET n = row"
-        }]
-    }
-}
-"""
+                    {
+                        "version": "1",
+                        "sources": [{
+                            "name": "a-source",
+                            "type": "text",
+                            "urls": ["https://example.com/file.csv"],
+                            "line_separator": ""
+                        }],
+                        "targets": {
+                            "queries": [{
+                                "name": "a-target",
+                                "source": "a-source",
+                                "query": "UNWIND $rows AS row CREATE (n:ANode) SET n = row"
+                            }]
+                        }
+                    }
+                    """
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
@@ -759,22 +786,23 @@ public class ImportSpecificationDeserializerSourceTest {
     void fails_if_external_text_source_line_separator_is_too_long() {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
-{
-    "sources": [{
-        "name": "a-source",
-        "type": "text",
-        "urls": ["https://example.com/file.csv"],
-        "line_separator": "--"
-    }],
-    "targets": {
-        "queries": [{
-            "name": "a-target",
-            "source": "a-source",
-            "query": "UNWIND $rows AS row CREATE (n:ANode) SET n = row"
-        }]
-    }
-}
-"""
+                    {
+                        "version": "1",
+                        "sources": [{
+                            "name": "a-source",
+                            "type": "text",
+                            "urls": ["https://example.com/file.csv"],
+                            "line_separator": "--"
+                        }],
+                        "targets": {
+                            "queries": [{
+                                "name": "a-target",
+                                "source": "a-source",
+                                "query": "UNWIND $rows AS row CREATE (n:ANode) SET n = row"
+                            }]
+                        }
+                    }
+                    """
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
@@ -785,21 +813,22 @@ public class ImportSpecificationDeserializerSourceTest {
     void fails_if_inline_text_source_line_lacks_header() {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
-{
-    "sources": [{
-        "name": "a-source",
-        "type": "text",
-        "data": [["data1"]]
-    }],
-    "targets": {
-        "queries": [{
-            "name": "a-target",
-            "source": "a-source",
-            "query": "UNWIND $rows AS row CREATE (n:ANode) SET n = row"
-        }]
-    }
-}
-"""
+                    {
+                        "version": "1",
+                        "sources": [{
+                            "name": "a-source",
+                            "type": "text",
+                            "data": [["data1"]]
+                        }],
+                        "targets": {
+                            "queries": [{
+                                "name": "a-target",
+                                "source": "a-source",
+                                "query": "UNWIND $rows AS row CREATE (n:ANode) SET n = row"
+                            }]
+                        }
+                    }
+                    """
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
@@ -810,21 +839,22 @@ public class ImportSpecificationDeserializerSourceTest {
     void fails_if_inline_text_source_line_lacks_data() {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
-{
-    "sources": [{
-        "name": "a-source",
-        "type": "text",
-        "header": ["column"]
-    }],
-    "targets": {
-        "queries": [{
-            "name": "a-target",
-            "source": "a-source",
-            "query": "UNWIND $rows AS row CREATE (n:ANode) SET n = row"
-        }]
-    }
-}
-"""
+                    {
+                        "version": "1",
+                        "sources": [{
+                            "name": "a-source",
+                            "type": "text",
+                            "header": ["column"]
+                        }],
+                        "targets": {
+                            "queries": [{
+                                "name": "a-target",
+                                "source": "a-source",
+                                "query": "UNWIND $rows AS row CREATE (n:ANode) SET n = row"
+                            }]
+                        }
+                    }
+                    """
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
@@ -835,22 +865,23 @@ public class ImportSpecificationDeserializerSourceTest {
     void fails_if_inline_text_source_line_data_is_empty() {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
-{
-    "sources": [{
-        "name": "a-source",
-        "type": "text",
-        "header": ["column"],
-        "data": []
-    }],
-    "targets": {
-        "queries": [{
-            "name": "a-target",
-            "source": "a-source",
-            "query": "UNWIND $rows AS row CREATE (n:ANode) SET n = row"
-        }]
-    }
-}
-"""
+                    {
+                        "version": "1",
+                        "sources": [{
+                            "name": "a-source",
+                            "type": "text",
+                            "header": ["column"],
+                            "data": []
+                        }],
+                        "targets": {
+                            "queries": [{
+                                "name": "a-target",
+                                "source": "a-source",
+                                "query": "UNWIND $rows AS row CREATE (n:ANode) SET n = row"
+                            }]
+                        }
+                    }
+                    """
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
@@ -861,24 +892,25 @@ public class ImportSpecificationDeserializerSourceTest {
     void fails_if_inline_text_source_line_data_contains_empty_row() {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
-{
-    "sources": [{
-        "name": "a-source",
-        "type": "text",
-        "header": ["column"],
-        "data": [
-            []
-        ]
-    }],
-    "targets": {
-        "queries": [{
-            "name": "a-target",
-            "source": "a-source",
-            "query": "UNWIND $rows AS row CREATE (n:ANode) SET n = row"
-        }]
-    }
-}
-"""
+                    {
+                        "version": "1",
+                        "sources": [{
+                            "name": "a-source",
+                            "type": "text",
+                            "header": ["column"],
+                            "data": [
+                                []
+                            ]
+                        }],
+                        "targets": {
+                            "queries": [{
+                                "name": "a-target",
+                                "source": "a-source",
+                                "query": "UNWIND $rows AS row CREATE (n:ANode) SET n = row"
+                            }]
+                        }
+                    }
+                    """
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
