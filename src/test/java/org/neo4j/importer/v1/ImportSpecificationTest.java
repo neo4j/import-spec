@@ -41,6 +41,7 @@ class ImportSpecificationTest {
         var json =
                 """
             {
+                "version": "1",
                 "sources": [{
                     "name": "my-bigquery-source",
                     "type": "bigquery",
@@ -80,6 +81,7 @@ class ImportSpecificationTest {
         var json =
                 """
             {
+                "version": "1",
                 "config": {
                     "foo": "bar",
                     "baz": 42,

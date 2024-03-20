@@ -52,7 +52,7 @@ public class ImportSpecificationDeserializer {
             .build();
 
     private static final JsonSchema SCHEMA = JsonSchemaFactory.getInstance(VersionFlag.V202012)
-            .getSchema(ImportSpecificationDeserializer.class.getResourceAsStream("/spec.v1.0.json"));
+            .getSchema(ImportSpecificationDeserializer.class.getResourceAsStream("/spec.v1.json"));
 
     /**
      * Returns an instance of {@link ImportSpecification} based on the provided {@link Reader} content.

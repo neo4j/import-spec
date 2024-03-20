@@ -32,6 +32,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
                         {
+                            "version": "1",
                             "sources": [{
                                 "type": "bigquery",
                                 "name": "duplicate",
@@ -64,6 +65,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
                         {
+                            "version": "1",
                             "sources": [{
                                 "type": "bigquery",
                                 "name": "duplicate",
@@ -103,6 +105,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
                         {
+                            "version": "1",
                             "sources": [{
                                 "type": "bigquery",
                                 "name": "duplicate",
@@ -130,6 +133,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
                         {
+                            "version": "1",
                             "sources": [{
                                 "type": "bigquery",
                                 "name": "duplicate",
@@ -164,6 +168,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
                         {
+                            "version": "1",
                             "sources": [{
                                 "type": "bigquery",
                                 "name": "a-source",
@@ -197,6 +202,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
                         {
+                            "version": "1",
                             "sources": [{
                                 "type": "bigquery",
                                 "name": "a-source",
@@ -237,6 +243,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
                         {
+                            "version": "1",
                             "sources": [{
                                 "type": "bigquery",
                                 "name": "a-source",
@@ -265,6 +272,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
                         {
+                            "version": "1",
                             "sources": [{
                                 "type": "bigquery",
                                 "name": "a-source",
@@ -298,6 +306,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
                         {
+                            "version": "1",
                             "sources": [{
                                 "type": "bigquery",
                                 "name": "a-source",
@@ -338,6 +347,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
                         {
+                            "version": "1",
                             "sources": [{
                                 "type": "bigquery",
                                 "name": "a-source",
@@ -366,6 +376,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
                         {
+                            "version": "1",
                             "sources": [{
                                 "type": "bigquery",
                                 "name": "a-source",
@@ -400,6 +411,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
                         {
+                            "version": "1",
                             "sources": [{
                                 "type": "bigquery",
                                 "name": "a-source",
@@ -434,6 +446,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
                         {
+                            "version": "1",
                             "sources": [{
                                 "type": "bigquery",
                                 "name": "a-source",
@@ -472,6 +485,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
                         {
+                            "version": "1",
                             "sources": [{
                                 "type": "bigquery",
                                 "name": "a-source",
@@ -525,39 +539,40 @@ public class ImportSpecificationDeserializerExtraValidationTest {
     void fails_if_dependency_cycle_is_detected_via_start_node_reference() {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
-                {
-                    "sources": [{
-                        "type": "bigquery",
-                        "name": "a-source",
-                        "query": "SELECT id, name, description FROM my.table"
-                    }],
-                    "targets": {
-                        "nodes": [{
-                            "name": "a-node-target",
-                            "source": "a-source",
-                            "depends_on": ["a-relationship-target"],
-                            "labels": ["Label1"],
-                            "write_mode": "create",
-                            "properties": [
-                                {"source_field": "id", "target_property": "property1"},
-                                {"source_field": "name", "target_property": "property2"}
-                            ]
-                        }],
-                        "relationships": [{
-                            "name": "a-relationship-target",
-                            "source": "a-source",
-                            "type": "TYPE",
-                            "start_node_reference": "a-node-target",
-                            "end_node": {
-                                "label": "Label2",
-                                "key_properties": [
-                                    {"source_field": "description", "target_property": "property2"}
-                                ]
+                        {
+                            "version": "1",
+                            "sources": [{
+                                "type": "bigquery",
+                                "name": "a-source",
+                                "query": "SELECT id, name, description FROM my.table"
+                            }],
+                            "targets": {
+                                "nodes": [{
+                                    "name": "a-node-target",
+                                    "source": "a-source",
+                                    "depends_on": ["a-relationship-target"],
+                                    "labels": ["Label1"],
+                                    "write_mode": "create",
+                                    "properties": [
+                                        {"source_field": "id", "target_property": "property1"},
+                                        {"source_field": "name", "target_property": "property2"}
+                                    ]
+                                }],
+                                "relationships": [{
+                                    "name": "a-relationship-target",
+                                    "source": "a-source",
+                                    "type": "TYPE",
+                                    "start_node_reference": "a-node-target",
+                                    "end_node": {
+                                        "label": "Label2",
+                                        "key_properties": [
+                                            {"source_field": "description", "target_property": "property2"}
+                                        ]
+                                    }
+                                }]
                             }
-                        }]
-                    }
-                }
-                """
+                        }
+                        """
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
@@ -570,39 +585,40 @@ public class ImportSpecificationDeserializerExtraValidationTest {
     void fails_if_dependency_cycle_is_detected_via_end_node_reference() {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
-                {
-                    "sources": [{
-                        "type": "bigquery",
-                        "name": "a-source",
-                        "query": "SELECT id, name, description FROM my.table"
-                    }],
-                    "targets": {
-                        "nodes": [{
-                            "name": "a-node-target",
-                            "source": "a-source",
-                            "depends_on": ["a-relationship-target"],
-                            "labels": ["Label1"],
-                            "write_mode": "create",
-                            "properties": [
-                                {"source_field": "id", "target_property": "property1"},
-                                {"source_field": "name", "target_property": "property2"}
-                            ]
-                        }],
-                        "relationships": [{
-                            "name": "a-relationship-target",
-                            "source": "a-source",
-                            "type": "TYPE",
-                            "start_node": {
-                                "label": "Label1",
-                                "key_properties": [
-                                    {"source_field": "description", "target_property": "property1"}
-                                ]
-                            },
-                            "end_node_reference": "a-node-target"
-                        }]
-                    }
-                }
-                """
+                        {
+                            "version": "1",
+                            "sources": [{
+                                "type": "bigquery",
+                                "name": "a-source",
+                                "query": "SELECT id, name, description FROM my.table"
+                            }],
+                            "targets": {
+                                "nodes": [{
+                                    "name": "a-node-target",
+                                    "source": "a-source",
+                                    "depends_on": ["a-relationship-target"],
+                                    "labels": ["Label1"],
+                                    "write_mode": "create",
+                                    "properties": [
+                                        {"source_field": "id", "target_property": "property1"},
+                                        {"source_field": "name", "target_property": "property2"}
+                                    ]
+                                }],
+                                "relationships": [{
+                                    "name": "a-relationship-target",
+                                    "source": "a-source",
+                                    "type": "TYPE",
+                                    "start_node": {
+                                        "label": "Label1",
+                                        "key_properties": [
+                                            {"source_field": "description", "target_property": "property1"}
+                                        ]
+                                    },
+                                    "end_node_reference": "a-node-target"
+                                }]
+                            }
+                        }
+                        """
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
@@ -616,6 +632,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
                         {
+                            "version": "1",
                             "sources": [{
                                 "type": "bigquery",
                                 "name": "a-source",
@@ -662,6 +679,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
                         {
+                            "version": "1",
                             "sources": [{
                                 "type": "bigquery",
                                 "name": "a-source",
@@ -713,46 +731,47 @@ public class ImportSpecificationDeserializerExtraValidationTest {
     void does_not_report_cycles_if_node_references_are_dangling() {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
-                {
-                    "sources": [{
-                        "type": "bigquery",
-                        "name": "a-source",
-                        "query": "SELECT id, name, description FROM my.table"
-                    }],
-                    "targets": {
-                        "nodes": [{
-                            "name": "a-node-target",
-                            "source": "a-source",
-                            "depends_on": ["a-relationship-target"],
-                            "labels": ["Label1"],
-                            "write_mode": "create",
-                            "properties": [
-                                {"source_field": "id", "target_property": "property1"},
-                                {"source_field": "name", "target_property": "property2"}
-                            ]
-                        }],
-                        "relationships": [{
-                            "name": "a-relationship-target",
-                            "source": "a-source",
-                            "type": "TYPE",
-                            "start_node": {
-                                "label": "Label1",
-                                "key_properties": [
-                                    {"source_field": "description", "target_property": "property1"}
+                        {
+                            "version": "1",
+                            "sources": [{
+                                "type": "bigquery",
+                                "name": "a-source",
+                                "query": "SELECT id, name, description FROM my.table"
+                            }],
+                            "targets": {
+                                "nodes": [{
+                                    "name": "a-node-target",
+                                    "source": "a-source",
+                                    "depends_on": ["a-relationship-target"],
+                                    "labels": ["Label1"],
+                                    "write_mode": "create",
+                                    "properties": [
+                                        {"source_field": "id", "target_property": "property1"},
+                                        {"source_field": "name", "target_property": "property2"}
+                                    ]
+                                }],
+                                "relationships": [{
+                                    "name": "a-relationship-target",
+                                    "source": "a-source",
+                                    "type": "TYPE",
+                                    "start_node": {
+                                        "label": "Label1",
+                                        "key_properties": [
+                                            {"source_field": "description", "target_property": "property1"}
+                                        ]
+                                    },
+                                    "end_node_reference": "a-node-target"
+                                },{
+                                    "name": "a-relationship-target-2",
+                                    "source": "a-source",
+                                    "type": "TYPE",
+                                    "start_node_reference": "invalid-ref",
+                                    "end_node_reference": "a-node-target"
+                                }
                                 ]
-                            },
-                            "end_node_reference": "a-node-target"
-                        },{
-                            "name": "a-relationship-target-2",
-                            "source": "a-source",
-                            "type": "TYPE",
-                            "start_node_reference": "invalid-ref",
-                            "end_node_reference": "a-node-target"
+                            }
                         }
-                        ]
-                    }
-                }
-                """
+                        """
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
@@ -766,6 +785,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
                         {
+                            "version": "1",
                             "sources": [{
                                 "name": "a-source",
                                 "type": "text",
@@ -796,6 +816,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
                         {
+                            "version": "1",
                             "sources": [{
                                 "name": "a-source",
                                 "type": "text",
@@ -826,7 +847,8 @@ public class ImportSpecificationDeserializerExtraValidationTest {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
                         {
-                          "sources": [
+                            "version": "1",
+                            "sources": [
                             {
                               "name": "a-source",
                               "type": "text",
@@ -840,8 +862,8 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                                 ]
                               ]
                             }
-                          ],
-                          "targets": {
+                            ],
+                            "targets": {
                             "queries": [
                               {
                                 "name": "a-target",
@@ -849,7 +871,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                                 "query": "UNWIND $rows AS row CREATE (n:ANode) SET n = row"
                               }
                             ]
-                          }
+                            }
                         }
                         """
                                 .stripIndent())))
@@ -865,8 +887,8 @@ public class ImportSpecificationDeserializerExtraValidationTest {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
                         {
-                          "sources": [
-                            {
+                            "version": "1",
+                            "sources": [{
                               "name": "a-source",
                               "type": "text",
                               "header": [
@@ -878,18 +900,15 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                                   "value1", "value2"
                                 ]
                               ]
+                            }],
+                            "targets": {
+                                "queries": [{
+                                    "active": false,
+                                    "name": "a-target",
+                                    "source": "a-source",
+                                    "query": "UNWIND $rows AS row CREATE (n:ANode) SET n = row"
+                              }]
                             }
-                          ],
-                          "targets": {
-                            "queries": [
-                              {
-                                "active": false,
-                                "name": "a-target",
-                                "source": "a-source",
-                                "query": "UNWIND $rows AS row CREATE (n:ANode) SET n = row"
-                              }
-                            ]
-                          }
                         }
                         """
                                 .stripIndent())))
@@ -903,7 +922,8 @@ public class ImportSpecificationDeserializerExtraValidationTest {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
                         {
-                          "sources": [
+                            "version": "1",
+                            "sources": [
                             {
                               "name": "a-source",
                               "type": "text",
@@ -917,27 +937,25 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                                 ]
                               ]
                             }
-                          ],
-                          "targets": {
-                            "nodes": [{
-                                "name": "a-node-target",
-                                "source": "a-source",
-                                "labels": ["Label1", "Label2"],
-                                "depends_on": ["a-query-target", "a-query-target"],
-                                "write_mode": "create",
-                                "properties": [
-                                    {"source_field": "field_1", "target_property": "property1"},
-                                    {"source_field": "field_2", "target_property": "property2"}
-                                ]
-                            }],
-                            "queries": [
-                              {
-                                "name": "a-query-target",
-                                "source": "a-source",
-                                "query": "UNWIND $rows AS row CREATE (n:ANode) SET n = row"
-                              }
-                            ]
-                          }
+                            ],
+                            "targets": {
+                                "nodes": [{
+                                    "name": "a-node-target",
+                                    "source": "a-source",
+                                    "labels": ["Label1", "Label2"],
+                                    "depends_on": ["a-query-target", "a-query-target"],
+                                    "write_mode": "create",
+                                    "properties": [
+                                        {"source_field": "field_1", "target_property": "property1"},
+                                        {"source_field": "field_2", "target_property": "property2"}
+                                    ]
+                                }],
+                                "queries": [{
+                                    "name": "a-query-target",
+                                    "source": "a-source",
+                                    "query": "UNWIND $rows AS row CREATE (n:ANode) SET n = row"
+                                }]
+                            }
                         }
                         """
                                 .stripIndent())))
@@ -953,7 +971,8 @@ public class ImportSpecificationDeserializerExtraValidationTest {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
                         {
-                          "sources": [
+                            "version": "1",
+                            "sources": [
                             {
                               "name": "a-source",
                               "type": "text",
@@ -967,34 +986,32 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                                 ]
                               ]
                             }
-                          ],
-                          "targets": {
-                            "relationships": [{
-                                "name": "a-relationship-target",
-                                "source": "a-source",
-                                "type": "TYPE",
-                                "depends_on": ["a-query-target", "a-query-target"],
-                                "start_node": {
-                                    "label": "Label1",
-                                    "key_properties": [
-                                        {"source_field": "field_1", "target_property": "property1"}
-                                    ]
-                                },
-                                "end_node": {
-                                    "label": "Label2",
-                                    "key_properties": [
-                                        {"source_field": "field_2", "target_property": "property2"}
-                                    ]
-                                }
-                            }],
-                            "queries": [
-                              {
-                                "name": "a-query-target",
-                                "source": "a-source",
-                                "query": "UNWIND $rows AS row CREATE (n:ANode) SET n = row"
-                              }
-                            ]
-                          }
+                            ],
+                            "targets": {
+                                "relationships": [{
+                                    "name": "a-relationship-target",
+                                    "source": "a-source",
+                                    "type": "TYPE",
+                                    "depends_on": ["a-query-target", "a-query-target"],
+                                    "start_node": {
+                                        "label": "Label1",
+                                        "key_properties": [
+                                            {"source_field": "field_1", "target_property": "property1"}
+                                        ]
+                                    },
+                                    "end_node": {
+                                        "label": "Label2",
+                                        "key_properties": [
+                                            {"source_field": "field_2", "target_property": "property2"}
+                                        ]
+                                    }
+                                }],
+                                "queries": [{
+                                    "name": "a-query-target",
+                                    "source": "a-source",
+                                    "query": "UNWIND $rows AS row CREATE (n:ANode) SET n = row"
+                                }]
+                            }
                         }
                         """
                                 .stripIndent())))
@@ -1010,7 +1027,8 @@ public class ImportSpecificationDeserializerExtraValidationTest {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
                         {
-                          "sources": [
+                            "version": "1",
+                            "sources": [
                             {
                               "name": "a-source",
                               "type": "text",
@@ -1024,34 +1042,32 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                                 ]
                               ]
                             }
-                          ],
-                          "targets": {
-                            "queries": [
-                              {
-                                "name": "a-query-target",
-                                "source": "a-source",
-                                "depends_on": ["a-relationship-target", "a-relationship-target"],
-                                "query": "UNWIND $rows AS row CREATE (n:ANode) SET n = row"
-                              }
                             ],
-                            "relationships": [{
-                                "name": "a-relationship-target",
-                                "source": "a-source",
-                                "type": "TYPE",
-                                "start_node": {
-                                    "label": "Label1",
-                                    "key_properties": [
-                                        {"source_field": "field_1", "target_property": "property1"}
-                                    ]
-                                },
-                                "end_node": {
-                                    "label": "Label2",
-                                    "key_properties": [
-                                        {"source_field": "field_2", "target_property": "property2"}
-                                    ]
-                                }
-                            }]
-                          }
+                            "targets": {
+                                "queries": [{
+                                    "name": "a-query-target",
+                                    "source": "a-source",
+                                    "depends_on": ["a-relationship-target", "a-relationship-target"],
+                                    "query": "UNWIND $rows AS row CREATE (n:ANode) SET n = row"
+                                }],
+                                "relationships": [{
+                                    "name": "a-relationship-target",
+                                    "source": "a-source",
+                                    "type": "TYPE",
+                                    "start_node": {
+                                        "label": "Label1",
+                                        "key_properties": [
+                                            {"source_field": "field_1", "target_property": "property1"}
+                                        ]
+                                    },
+                                    "end_node": {
+                                        "label": "Label2",
+                                        "key_properties": [
+                                            {"source_field": "field_2", "target_property": "property2"}
+                                        ]
+                                    }
+                                }]
+                            }
                         }
                         """
                                 .stripIndent())))
@@ -1067,7 +1083,8 @@ public class ImportSpecificationDeserializerExtraValidationTest {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
                         {
-                          "sources": [
+                            "version": "1",
+                            "sources": [
                             {
                               "name": "a-source",
                               "type": "text",
@@ -1081,35 +1098,33 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                                 ]
                               ]
                             }
-                          ],
-                          "targets": {
-                            "queries": [
-                              {
-                                "name": "a-query-target",
-                                "source": "a-source",
-                                "depends_on": ["a-relationship-target", "a-relationship-target"],
-                                "query": "UNWIND $rows AS row CREATE (n:ANode) SET n = row"
-                              }
                             ],
-                            "relationships": [{
-                                "name": "a-relationship-target",
-                                "source": "a-source",
-                                "type": "TYPE",
-                                "depends_on": ["a-query-target"],
-                                "start_node": {
-                                    "label": "Label1",
-                                    "key_properties": [
-                                        {"source_field": "field_1", "target_property": "property1"}
-                                    ]
-                                },
-                                "end_node": {
-                                    "label": "Label2",
-                                    "key_properties": [
-                                        {"source_field": "field_2", "target_property": "property2"}
-                                    ]
-                                }
-                            }]
-                          }
+                            "targets": {
+                                "queries": [{
+                                    "name": "a-query-target",
+                                    "source": "a-source",
+                                    "depends_on": ["a-relationship-target", "a-relationship-target"],
+                                    "query": "UNWIND $rows AS row CREATE (n:ANode) SET n = row"
+                                }],
+                                "relationships": [{
+                                    "name": "a-relationship-target",
+                                    "source": "a-source",
+                                    "type": "TYPE",
+                                    "depends_on": ["a-query-target"],
+                                    "start_node": {
+                                        "label": "Label1",
+                                        "key_properties": [
+                                            {"source_field": "field_1", "target_property": "property1"}
+                                        ]
+                                    },
+                                    "end_node": {
+                                        "label": "Label2",
+                                        "key_properties": [
+                                            {"source_field": "field_2", "target_property": "property2"}
+                                        ]
+                                    }
+                                }]
+                            }
                         }
                         """
                                 .stripIndent())))
