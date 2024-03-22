@@ -28,8 +28,14 @@
             <organizationUrl>https://neo4j.com</organizationUrl>
         </developer>
     </developers>
+    <scm>
+        <connection>scm:git:git://github.com/neo4j/import-spec.git</connection>
+        <developerConnection>scm:git:git@github.com:neo4j/import-spec.git</developerConnection>
+        <url>https://github.com/neo4j/import-spec</url>
+    </scm>
     <properties>
         <beam.version>2.54.0</beam.version>
+        <jreleaser-maven-plugin.version>1.11.0</jreleaser-maven-plugin.version>
         <license.id>neo4j_apache_v2</license.id>
         <maven.compiler.release>11</maven.compiler.release>
         <maven.compiler.testRelease>21</maven.compiler.testRelease>
@@ -180,6 +186,14 @@
                     <artifactId>maven-project-info-reports-plugin</artifactId>
                     <version>3.5.0</version>
                 </plugin>
+                <plugin>
+                    <artifactId>maven-javadoc-plugin</artifactId>
+                    <version>3.6.3</version>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-source-plugin</artifactId>
+                    <version>3.3.0</version>
+                </plugin>
             </plugins>
         </pluginManagement>
         <plugins>
@@ -283,4 +297,58 @@
             </plugin>
         </plugins>
     </build>
+    <profiles>
+        <profile>
+            <id>publication</id>
+            <properties>
+                <altDeploymentRepository>local::file:./target/staging-deploy</altDeploymentRepository>
+            </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>attach-javadocs</id>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                                <configuration>
+                                    <attach>true</attach>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-source-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>attach-sources</id>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                                <configuration>
+                                    <attach>true</attach>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>release</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.jreleaser</groupId>
+                        <artifactId>jreleaser-maven-plugin</artifactId>
+                        <version>${jreleaser-maven-plugin.version}</version>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>

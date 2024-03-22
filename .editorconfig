@@ -1,0 +1,5 @@
+[*]
+max_line_length = unset
+
+[pom.xml]
+max_line_length = 180

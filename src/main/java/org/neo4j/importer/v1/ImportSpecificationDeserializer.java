@@ -57,10 +57,10 @@ public class ImportSpecificationDeserializer {
     /**
      * Returns an instance of {@link ImportSpecification} based on the provided {@link Reader} content.
      * The result is guaranteed to be consistent with the specification JSON schema.
-     * <br/>
+     * <br>
      * If implementations of the {@link SpecificationValidator} SPI are provided, they will also run against the
      * {@link ImportSpecification} instance before the latter is returned.
-     * <br/>
+     * <br>
      * If the parsing, deserialization or validation (standard or via SPI implementations) fail, a {@link SpecificationException}
      * is going to be thrown.
      *
