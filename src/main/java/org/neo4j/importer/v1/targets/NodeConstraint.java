@@ -18,7 +18,7 @@ package org.neo4j.importer.v1.targets;
 
 import java.util.Objects;
 
-abstract class NodeConstraint extends Constraint {
+public abstract class NodeConstraint extends Constraint {
 
     private final String label;
 

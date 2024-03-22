@@ -19,7 +19,7 @@ package org.neo4j.importer.v1.targets;
 import java.io.Serializable;
 import java.util.Objects;
 
-abstract class Constraint implements Serializable {
+public abstract class Constraint implements Serializable {
     private final String name;
 
     protected Constraint(String name) {
