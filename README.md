@@ -1,7 +1,5 @@
 # Neo4j Import Specification Format
 
-[![CI](https://github.com/neo4j/import-spec/actions/workflows/CI.yml/badge.svg)](https://github.com/neo4j/import-spec/actions/workflows/CI.yml)
-
 ## Scope
 
 This library provides a uniform configuration facade for tools running imports to Neo4j.
