@@ -25,9 +25,9 @@ import java.util.Objects;
 public class RelationshipSchema implements Serializable {
 
     private final boolean enableTypeConstraints;
-    private final List<RelationshipKeyConstraint> nodeKeyConstraints;
-    private final List<RelationshipUniqueConstraint> nodeUniqueConstraints;
-    private final List<RelationshipExistenceConstraint> nodeExistenceConstraints;
+    private final List<RelationshipKeyConstraint> relationshipKeyConstraints;
+    private final List<RelationshipUniqueConstraint> relationshipUniqueConstraints;
+    private final List<RelationshipExistenceConstraint> relationshipExistenceConstraints;
     private final List<RelationshipRangeIndex> rangeIndexes;
     private final List<RelationshipTextIndex> textIndexes;
     private final List<RelationshipPointIndex> pointIndexes;
@@ -37,9 +37,10 @@ public class RelationshipSchema implements Serializable {
     @JsonCreator
     public RelationshipSchema(
             @JsonProperty("enable_type_constraints") boolean enableTypeConstraints,
-            @JsonProperty("key_constraints") List<RelationshipKeyConstraint> nodeKeyConstraints,
-            @JsonProperty("unique_constraints") List<RelationshipUniqueConstraint> nodeUniqueConstraints,
-            @JsonProperty("existence_constraints") List<RelationshipExistenceConstraint> nodeExistenceConstraints,
+            @JsonProperty("key_constraints") List<RelationshipKeyConstraint> relationshipKeyConstraints,
+            @JsonProperty("unique_constraints") List<RelationshipUniqueConstraint> relationshipUniqueConstraints,
+            @JsonProperty("existence_constraints")
+                    List<RelationshipExistenceConstraint> relationshipExistenceConstraints,
             @JsonProperty("range_indexes") List<RelationshipRangeIndex> rangeIndexes,
             @JsonProperty("text_indexes") List<RelationshipTextIndex> textIndexes,
             @JsonProperty("point_indexes") List<RelationshipPointIndex> pointIndexes,
@@ -47,9 +48,9 @@ public class RelationshipSchema implements Serializable {
             @JsonProperty("vector_indexes") List<RelationshipVectorIndex> vectorIndexes) {
 
         this.enableTypeConstraints = enableTypeConstraints;
-        this.nodeKeyConstraints = nodeKeyConstraints;
-        this.nodeUniqueConstraints = nodeUniqueConstraints;
-        this.nodeExistenceConstraints = nodeExistenceConstraints;
+        this.relationshipKeyConstraints = relationshipKeyConstraints;
+        this.relationshipUniqueConstraints = relationshipUniqueConstraints;
+        this.relationshipExistenceConstraints = relationshipExistenceConstraints;
         this.rangeIndexes = rangeIndexes;
         this.textIndexes = textIndexes;
         this.pointIndexes = pointIndexes;
@@ -61,16 +62,16 @@ public class RelationshipSchema implements Serializable {
         return enableTypeConstraints;
     }
 
-    public List<RelationshipKeyConstraint> getNodeKeyConstraints() {
-        return nodeKeyConstraints;
+    public List<RelationshipKeyConstraint> getRelationshipKeyConstraints() {
+        return relationshipKeyConstraints;
     }
 
-    public List<RelationshipUniqueConstraint> getNodeUniqueConstraints() {
-        return nodeUniqueConstraints;
+    public List<RelationshipUniqueConstraint> getRelationshipUniqueConstraints() {
+        return relationshipUniqueConstraints;
     }
 
-    public List<RelationshipExistenceConstraint> getNodeExistenceConstraints() {
-        return nodeExistenceConstraints;
+    public List<RelationshipExistenceConstraint> getRelationshipExistenceConstraints() {
+        return relationshipExistenceConstraints;
     }
 
     public List<RelationshipRangeIndex> getRangeIndexes() {
@@ -99,9 +100,9 @@ public class RelationshipSchema implements Serializable {
         if (o == null || getClass() != o.getClass()) return false;
         RelationshipSchema that = (RelationshipSchema) o;
         return enableTypeConstraints == that.enableTypeConstraints
-                && Objects.equals(nodeKeyConstraints, that.nodeKeyConstraints)
-                && Objects.equals(nodeUniqueConstraints, that.nodeUniqueConstraints)
-                && Objects.equals(nodeExistenceConstraints, that.nodeExistenceConstraints)
+                && Objects.equals(relationshipKeyConstraints, that.relationshipKeyConstraints)
+                && Objects.equals(relationshipUniqueConstraints, that.relationshipUniqueConstraints)
+                && Objects.equals(relationshipExistenceConstraints, that.relationshipExistenceConstraints)
                 && Objects.equals(rangeIndexes, that.rangeIndexes)
                 && Objects.equals(textIndexes, that.textIndexes)
                 && Objects.equals(pointIndexes, that.pointIndexes)
@@ -113,9 +114,9 @@ public class RelationshipSchema implements Serializable {
     public int hashCode() {
         return Objects.hash(
                 enableTypeConstraints,
-                nodeKeyConstraints,
-                nodeUniqueConstraints,
-                nodeExistenceConstraints,
+                relationshipKeyConstraints,
+                relationshipUniqueConstraints,
+                relationshipExistenceConstraints,
                 rangeIndexes,
                 textIndexes,
                 pointIndexes,
@@ -126,10 +127,10 @@ public class RelationshipSchema implements Serializable {
     @Override
     public String toString() {
         return "RelationshipSchema{" + "enableTypeConstraints="
-                + enableTypeConstraints + ", nodeKeyConstraints="
-                + nodeKeyConstraints + ", nodeUniqueConstraints="
-                + nodeUniqueConstraints + ", nodeExistenceConstraints="
-                + nodeExistenceConstraints + ", rangeIndexes="
+                + enableTypeConstraints + ", relationshipKeyConstraints="
+                + relationshipKeyConstraints + ", relationshipUniqueConstraints="
+                + relationshipUniqueConstraints + ", relationshipExistenceConstraints="
+                + relationshipExistenceConstraints + ", rangeIndexes="
                 + rangeIndexes + ", textIndexes="
                 + textIndexes + ", pointIndexes="
                 + pointIndexes + ", fullTextIndexes="
