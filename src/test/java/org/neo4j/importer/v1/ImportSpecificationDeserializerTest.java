@@ -420,23 +420,23 @@ class ImportSpecificationDeserializerTest {
                         "query": "SELECT id, name FROM my.table"
                     }],
                     "targets": {
+                        "nodes": [{
+                            "source": "a-source",
+                            "name": "a-node-target",
+                            "write_mode": "merge",
+                            "labels": ["Label1", "Label2"],
+                            "properties": [
+                                {"source_field": "field_1", "target_property": "property1"},
+                                {"source_field": "field_2", "target_property": "property2"}
+                            ]
+                        }],
                         "relationships": [{
                             "source": "a-source",
                             "type": "TYPE",
                             "write_mode": "create",
                             "node_match_mode": "create",
-                            "start_node": {
-                                "label": "Label1",
-                                "key_properties": [
-                                    {"source_field": "field_1", "target_property": "property1"}
-                                ]
-                            },
-                            "end_node": {
-                                "label": "Label2",
-                                "key_properties": [
-                                    {"source_field": "field_2", "target_property": "property2"}
-                                ]
-                            }
+                            "start_node_reference": "a-node-target",
+                            "end_node_reference": "a-node-target"
                         }]
                     }
                 }
@@ -573,24 +573,24 @@ class ImportSpecificationDeserializerTest {
                         "query": "SELECT id, name FROM my.table"
                     }],
                     "targets": {
+                        "nodes": [{
+                            "source": "a-source",
+                            "name": "a-node-target",
+                            "write_mode": "merge",
+                            "labels": ["Label1", "Label2"],
+                            "properties": [
+                                {"source_field": "field_1", "target_property": "property1"},
+                                {"source_field": "field_2", "target_property": "property2"}
+                            ]
+                        }],
                         "relationships": [{
                             "name": "   ",
                             "source": "a-source",
                             "write_mode": "create",
                             "node_match_mode": "create",
                             "type": "TYPE",
-                            "start_node": {
-                                "label": "Label1",
-                                "key_properties": [
-                                    {"source_field": "field_1", "target_property": "property1"}
-                                ]
-                            },
-                            "end_node": {
-                                "label": "Label2",
-                                "key_properties": [
-                                    {"source_field": "field_2", "target_property": "property2"}
-                                ]
-                            }
+                            "start_node_reference": "a-node-target",
+                            "end_node_reference": "a-node-target"
                         }]
                     }
                 }

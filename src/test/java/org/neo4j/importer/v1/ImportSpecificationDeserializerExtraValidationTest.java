@@ -72,22 +72,22 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                                 "query": "SELECT id, name FROM my.table"
                             }],
                             "targets": {
+                                "nodes": [{
+                                    "source": "duplicate",
+                                    "name": "a-node-target",
+                                    "write_mode": "merge",
+                                    "labels": ["Label1", "Label2"],
+                                    "properties": [
+                                        {"source_field": "field_1", "target_property": "property1"},
+                                        {"source_field": "field_2", "target_property": "property2"}
+                                    ]
+                                }],
                                 "relationships": [{
                                     "name": "duplicate",
                                     "source": "duplicate",
                                     "type": "TYPE",
-                                    "start_node": {
-                                        "label": "Label1",
-                                        "key_properties": [
-                                            {"source_field": "field_1", "target_property": "property1"}
-                                        ]
-                                    },
-                                    "end_node": {
-                                        "label": "Label2",
-                                        "key_properties": [
-                                            {"source_field": "field_2", "target_property": "property2"}
-                                        ]
-                                    }
+                                    "start_node_reference": "a-node-target",
+                                    "end_node_reference": "a-node-target"
                                 }]
                             }
                         }
@@ -209,22 +209,22 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                                 "query": "SELECT id, name FROM my.table"
                             }],
                             "targets": {
+                                "nodes": [{
+                                    "source": "a-source",
+                                    "name": "a-node-target",
+                                    "write_mode": "merge",
+                                    "labels": ["Label1", "Label2"],
+                                    "properties": [
+                                        {"source_field": "field_1", "target_property": "property1"},
+                                        {"source_field": "field_2", "target_property": "property2"}
+                                    ]
+                                }],
                                 "relationships": [{
                                     "name": "a-target",
                                     "source": "incorrect-source-name",
                                     "type": "TYPE",
-                                    "start_node": {
-                                        "label": "Label1",
-                                        "key_properties": [
-                                            {"source_field": "field_1", "target_property": "property1"}
-                                        ]
-                                    },
-                                    "end_node": {
-                                        "label": "Label2",
-                                        "key_properties": [
-                                            {"source_field": "field_2", "target_property": "property2"}
-                                        ]
-                                    }
+                                    "start_node_reference": "a-node-target",
+                                    "end_node_reference": "a-node-target",
                                 }]
                             }
                         }
@@ -313,23 +313,23 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                                 "query": "SELECT id, name FROM my.table"
                             }],
                             "targets": {
+                                "nodes": [{
+                                    "source": "a-source",
+                                    "name": "a-node-target",
+                                    "write_mode": "merge",
+                                    "labels": ["Label1", "Label2"],
+                                    "properties": [
+                                        {"source_field": "field_1", "target_property": "property1"},
+                                        {"source_field": "field_2", "target_property": "property2"}
+                                    ]
+                                }],
                                 "relationships": [{
                                     "name": "a-target",
                                     "source": "a-source",
                                     "depends_on": ["invalid"],
                                     "type": "TYPE",
-                                    "start_node": {
-                                        "label": "Label1",
-                                        "key_properties": [
-                                            {"source_field": "field_1", "target_property": "property1"}
-                                        ]
-                                    },
-                                    "end_node": {
-                                        "label": "Label2",
-                                        "key_properties": [
-                                            {"source_field": "field_2", "target_property": "property2"}
-                                        ]
-                                    }
+                                    "start_node_reference": "a-node-target",
+                                    "end_node_reference": "a-node-target"
                                 }]
                             }
                         }
@@ -383,17 +383,22 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                                 "query": "SELECT id, name FROM my.table"
                             }],
                             "targets": {
+                                "nodes": [{
+                                    "source": "a-source",
+                                    "name": "a-node-target",
+                                    "write_mode": "merge",
+                                    "labels": ["Label1", "Label2"],
+                                    "properties": [
+                                        {"source_field": "field_1", "target_property": "property1"},
+                                        {"source_field": "field_2", "target_property": "property2"}
+                                    ]
+                                }],
                                 "relationships": [{
                                     "name": "a-target",
                                     "source": "a-source",
                                     "type": "TYPE",
                                     "start_node_reference": "incorrect-reference",
-                                    "end_node": {
-                                        "label": "Label2",
-                                        "key_properties": [
-                                            {"source_field": "field_2", "target_property": "property2"}
-                                        ]
-                                    }
+                                    "end_node_reference": "a-node-target"
                                 }]
                             }
                         }
@@ -418,16 +423,21 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                                 "query": "SELECT id, name FROM my.table"
                             }],
                             "targets": {
+                                "nodes": [{
+                                    "source": "a-source",
+                                    "name": "a-node-target",
+                                    "write_mode": "merge",
+                                    "labels": ["Label1", "Label2"],
+                                    "properties": [
+                                        {"source_field": "field_1", "target_property": "property1"},
+                                        {"source_field": "field_2", "target_property": "property2"}
+                                    ]
+                                }],
                                 "relationships": [{
                                     "name": "a-target",
                                     "source": "a-source",
                                     "type": "TYPE",
-                                    "start_node": {
-                                        "label": "Label1",
-                                        "key_properties": [
-                                            {"source_field": "field_1", "target_property": "property1"}
-                                        ]
-                                    },
+                                    "start_node_reference": "a-node-target",
                                     "end_node_reference": "incorrect-reference"
                                 }]
                             }
@@ -453,23 +463,23 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                                 "query": "SELECT id, name FROM my.table"
                             }],
                             "targets": {
+                                "nodes": [{
+                                    "source": "a-source",
+                                    "name": "a-node-target",
+                                    "write_mode": "merge",
+                                    "labels": ["Label1", "Label2"],
+                                    "properties": [
+                                        {"source_field": "field_1", "target_property": "property1"},
+                                        {"source_field": "field_2", "target_property": "property2"}
+                                    ]
+                                }],
                                 "relationships": [{
                                     "name": "a-target",
                                     "depends_on": ["a-target"],
                                     "source": "a-source",
                                     "type": "TYPE",
-                                    "start_node": {
-                                        "label": "Label1",
-                                        "key_properties": [
-                                            {"source_field": "field_1", "target_property": "property1"}
-                                        ]
-                                    },
-                                    "end_node": {
-                                        "label": "Label2",
-                                        "key_properties": [
-                                            {"source_field": "field_2", "target_property": "property2"}
-                                        ]
-                                    }
+                                    "start_node_reference": "a-node-target",
+                                    "end_node_reference": "a-node-target"
                                 }]
                             }
                         }
@@ -492,23 +502,23 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                                 "query": "SELECT id, name FROM my.table"
                             }],
                             "targets": {
+                                "nodes": [{
+                                    "source": "a-source",
+                                    "name": "a-node-target",
+                                    "write_mode": "merge",
+                                    "labels": ["Label1", "Label2"],
+                                    "properties": [
+                                        {"source_field": "field_1", "target_property": "property1"},
+                                        {"source_field": "field_2", "target_property": "property2"}
+                                    ]
+                                }],
                                 "relationships": [{
                                     "name": "a-relationship-target",
                                     "depends_on": ["a-query-target"],
                                     "source": "a-source",
                                     "type": "TYPE",
-                                    "start_node": {
-                                        "label": "Label1",
-                                        "key_properties": [
-                                            {"source_field": "field_1", "target_property": "property1"}
-                                        ]
-                                    },
-                                    "end_node": {
-                                        "label": "Label2",
-                                        "key_properties": [
-                                            {"source_field": "field_2", "target_property": "property2"}
-                                        ]
-                                    }
+                                    "start_node_reference": "a-node-target",
+                                    "end_node_reference": "a-node-target"
                                 }],
                                 "queries": [
                                     {
@@ -557,18 +567,23 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                                         {"source_field": "id", "target_property": "property1"},
                                         {"source_field": "name", "target_property": "property2"}
                                     ]
+                                },
+                                {
+                                    "name": "another-node-target",
+                                    "source": "a-source",
+                                    "labels": ["Label2"],
+                                    "write_mode": "create",
+                                    "properties": [
+                                        {"source_field": "id", "target_property": "property1"},
+                                        {"source_field": "name", "target_property": "property2"}
+                                    ]
                                 }],
                                 "relationships": [{
                                     "name": "a-relationship-target",
                                     "source": "a-source",
                                     "type": "TYPE",
                                     "start_node_reference": "a-node-target",
-                                    "end_node": {
-                                        "label": "Label2",
-                                        "key_properties": [
-                                            {"source_field": "description", "target_property": "property2"}
-                                        ]
-                                    }
+                                    "end_node_reference": "another-node-target"
                                 }]
                             }
                         }
@@ -603,17 +618,21 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                                         {"source_field": "id", "target_property": "property1"},
                                         {"source_field": "name", "target_property": "property2"}
                                     ]
+                                },{
+                                    "name": "another-node-target",
+                                    "source": "a-source",
+                                    "labels": ["Label2"],
+                                    "write_mode": "create",
+                                    "properties": [
+                                        {"source_field": "id", "target_property": "property1"},
+                                        {"source_field": "name", "target_property": "property2"}
+                                    ]
                                 }],
                                 "relationships": [{
                                     "name": "a-relationship-target",
                                     "source": "a-source",
                                     "type": "TYPE",
-                                    "start_node": {
-                                        "label": "Label1",
-                                        "key_properties": [
-                                            {"source_field": "description", "target_property": "property1"}
-                                        ]
-                                    },
+                                    "start_node_reference": "a-node-target",
                                     "end_node_reference": "a-node-target"
                                 }]
                             }
@@ -639,23 +658,23 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                                 "query": "SELECT id, name FROM my.table"
                             }],
                             "targets": {
+                                "nodes": [{
+                                    "source": "a-source",
+                                    "name": "a-node-target",
+                                    "write_mode": "merge",
+                                    "labels": ["Label1", "Label2"],
+                                    "properties": [
+                                        {"source_field": "field_1", "target_property": "property1"},
+                                        {"source_field": "field_2", "target_property": "property2"}
+                                    ]
+                                }],
                                 "relationships": [{
                                     "name": "a-target",
                                     "depends_on": ["a-target"],
                                     "source": "a-source",
                                     "type": "TYPE",
-                                    "start_node": {
-                                        "label": "Label1",
-                                        "key_properties": [
-                                            {"source_field": "field_1", "target_property": "property1"}
-                                        ]
-                                    },
-                                    "end_node": {
-                                        "label": "Label2",
-                                        "key_properties": [
-                                            {"source_field": "field_2", "target_property": "property2"}
-                                        ]
-                                    }
+                                    "start_node_reference": "a-node-target",
+                                    "end_node_reference": "a-node-target"
                                 }],
                                 "queries": [{
                                     "name": "a-target",
@@ -686,23 +705,23 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                                 "query": "SELECT id, name FROM my.table"
                             }],
                             "targets": {
+                                "nodes": [{
+                                    "source": "a-source",
+                                    "name": "a-node-target",
+                                    "write_mode": "merge",
+                                    "labels": ["Label1", "Label2"],
+                                    "properties": [
+                                        {"source_field": "field_1", "target_property": "property1"},
+                                        {"source_field": "field_2", "target_property": "property2"}
+                                    ]
+                                }],
                                 "relationships": [{
                                     "name": "a-relationship-target",
                                     "depends_on": ["a-query-target"],
                                     "source": "a-source",
                                     "type": "TYPE",
-                                    "start_node": {
-                                        "label": "Label1",
-                                        "key_properties": [
-                                            {"source_field": "field_1", "target_property": "property1"}
-                                        ]
-                                    },
-                                    "end_node": {
-                                        "label": "Label2",
-                                        "key_properties": [
-                                            {"source_field": "field_2", "target_property": "property2"}
-                                        ]
-                                    }
+                                    "start_node_reference": "a-node-target",
+                                    "end_node_reference": "a-node-target"
                                 }],
                                 "queries": [{
                                     "name": "a-query-target",
@@ -754,12 +773,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                                     "name": "a-relationship-target",
                                     "source": "a-source",
                                     "type": "TYPE",
-                                    "start_node": {
-                                        "label": "Label1",
-                                        "key_properties": [
-                                            {"source_field": "description", "target_property": "property1"}
-                                        ]
-                                    },
+                                    "start_node_reference": "a-node-target",
                                     "end_node_reference": "a-node-target"
                                 },{
                                     "name": "a-relationship-target-2",
@@ -988,23 +1002,23 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                             }
                             ],
                             "targets": {
+                                "nodes": [{
+                                    "source": "a-source",
+                                    "name": "a-node-target",
+                                    "write_mode": "merge",
+                                    "labels": ["Label1", "Label2"],
+                                    "properties": [
+                                        {"source_field": "field_1", "target_property": "property1"},
+                                        {"source_field": "field_2", "target_property": "property2"}
+                                    ]
+                                }],
                                 "relationships": [{
                                     "name": "a-relationship-target",
                                     "source": "a-source",
                                     "type": "TYPE",
                                     "depends_on": ["a-query-target", "a-query-target"],
-                                    "start_node": {
-                                        "label": "Label1",
-                                        "key_properties": [
-                                            {"source_field": "field_1", "target_property": "property1"}
-                                        ]
-                                    },
-                                    "end_node": {
-                                        "label": "Label2",
-                                        "key_properties": [
-                                            {"source_field": "field_2", "target_property": "property2"}
-                                        ]
-                                    }
+                                    "start_node_reference": "a-node-target",
+                                    "end_node_reference": "a-node-target"
                                 }],
                                 "queries": [{
                                     "name": "a-query-target",
@@ -1050,22 +1064,22 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                                     "depends_on": ["a-relationship-target", "a-relationship-target"],
                                     "query": "UNWIND $rows AS row CREATE (n:ANode) SET n = row"
                                 }],
+                               "nodes": [{
+                                   "source": "a-source",
+                                   "name": "a-node-target",
+                                   "write_mode": "merge",
+                                   "labels": ["Label1", "Label2"],
+                                   "properties": [
+                                       {"source_field": "field_1", "target_property": "property1"},
+                                       {"source_field": "field_2", "target_property": "property2"}
+                                   ]
+                               }],
                                 "relationships": [{
                                     "name": "a-relationship-target",
                                     "source": "a-source",
                                     "type": "TYPE",
-                                    "start_node": {
-                                        "label": "Label1",
-                                        "key_properties": [
-                                            {"source_field": "field_1", "target_property": "property1"}
-                                        ]
-                                    },
-                                    "end_node": {
-                                        "label": "Label2",
-                                        "key_properties": [
-                                            {"source_field": "field_2", "target_property": "property2"}
-                                        ]
-                                    }
+                                    "start_node_reference": "a-node-target",
+                                    "end_node_reference": "a-node-target"
                                 }]
                             }
                         }
@@ -1106,23 +1120,23 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                                     "depends_on": ["a-relationship-target", "a-relationship-target"],
                                     "query": "UNWIND $rows AS row CREATE (n:ANode) SET n = row"
                                 }],
+                               "nodes": [{
+                                   "source": "a-source",
+                                   "name": "a-node-target",
+                                   "write_mode": "merge",
+                                   "labels": ["Label1", "Label2"],
+                                   "properties": [
+                                       {"source_field": "field_1", "target_property": "property1"},
+                                       {"source_field": "field_2", "target_property": "property2"}
+                                   ]
+                               }],
                                 "relationships": [{
                                     "name": "a-relationship-target",
                                     "source": "a-source",
                                     "type": "TYPE",
                                     "depends_on": ["a-query-target"],
-                                    "start_node": {
-                                        "label": "Label1",
-                                        "key_properties": [
-                                            {"source_field": "field_1", "target_property": "property1"}
-                                        ]
-                                    },
-                                    "end_node": {
-                                        "label": "Label2",
-                                        "key_properties": [
-                                            {"source_field": "field_2", "target_property": "property2"}
-                                        ]
-                                    }
+                                    "start_node_reference": "a-node-target",
+                                    "end_node_reference": "a-node-target"
                                 }]
                             }
                         }
