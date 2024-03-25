@@ -62,24 +62,8 @@ class TargetsTest {
                       "write_mode": "create",
                       "node_match_mode": "create",
                       "type": "TYPE",
-                      "start_node": {
-                        "label": "Label1",
-                        "key_properties": [
-                          {
-                            "source_field": "field_1",
-                            "target_property": "property1"
-                          }
-                        ]
-                      },
-                      "end_node": {
-                        "label": "Label2",
-                        "key_properties": [
-                          {
-                            "source_field": "field_2",
-                            "target_property": "property2"
-                          }
-                        ]
-                      },
+                      "start_node_reference": "my-minimal-node-target",
+                      "end_node_reference": "my-minimal-node-target",
                       "properties": [
                         {
                           "source_field": "field_1",
@@ -128,10 +112,8 @@ class TargetsTest {
                         WriteMode.CREATE,
                         NodeMatchMode.CREATE,
                         null,
-                        new RelationshipNode("Label1", List.of(new PropertyMapping("field_1", "property1", null))),
-                        null,
-                        new RelationshipNode("Label2", List.of(new PropertyMapping("field_2", "property2", null))),
-                        null,
+                        "my-minimal-node-target",
+                        "my-minimal-node-target",
                         List.of(
                                 new PropertyMapping("field_1", "property1", null),
                                 new PropertyMapping("field_2", "property2", null)),

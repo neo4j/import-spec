@@ -27,9 +27,7 @@ public class RelationshipTarget extends Target {
     private final WriteMode writeMode;
     private final NodeMatchMode nodeMatchMode;
     private final SourceTransformations sourceTransformations;
-    private final RelationshipNode startNode;
     private final String startNodeReference;
-    private final RelationshipNode endNode;
     private final String endNodeReference;
     private final List<PropertyMapping> properties;
     private final RelationshipSchema schema;
@@ -44,9 +42,7 @@ public class RelationshipTarget extends Target {
             @JsonProperty("write_mode") WriteMode writeMode,
             @JsonProperty("node_match_mode") NodeMatchMode nodeMatchMode,
             @JsonProperty("source_transformations") SourceTransformations sourceTransformations,
-            @JsonProperty("start_node") RelationshipNode startNode,
             @JsonProperty("start_node_reference") String startNodeReference,
-            @JsonProperty("end_node") RelationshipNode endNode,
             @JsonProperty("end_node_reference") String endNodeReference,
             @JsonProperty("properties") List<PropertyMapping> properties,
             @JsonProperty("schema") RelationshipSchema schema) {
@@ -56,9 +52,7 @@ public class RelationshipTarget extends Target {
         this.writeMode = writeMode;
         this.nodeMatchMode = nodeMatchMode;
         this.sourceTransformations = sourceTransformations;
-        this.startNode = startNode;
         this.startNodeReference = startNodeReference;
-        this.endNode = endNode;
         this.endNodeReference = endNodeReference;
         this.properties = properties;
         this.schema = schema;
@@ -78,14 +72,6 @@ public class RelationshipTarget extends Target {
 
     public SourceTransformations getSourceTransformations() {
         return sourceTransformations;
-    }
-
-    public RelationshipNode getStartNode() {
-        return startNode;
-    }
-
-    public RelationshipNode getEndNode() {
-        return endNode;
     }
 
     public List<PropertyMapping> getProperties() {
@@ -126,9 +112,7 @@ public class RelationshipTarget extends Target {
                 && writeMode == that.writeMode
                 && nodeMatchMode == that.nodeMatchMode
                 && Objects.equals(sourceTransformations, that.sourceTransformations)
-                && Objects.equals(startNode, that.startNode)
                 && Objects.equals(startNodeReference, that.startNodeReference)
-                && Objects.equals(endNode, that.endNode)
                 && Objects.equals(endNodeReference, that.endNodeReference)
                 && Objects.equals(properties, that.properties)
                 && Objects.equals(schema, that.schema);
@@ -142,9 +126,7 @@ public class RelationshipTarget extends Target {
                 writeMode,
                 nodeMatchMode,
                 sourceTransformations,
-                startNode,
                 startNodeReference,
-                endNode,
                 endNodeReference,
                 properties,
                 schema);
@@ -157,9 +139,7 @@ public class RelationshipTarget extends Target {
                 + writeMode + ", nodeMatchMode="
                 + nodeMatchMode + ", sourceTransformations="
                 + sourceTransformations + ", startNode="
-                + startNode + ", startNodeReference='"
                 + startNodeReference + '\'' + ", endNode="
-                + endNode + ", endNodeReference='"
                 + endNodeReference + '\'' + ", properties="
                 + properties + ", schema="
                 + schema + "} "

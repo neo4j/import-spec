@@ -448,15 +448,9 @@
           "type": "string",
           "minLength": 1
         },
-        "start_node": {
-          "$ref": "#/$defs/target.relationship.node"
-        },
         "start_node_reference": {
           "type": "string",
           "minLength": 1
-        },
-        "end_node": {
-          "$ref": "#/$defs/target.relationship.node"
         },
         "end_node_reference": {
           "type": "string",
@@ -521,33 +515,9 @@
         }
       },
       "required": [
-        "type"
-      ],
-      "oneOf": [
-        {
-          "required": [
-            "start_node",
-            "end_node"
-          ]
-        },
-        {
-          "required": [
-            "start_node",
-            "end_node_reference"
-          ]
-        },
-        {
-          "required": [
-            "start_node_reference",
-            "end_node"
-          ]
-        },
-        {
-          "required": [
-            "start_node_reference",
-            "end_node_reference"
-          ]
-        }
+        "type",
+        "start_node_reference",
+        "end_node_reference"
       ]
     },
     "target.query": {
@@ -1047,27 +1017,6 @@
         "label",
         "property",
         "options"
-      ],
-      "additionalProperties": false
-    },
-    "target.relationship.node": {
-      "type": "object",
-      "properties": {
-        "label": {
-          "type": "string",
-          "minLength": 1
-        },
-        "key_properties": {
-          "type": "array",
-          "items": {
-            "$ref": "#/$defs/target.entity.propertyMapping"
-          },
-          "minItems": 1
-        }
-      },
-      "required": [
-        "label",
-        "key_properties"
       ],
       "additionalProperties": false
     },

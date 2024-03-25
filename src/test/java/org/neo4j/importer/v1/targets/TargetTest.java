@@ -256,88 +256,16 @@ class TargetTest {
             "name": "my-minimal-relationship-target",
             "source": "a-source",
             "type": "TYPE",
-            "start_node": {
-                "label": "Label1",
-                "key_properties": [
-                    {"source_field": "field_1", "target_property": "property1"}
-                ]
-            },
-            "end_node": {
-                "label": "Label2",
-                "key_properties": [
-                    {"source_field": "field_2", "target_property": "property2"}
-                ]
-            }
+            "start_node_reference": "a-node-target",
+            "end_node_reference": "another-node-target"
         }
         """
                         .stripIndent();
 
         var target = mapper.readValue(json, RelationshipTarget.class);
 
-        assertThat(target.getName()).isEqualTo("my-minimal-relationship-target");
-        assertThat(target.isActive()).isTrue();
-        assertThat(target.getSource()).isEqualTo("a-source");
-        assertThat(target.getType()).isEqualTo("TYPE");
-        assertThat(target.getStartNode())
-                .isEqualTo(new RelationshipNode("Label1", List.of(new PropertyMapping("field_1", "property1", null))));
-        assertThat(target.getEndNode())
-                .isEqualTo(new RelationshipNode("Label2", List.of(new PropertyMapping("field_2", "property2", null))));
-    }
-
-    @Test
-    void deserializes_relationship_target_with_start_node_reference() throws Exception {
-        var json =
-                """
-        {
-            "name": "my-minimal-relationship-target",
-            "source": "a-source",
-            "type": "TYPE",
-            "start_node_reference": "my-node-target",
-            "end_node": {
-                "label": "Label2",
-                "key_properties": [
-                    {"source_field": "field_2", "target_property": "property2"}
-                ]
-            }
-        }
-        """
-                        .stripIndent();
-
-        var target = mapper.readValue(json, RelationshipTarget.class);
-
-        assertThat(target.getStartNode()).isNull();
-        assertThat(target.getStartNodeReference()).isEqualTo("my-node-target");
-        assertThat(target.getEndNode())
-                .isEqualTo(new RelationshipNode("Label2", List.of(new PropertyMapping("field_2", "property2", null))));
-        assertThat(target.getEndNodeReference()).isNull();
-    }
-
-    @Test
-    void deserializes_relationship_target_with_end_node_reference() throws Exception {
-        var json =
-                """
-        {
-            "name": "my-minimal-relationship-target",
-            "source": "a-source",
-            "type": "TYPE",
-            "start_node": {
-                "label": "Label1",
-                "key_properties": [
-                    {"source_field": "field_1", "target_property": "property1"}
-                ]
-            },
-            "end_node_reference": "my-node-target"
-        }
-        """
-                        .stripIndent();
-
-        var target = mapper.readValue(json, RelationshipTarget.class);
-
-        assertThat(target.getStartNode())
-                .isEqualTo(new RelationshipNode("Label1", List.of(new PropertyMapping("field_1", "property1", null))));
-        assertThat(target.getStartNodeReference()).isNull();
-        assertThat(target.getEndNode()).isNull();
-        assertThat(target.getEndNodeReference()).isEqualTo("my-node-target");
+        assertThat(target.getStartNodeReference()).isEqualTo("a-node-target");
+        assertThat(target.getEndNodeReference()).isEqualTo("another-node-target");
     }
 
     @Test
@@ -366,18 +294,8 @@ class TargetTest {
                 "limit": 42
             },
             "type": "TYPE",
-            "start_node": {
-                "label": "Label1",
-                "key_properties": [
-                    {"source_field": "field_1", "target_property": "property1", "target_property_type": "DATE"}
-                ]
-            },
-            "end_node": {
-                "label": "Label2",
-                "key_properties": [
-                    {"source_field": "field_2", "target_property": "property2", "target_property_type": "POINT_ARRAY"}
-                ]
-            },
+            "start_node_reference": "a-node-target",
+            "end_node_reference": "another-node-target",
             "properties": [
                 {"source_field": "field_1", "target_property": "property1", "target_property_type": "LOCAL_TIME_ARRAY"},
                 {"source_field": "field_2", "target_property": "property2", "target_property_type": "STRING_ARRAY"},
@@ -440,12 +358,8 @@ class TargetTest {
                                 new OrderBy("column_3", Order.DESC)),
                         42));
         assertThat(target.getType()).isEqualTo("TYPE");
-        assertThat(target.getStartNode())
-                .isEqualTo(new RelationshipNode(
-                        "Label1", List.of(new PropertyMapping("field_1", "property1", PropertyType.DATE))));
-        assertThat(target.getEndNode())
-                .isEqualTo(new RelationshipNode(
-                        "Label2", List.of(new PropertyMapping("field_2", "property2", PropertyType.POINT_ARRAY))));
+        assertThat(target.getStartNodeReference()).isEqualTo("a-node-target");
+        assertThat(target.getEndNodeReference()).isEqualTo("another-node-target");
         assertThat(target.getProperties())
                 .isEqualTo(List.of(
                         new PropertyMapping("field_1", "property1", PropertyType.LOCAL_TIME_ARRAY),
@@ -510,9 +424,7 @@ class TargetTest {
                 WriteMode.CREATE,
                 NodeMatchMode.CREATE,
                 null,
-                null,
                 "start-node-ref",
-                null,
                 "end-node-ref",
                 mappings,
                 null);
@@ -544,9 +456,7 @@ class TargetTest {
                 WriteMode.CREATE,
                 NodeMatchMode.CREATE,
                 null,
-                null,
                 "start-node-ref",
-                null,
                 "end-node-ref",
                 mappings,
                 null);
@@ -583,9 +493,7 @@ class TargetTest {
                 WriteMode.CREATE,
                 NodeMatchMode.CREATE,
                 null,
-                null,
                 "a-node-target",
-                null,
                 "end-node-ref",
                 mappings,
                 null);
@@ -608,9 +516,7 @@ class TargetTest {
                 WriteMode.CREATE,
                 NodeMatchMode.CREATE,
                 null,
-                null,
                 "start-node-ref",
-                null,
                 "a-node-target",
                 mappings,
                 null);
