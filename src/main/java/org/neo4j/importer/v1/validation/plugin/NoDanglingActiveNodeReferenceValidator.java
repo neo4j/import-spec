@@ -25,24 +25,35 @@ import org.neo4j.importer.v1.targets.RelationshipTarget;
 import org.neo4j.importer.v1.validation.SpecificationValidationResult.Builder;
 import org.neo4j.importer.v1.validation.SpecificationValidator;
 
-public class NoDanglingNodeReferenceValidator implements SpecificationValidator {
-    private static final String ERROR_CODE = "DANG-003";
+public class NoDanglingActiveNodeReferenceValidator implements SpecificationValidator {
+    private static final String ERROR_CODE = "DANG-004";
 
     private final Set<String> names;
     private final Map<String, String> invalidPathToNodeReferences;
 
-    public NoDanglingNodeReferenceValidator() {
+    public NoDanglingActiveNodeReferenceValidator() {
         names = new LinkedHashSet<>();
         invalidPathToNodeReferences = new LinkedHashMap<>();
     }
 
     @Override
+    public Set<Class<? extends SpecificationValidator>> requires() {
+        return Set.of(NoDanglingNodeReferenceValidator.class);
+    }
+
+    @Override
     public void visitNodeTarget(int index, NodeTarget target) {
+        if (!target.isActive()) {
+            return;
+        }
         names.add(target.getName());
     }
 
     @Override
     public void visitRelationshipTarget(int index, RelationshipTarget target) {
+        if (!target.isActive()) { // an inactive relationship can refer to inactive node targets
+            return;
+        }
         String startNodeRef = target.getStartNodeReference();
         if (!names.contains(startNodeRef)) {
             invalidPathToNodeReferences.put(
@@ -61,7 +72,9 @@ public class NoDanglingNodeReferenceValidator implements SpecificationValidator 
             builder.addError(
                     path,
                     ERROR_CODE,
-                    String.format("%s refers to a non-existing node target \"%s\".", path, invalidNodeReference));
+                    String.format(
+                            "%s belongs to an active target but refers to an inactive node target \"%s\".",
+                            path, invalidNodeReference));
         });
         return !invalidPathToNodeReferences.isEmpty();
     }

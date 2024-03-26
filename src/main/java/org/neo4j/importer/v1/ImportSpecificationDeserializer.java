@@ -32,10 +32,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.ServiceLoader;
 import java.util.Set;
-import java.util.TreeSet;
 import java.util.stream.Collectors;
 import org.neo4j.importer.v1.actions.Action;
-import org.neo4j.importer.v1.graph.CycleDetector;
+import org.neo4j.importer.v1.graph.Graph;
 import org.neo4j.importer.v1.validation.InvalidSpecificationException;
 import org.neo4j.importer.v1.validation.SpecificationException;
 import org.neo4j.importer.v1.validation.SpecificationValidationResult;
@@ -150,26 +149,17 @@ public class ImportSpecificationDeserializer {
         }
     }
 
-    private static Set<SpecificationValidator> loadValidators() {
-        Set<SpecificationValidator> result = new TreeSet<>();
-        ServiceLoader.load(SpecificationValidator.class).forEach(result::add);
-        checkValidatorCycles(result);
-        return result;
-    }
-
-    private static void checkValidatorCycles(Set<SpecificationValidator> validators) {
-        var validatorDependencyGraph = new HashMap<Class<?>, Class<?>>(validators.size());
-        validators.forEach((validator) -> {
-            for (Class<? extends SpecificationValidator> dependency : validator.requires()) {
-                validatorDependencyGraph.put(validator.getClass(), dependency);
-            }
+    private static List<SpecificationValidator> loadValidators() {
+        var validatorCatalog = new HashMap<Class<? extends SpecificationValidator>, SpecificationValidator>();
+        var validatorGraph =
+                new HashMap<Class<? extends SpecificationValidator>, Set<Class<? extends SpecificationValidator>>>();
+        ServiceLoader.load(SpecificationValidator.class).forEach(validator -> {
+            validatorCatalog.put(validator.getClass(), validator);
+            validatorGraph.put(validator.getClass(), validator.requires());
         });
-        var cycles = CycleDetector.detectSimple(validatorDependencyGraph);
-        if (!cycles.isEmpty()) {
-            throw new IllegalStateException(String.format(
-                    "%d validator dependency cycle(s) detected:%n%s",
-                    cycles.size(), validatorCycleDescription(cycles)));
-        }
+        return Graph.runTopologicalSort(validatorGraph).stream()
+                .map(validatorCatalog::get)
+                .collect(Collectors.toList());
     }
 
     private static JsonNode parse(Reader spec) throws SpecificationException {
@@ -178,13 +168,5 @@ public class ImportSpecificationDeserializer {
         } catch (IOException e) {
             throw new UnparseableSpecificationException(e);
         }
-    }
-
-    private static String validatorCycleDescription(List<List<Class<?>>> cycles) {
-        return cycles.stream()
-                .map(cycle -> cycle.stream()
-                        .map(Class::getName)
-                        .reduce("", (type1, type2) -> String.format("%s->%s", type1, type2)))
-                .collect(Collectors.joining("\n\t- ", "\t-", ""));
     }
 }

@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.neo4j.importer.v1.e2e;
+package org.neo4j.importer.v1.graph;
 
 import java.util.Map;
 import java.util.Map.Entry;
