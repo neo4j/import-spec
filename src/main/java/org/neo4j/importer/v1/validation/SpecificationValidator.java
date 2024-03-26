@@ -46,7 +46,7 @@ import org.neo4j.importer.v1.validation.SpecificationValidationResult.Builder;
  * If an implementation depends on the successful validation of another one, please include the latter to {@link SpecificationValidator#requires()}.
  * Mutating the provided arguments via any of the visitXxx or accept calls is considered undefined behavior.
  */
-public interface SpecificationValidator extends Comparable<SpecificationValidator> {
+public interface SpecificationValidator {
 
     /**
      * Reports validation errors and warnings via {@link SpecificationValidationResult.Builder}
@@ -54,16 +54,6 @@ public interface SpecificationValidator extends Comparable<SpecificationValidato
      * @return true if at least 1 error was reported, false otherwise
      */
     boolean report(SpecificationValidationResult.Builder builder);
-
-    default int compareTo(SpecificationValidator other) {
-        if (this.requires().contains(other.getClass())) {
-            return 1;
-        }
-        if (other.requires().contains(this.getClass())) {
-            return -1;
-        }
-        return this.getClass().getName().compareTo(other.getClass().getName());
-    }
 
     /**
      * Declares validators whose validation must be successful before

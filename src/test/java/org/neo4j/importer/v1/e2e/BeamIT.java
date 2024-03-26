@@ -66,6 +66,7 @@ import org.neo4j.importer.v1.actions.Action;
 import org.neo4j.importer.v1.actions.ActionStage;
 import org.neo4j.importer.v1.actions.CypherAction;
 import org.neo4j.importer.v1.e2e.AdminImportIT.ThrowingFunction;
+import org.neo4j.importer.v1.graph.Maps;
 import org.neo4j.importer.v1.sources.NamedJdbcSource;
 import org.neo4j.importer.v1.sources.Source;
 import org.neo4j.importer.v1.targets.CustomQueryTarget;

@@ -16,6 +16,7 @@
  */
 package org.neo4j.importer.v1;
 
+import static org.assertj.core.api.Assertions.assertThatNoException;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.neo4j.importer.v1.ImportSpecificationDeserializer.deserialize;
 
@@ -399,6 +400,241 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                                     "type": "TYPE",
                                     "start_node_reference": "incorrect-reference",
                                     "end_node_reference": "a-node-target"
+                                }]
+                            }
+                        }
+                        """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "$.targets.relationships[0].start_node_reference refers to a non-existing node target \"incorrect-reference\".");
+    }
+
+    @Test
+    void fails_if_active_relationship_target_refers_to_an_inactive_node_target_for_start() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+                        {
+                            "version": "1",
+                            "sources": [{
+                                "type": "bigquery",
+                                "name": "a-source",
+                                "query": "SELECT id, name FROM my.table"
+                            }],
+                            "targets": {
+                                "nodes": [{
+                                    "active": false,
+                                    "source": "a-source",
+                                    "name": "a-node-target",
+                                    "write_mode": "merge",
+                                    "labels": ["Label1", "Label2"],
+                                    "properties": [
+                                        {"source_field": "field_1", "target_property": "property1"},
+                                        {"source_field": "field_2", "target_property": "property2"}
+                                    ]
+                                },{
+                                    "source": "a-source",
+                                    "name": "another-node-target",
+                                    "write_mode": "merge",
+                                    "labels": ["Label3"],
+                                    "properties": [
+                                        {"source_field": "field_1", "target_property": "property1"},
+                                        {"source_field": "field_2", "target_property": "property2"}
+                                    ]
+                                }],
+                                "relationships": [{
+                                    "name": "a-target",
+                                    "source": "a-source",
+                                    "type": "TYPE",
+                                    "start_node_reference": "a-node-target",
+                                    "end_node_reference": "another-node-target"
+                                }]
+                            }
+                        }
+                        """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "$.targets.relationships[0].start_node_reference belongs to an active target but refers to an inactive node target \"a-node-target\"");
+    }
+
+    @Test
+    void fails_if_active_relationship_target_refers_to_an_inactive_node_target_for_end() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+                {
+                    "version": "1",
+                    "sources": [{
+                        "type": "bigquery",
+                        "name": "a-source",
+                        "query": "SELECT id, name FROM my.table"
+                    }],
+                    "targets": {
+                        "nodes": [{
+                            "source": "a-source",
+                            "name": "a-node-target",
+                            "write_mode": "merge",
+                            "labels": ["Label1", "Label2"],
+                            "properties": [
+                                {"source_field": "field_1", "target_property": "property1"},
+                                {"source_field": "field_2", "target_property": "property2"}
+                            ]
+                        },{
+                            "active": false,
+                            "source": "a-source",
+                            "name": "another-node-target",
+                            "write_mode": "merge",
+                            "labels": ["Label3"],
+                            "properties": [
+                                {"source_field": "field_1", "target_property": "property1"},
+                                {"source_field": "field_2", "target_property": "property2"}
+                            ]
+                        }],
+                        "relationships": [{
+                            "name": "a-target",
+                            "source": "a-source",
+                            "type": "TYPE",
+                            "start_node_reference": "a-node-target",
+                            "end_node_reference": "another-node-target"
+                        }]
+                    }
+                }
+                """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "$.targets.relationships[0].end_node_reference belongs to an active target but refers to an inactive node target \"another-node-target\"");
+    }
+
+    @Test
+    void does_not_fail_if_inactive_relationship_refers_to_an_inactive_node_target_for_start() {
+        assertThatNoException()
+                .isThrownBy(() -> deserialize(new StringReader(
+                        """
+                        {
+                            "version": "1",
+                            "sources": [{
+                                "type": "bigquery",
+                                "name": "a-source",
+                                "query": "SELECT id, name FROM my.table"
+                            }],
+                            "targets": {
+                                "nodes": [{
+                                    "active": false,
+                                    "source": "a-source",
+                                    "name": "a-node-target",
+                                    "write_mode": "merge",
+                                    "labels": ["Label1", "Label2"],
+                                    "properties": [
+                                        {"source_field": "field_1", "target_property": "property1"},
+                                        {"source_field": "field_2", "target_property": "property2"}
+                                    ]
+                                },{
+                                    "source": "a-source",
+                                    "name": "another-node-target",
+                                    "write_mode": "merge",
+                                    "labels": ["Label3"],
+                                    "properties": [
+                                        {"source_field": "field_1", "target_property": "property1"},
+                                        {"source_field": "field_2", "target_property": "property2"}
+                                    ]
+                                }],
+                                "relationships": [{
+                                    "active": false,
+                                    "name": "a-target",
+                                    "source": "a-source",
+                                    "type": "TYPE",
+                                    "start_node_reference": "a-node-target",
+                                    "end_node_reference": "another-node-target"
+                                }]
+                            }
+                        }
+                        """
+                                .stripIndent())));
+    }
+
+    @Test
+    void does_not_fail_if_inactive_relationship_refers_to_an_inactive_node_target_for_end() {
+        assertThatNoException()
+                .isThrownBy(() -> deserialize(new StringReader(
+                        """
+                        {
+                            "version": "1",
+                            "sources": [{
+                                "type": "bigquery",
+                                "name": "a-source",
+                                "query": "SELECT id, name FROM my.table"
+                            }],
+                            "targets": {
+                                "nodes": [{
+                                    "source": "a-source",
+                                    "name": "a-node-target",
+                                    "write_mode": "merge",
+                                    "labels": ["Label1", "Label2"],
+                                    "properties": [
+                                        {"source_field": "field_1", "target_property": "property1"},
+                                        {"source_field": "field_2", "target_property": "property2"}
+                                    ]
+                                },{
+                                    "active": false,
+                                    "source": "a-source",
+                                    "name": "another-node-target",
+                                    "write_mode": "merge",
+                                    "labels": ["Label3"],
+                                    "properties": [
+                                        {"source_field": "field_1", "target_property": "property1"},
+                                        {"source_field": "field_2", "target_property": "property2"}
+                                    ]
+                                }],
+                                "relationships": [{
+                                    "active": false,
+                                    "name": "a-target",
+                                    "source": "a-source",
+                                    "type": "TYPE",
+                                    "start_node_reference": "a-node-target",
+                                    "end_node_reference": "another-node-target"
+                                }]
+                            }
+                        }
+                        """
+                                .stripIndent())));
+    }
+
+    @Test
+    void does_not_report_inactive_node_reference_when_other_references_are_dangling() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+                        {
+                            "version": "1",
+                            "sources": [{
+                                "type": "bigquery",
+                                "name": "a-source",
+                                "query": "SELECT id, name FROM my.table"
+                            }],
+                            "targets": {
+                                "nodes": [{
+                                    "active": false,
+                                    "source": "a-source",
+                                    "name": "another-node-target",
+                                    "write_mode": "merge",
+                                    "labels": ["Label3"],
+                                    "properties": [
+                                        {"source_field": "field_1", "target_property": "property1"},
+                                        {"source_field": "field_2", "target_property": "property2"}
+                                    ]
+                                }],
+                                "relationships": [{
+                                    "name": "a-target",
+                                    "source": "a-source",
+                                    "type": "TYPE",
+                                    "start_node_reference": "incorrect-reference",
+                                    "end_node_reference": "another-node-target"
                                 }]
                             }
                         }
