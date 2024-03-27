@@ -49,7 +49,7 @@ public class SourceTransformations implements Serializable {
     }
 
     public List<Aggregation> getAggregations() {
-        return aggregations;
+        return aggregations != null ? aggregations : List.of();
     }
 
     public String getWhereClause() {
@@ -57,7 +57,7 @@ public class SourceTransformations implements Serializable {
     }
 
     public List<OrderBy> getOrderByClauses() {
-        return orderByClauses;
+        return orderByClauses != null ? orderByClauses : List.of();
     }
 
     public Integer getLimit() {
