@@ -30,7 +30,7 @@ import org.neo4j.importer.v1.targets.Targets;
 public class ImportSpecification implements Serializable {
 
     private final String version;
-    private final Map<String, Object> configuration;
+    private final Configuration configuration;
 
     private final List<Source> sources;
 
@@ -47,7 +47,7 @@ public class ImportSpecification implements Serializable {
             @JsonProperty("actions") List<Action> actions) {
 
         this.version = version;
-        this.configuration = configuration;
+        this.configuration = new Configuration(configuration);
         this.sources = sources;
         this.targets = targets;
         this.actions = actions;
@@ -57,7 +57,7 @@ public class ImportSpecification implements Serializable {
         return version;
     }
 
-    public Map<String, Object> getConfiguration() {
+    public Configuration getConfiguration() {
         return configuration;
     }
 

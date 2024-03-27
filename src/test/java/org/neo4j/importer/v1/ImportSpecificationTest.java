@@ -60,7 +60,7 @@ class ImportSpecificationTest {
 
         var spec = mapper.readValue(json, ImportSpecification.class);
 
-        assertThat(spec.getConfiguration()).isNull();
+        assertThat(spec.getConfiguration()).isEqualTo(new Configuration(null));
         assertThat(spec.getSources())
                 .isEqualTo(List.of(new BigQuerySource("my-bigquery-source", "SELECT id, name FROM my.table")));
         assertThat(spec.getTargets())
@@ -113,7 +113,7 @@ class ImportSpecificationTest {
         var spec = mapper.readValue(json, ImportSpecification.class);
 
         assertThat(spec.getConfiguration())
-                .isEqualTo(Map.of("foo", "bar", "baz", 42, "qix", List.of(true, 1.0, Map.of())));
+                .isEqualTo(new Configuration(Map.of("foo", "bar", "baz", 42, "qix", List.of(true, 1.0, Map.of()))));
         assertThat(spec.getSources())
                 .isEqualTo(List.of(new BigQuerySource("my-bigquery-source", "SELECT id, name FROM my.table")));
         assertThat(spec.getTargets())
