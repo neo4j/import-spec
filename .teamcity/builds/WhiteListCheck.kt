@@ -33,6 +33,8 @@ class WhiteListCheck(id: String, name: String) :
             """
                   .trimIndent()
           formatStderrAsError = true
+
+          conditions { doesNotMatch("teamcity.pullRequest.source.branch", "^dependabot/") }
         }
       }
 
