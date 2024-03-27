@@ -24,16 +24,22 @@ import java.util.Objects;
 public abstract class Target implements Comparable<Target>, Serializable {
 
     protected static final String DEFAULT_ACTIVE = "true";
+    private final TargetType targetType;
     private final boolean active;
     private final String name;
     private final String source;
     private final List<String> dependencies;
 
-    Target(Boolean active, String name, String source, List<String> dependencies) {
+    Target(TargetType targetType, Boolean active, String name, String source, List<String> dependencies) {
+        this.targetType = targetType;
         this.active = active != null ? active : Boolean.valueOf(DEFAULT_ACTIVE).booleanValue();
         this.name = name;
         this.source = source;
         this.dependencies = dependencies != null ? dependencies : Collections.emptyList();
+    }
+
+    public TargetType getTargetType() {
+        return targetType;
     }
 
     public boolean isActive() {
@@ -73,6 +79,7 @@ public abstract class Target implements Comparable<Target>, Serializable {
         if (o == null || getClass() != o.getClass()) return false;
         Target target = (Target) o;
         return active == target.active
+                && targetType == target.targetType
                 && Objects.equals(name, target.name)
                 && Objects.equals(source, target.source)
                 && Objects.equals(dependencies, target.dependencies);
@@ -80,15 +87,16 @@ public abstract class Target implements Comparable<Target>, Serializable {
 
     @Override
     public int hashCode() {
-        return Objects.hash(active, name, source, dependencies);
+        return Objects.hash(targetType, active, name, source, dependencies);
     }
 
     @Override
     public String toString() {
-        return "Target{" + "active="
+        return "Target{" + "targetType="
+                + targetType + ", active="
                 + active + ", name='"
                 + name + '\'' + ", source='"
-                + source + '\'' + ", dependencies='"
-                + dependencies + '\'' + '}';
+                + source + '\'' + ", dependencies="
+                + dependencies + '}';
     }
 }

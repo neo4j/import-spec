@@ -39,7 +39,7 @@ public class NodeTarget extends Target {
             @JsonProperty(value = "labels", required = true) List<String> labels,
             @JsonProperty(value = "properties", required = true) List<PropertyMapping> properties,
             @JsonProperty("schema") NodeSchema schema) {
-        super(active, name, source, dependencies);
+        super(TargetType.NODE, active, name, source, dependencies);
         this.writeMode = writeMode;
         this.sourceTransformations = sourceTransformations;
         this.labels = labels;
