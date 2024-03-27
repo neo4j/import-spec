@@ -43,7 +43,7 @@ fun BuildFeatures.enablePullRequests() = pullRequests {
   vcsRootExtId = DslContext.settingsRoot.id.toString()
   provider = github {
     authType = token { token = "%github-pull-request-token%" }
-    filterAuthorRole = PullRequests.GitHubRoleFilter.MEMBER
+    filterAuthorRole = PullRequests.GitHubRoleFilter.EVERYBODY
   }
 }
 
