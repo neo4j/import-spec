@@ -46,6 +46,7 @@ class TargetTest {
 
         var target = mapper.readValue(json, CustomQueryTarget.class);
 
+        assertThat(target.getTargetType()).isEqualTo(TargetType.QUERY);
         assertThat(target.getName()).isEqualTo("my-minimal-custom-query-target");
         assertThat(target.isActive()).isTrue();
         assertThat(target.getSource()).isEqualTo("a-source");
@@ -68,6 +69,7 @@ class TargetTest {
 
         var target = mapper.readValue(json, CustomQueryTarget.class);
 
+        assertThat(target.getTargetType()).isEqualTo(TargetType.QUERY);
         assertThat(target.getName()).isEqualTo("my-custom-query-target");
         assertThat(target.isActive()).isFalse();
         assertThat(target.getSource()).isEqualTo("a-source");
@@ -93,6 +95,7 @@ class TargetTest {
 
         var target = mapper.readValue(json, NodeTarget.class);
 
+        assertThat(target.getTargetType()).isEqualTo(TargetType.NODE);
         assertThat(target.getName()).isEqualTo("my-minimal-node-target");
         assertThat(target.isActive()).isTrue();
         assertThat(target.getSource()).isEqualTo("a-source");
@@ -171,6 +174,7 @@ class TargetTest {
 
         var target = mapper.readValue(json, NodeTarget.class);
 
+        assertThat(target.getTargetType()).isEqualTo(TargetType.NODE);
         assertThat(target.getName()).isEqualTo("my-node-target");
         assertThat(target.isActive()).isFalse();
         assertThat(target.getSource()).isEqualTo("a-source");
@@ -264,6 +268,7 @@ class TargetTest {
 
         var target = mapper.readValue(json, RelationshipTarget.class);
 
+        assertThat(target.getTargetType()).isEqualTo(TargetType.RELATIONSHIP);
         assertThat(target.getStartNodeReference()).isEqualTo("a-node-target");
         assertThat(target.getEndNodeReference()).isEqualTo("another-node-target");
     }
@@ -339,6 +344,7 @@ class TargetTest {
 
         var target = mapper.readValue(json, RelationshipTarget.class);
 
+        assertThat(target.getTargetType()).isEqualTo(TargetType.RELATIONSHIP);
         assertThat(target.getName()).isEqualTo("my-relationship-target");
         assertThat(target.isActive()).isFalse();
         assertThat(target.getSource()).isEqualTo("a-source");

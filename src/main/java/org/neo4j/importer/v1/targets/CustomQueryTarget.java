@@ -32,7 +32,7 @@ public class CustomQueryTarget extends Target {
             @JsonProperty(value = "source", required = true) String source,
             @JsonProperty("depends_on") List<String> dependencies,
             @JsonProperty(value = "query", required = true) String query) {
-        super(active, name, source, dependencies);
+        super(TargetType.QUERY, active, name, source, dependencies);
         this.query = query;
     }
 

@@ -47,7 +47,7 @@ public class RelationshipTarget extends Target {
             @JsonProperty("properties") List<PropertyMapping> properties,
             @JsonProperty("schema") RelationshipSchema schema) {
 
-        super(active, name, source, dependencies);
+        super(TargetType.RELATIONSHIP, active, name, source, dependencies);
         this.type = type;
         this.writeMode = writeMode;
         this.nodeMatchMode = nodeMatchMode;
