@@ -17,8 +17,8 @@
 package org.neo4j.importer.v1.validation;
 
 import java.io.Reader;
-import java.util.Map;
 import java.util.Set;
+import org.neo4j.importer.v1.Configuration;
 import org.neo4j.importer.v1.actions.Action;
 import org.neo4j.importer.v1.sources.Source;
 import org.neo4j.importer.v1.targets.CustomQueryTarget;
@@ -68,7 +68,7 @@ public interface SpecificationValidator {
         return Set.of();
     }
 
-    default void visitConfiguration(Map<String, Object> configuration) {}
+    default void visitConfiguration(Configuration configuration) {}
 
     default void visitSource(int index, Source source) {}
 

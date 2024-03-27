@@ -101,9 +101,7 @@ public class ImportSpecificationDeserializer {
 
     private static void runExtraValidations(ImportSpecification spec) throws SpecificationException {
         var validators = loadValidators();
-        var configuration =
-                spec.getConfiguration() == null ? Collections.<String, Object>emptyMap() : spec.getConfiguration();
-        validators.forEach(validator -> validator.visitConfiguration(configuration));
+        validators.forEach(validator -> validator.visitConfiguration(spec.getConfiguration()));
         var sources = spec.getSources();
         for (int i = 0; i < sources.size(); i++) {
             final int index = i;
