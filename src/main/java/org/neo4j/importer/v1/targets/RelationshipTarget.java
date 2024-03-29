@@ -18,18 +18,19 @@ package org.neo4j.importer.v1.targets;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import java.util.Collections;
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-public class RelationshipTarget extends Target {
+public class RelationshipTarget extends EntityTarget {
     private final String type;
-    private final WriteMode writeMode;
     private final NodeMatchMode nodeMatchMode;
-    private final SourceTransformations sourceTransformations;
     private final String startNodeReference;
     private final String endNodeReference;
-    private final List<PropertyMapping> properties;
     private final RelationshipSchema schema;
 
     @JsonCreator
@@ -47,14 +48,19 @@ public class RelationshipTarget extends Target {
             @JsonProperty("properties") List<PropertyMapping> properties,
             @JsonProperty("schema") RelationshipSchema schema) {
 
-        super(TargetType.RELATIONSHIP, active, name, source, dependencies);
+        super(
+                TargetType.RELATIONSHIP,
+                active,
+                name,
+                source,
+                dependencies,
+                writeMode,
+                sourceTransformations,
+                properties);
         this.type = type;
-        this.writeMode = writeMode;
         this.nodeMatchMode = nodeMatchMode;
-        this.sourceTransformations = sourceTransformations;
         this.startNodeReference = startNodeReference;
         this.endNodeReference = endNodeReference;
-        this.properties = properties;
         this.schema = schema;
     }
 
@@ -62,20 +68,8 @@ public class RelationshipTarget extends Target {
         return type;
     }
 
-    public WriteMode getWriteMode() {
-        return writeMode;
-    }
-
     public NodeMatchMode getNodeMatchMode() {
         return nodeMatchMode;
-    }
-
-    public SourceTransformations getSourceTransformations() {
-        return sourceTransformations;
-    }
-
-    public List<PropertyMapping> getProperties() {
-        return properties == null ? Collections.emptyList() : properties;
     }
 
     public RelationshipSchema getSchema() {
@@ -103,46 +97,67 @@ public class RelationshipTarget extends Target {
     }
 
     @Override
+    public List<String> getKeyProperties() {
+        Set<String> result = schema.getRelationshipKeyConstraints().stream()
+                .flatMap(RelationshipTarget::propertyStream)
+                .collect(Collectors.toCollection(LinkedHashSet::new));
+        result.addAll(keyEquivalentProperties());
+        return new ArrayList<>(result);
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
         RelationshipTarget that = (RelationshipTarget) o;
         return Objects.equals(type, that.type)
-                && writeMode == that.writeMode
                 && nodeMatchMode == that.nodeMatchMode
-                && Objects.equals(sourceTransformations, that.sourceTransformations)
                 && Objects.equals(startNodeReference, that.startNodeReference)
                 && Objects.equals(endNodeReference, that.endNodeReference)
-                && Objects.equals(properties, that.properties)
                 && Objects.equals(schema, that.schema);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(
-                super.hashCode(),
-                type,
-                writeMode,
-                nodeMatchMode,
-                sourceTransformations,
-                startNodeReference,
-                endNodeReference,
-                properties,
-                schema);
+        return Objects.hash(super.hashCode(), type, nodeMatchMode, startNodeReference, endNodeReference, schema);
     }
 
     @Override
     public String toString() {
         return "RelationshipTarget{" + "type='"
                 + type + '\'' + ", writeMode="
-                + writeMode + ", nodeMatchMode="
                 + nodeMatchMode + ", sourceTransformations="
-                + sourceTransformations + ", startNode="
                 + startNodeReference + '\'' + ", endNode="
                 + endNodeReference + '\'' + ", properties="
-                + properties + ", schema="
                 + schema + "} "
                 + super.toString();
+    }
+
+    private Set<String> keyEquivalentProperties() {
+        var uniqueConstraints = schema.getRelationshipUniqueConstraints();
+        var existenceConstraints = schema.getRelationshipExistenceConstraints();
+
+        Set<String> result = new LinkedHashSet<>(Math.min(uniqueConstraints.size(), existenceConstraints.size()));
+        Set<String> uniqueProperties = uniqueConstraints.stream()
+                .flatMap(RelationshipTarget::propertyStream)
+                .collect(Collectors.toSet());
+        result.addAll(existenceConstraints.stream()
+                .map(RelationshipExistenceConstraint::getProperty)
+                .filter(uniqueProperties::contains)
+                .collect(Collectors.toList()));
+        return result;
+    }
+
+    private static Stream<String> propertyStream(RelationshipKeyConstraint constraint) {
+        return propertyStream(constraint.getProperties());
+    }
+
+    private static Stream<String> propertyStream(RelationshipUniqueConstraint constraint) {
+        return propertyStream(constraint.getProperties());
+    }
+
+    private static Stream<String> propertyStream(List<String> constraints) {
+        return constraints.stream();
     }
 }
