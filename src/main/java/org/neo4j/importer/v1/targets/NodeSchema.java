@@ -62,35 +62,35 @@ public class NodeSchema implements Serializable {
     }
 
     public List<NodeKeyConstraint> getNodeKeyConstraints() {
-        return nodeKeyConstraints;
+        return nodeKeyConstraints != null ? nodeKeyConstraints : List.of();
     }
 
     public List<NodeUniqueConstraint> getNodeUniqueConstraints() {
-        return nodeUniqueConstraints;
+        return nodeUniqueConstraints != null ? nodeUniqueConstraints : List.of();
     }
 
     public List<NodeExistenceConstraint> getNodeExistenceConstraints() {
-        return nodeExistenceConstraints;
+        return nodeExistenceConstraints != null ? nodeExistenceConstraints : List.of();
     }
 
     public List<NodeRangeIndex> getRangeIndexes() {
-        return rangeIndexes;
+        return rangeIndexes != null ? rangeIndexes : List.of();
     }
 
     public List<NodeTextIndex> getTextIndexes() {
-        return textIndexes;
+        return textIndexes != null ? textIndexes : List.of();
     }
 
     public List<NodePointIndex> getPointIndexes() {
-        return pointIndexes;
+        return pointIndexes != null ? pointIndexes : List.of();
     }
 
     public List<NodeFullTextIndex> getFullTextIndexes() {
-        return fullTextIndexes;
+        return fullTextIndexes != null ? fullTextIndexes : List.of();
     }
 
     public List<NodeVectorIndex> getVectorIndexes() {
-        return vectorIndexes;
+        return vectorIndexes != null ? vectorIndexes : List.of();
     }
 
     @Override

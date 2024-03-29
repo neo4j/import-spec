@@ -63,35 +63,35 @@ public class RelationshipSchema implements Serializable {
     }
 
     public List<RelationshipKeyConstraint> getRelationshipKeyConstraints() {
-        return relationshipKeyConstraints;
+        return relationshipKeyConstraints != null ? relationshipKeyConstraints : List.of();
     }
 
     public List<RelationshipUniqueConstraint> getRelationshipUniqueConstraints() {
-        return relationshipUniqueConstraints;
+        return relationshipUniqueConstraints != null ? relationshipUniqueConstraints : List.of();
     }
 
     public List<RelationshipExistenceConstraint> getRelationshipExistenceConstraints() {
-        return relationshipExistenceConstraints;
+        return relationshipExistenceConstraints != null ? relationshipExistenceConstraints : List.of();
     }
 
     public List<RelationshipRangeIndex> getRangeIndexes() {
-        return rangeIndexes;
+        return rangeIndexes != null ? rangeIndexes : List.of();
     }
 
     public List<RelationshipTextIndex> getTextIndexes() {
-        return textIndexes;
+        return textIndexes != null ? textIndexes : List.of();
     }
 
     public List<RelationshipPointIndex> getPointIndexes() {
-        return pointIndexes;
+        return pointIndexes != null ? pointIndexes : List.of();
     }
 
     public List<RelationshipFullTextIndex> getFullTextIndexes() {
-        return fullTextIndexes;
+        return fullTextIndexes != null ? fullTextIndexes : List.of();
     }
 
     public List<RelationshipVectorIndex> getVectorIndexes() {
-        return vectorIndexes;
+        return vectorIndexes != null ? vectorIndexes : List.of();
     }
 
     @Override
