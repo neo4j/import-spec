@@ -19,6 +19,7 @@ package org.neo4j.importer.v1.targets;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 public abstract class EntityTarget extends Target {
     private final WriteMode writeMode;
@@ -61,6 +62,10 @@ public abstract class EntityTarget extends Target {
      * part of key constraints.
      */
     public abstract List<String> getKeyProperties();
+
+    public List<String> getAllProperties() {
+        return properties.stream().map(PropertyMapping::getTargetProperty).collect(Collectors.toList());
+    }
 
     @Override
     public boolean equals(Object o) {
