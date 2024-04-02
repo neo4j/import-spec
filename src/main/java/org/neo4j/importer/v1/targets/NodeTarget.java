@@ -57,7 +57,7 @@ public class NodeTarget extends EntityTarget {
 
     @Override
     public List<String> getKeyProperties() {
-        Set<String> result = schema.getNodeKeyConstraints().stream()
+        Set<String> result = schema.getKeyConstraints().stream()
                 .flatMap(NodeTarget::propertyStream)
                 .collect(Collectors.toCollection(LinkedHashSet::new));
         result.addAll(keyEquivalentProperties());
@@ -84,8 +84,8 @@ public class NodeTarget extends EntityTarget {
     }
 
     private Set<String> keyEquivalentProperties() {
-        var uniqueConstraints = schema.getNodeUniqueConstraints();
-        var existenceConstraints = schema.getNodeExistenceConstraints();
+        var uniqueConstraints = schema.getUniqueConstraints();
+        var existenceConstraints = schema.getExistenceConstraints();
 
         Set<String> result = new LinkedHashSet<>(Math.min(uniqueConstraints.size(), existenceConstraints.size()));
         Set<String> uniqueProperties =

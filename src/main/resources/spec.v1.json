@@ -368,9 +368,11 @@
         "schema": {
           "type": "object",
           "properties": {
-            "enable_type_constraints": {
-              "description": "whether or not to create type constraints based on the declared property types",
-              "type": "boolean"
+            "type_constraints": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/target.node.schema.constraints.type"
+              }
             },
             "key_constraints": {
               "type": "array",
@@ -459,9 +461,11 @@
         "schema": {
           "type": "object",
           "properties": {
-            "enable_type_constraints": {
-              "description": "whether or not to create type constraints based on the declared property types",
-              "type": "boolean"
+            "type_constraints": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/target.relationship.schema.constraints.type"
+              }
             },
             "key_constraints": {
               "type": "array",
@@ -798,6 +802,29 @@
       },
       "additionalProperties": false
     },
+    "target.node.schema.constraints.type": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1
+        },
+        "property": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "name",
+        "label",
+        "property"
+      ],
+      "additionalProperties": false
+    },
     "target.node.schema.constraints.key": {
       "type": "object",
       "properties": {
@@ -1017,6 +1044,24 @@
         "label",
         "property",
         "options"
+      ],
+      "additionalProperties": false
+    },
+    "target.relationship.schema.constraints.type": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "property": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "name",
+        "property"
       ],
       "additionalProperties": false
     },

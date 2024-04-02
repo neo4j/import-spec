@@ -24,10 +24,10 @@ import java.util.Objects;
 
 public class RelationshipSchema implements Serializable {
 
-    private final boolean enableTypeConstraints;
-    private final List<RelationshipKeyConstraint> relationshipKeyConstraints;
-    private final List<RelationshipUniqueConstraint> relationshipUniqueConstraints;
-    private final List<RelationshipExistenceConstraint> relationshipExistenceConstraints;
+    private final List<RelationshipTypeConstraint> typeConstraints;
+    private final List<RelationshipKeyConstraint> keyConstraints;
+    private final List<RelationshipUniqueConstraint> uniqueConstraints;
+    private final List<RelationshipExistenceConstraint> existenceConstraints;
     private final List<RelationshipRangeIndex> rangeIndexes;
     private final List<RelationshipTextIndex> textIndexes;
     private final List<RelationshipPointIndex> pointIndexes;
@@ -36,7 +36,7 @@ public class RelationshipSchema implements Serializable {
 
     @JsonCreator
     public RelationshipSchema(
-            @JsonProperty("enable_type_constraints") boolean enableTypeConstraints,
+            @JsonProperty("type_constraints") List<RelationshipTypeConstraint> relationshipTypeConstraints,
             @JsonProperty("key_constraints") List<RelationshipKeyConstraint> relationshipKeyConstraints,
             @JsonProperty("unique_constraints") List<RelationshipUniqueConstraint> relationshipUniqueConstraints,
             @JsonProperty("existence_constraints")
@@ -47,10 +47,10 @@ public class RelationshipSchema implements Serializable {
             @JsonProperty("fulltext_indexes") List<RelationshipFullTextIndex> fullTextIndexes,
             @JsonProperty("vector_indexes") List<RelationshipVectorIndex> vectorIndexes) {
 
-        this.enableTypeConstraints = enableTypeConstraints;
-        this.relationshipKeyConstraints = relationshipKeyConstraints;
-        this.relationshipUniqueConstraints = relationshipUniqueConstraints;
-        this.relationshipExistenceConstraints = relationshipExistenceConstraints;
+        this.typeConstraints = relationshipTypeConstraints;
+        this.keyConstraints = relationshipKeyConstraints;
+        this.uniqueConstraints = relationshipUniqueConstraints;
+        this.existenceConstraints = relationshipExistenceConstraints;
         this.rangeIndexes = rangeIndexes;
         this.textIndexes = textIndexes;
         this.pointIndexes = pointIndexes;
@@ -58,20 +58,20 @@ public class RelationshipSchema implements Serializable {
         this.vectorIndexes = vectorIndexes;
     }
 
-    public boolean isEnableTypeConstraints() {
-        return enableTypeConstraints;
+    public List<RelationshipTypeConstraint> getTypeConstraints() {
+        return typeConstraints != null ? typeConstraints : List.of();
     }
 
-    public List<RelationshipKeyConstraint> getRelationshipKeyConstraints() {
-        return relationshipKeyConstraints != null ? relationshipKeyConstraints : List.of();
+    public List<RelationshipKeyConstraint> getKeyConstraints() {
+        return keyConstraints != null ? keyConstraints : List.of();
     }
 
-    public List<RelationshipUniqueConstraint> getRelationshipUniqueConstraints() {
-        return relationshipUniqueConstraints != null ? relationshipUniqueConstraints : List.of();
+    public List<RelationshipUniqueConstraint> getUniqueConstraints() {
+        return uniqueConstraints != null ? uniqueConstraints : List.of();
     }
 
-    public List<RelationshipExistenceConstraint> getRelationshipExistenceConstraints() {
-        return relationshipExistenceConstraints != null ? relationshipExistenceConstraints : List.of();
+    public List<RelationshipExistenceConstraint> getExistenceConstraints() {
+        return existenceConstraints != null ? existenceConstraints : List.of();
     }
 
     public List<RelationshipRangeIndex> getRangeIndexes() {
@@ -99,10 +99,10 @@ public class RelationshipSchema implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         RelationshipSchema that = (RelationshipSchema) o;
-        return enableTypeConstraints == that.enableTypeConstraints
-                && Objects.equals(relationshipKeyConstraints, that.relationshipKeyConstraints)
-                && Objects.equals(relationshipUniqueConstraints, that.relationshipUniqueConstraints)
-                && Objects.equals(relationshipExistenceConstraints, that.relationshipExistenceConstraints)
+        return Objects.equals(typeConstraints, that.typeConstraints)
+                && Objects.equals(keyConstraints, that.keyConstraints)
+                && Objects.equals(uniqueConstraints, that.uniqueConstraints)
+                && Objects.equals(existenceConstraints, that.existenceConstraints)
                 && Objects.equals(rangeIndexes, that.rangeIndexes)
                 && Objects.equals(textIndexes, that.textIndexes)
                 && Objects.equals(pointIndexes, that.pointIndexes)
@@ -113,10 +113,10 @@ public class RelationshipSchema implements Serializable {
     @Override
     public int hashCode() {
         return Objects.hash(
-                enableTypeConstraints,
-                relationshipKeyConstraints,
-                relationshipUniqueConstraints,
-                relationshipExistenceConstraints,
+                typeConstraints,
+                keyConstraints,
+                uniqueConstraints,
+                existenceConstraints,
                 rangeIndexes,
                 textIndexes,
                 pointIndexes,
@@ -126,11 +126,11 @@ public class RelationshipSchema implements Serializable {
 
     @Override
     public String toString() {
-        return "RelationshipSchema{" + "enableTypeConstraints="
-                + enableTypeConstraints + ", relationshipKeyConstraints="
-                + relationshipKeyConstraints + ", relationshipUniqueConstraints="
-                + relationshipUniqueConstraints + ", relationshipExistenceConstraints="
-                + relationshipExistenceConstraints + ", rangeIndexes="
+        return "RelationshipSchema{" + "typeConstraints="
+                + typeConstraints + ", keyConstraints="
+                + keyConstraints + ", uniqueConstraints="
+                + uniqueConstraints + ", existenceConstraints="
+                + existenceConstraints + ", rangeIndexes="
                 + rangeIndexes + ", textIndexes="
                 + textIndexes + ", pointIndexes="
                 + pointIndexes + ", fullTextIndexes="

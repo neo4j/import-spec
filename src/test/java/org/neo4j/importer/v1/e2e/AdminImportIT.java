@@ -172,7 +172,7 @@ public class AdminImportIT {
             try (var writer = new BufferedWriter(new FileWriter(headerFile))) {
                 // note: this ignores synthetic properties from source transformations
                 List<String> properties = sortedProperties(nodeTarget.getProperties());
-                List<NodeKeyConstraint> nodeKeys = nodeTarget.getSchema().getNodeKeyConstraints();
+                List<NodeKeyConstraint> nodeKeys = nodeTarget.getSchema().getKeyConstraints();
                 for (int i = 0; i < properties.size(); i++) {
                     var property = properties.get(i);
                     writer.append(property);
@@ -317,7 +317,7 @@ public class AdminImportIT {
         }
 
         private static NodeKeyConstraint singleNodeKey(NodeTarget nodeTarget) {
-            var nodeKeys = nodeTarget.getSchema().getNodeKeyConstraints();
+            var nodeKeys = nodeTarget.getSchema().getKeyConstraints();
             assertThat(nodeKeys).hasSize(1);
             return nodeKeys.getFirst();
         }
