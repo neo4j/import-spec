@@ -24,10 +24,10 @@ import java.util.Objects;
 
 public class NodeSchema implements Serializable {
 
-    private final boolean enableTypeConstraints;
-    private final List<NodeKeyConstraint> nodeKeyConstraints;
-    private final List<NodeUniqueConstraint> nodeUniqueConstraints;
-    private final List<NodeExistenceConstraint> nodeExistenceConstraints;
+    private final List<NodeTypeConstraint> typeConstraints;
+    private final List<NodeKeyConstraint> keyConstraints;
+    private final List<NodeUniqueConstraint> uniqueConstraints;
+    private final List<NodeExistenceConstraint> existenceConstraints;
     private final List<NodeRangeIndex> rangeIndexes;
     private final List<NodeTextIndex> textIndexes;
     private final List<NodePointIndex> pointIndexes;
@@ -36,20 +36,20 @@ public class NodeSchema implements Serializable {
 
     @JsonCreator
     public NodeSchema(
-            @JsonProperty("enable_type_constraints") boolean enableTypeConstraints,
-            @JsonProperty("key_constraints") List<NodeKeyConstraint> nodeKeyConstraints,
-            @JsonProperty("unique_constraints") List<NodeUniqueConstraint> nodeUniqueConstraints,
-            @JsonProperty("existence_constraints") List<NodeExistenceConstraint> nodeExistenceConstraints,
+            @JsonProperty("type_constraints") List<NodeTypeConstraint> typeConstraints,
+            @JsonProperty("key_constraints") List<NodeKeyConstraint> keyConstraints,
+            @JsonProperty("unique_constraints") List<NodeUniqueConstraint> uniqueConstraints,
+            @JsonProperty("existence_constraints") List<NodeExistenceConstraint> existenceConstraints,
             @JsonProperty("range_indexes") List<NodeRangeIndex> rangeIndexes,
             @JsonProperty("text_indexes") List<NodeTextIndex> textIndexes,
             @JsonProperty("point_indexes") List<NodePointIndex> pointIndexes,
             @JsonProperty("fulltext_indexes") List<NodeFullTextIndex> fullTextIndexes,
             @JsonProperty("vector_indexes") List<NodeVectorIndex> vectorIndexes) {
 
-        this.enableTypeConstraints = enableTypeConstraints;
-        this.nodeKeyConstraints = nodeKeyConstraints;
-        this.nodeUniqueConstraints = nodeUniqueConstraints;
-        this.nodeExistenceConstraints = nodeExistenceConstraints;
+        this.typeConstraints = typeConstraints;
+        this.keyConstraints = keyConstraints;
+        this.uniqueConstraints = uniqueConstraints;
+        this.existenceConstraints = existenceConstraints;
         this.rangeIndexes = rangeIndexes;
         this.textIndexes = textIndexes;
         this.pointIndexes = pointIndexes;
@@ -57,20 +57,20 @@ public class NodeSchema implements Serializable {
         this.vectorIndexes = vectorIndexes;
     }
 
-    public boolean isEnableTypeConstraints() {
-        return enableTypeConstraints;
+    public List<NodeTypeConstraint> getTypeConstraints() {
+        return typeConstraints != null ? typeConstraints : List.of();
     }
 
-    public List<NodeKeyConstraint> getNodeKeyConstraints() {
-        return nodeKeyConstraints != null ? nodeKeyConstraints : List.of();
+    public List<NodeKeyConstraint> getKeyConstraints() {
+        return keyConstraints != null ? keyConstraints : List.of();
     }
 
-    public List<NodeUniqueConstraint> getNodeUniqueConstraints() {
-        return nodeUniqueConstraints != null ? nodeUniqueConstraints : List.of();
+    public List<NodeUniqueConstraint> getUniqueConstraints() {
+        return uniqueConstraints != null ? uniqueConstraints : List.of();
     }
 
-    public List<NodeExistenceConstraint> getNodeExistenceConstraints() {
-        return nodeExistenceConstraints != null ? nodeExistenceConstraints : List.of();
+    public List<NodeExistenceConstraint> getExistenceConstraints() {
+        return existenceConstraints != null ? existenceConstraints : List.of();
     }
 
     public List<NodeRangeIndex> getRangeIndexes() {
@@ -98,10 +98,10 @@ public class NodeSchema implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         NodeSchema that = (NodeSchema) o;
-        return enableTypeConstraints == that.enableTypeConstraints
-                && Objects.equals(nodeKeyConstraints, that.nodeKeyConstraints)
-                && Objects.equals(nodeUniqueConstraints, that.nodeUniqueConstraints)
-                && Objects.equals(nodeExistenceConstraints, that.nodeExistenceConstraints)
+        return Objects.equals(typeConstraints, that.typeConstraints)
+                && Objects.equals(keyConstraints, that.keyConstraints)
+                && Objects.equals(uniqueConstraints, that.uniqueConstraints)
+                && Objects.equals(existenceConstraints, that.existenceConstraints)
                 && Objects.equals(rangeIndexes, that.rangeIndexes)
                 && Objects.equals(textIndexes, that.textIndexes)
                 && Objects.equals(pointIndexes, that.pointIndexes)
@@ -112,10 +112,10 @@ public class NodeSchema implements Serializable {
     @Override
     public int hashCode() {
         return Objects.hash(
-                enableTypeConstraints,
-                nodeKeyConstraints,
-                nodeUniqueConstraints,
-                nodeExistenceConstraints,
+                typeConstraints,
+                keyConstraints,
+                uniqueConstraints,
+                existenceConstraints,
                 rangeIndexes,
                 textIndexes,
                 pointIndexes,
@@ -125,11 +125,11 @@ public class NodeSchema implements Serializable {
 
     @Override
     public String toString() {
-        return "NodeSchema{" + "enableTypeConstraints="
-                + enableTypeConstraints + ", nodeKeyConstraints="
-                + nodeKeyConstraints + ", nodeUniqueConstraints="
-                + nodeUniqueConstraints + ", nodeExistenceConstraints="
-                + nodeExistenceConstraints + ", rangeIndexes="
+        return "NodeSchema{" + "typeConstraints="
+                + typeConstraints + ", keyConstraints="
+                + keyConstraints + ", uniqueConstraints="
+                + uniqueConstraints + ", existenceConstraints="
+                + existenceConstraints + ", rangeIndexes="
                 + rangeIndexes + ", textIndexes="
                 + textIndexes + ", pointIndexes="
                 + pointIndexes + ", fullTextIndexes="

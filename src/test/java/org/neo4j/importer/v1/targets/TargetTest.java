@@ -137,7 +137,9 @@ class TargetTest {
                 {"source_field": "field_3", "target_property": "property3", "target_property_type": "boolean"}
             ],
             "schema": {
-                "enable_type_constraints": true,
+                "type_constraints": [
+                    {"name": "type_constraint_1", "label": "Label1", "property": "property1"}
+                ],
                 "key_constraints": [
                     {"name": "key_constraint_1", "label": "Label1", "properties": ["property1"]},
                     {"name": "key_constraint_2", "label": "Label2", "properties": ["property2"], "options": {"indexProvider": "range-1.0"}}
@@ -200,7 +202,7 @@ class TargetTest {
                         new PropertyMapping("field_3", "property3", PropertyType.BOOLEAN)));
         assertThat(target.getSchema())
                 .isEqualTo(new NodeSchema(
-                        true,
+                        List.of(new NodeTypeConstraint("type_constraint_1", "Label1", "property1")),
                         List.of(
                                 new NodeKeyConstraint("key_constraint_1", "Label1", List.of("property1"), null),
                                 new NodeKeyConstraint(
@@ -307,7 +309,9 @@ class TargetTest {
                 {"source_field": "field_3", "target_property": "property3", "target_property_type": "FLOAT"}
             ],
             "schema": {
-                "enable_type_constraints": true,
+                "type_constraints": [
+                    {"name": "type_constraint_1", "property": "property1"}
+                ],
                 "key_constraints": [
                     {"name": "key_constraint_1", "properties": ["property1"]},
                     {"name": "key_constraint_2", "properties": ["property2"], "options": {"indexProvider": "range-1.0"}}
@@ -373,7 +377,7 @@ class TargetTest {
                         new PropertyMapping("field_3", "property3", PropertyType.FLOAT)));
         assertThat(target.getSchema())
                 .isEqualTo(new RelationshipSchema(
-                        true,
+                        List.of(new RelationshipTypeConstraint("type_constraint_1", "property1")),
                         List.of(
                                 new RelationshipKeyConstraint("key_constraint_1", List.of("property1"), null),
                                 new RelationshipKeyConstraint(

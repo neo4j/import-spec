@@ -515,7 +515,7 @@ class TargetWriteRowFn extends DoFn<Row, Row> {
     private Set<String> nodeKeyPropertyNames(NodeTarget node) {
         Set<String> keyProps = new HashSet<>();
 
-        node.getSchema().getNodeKeyConstraints().forEach(kc -> keyProps.addAll(kc.getProperties()));
+        node.getSchema().getKeyConstraints().forEach(kc -> keyProps.addAll(kc.getProperties()));
 
         if (keyProps.isEmpty()) {
             node.getProperties().forEach(p -> keyProps.add(p.getTargetProperty()));
@@ -538,7 +538,7 @@ class TargetWriteRowFn extends DoFn<Row, Row> {
         StringBuilder builder = new StringBuilder();
         builder.append("{");
         List<PropertyMapping> mappings = nodeTarget.getProperties();
-        List<NodeKeyConstraint> nodeKeyConstraints = nodeTarget.getSchema().getNodeKeyConstraints();
+        List<NodeKeyConstraint> nodeKeyConstraints = nodeTarget.getSchema().getKeyConstraints();
         for (int i = 0; i < nodeKeyConstraints.size(); i++) {
             NodeKeyConstraint key = nodeKeyConstraints.get(i);
             List<String> properties = key.getProperties();

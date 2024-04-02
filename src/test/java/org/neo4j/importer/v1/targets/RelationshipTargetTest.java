@@ -123,6 +123,6 @@ class RelationshipTargetTest {
             List<RelationshipKeyConstraint> keys,
             List<RelationshipUniqueConstraint> uniques,
             List<RelationshipExistenceConstraint> notNulls) {
-        return new RelationshipSchema(false, keys, uniques, notNulls, null, null, null, null, null);
+        return new RelationshipSchema(null, keys, uniques, notNulls, null, null, null, null, null);
     }
 }

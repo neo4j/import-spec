@@ -87,6 +87,6 @@ class NodeTargetTest {
 
     private static NodeSchema schemaFor(
             List<NodeKeyConstraint> keys, List<NodeUniqueConstraint> uniques, List<NodeExistenceConstraint> notNulls) {
-        return new NodeSchema(false, keys, uniques, notNulls, null, null, null, null, null);
+        return new NodeSchema(null, keys, uniques, notNulls, null, null, null, null, null);
     }
 }
