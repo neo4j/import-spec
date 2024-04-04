@@ -434,7 +434,7 @@ class ImportSpecificationDeserializerTest {
                             "source": "a-source",
                             "type": "TYPE",
                             "write_mode": "create",
-                            "node_match_mode": "create",
+                            "node_match_mode": "match",
                             "start_node_reference": "a-node-target",
                             "end_node_reference": "a-node-target"
                         }]
@@ -587,7 +587,7 @@ class ImportSpecificationDeserializerTest {
                             "name": "   ",
                             "source": "a-source",
                             "write_mode": "create",
-                            "node_match_mode": "create",
+                            "node_match_mode": "merge",
                             "type": "TYPE",
                             "start_node_reference": "a-node-target",
                             "end_node_reference": "a-node-target"

@@ -441,7 +441,6 @@
         "node_match_mode": {
           "type": "string",
           "enum": [
-            "create",
             "match",
             "merge"
           ]
