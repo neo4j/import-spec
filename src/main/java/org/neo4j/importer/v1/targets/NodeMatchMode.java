@@ -17,7 +17,6 @@
 package org.neo4j.importer.v1.targets;
 
 public enum NodeMatchMode {
-    CREATE,
     MATCH,
     MERGE
 }
