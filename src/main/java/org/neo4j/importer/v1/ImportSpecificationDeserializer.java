@@ -66,12 +66,31 @@ public class ImportSpecificationDeserializer {
      * @return an {@link ImportSpecification}
      * @throws SpecificationException if parsing, deserialization or validation fail
      */
+    @SuppressWarnings("deprecated")
     public static ImportSpecification deserialize(Reader spec) throws SpecificationException {
         JsonNode json = parse(spec);
         validate(SCHEMA, json);
         ImportSpecification result = deserialize(json);
-        runExtraValidations(result);
+        validate(result);
         return result;
+    }
+
+    /**
+     * Validates the manually constructed {@link ImportSpecification} instance.
+     * <br>
+     * This particular API only runs the registered implementations of the {@link SpecificationValidator} SPI.
+     * It does not check whether the equivalent textual representation adheres to the JSON schema, but it assumes
+     * this is the case.
+     * <br>
+     * This method is deprecated as {@link ImportSpecificationDeserializer#deserialize(Reader)} is the only recommended
+     * way to retrieve a fully valid {@link ImportSpecification} instance.
+     *
+     * @param specification the import specification to run validations against
+     * @throws SpecificationException if validation fails
+     */
+    @Deprecated
+    public static void validate(ImportSpecification specification) throws SpecificationException {
+        runExtraValidations(specification);
     }
 
     private static void validate(JsonSchema schema, JsonNode json) throws InvalidSpecificationException {
