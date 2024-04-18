@@ -126,10 +126,10 @@ public class RelationshipTarget extends EntityTarget {
     @Override
     public String toString() {
         return "RelationshipTarget{" + "type='"
-                + type + '\'' + ", writeMode="
-                + nodeMatchMode + ", sourceTransformations="
-                + startNodeReference + '\'' + ", endNode="
-                + endNodeReference + '\'' + ", properties="
+                + type + '\'' + ", nodeMatchMode="
+                + nodeMatchMode + ", startNodeReference='"
+                + startNodeReference + '\'' + ", endNodeReference='"
+                + endNodeReference + '\'' + ", schema="
                 + schema + "} "
                 + super.toString();
     }
