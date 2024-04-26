@@ -29,20 +29,132 @@ import org.neo4j.importer.v1.validation.InvalidSpecificationException;
 public class ImportSpecificationDeserializerExtraValidationTest {
 
     @Test
-    void fails_if_source_name_is_duplicated_with_node_target() {
+    void fails_if_source_name_is_duplicated() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+                {
+                    "version": "1",
+                    "sources": [{
+                        "type": "bigquery",
+                        "name": "duplicate",
+                        "query": "SELECT id, name FROM my.table"
+                    },
+                    {
+                        "type": "bigquery",
+                        "name": "duplicate",
+                        "query": "SELECT id, name FROM my.table"
+                    }],
+                    "targets": {
+                        "nodes": [{
+                            "name": "target",
+                            "source": "duplicate",
+                            "labels": ["Label1", "Label2"],
+                            "write_mode": "create",
+                            "properties": [
+                                {"source_field": "field_1", "target_property": "property1"},
+                                {"source_field": "field_2", "target_property": "property2"}
+                            ]
+                        }]
+                    }
+                }
+                """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "Name \"duplicate\" is duplicated across the following paths: $.sources[0].name, $.sources[1].name");
+    }
+
+    @Test
+    void does_not_fails_if_source_name_is_duplicated_with_target_name() {
+        assertThatNoException()
+                .isThrownBy(() -> deserialize(new StringReader(
+                        """
+                        {
+                            "version": "1",
+                            "sources": [{
+                                "type": "bigquery",
+                                "name": "not-duplicate",
+                                "query": "SELECT id, name FROM my.table"
+                            }],
+                            "targets": {
+                                "nodes": [{
+                                    "name": "not-duplicate",
+                                    "source": "not-duplicate",
+                                    "labels": ["Label1", "Label2"],
+                                    "write_mode": "create",
+                                    "properties": [
+                                        {"source_field": "field_1", "target_property": "property1"},
+                                        {"source_field": "field_2", "target_property": "property2"}
+                                    ]
+                                }]
+                            }
+                        }
+                        """
+                                .stripIndent())));
+    }
+
+    @Test
+    void does_not_fails_if_source_name_is_duplicated_with_action_name() {
+        assertThatNoException()
+                .isThrownBy(() -> deserialize(new StringReader(
+                        """
+                        {
+                            "version": "1",
+                            "sources": [{
+                                "type": "bigquery",
+                                "name": "not-duplicate",
+                                "query": "SELECT id, name FROM my.table"
+                            }],
+                            "targets": {
+                                "nodes": [{
+                                    "name": "target",
+                                    "source": "not-duplicate",
+                                    "labels": ["Label1", "Label2"],
+                                    "write_mode": "create",
+                                    "properties": [
+                                        {"source_field": "field_1", "target_property": "property1"},
+                                        {"source_field": "field_2", "target_property": "property2"}
+                                    ]
+                                }]
+                            },
+                            "actions": [{
+                                "name": "not-duplicate",
+                                "type": "http",
+                                "method": "get",
+                                "stage": "pre_relationships",
+                                "url": "https://example.com"
+                            }]
+                        }
+                        """
+                                .stripIndent())));
+    }
+
+    @Test
+    void fails_if_node_target_name_is_duplicated() {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
                         {
                             "version": "1",
                             "sources": [{
                                 "type": "bigquery",
-                                "name": "duplicate",
+                                "name": "source",
                                 "query": "SELECT id, name FROM my.table"
                             }],
                             "targets": {
                                 "nodes": [{
                                     "name": "duplicate",
-                                    "source": "duplicate",
+                                    "source": "source",
+                                    "labels": ["Label1", "Label2"],
+                                    "write_mode": "create",
+                                    "properties": [
+                                        {"source_field": "field_1", "target_property": "property1"},
+                                        {"source_field": "field_2", "target_property": "property2"}
+                                    ]
+                                },{
+                                    "name": "duplicate",
+                                    "source": "source",
                                     "labels": ["Label1", "Label2"],
                                     "write_mode": "create",
                                     "properties": [
@@ -58,24 +170,24 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                 .hasMessageContainingAll(
                         "1 error(s)",
                         "0 warning(s)",
-                        "Name \"duplicate\" is duplicated across the following paths: $.sources[0].name, $.targets.nodes[0].name");
+                        "Name \"duplicate\" is duplicated across the following paths: $.targets.nodes[0].name, $.targets.nodes[1].name");
     }
 
     @Test
-    void fails_if_source_name_is_duplicated_with_rel_target() {
+    void fails_if_node_target_name_is_duplicated_with_rel_target() {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
                         {
                             "version": "1",
                             "sources": [{
                                 "type": "bigquery",
-                                "name": "duplicate",
+                                "name": "source",
                                 "query": "SELECT id, name FROM my.table"
                             }],
                             "targets": {
                                 "nodes": [{
-                                    "source": "duplicate",
-                                    "name": "a-node-target",
+                                    "source": "source",
+                                    "name": "duplicate",
                                     "write_mode": "merge",
                                     "labels": ["Label1", "Label2"],
                                     "properties": [
@@ -85,10 +197,10 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                                 }],
                                 "relationships": [{
                                     "name": "duplicate",
-                                    "source": "duplicate",
+                                    "source": "source",
                                     "type": "TYPE",
-                                    "start_node_reference": "a-node-target",
-                                    "end_node_reference": "a-node-target"
+                                    "start_node_reference": "duplicate",
+                                    "end_node_reference": "duplicate"
                                 }]
                             }
                         }
@@ -98,24 +210,34 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                 .hasMessageContainingAll(
                         "1 error(s)",
                         "0 warning(s)",
-                        "Name \"duplicate\" is duplicated across the following paths: $.sources[0].name, $.targets.relationships[0].name");
+                        "Name \"duplicate\" is duplicated across the following paths: $.targets.nodes[0].name, $.targets.relationships[0].name");
     }
 
     @Test
-    void fails_if_source_name_is_duplicated_with_custom_query_target() {
+    void fails_if_node_target_name_is_duplicated_with_custom_query_target() {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
                         {
                             "version": "1",
                             "sources": [{
                                 "type": "bigquery",
-                                "name": "duplicate",
+                                "name": "source",
                                 "query": "SELECT id, name FROM my.table"
                             }],
                             "targets": {
+                                "nodes": [{
+                                    "source": "source",
+                                    "name": "duplicate",
+                                    "write_mode": "merge",
+                                    "labels": ["Label1", "Label2"],
+                                    "properties": [
+                                        {"source_field": "field_1", "target_property": "property1"},
+                                        {"source_field": "field_2", "target_property": "property2"}
+                                    ]
+                                }],
                                 "queries": [{
                                     "name": "duplicate",
-                                    "source": "duplicate",
+                                    "source": "source",
                                     "query": "UNWIND $rows AS row CREATE (n:ANode) SET n = row"
                                 }]
                             }
@@ -126,24 +248,24 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                 .hasMessageContainingAll(
                         "1 error(s)",
                         "0 warning(s)",
-                        "Name \"duplicate\" is duplicated across the following paths: $.sources[0].name, $.targets.queries[0].name");
+                        "Name \"duplicate\" is duplicated across the following paths: $.targets.nodes[0].name, $.targets.queries[0].name");
     }
 
     @Test
-    void fails_if_source_name_is_duplicated_with_action() {
+    void fails_if_query_target_name_is_duplicated_with_action() {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
                         {
                             "version": "1",
                             "sources": [{
                                 "type": "bigquery",
-                                "name": "duplicate",
+                                "name": "source",
                                 "query": "SELECT id, name FROM my.table"
                             }],
                             "targets": {
                                 "queries": [{
-                                    "name": "my-target",
-                                    "source": "duplicate",
+                                    "name": "duplicate",
+                                    "source": "source",
                                     "query": "UNWIND $rows AS row CREATE (n:ANode) SET n = row"
                                 }]
                             },
@@ -161,7 +283,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                 .hasMessageContainingAll(
                         "1 error(s)",
                         "0 warning(s)",
-                        "Name \"duplicate\" is duplicated across the following paths: $.sources[0].name, $.actions[0].name");
+                        "Name \"duplicate\" is duplicated across the following paths: $.targets.queries[0].name, $.actions[0].name");
     }
 
     @Test
