@@ -22,24 +22,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 import org.neo4j.importer.v1.actions.Action;
-import org.neo4j.importer.v1.sources.Source;
 import org.neo4j.importer.v1.targets.CustomQueryTarget;
 import org.neo4j.importer.v1.targets.NodeTarget;
 import org.neo4j.importer.v1.targets.RelationshipTarget;
 import org.neo4j.importer.v1.validation.SpecificationValidationResult.Builder;
 import org.neo4j.importer.v1.validation.SpecificationValidator;
 
-public class NoDuplicatedNameValidator implements SpecificationValidator {
+public class NoDuplicatedTargetActionNameValidator implements SpecificationValidator {
+    private static final String ERROR_CODE = "DUPL-001";
 
     private final NameCounter nameCounter;
 
-    public NoDuplicatedNameValidator() {
-        nameCounter = new NameCounter();
-    }
-
-    @Override
-    public void visitSource(int index, Source source) {
-        nameCounter.track(source.getName(), String.format("$.sources[%d]", index));
+    public NoDuplicatedTargetActionNameValidator() {
+        nameCounter = new NameCounter(ERROR_CODE);
     }
 
     @Override
@@ -69,9 +64,13 @@ public class NoDuplicatedNameValidator implements SpecificationValidator {
 }
 
 class NameCounter {
-    private static final String ERROR_CODE = "DUPL-001";
 
     private final Map<String, List<String>> pathsUsingName = new LinkedHashMap<>();
+    private final String errorCode;
+
+    public NameCounter(String errorCode) {
+        this.errorCode = errorCode;
+    }
 
     public void track(String name, String path) {
         pathsUsingName.computeIfAbsent(name, (ignored) -> new ArrayList<>()).add(String.format("%s.name", path));
@@ -86,7 +85,7 @@ class NameCounter {
                     result.set(true);
                     builder.addError(
                             paths.get(0),
-                            ERROR_CODE,
+                            errorCode,
                             String.format(
                                     "Name \"%s\" is duplicated across the following paths: %s",
                                     entry.getKey(), String.join(", ", paths)));

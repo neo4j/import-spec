@@ -1,4 +1,4 @@
-org.neo4j.importer.v1.validation.plugin.NoDuplicatedNameValidator
+org.neo4j.importer.v1.validation.plugin.NoDuplicatedTargetActionNameValidator
 org.neo4j.importer.v1.validation.plugin.NoDanglingSourceValidator
 org.neo4j.importer.v1.validation.plugin.NoDanglingDependsOnValidator
 org.neo4j.importer.v1.validation.plugin.NoDanglingNodeReferenceValidator
@@ -8,3 +8,4 @@ org.neo4j.importer.v1.validation.plugin.NoInconsistentInlineSourceDataValidator
 org.neo4j.importer.v1.validation.plugin.AtLeastOneActiveTargetValidator
 org.neo4j.importer.v1.validation.plugin.NoDuplicatedDependencyValidator
 org.neo4j.importer.v1.validation.plugin.NoDanglingActiveNodeReferenceValidator
+org.neo4j.importer.v1.validation.plugin.NoDuplicatedSourceNameValidator

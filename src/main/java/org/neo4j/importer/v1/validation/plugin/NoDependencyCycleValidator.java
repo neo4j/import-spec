@@ -50,7 +50,7 @@ public class NoDependencyCycleValidator implements SpecificationValidator {
     @Override
     public Set<Class<? extends SpecificationValidator>> requires() {
         return Set.of(
-                NoDuplicatedNameValidator.class,
+                NoDuplicatedTargetActionNameValidator.class,
                 NoDanglingDependsOnValidator.class,
                 NoDanglingNodeReferenceValidator.class,
                 NoDuplicatedDependencyValidator.class);
