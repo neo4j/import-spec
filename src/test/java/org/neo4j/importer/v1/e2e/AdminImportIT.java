@@ -340,26 +340,24 @@ public class AdminImportIT {
         private static String[] importCommand(ImportSpecification importSpec, String database) {
             var command = new StringBuilder();
             command.append("neo4j-admin database import full ");
+            command.append(database);
             Targets targets = importSpec.getTargets();
             for (NodeTarget nodeTarget : targets.getNodes()) {
-                command.append("--nodes=");
+                command.append(" --nodes=");
                 command.append(String.join(":", nodeTarget.getLabels()));
                 command.append("=");
                 command.append("/import/%s".formatted(headerFileName(nodeTarget)));
                 command.append(",");
                 command.append("/import/%s".formatted(dataFileName(nodeTarget)));
-                command.append(" ");
             }
             for (RelationshipTarget relationshipTarget : targets.getRelationships()) {
-                command.append("--relationships=");
+                command.append(" --relationships=");
                 command.append(relationshipTarget.getType());
                 command.append("=");
                 command.append("/import/%s".formatted(headerFileName(relationshipTarget)));
                 command.append(",");
                 command.append("/import/%s".formatted(dataFileName(relationshipTarget)));
-                command.append(" ");
             }
-            command.append(database);
             return command.toString().split(" ");
         }
 
