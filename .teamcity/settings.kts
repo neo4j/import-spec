@@ -8,7 +8,7 @@ project {
   params {
     text("osssonatypeorg-username", "%publish-username%")
     password("osssonatypeorg-password", "%publish-password%")
-    password("signing-key-passphrase", "%gpg-signing-key-password%")
+    password("signing-key-passphrase", "%publish-signing-key-password%")
     password("github-commit-status-token", "%github-token%")
     password("github-pull-request-token", "%github-token%")
   }
