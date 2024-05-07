@@ -3,9 +3,14 @@ org.neo4j.importer.v1.validation.plugin.NoDanglingSourceValidator
 org.neo4j.importer.v1.validation.plugin.NoDanglingDependsOnValidator
 org.neo4j.importer.v1.validation.plugin.NoDanglingNodeReferenceValidator
 org.neo4j.importer.v1.validation.plugin.NoDependencyCycleValidator
-org.neo4j.importer.v1.validation.plugin.NoDuplicatedSourceHeaderColumn
+org.neo4j.importer.v1.validation.plugin.NoDuplicatedSourceHeaderColumnValidator
 org.neo4j.importer.v1.validation.plugin.NoInconsistentInlineSourceDataValidator
 org.neo4j.importer.v1.validation.plugin.AtLeastOneActiveTargetValidator
 org.neo4j.importer.v1.validation.plugin.NoDuplicatedDependencyValidator
 org.neo4j.importer.v1.validation.plugin.NoDanglingActiveNodeReferenceValidator
 org.neo4j.importer.v1.validation.plugin.NoDuplicatedSourceNameValidator
+org.neo4j.importer.v1.validation.plugin.InvalidTextColumnMappingValidator
+org.neo4j.importer.v1.validation.plugin.NoDuplicatedWithSourceAggregateFieldNameValidator
+org.neo4j.importer.v1.validation.plugin.NoDuplicatedAggregateFieldNameValidator
+org.neo4j.importer.v1.validation.plugin.NoDuplicatedLabelValidator
+org.neo4j.importer.v1.validation.plugin.NoDuplicatedTargetPropertyValidator
