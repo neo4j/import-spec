@@ -361,7 +361,8 @@
           "type": "array",
           "items": {
             "type": "string",
-            "minLength": 1
+            "minLength": 1,
+            "pattern": "\\S+"
           },
           "minItems": 1
         },
@@ -710,10 +711,14 @@
             "type": "object",
             "properties": {
               "expression": {
-                "type": "string"
+                "type": "string",
+                "minLength": 1,
+                "pattern": "\\S+"
               },
               "field_name": {
-                "type": "string"
+                "type": "string",
+                "minLength": 1,
+                "pattern": "\\S+"
               }
             },
             "required": [
@@ -725,7 +730,9 @@
           "minItems": 1
         },
         "where": {
-          "type": "string"
+          "type": "string",
+          "minLength": 1,
+          "pattern": "\\S+"
         },
         "order_by": {
           "type": "array",
@@ -733,15 +740,15 @@
             "type": "object",
             "properties": {
               "expression": {
-                "type": "string"
+                "type": "string",
+                "minLength": 1,
+                "pattern": "\\S+"
               },
               "order": {
                 "type": "string",
                 "enum": [
                   "ASC",
-                  "asc",
-                  "DESC",
-                  "desc"
+                  "DESC"
                 ]
               }
             },
@@ -764,11 +771,13 @@
       "properties": {
         "source_field": {
           "type": "string",
-          "minLength": 1
+          "minLength": 1,
+          "pattern": "\\S+"
         },
         "target_property": {
           "type": "string",
-          "minLength": 1
+          "minLength": 1,
+          "pattern": "\\S+"
         },
         "target_property_type": {
           "type": "string",
@@ -799,7 +808,10 @@
           ]
         }
       },
-      "additionalProperties": false
+      "additionalProperties": false,
+      "required": [
+        "source_field", "target_property"
+      ]
     },
     "target.node.schema.constraints.type": {
       "type": "object",

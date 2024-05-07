@@ -1318,8 +1318,8 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                                     "depends_on": ["a-query-target", "a-query-target"],
                                     "write_mode": "create",
                                     "properties": [
-                                        {"source_field": "field_1", "target_property": "property1"},
-                                        {"source_field": "field_2", "target_property": "property2"}
+                                        {"source_field": "column1", "target_property": "property1"},
+                                        {"source_field": "column2", "target_property": "property2"}
                                     ]
                                 }],
                                 "queries": [{
@@ -1366,8 +1366,8 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                                     "write_mode": "merge",
                                     "labels": ["Label1", "Label2"],
                                     "properties": [
-                                        {"source_field": "field_1", "target_property": "property1"},
-                                        {"source_field": "field_2", "target_property": "property2"}
+                                        {"source_field": "column1", "target_property": "property1"},
+                                        {"source_field": "column2", "target_property": "property2"}
                                     ]
                                 }],
                                 "relationships": [{
@@ -1428,8 +1428,8 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                                    "write_mode": "merge",
                                    "labels": ["Label1", "Label2"],
                                    "properties": [
-                                       {"source_field": "field_1", "target_property": "property1"},
-                                       {"source_field": "field_2", "target_property": "property2"}
+                                       {"source_field": "column1", "target_property": "property1"},
+                                       {"source_field": "column2", "target_property": "property2"}
                                    ]
                                }],
                                 "relationships": [{
@@ -1484,8 +1484,8 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                                    "write_mode": "merge",
                                    "labels": ["Label1", "Label2"],
                                    "properties": [
-                                       {"source_field": "field_1", "target_property": "property1"},
-                                       {"source_field": "field_2", "target_property": "property2"}
+                                       {"source_field": "column1", "target_property": "property1"},
+                                       {"source_field": "column2", "target_property": "property2"}
                                    ]
                                }],
                                 "relationships": [{

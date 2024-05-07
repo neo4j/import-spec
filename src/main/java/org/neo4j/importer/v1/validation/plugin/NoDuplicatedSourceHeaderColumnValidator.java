@@ -26,12 +26,12 @@ import org.neo4j.importer.v1.sources.TextSource;
 import org.neo4j.importer.v1.validation.SpecificationValidationResult.Builder;
 import org.neo4j.importer.v1.validation.SpecificationValidator;
 
-public class NoDuplicatedSourceHeaderColumn implements SpecificationValidator {
+public class NoDuplicatedSourceHeaderColumnValidator implements SpecificationValidator {
     private static final String ERROR_CODE = "DUPL-002";
 
     private final Map<String, Duplicate<String>> sourcePathToDuplicates;
 
-    public NoDuplicatedSourceHeaderColumn() {
+    public NoDuplicatedSourceHeaderColumnValidator() {
         sourcePathToDuplicates = new LinkedHashMap<>();
     }
 
