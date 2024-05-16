@@ -83,62 +83,12 @@
   "$defs": {
     "source": {
       "type": "object",
-      "allOf": [
-        {
-          "properties": {
-            "type": {
-              "type": "string",
-              "enum": [
-                "bigquery",
-                "jdbc",
-                "text"
-              ]
-            }
-          },
-          "required": [
-            "type"
-          ]
-        },
-        {
-          "if": {
-            "properties": {
-              "type": {
-                "const": "bigquery"
-              }
-            }
-          },
-          "then": {
-            "$ref": "#/$defs/source.bigQuery"
-          }
-        },
-        {
-          "if": {
-            "properties": {
-              "type": {
-                "const": "jdbc"
-              }
-            }
-          },
-          "then": {
-            "$ref": "#/$defs/source.jdbc"
-          }
-        },
-        {
-          "if": {
-            "properties": {
-              "type": {
-                "const": "text"
-              }
-            }
-          },
-          "then": {
-            "$ref": "#/$defs/source.text"
-          }
-        }
-      ]
-    },
-    "source.base": {
       "properties": {
+        "type": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "\\S+"
+        },
         "name": {
           "type": "string",
           "minLength": 1,
@@ -146,151 +96,10 @@
         }
       },
       "required": [
+        "type",
         "name"
-      ]
-    },
-    "source.bigQuery": {
-      "type": "object",
-      "allOf": [
-        {
-          "$ref": "#/$defs/source.base"
-        }
       ],
-      "properties": {
-        "query": {
-          "type": "string",
-          "minLength": 1
-        }
-      },
-      "required": [
-        "query"
-      ]
-    },
-    "source.jdbc": {
-      "type": "object",
-      "allOf": [
-        {
-          "$ref": "#/$defs/source.base"
-        }
-      ],
-      "properties": {
-        "type": {
-          "const": "jdbc"
-        },
-        "data_source": {
-          "type": "string",
-          "minLength": 1
-        },
-        "sql": {
-          "type": "string",
-          "minLength": 1
-        }
-      },
-      "required": [
-        "data_source",
-        "sql"
-      ]
-    },
-    "source.text": {
-      "type": "object",
-      "allOf": [
-        {
-          "$ref": "#/$defs/source.base"
-        },
-        {
-          "$ref": "#/$defs/source.text.base"
-        },
-        {
-          "if": {
-            "properties": {
-              "urls": {
-              }
-            },
-            "required": [
-              "urls"
-            ]
-          },
-          "then": {
-            "$ref": "#/$defs/source.text.external"
-          },
-          "else": {
-            "$ref": "#/$defs/source.text.inline"
-          }
-        }
-      ]
-    },
-    "source.text.base": {
-      "type": "object",
-      "properties": {
-        "header": {
-          "type": "array",
-          "items": {
-            "type": "string",
-            "minLength": 1,
-            "pattern": "\\S+"
-          },
-          "minItems": 1
-        }
-      }
-    },
-    "source.text.external": {
-      "type": "object",
-      "properties": {
-        "urls": {
-          "type": "array",
-          "items": {
-            "type": "string",
-            "minLength": 1,
-            "pattern": "\\S+"
-          },
-          "minItems": 1
-        },
-        "format": {
-          "type": "string",
-          "enum": [
-            "default",
-            "excel",
-            "informix",
-            "mongo",
-            "mongo_tsv",
-            "mysql",
-            "oracle",
-            "postgres",
-            "postgresql_csv",
-            "rfc4180"
-          ]
-        },
-        "column_delimiter": {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 1
-        },
-        "line_separator": {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 1
-        }
-      },
-      "required": [
-        "urls"
-      ]
-    },
-    "source.text.inline": {
-      "type": "object",
-      "properties": {
-        "data": {
-          "type": "array",
-          "items": {
-            "type": "array",
-            "minItems": 1
-          },
-          "minItems": 1
-        }
-      },
-      "required": [
-        "header",
-        "data"
-      ]
+      "additionalProperties": true
     },
     "target.base": {
       "type": "object",

@@ -16,21 +16,27 @@
  */
 package org.neo4j.importer.v1.sources;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Objects;
 
-public class BigQuerySource extends Source {
+public class BigQuerySource implements Source {
 
+    private final String name;
     private final String query;
 
-    @JsonCreator
-    public BigQuerySource(
-            @JsonProperty(value = "name", required = true) String name,
-            @JsonProperty(value = "query", required = true) String query) {
+    public BigQuerySource(String name, String query) {
 
-        super(name, SourceType.BIGQUERY);
+        this.name = name;
         this.query = query;
+    }
+
+    @Override
+    public String getType() {
+        return "bigquery";
+    }
+
+    @Override
+    public String getName() {
+        return name;
     }
 
     public String getQuery() {
@@ -40,19 +46,17 @@ public class BigQuerySource extends Source {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        if (!super.equals(o)) return false;
-        BigQuerySource source = (BigQuerySource) o;
-        return Objects.equals(query, source.query);
+        if (!(o instanceof BigQuerySource that)) return false;
+        return Objects.equals(name, that.name) && Objects.equals(query, that.query);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), query);
+        return Objects.hash(name, query);
     }
 
     @Override
     public String toString() {
-        return "BigQuerySource{" + "query='" + query + '\'' + "} " + super.toString();
+        return "BigQuerySource{" + "name='" + name + '\'' + ", query='" + query + '\'' + '}';
     }
 }

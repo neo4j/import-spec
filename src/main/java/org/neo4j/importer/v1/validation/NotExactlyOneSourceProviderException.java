@@ -14,13 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.neo4j.importer.v1.sources;
+package org.neo4j.importer.v1.validation;
 
-import java.io.Serializable;
+public class NotExactlyOneSourceProviderException extends RuntimeException implements SourceError {
 
-public interface Source extends Serializable {
-
-    String getType();
-
-    String getName();
+    public NotExactlyOneSourceProviderException(String type, int count) {
+        super(String.format("Expected exactly one source provider for sources of type %s, but found: %d", type, count));
+    }
 }

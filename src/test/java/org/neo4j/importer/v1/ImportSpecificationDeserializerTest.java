@@ -16,17 +16,121 @@
  */
 package org.neo4j.importer.v1;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.neo4j.importer.v1.ImportSpecificationDeserializer.deserialize;
 
 import java.io.StringReader;
+import java.util.List;
+import java.util.Map;
 import org.junit.jupiter.api.Test;
+import org.neo4j.importer.v1.actions.ActionStage;
+import org.neo4j.importer.v1.actions.HttpAction;
+import org.neo4j.importer.v1.actions.HttpMethod;
+import org.neo4j.importer.v1.sources.BigQuerySource;
+import org.neo4j.importer.v1.targets.CustomQueryTarget;
+import org.neo4j.importer.v1.targets.Targets;
 import org.neo4j.importer.v1.validation.InvalidSpecificationException;
 import org.neo4j.importer.v1.validation.UnparseableSpecificationException;
 
 // This exercises the compliance of various import spec payloads with the JSON schema
 // The class focuses on the general structure of the spec.
 class ImportSpecificationDeserializerTest {
+
+    @Test
+    void deserializes_minimal_job_spec() throws Exception {
+        var json =
+                """
+            {
+                "version": "1",
+                "sources": [{
+                    "name": "my-bigquery-source",
+                    "type": "bigquery",
+                    "query": "SELECT id, name FROM my.table"
+                }],
+                "targets": {
+                    "queries": [{
+                        "name": "my-query",
+                        "source": "my-bigquery-source",
+                        "query": "UNWIND $rows AS row CREATE (n:ANode) SET n = row"
+                    }]
+                }
+            }
+        """
+                        .stripIndent();
+
+        var spec = deserialize(new StringReader(json));
+
+        assertThat(spec.getConfiguration()).isEqualTo(new Configuration(null));
+        assertThat(spec.getSources())
+                .isEqualTo(List.of(new BigQuerySource("my-bigquery-source", "SELECT id, name FROM my.table")));
+        assertThat(spec.getTargets())
+                .isEqualTo(new Targets(
+                        null,
+                        null,
+                        List.of(new CustomQueryTarget(
+                                true,
+                                "my-query",
+                                "my-bigquery-source",
+                                null,
+                                "UNWIND $rows AS row CREATE (n:ANode) SET n = row"))));
+        assertThat(spec.getActions()).isEmpty();
+    }
+
+    @Test
+    void deserializes_job_spec() throws Exception {
+        var json =
+                """
+            {
+                "version": "1",
+                "config": {
+                    "foo": "bar",
+                    "baz": 42,
+                    "qix": [true, 1.0, {}]
+                },
+                "sources": [{
+                    "name": "my-bigquery-source",
+                    "type": "bigquery",
+                    "query": "SELECT id, name FROM my.table"
+                }],
+                "targets": {
+                    "queries": [{
+                        "name": "my-query",
+                        "source": "my-bigquery-source",
+                        "query": "UNWIND $rows AS row CREATE (n:ANode) SET n = row"
+                    }]
+                },
+                "actions": [{
+                    "name": "my-http-get-action",
+                    "type": "http",
+                    "method": "get",
+                    "url": "https://example.com",
+                    "stage": "start"
+                }]
+            }
+        """
+                        .stripIndent();
+
+        var spec = deserialize(new StringReader(json));
+
+        assertThat(spec.getConfiguration())
+                .isEqualTo(new Configuration(Map.of("foo", "bar", "baz", 42, "qix", List.of(true, 1.0, Map.of()))));
+        assertThat(spec.getSources())
+                .isEqualTo(List.of(new BigQuerySource("my-bigquery-source", "SELECT id, name FROM my.table")));
+        assertThat(spec.getTargets())
+                .isEqualTo(new Targets(
+                        null,
+                        null,
+                        List.of(new CustomQueryTarget(
+                                true,
+                                "my-query",
+                                "my-bigquery-source",
+                                null,
+                                "UNWIND $rows AS row CREATE (n:ANode) SET n = row"))));
+        assertThat(spec.getActions())
+                .isEqualTo(List.of(new HttpAction(
+                        true, "my-http-get-action", ActionStage.START, "https://example.com", HttpMethod.GET, null)));
+    }
 
     @Test
     void fails_if_spec_is_unparseable() {

@@ -16,11 +16,18 @@
  */
 package org.neo4j.importer.v1.sources;
 
-import java.io.Serializable;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
-public interface Source extends Serializable {
+public class BigQuerySourceProvider implements SourceProvider<BigQuerySource> {
 
-    String getType();
+    @Override
+    public String supportedType() {
+        return "bigquery";
+    }
 
-    String getName();
+    @Override
+    public BigQuerySource provide(ObjectNode node) {
+        return new BigQuerySource(
+                node.get("name").textValue(), node.get("query").textValue());
+    }
 }

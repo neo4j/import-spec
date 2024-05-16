@@ -16,11 +16,20 @@
  */
 package org.neo4j.importer.v1.sources;
 
-import java.io.Serializable;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
-public interface Source extends Serializable {
+public class JdbcSourceProvider implements SourceProvider<JdbcSource> {
 
-    String getType();
+    @Override
+    public String supportedType() {
+        return "jdbc";
+    }
 
-    String getName();
+    @Override
+    public JdbcSource provide(ObjectNode node) {
+        return new JdbcSource(
+                node.get("name").textValue(),
+                node.get("data_source").textValue(),
+                node.get("sql").textValue());
+    }
 }

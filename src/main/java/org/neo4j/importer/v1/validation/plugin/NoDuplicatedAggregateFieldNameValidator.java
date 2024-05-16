@@ -18,7 +18,6 @@ package org.neo4j.importer.v1.validation.plugin;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 import org.neo4j.importer.v1.targets.Aggregation;
 import org.neo4j.importer.v1.targets.EntityTarget;
@@ -35,11 +34,6 @@ public class NoDuplicatedAggregateFieldNameValidator implements SpecificationVal
 
     public NoDuplicatedAggregateFieldNameValidator() {
         this.duplicatedAggregateFields = new LinkedHashMap<>();
-    }
-
-    @Override
-    public Set<Class<? extends SpecificationValidator>> requires() {
-        return Set.of(NoDuplicatedWithSourceAggregateFieldNameValidator.class);
     }
 
     @Override

@@ -14,13 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.neo4j.importer.v1.sources;
+package org.neo4j.importer.v1.validation;
 
-import java.io.Serializable;
-
-public interface Source extends Serializable {
-
-    String getType();
-
-    String getName();
-}
+public interface SourceError {}

@@ -16,8 +16,11 @@
  */
 package org.neo4j.importer.v1.sources;
 
-public enum SourceType {
-    BIGQUERY,
-    JDBC,
-    TEXT;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+
+public interface SourceProvider<T extends Source> {
+
+    String supportedType();
+
+    T provide(ObjectNode node);
 }
