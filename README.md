@@ -7,10 +7,12 @@ In particular, it offers:
 
 - a user-friendly configuration surface (in JSON or YAML), called import specification, backed by a JSON schema
 - the Java equivalent of the import specification, a.k.a. `org.neo4j.importer.v1.ImportSpecification`
-- validation plugins (see [built-in plugins](https://github.com/neo4j/import-spec/tree/main/src/main/java/org/neo4j/importer/v1/validation/plugin))
+- source plugins (see [`SourceProvider` Service Provider Interface](https://github.com/neo4j/import-spec/blob/main/src/main/java/org/neo4j/importer/v1/sources/SourceProvider.java))
+- validation plugins (see [`SpecificationValidator` Service Provider Interface](https://github.com/neo4j/import-spec/blob/main/src/main/java/org/neo4j/importer/v1/validation/SpecificationValidator.java) and [built-in plugins](https://github.com/neo4j/import-spec/tree/main/src/main/java/org/neo4j/importer/v1/validation/plugin))
 
 The library does **NOT**:
 
+- define any sources, you need to define and register at least one (see [examples](https://github.com/neo4j/import-spec/tree/main/src/test/java/org/neo4j/importer/v1/sources/))
 - implement any actual import to Neo4j (although some end-to-end tests just do that)
 - expose any configuration to locate a Neo4j instance to import data to
 
