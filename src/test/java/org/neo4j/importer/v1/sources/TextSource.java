@@ -21,11 +21,9 @@ import java.util.Objects;
 
 public abstract class TextSource implements Source {
 
-    private String name;
+    private final String name;
 
-    private List<String> header;
-
-    TextSource() {}
+    private final List<String> header;
 
     public TextSource(String name, List<String> header) {
         this.name = name;
