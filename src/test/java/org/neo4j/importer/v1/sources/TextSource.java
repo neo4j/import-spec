@@ -19,12 +19,14 @@ package org.neo4j.importer.v1.sources;
 import java.util.List;
 import java.util.Objects;
 
-public abstract class TextSource extends Source {
+public abstract class TextSource implements Source {
+
+    private final String name;
 
     private final List<String> header;
 
     public TextSource(String name, List<String> header) {
-        super(name, SourceType.TEXT);
+        this.name = name;
         this.header = header;
     }
 
@@ -33,21 +35,29 @@ public abstract class TextSource extends Source {
     }
 
     @Override
+    public String getType() {
+        return "text";
+    }
+
+    @Override
+    public String getName() {
+        return name;
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        if (!super.equals(o)) return false;
-        TextSource that = (TextSource) o;
-        return Objects.equals(header, that.header);
+        if (!(o instanceof TextSource that)) return false;
+        return Objects.equals(name, that.name) && Objects.equals(header, that.header);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), header);
+        return Objects.hash(name, header);
     }
 
     @Override
     public String toString() {
-        return "TextSource{" + "header=" + header + "} " + super.toString();
+        return "TextSource{" + "name='" + name + '\'' + ", header=" + header + '}';
     }
 }

@@ -20,6 +20,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.StreamReadFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.MapperFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
 import com.networknt.schema.JsonSchema;
 import com.networknt.schema.JsonSchemaFactory;
@@ -35,20 +37,20 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import org.neo4j.importer.v1.actions.Action;
 import org.neo4j.importer.v1.graph.Graph;
+import org.neo4j.importer.v1.sources.Source;
+import org.neo4j.importer.v1.sources.SourceDeserializer;
+import org.neo4j.importer.v1.sources.SourceProvider;
 import org.neo4j.importer.v1.validation.InvalidSpecificationException;
+import org.neo4j.importer.v1.validation.SourceError;
 import org.neo4j.importer.v1.validation.SpecificationException;
 import org.neo4j.importer.v1.validation.SpecificationValidationResult;
 import org.neo4j.importer.v1.validation.SpecificationValidationResult.Builder;
 import org.neo4j.importer.v1.validation.SpecificationValidator;
+import org.neo4j.importer.v1.validation.UndeserializableSourceException;
 import org.neo4j.importer.v1.validation.UndeserializableSpecificationException;
 import org.neo4j.importer.v1.validation.UnparseableSpecificationException;
 
 public class ImportSpecificationDeserializer {
-    private static final YAMLMapper MAPPER = YAMLMapper.builder()
-            .enable(MapperFeature.ACCEPT_CASE_INSENSITIVE_ENUMS)
-            .enable(StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION)
-            .disable(MapperFeature.AUTO_DETECT_CREATORS)
-            .build();
 
     private static final JsonSchema SCHEMA = JsonSchemaFactory.getInstance(VersionFlag.V202012)
             .getSchema(ImportSpecificationDeserializer.class.getResourceAsStream("/spec.v1.json"));
@@ -68,9 +70,10 @@ public class ImportSpecificationDeserializer {
      */
     @SuppressWarnings("deprecated")
     public static ImportSpecification deserialize(Reader spec) throws SpecificationException {
-        JsonNode json = parse(spec);
+        YAMLMapper mapper = initMapper();
+        JsonNode json = parse(mapper, spec);
         validate(SCHEMA, json);
-        ImportSpecification result = deserialize(json);
+        ImportSpecification result = deserialize(mapper, json);
         validate(result);
         return result;
     }
@@ -93,6 +96,28 @@ public class ImportSpecificationDeserializer {
         runExtraValidations(specification);
     }
 
+    private static YAMLMapper initMapper() {
+        var module = new SimpleModule();
+        List<SourceProvider<? extends Source>> providers = ServiceLoader.load(SourceProvider.class).stream()
+                .map(provider -> (SourceProvider<? extends Source>) provider.get())
+                .collect(Collectors.toList());
+        module.addDeserializer(Source.class, new SourceDeserializer(providers));
+        return YAMLMapper.builder()
+                .addModule(module)
+                .enable(MapperFeature.ACCEPT_CASE_INSENSITIVE_ENUMS)
+                .enable(StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION)
+                .disable(MapperFeature.AUTO_DETECT_CREATORS)
+                .build();
+    }
+
+    private static JsonNode parse(ObjectMapper mapper, Reader spec) throws SpecificationException {
+        try {
+            return mapper.readTree(spec);
+        } catch (IOException e) {
+            throw new UnparseableSpecificationException(e);
+        }
+    }
+
     private static void validate(JsonSchema schema, JsonNode json) throws InvalidSpecificationException {
         Builder builder = SpecificationValidationResult.builder();
         schema.validate(json)
@@ -106,10 +131,14 @@ public class ImportSpecificationDeserializer {
         }
     }
 
-    private static ImportSpecification deserialize(JsonNode json) throws SpecificationException {
+    private static ImportSpecification deserialize(ObjectMapper mapper, JsonNode json) throws SpecificationException {
         try {
-            return MAPPER.treeToValue(json, ImportSpecification.class);
+            return mapper.treeToValue(json, ImportSpecification.class);
         } catch (JsonProcessingException e) {
+            Throwable cause = e.getCause();
+            if (cause instanceof SourceError) {
+                throw new UndeserializableSourceException(cause);
+            }
             throw new UndeserializableSpecificationException(
                     "The payload cannot be deserialized, despite a successful schema validation.\n"
                             + "This is likely a bug, please open an issue in "
@@ -177,13 +206,5 @@ public class ImportSpecificationDeserializer {
         return Graph.runTopologicalSort(validatorGraph).stream()
                 .map(validatorCatalog::get)
                 .collect(Collectors.toList());
-    }
-
-    private static JsonNode parse(Reader spec) throws SpecificationException {
-        try {
-            return MAPPER.readTree(spec);
-        } catch (IOException e) {
-            throw new UnparseableSpecificationException(e);
-        }
     }
 }

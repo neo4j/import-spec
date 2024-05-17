@@ -16,22 +16,16 @@
  */
 package org.neo4j.importer.v1.sources;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Objects;
 
-public class NamedJdbcSource extends Source {
+public class JdbcSource implements Source {
 
+    private final String name;
     private final String dataSource;
     private final String sql;
 
-    @JsonCreator
-    public NamedJdbcSource(
-            @JsonProperty(value = "name", required = true) String name,
-            @JsonProperty(value = "data_source", required = true) String dataSource,
-            @JsonProperty(value = "sql", required = true) String sql) {
-
-        super(name, SourceType.JDBC);
+    public JdbcSource(String name, String dataSource, String sql) {
+        this.name = name;
         this.dataSource = dataSource;
         this.sql = sql;
     }
@@ -45,24 +39,34 @@ public class NamedJdbcSource extends Source {
     }
 
     @Override
+    public String getType() {
+        return "jdbc";
+    }
+
+    @Override
+    public String getName() {
+        return name;
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        if (!super.equals(o)) return false;
-        NamedJdbcSource that = (NamedJdbcSource) o;
-        return Objects.equals(dataSource, that.dataSource) && Objects.equals(sql, that.sql);
+        if (!(o instanceof JdbcSource that)) return false;
+        return Objects.equals(name, that.name)
+                && Objects.equals(dataSource, that.dataSource)
+                && Objects.equals(sql, that.sql);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), dataSource, sql);
+        return Objects.hash(name, dataSource, sql);
     }
 
     @Override
     public String toString() {
-        return "NamedJdbcSource{" + "dataSource='"
-                + dataSource + '\'' + ", query='"
-                + sql + '\'' + "} "
-                + super.toString();
+        return "NamedJdbcSource{" + "name='"
+                + name + '\'' + ", dataSource='"
+                + dataSource + '\'' + ", sql='"
+                + sql + '\'' + '}';
     }
 }

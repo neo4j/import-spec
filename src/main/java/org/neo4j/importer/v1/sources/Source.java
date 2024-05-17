@@ -16,54 +16,33 @@
  */
 package org.neo4j.importer.v1.sources;
 
-import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 import java.io.Serializable;
-import java.util.Objects;
 
-@JsonTypeInfo(use = Id.DEDUCTION)
-@JsonSubTypes({
-    @Type(value = BigQuerySource.class),
-    @Type(value = ExternalTextSource.class),
-    @Type(value = InlineTextSource.class),
-    @Type(value = NamedJdbcSource.class),
-})
-public abstract class Source implements Serializable {
+/**
+ * A {@link Source} provides a collection of key-value pairs.
+ * Each {@link org.neo4j.importer.v1.targets.Target} is bound to a single {@link Source}, using the source's name.
+ * The source's key-value pairs are mapped by the target's {@link org.neo4j.importer.v1.targets.PropertyMapping} in the case
+ * of {@link org.neo4j.importer.v1.targets.NodeTarget} and {@link org.neo4j.importer.v1.targets.RelationshipTarget}.
+ * They are otherwise arbitrarily mapped by the Cypher query defined by {@link org.neo4j.importer.v1.targets.CustomQueryTarget}.
+ * A source name must be unique within an instance of {@link org.neo4j.importer.v1.ImportSpecification}.
+ * A custom source can only be used if a corresponding {@link SourceProvider} is registered, through Java's standard
+ * Service Provider Interface mechanism.
+ */
+public interface Source extends Serializable {
 
-    private final String name;
+    /**
+     * Type of the source (example: "jdbc", "text", "parquet", ...)
+     * The type name must be unique in a case-insensitive (per {@link java.util.Locale.ROOT} casing rules).
+     * Having multiple sources loaded with the same type is invalid and will lead to an exception being raised.
+     * Note: it is recommended that the type returned here be the same as the one this source's {@link SourceProvider} supports.
+     */
+    String getType();
 
-    private final SourceType type;
-
-    public Source(String name, SourceType type) {
-        this.name = name;
-        this.type = type;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public SourceType getType() {
-        return type;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Source source = (Source) o;
-        return Objects.equals(name, source.name) && type == source.type;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(name, type);
-    }
-
-    @Override
-    public String toString() {
-        return "Source{" + "name='" + name + '\'' + ", type=" + type + '}';
-    }
+    /**
+     * Name of a particular source instance
+     * The name is user-provided and must be unique within the whole {@link org.neo4j.importer.v1.ImportSpecification}.
+     * This name is used as a reference for {@link org.neo4j.importer.v1.targets.Target}s to declare the source of the
+     * data they map from.
+     */
+    String getName();
 }

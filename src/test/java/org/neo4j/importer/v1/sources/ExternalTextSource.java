@@ -16,32 +16,27 @@
  */
 package org.neo4j.importer.v1.sources;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
 import java.util.Objects;
 
 public class ExternalTextSource extends TextSource {
-    private static final String DEFAULT_COLUMN_DELIMITER = ",";
-    private static final String DEFAULT_LINE_SEPARATOR = "\n";
     private final List<String> urls;
     private final TextFormat format;
     private final String columnDelimiter;
     private final String lineSeparator;
 
-    @JsonCreator
     public ExternalTextSource(
-            @JsonProperty(value = "name", required = true) String name,
-            @JsonProperty(value = "urls", required = true) List<String> urls,
-            @JsonProperty("header") List<String> header,
-            @JsonProperty("format") TextFormat format,
-            @JsonProperty(value = "column_delimiter", defaultValue = DEFAULT_COLUMN_DELIMITER) String columnDelimiter,
-            @JsonProperty(value = "line_separator", defaultValue = DEFAULT_LINE_SEPARATOR) String lineSeparator) {
+            String name,
+            List<String> urls,
+            List<String> header,
+            TextFormat format,
+            String columnDelimiter,
+            String lineSeparator) {
         super(name, header);
         this.urls = urls;
         this.format = format;
-        this.columnDelimiter = columnDelimiter != null ? columnDelimiter : DEFAULT_COLUMN_DELIMITER;
-        this.lineSeparator = lineSeparator != null ? lineSeparator : DEFAULT_LINE_SEPARATOR;
+        this.columnDelimiter = columnDelimiter;
+        this.lineSeparator = lineSeparator;
     }
 
     public List<String> getUrls() {

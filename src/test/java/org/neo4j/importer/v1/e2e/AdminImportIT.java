@@ -32,6 +32,7 @@ import java.sql.DriverManager;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
@@ -45,9 +46,8 @@ import org.neo4j.driver.GraphDatabase;
 import org.neo4j.driver.QueryConfig;
 import org.neo4j.importer.v1.ImportSpecification;
 import org.neo4j.importer.v1.ImportSpecificationDeserializer;
-import org.neo4j.importer.v1.sources.NamedJdbcSource;
+import org.neo4j.importer.v1.sources.JdbcSource;
 import org.neo4j.importer.v1.sources.Source;
-import org.neo4j.importer.v1.sources.SourceType;
 import org.neo4j.importer.v1.targets.NodeKeyConstraint;
 import org.neo4j.importer.v1.targets.NodeTarget;
 import org.neo4j.importer.v1.targets.PropertyMapping;
@@ -388,14 +388,15 @@ public class AdminImportIT {
     static class SourceExecutor {
 
         public static List<Map<String, Object>> read(Source source) throws Exception {
-            SourceType sourceType = source.getType();
-            switch (sourceType) {
-                case JDBC -> {
-                    var jdbcSource = (NamedJdbcSource) source;
+            String sourceType = source.getType();
+            switch (sourceType.toLowerCase(Locale.ROOT)) {
+                case "jdbc" -> {
+                    var jdbcSource = (JdbcSource) source;
                     var connectionSupplier = JdbcContext.connectionSupplier(jdbcSource.getDataSource());
                     return JdbcExecutor.execute(connectionSupplier, jdbcSource.getSql());
                 }
-                case BIGQUERY, TEXT -> throw new RuntimeException("TODO: %s unsupported for now".formatted(sourceType));
+                case "bigquery", "text" -> throw new RuntimeException(
+                        "TODO: %s unsupported for now".formatted(sourceType));
             }
             throw new RuntimeException("unrecognized type %s".formatted(sourceType));
         }

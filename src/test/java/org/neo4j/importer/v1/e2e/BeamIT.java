@@ -67,7 +67,7 @@ import org.neo4j.importer.v1.actions.ActionStage;
 import org.neo4j.importer.v1.actions.CypherAction;
 import org.neo4j.importer.v1.e2e.AdminImportIT.ThrowingFunction;
 import org.neo4j.importer.v1.graph.Maps;
-import org.neo4j.importer.v1.sources.NamedJdbcSource;
+import org.neo4j.importer.v1.sources.JdbcSource;
 import org.neo4j.importer.v1.sources.Source;
 import org.neo4j.importer.v1.targets.CustomQueryTarget;
 import org.neo4j.importer.v1.targets.NodeKeyConstraint;
@@ -362,7 +362,7 @@ class SourceIO extends PTransform<@NotNull PBegin, @NotNull PCollection<Row>> {
                         .withDataSourceConfiguration(DataSourceConfiguration.create("org.postgresql.Driver", jdbcUrl)
                                 .withUsername(username)
                                 .withPassword(password))
-                        .withQuery(((NamedJdbcSource) source).getSql()));
+                        .withQuery(((JdbcSource) source).getSql()));
     }
 }
 

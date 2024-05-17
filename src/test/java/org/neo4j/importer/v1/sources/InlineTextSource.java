@@ -16,19 +16,14 @@
  */
 package org.neo4j.importer.v1.sources;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
 import java.util.Objects;
 
 public class InlineTextSource extends TextSource {
+
     private final List<List<Object>> data;
 
-    @JsonCreator
-    public InlineTextSource(
-            @JsonProperty(value = "name", required = true) String name,
-            @JsonProperty(value = "data", required = true) List<List<Object>> data,
-            @JsonProperty(value = "header", required = true) List<String> header) {
+    public InlineTextSource(String name, List<List<Object>> data, List<String> header) {
         super(name, header);
         this.data = data;
     }

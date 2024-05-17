@@ -567,41 +567,6 @@ public class ImportSpecificationDeserializerNodeTargetTest {
     }
 
     @Test
-    public void fails_if_node_target_property_mappings_source_field_is_not_listed_in_text_source_fields() {
-        assertThatThrownBy(() -> deserialize(new StringReader(
-                        """
-{
-    "version": "1",
-    "sources": [{
-        "name": "a-source",
-        "type": "text",
-        "header": ["field-1"],
-        "data": [
-            ["foo"], ["bar"]
-        ]
-    }],
-    "targets": {
-        "nodes": [{
-            "active": true,
-            "name": "a-target",
-            "source": "a-source",
-            "labels": ["Label"],
-            "properties": [
-                {"source_field": "invalid-field", "target_property": "property"}
-            ]
-        }]
-    }
-}
-"""
-                                .stripIndent())))
-                .isInstanceOf(InvalidSpecificationException.class)
-                .hasMessageContainingAll(
-                        "1 error(s)",
-                        "0 warning(s)",
-                        "$.targets.nodes[0].properties[0].source_field field \"invalid-field\" is neither defined in the target's text source nor its source transformations");
-    }
-
-    @Test
     public void does_not_fail_if_node_target_property_mappings_source_field_is_listed_in_target_aggregations() {
         assertThatCode(() -> deserialize(new StringReader(
                         """
@@ -1337,47 +1302,6 @@ public class ImportSpecificationDeserializerNodeTargetTest {
                         "1 error(s)",
                         "0 warning(s)",
                         "$.targets.nodes[0].source_transformations.aggregations[0].field_name \"field_2\" must be defined only once but is currently defined 2 times within this target's aggregations");
-    }
-
-    @Test
-    public void fails_if_node_target_source_transformation_aggregations_field_name_clashes_with_text_source_fields() {
-        assertThatThrownBy(() -> deserialize(new StringReader(
-                        """
-{
-    "version": "1",
-    "sources": [{
-        "name": "a-source",
-        "type": "text",
-        "header": ["field_1"],
-        "data": [
-            ["foo"], ["bar"]
-        ]
-    }],
-    "targets": {
-        "nodes": [{
-            "name": "a-target",
-            "source": "a-source",
-            "write_mode": "merge",
-            "labels": ["Label"],
-            "properties": [
-                {"source_field": "field_1", "target_property": "property"}
-            ],
-            "source_transformations": {
-                "aggregations": [{
-                    "expression": "42",
-                    "field_name": "field_1"
-                }]
-            }
-        }]
-    }
-}
-"""
-                                .stripIndent())))
-                .isInstanceOf(InvalidSpecificationException.class)
-                .hasMessageContainingAll(
-                        "1 error(s)",
-                        "0 warning(s)",
-                        "$.targets.nodes[0].source_transformations.aggregations[0].field_name \"field_1\" is already defined in the target's source header");
     }
 
     @Test
