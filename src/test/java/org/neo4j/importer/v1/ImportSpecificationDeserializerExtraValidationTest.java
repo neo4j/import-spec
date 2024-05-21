@@ -1404,4 +1404,210 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                         "0 warning(s)",
                         "$.targets.queries[0].depends_on defines dependency \"a-relationship-target\" 2 times, it must be defined at most once");
     }
+
+    @Test
+    public void fails_if_node_target_labels_are_duplicated() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+                {
+                    "version": "1",
+                    "sources": [{
+                        "name": "a-source",
+                        "type": "jdbc",
+                        "data_source": "a-data-source",
+                        "sql": "SELECT id, name FROM my.table"
+                    }],
+                    "targets": {
+                        "nodes": [{
+                            "active": true,
+                            "name": "a-target",
+                            "source": "a-source",
+                            "labels": ["Label1", "Label1", "Label2", "Label2", "Label2"],
+                            "properties": [
+                                {"source_field": "field", "target_property": "property"}
+                            ]
+                        }]
+                    }
+                }
+                """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "2 error(s)",
+                        "0 warning(s)",
+                        "$.targets.nodes[0].labels[0] \"Label1\" must be defined only once but found 2 occurrences",
+                        "$.targets.nodes[0].labels[2] \"Label2\" must be defined only once but found 3 occurrences");
+    }
+
+    @Test
+    public void fails_if_node_target_property_mappings_target_property_is_duplicated() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+                             {
+                             "version": "1",
+                             "sources": [{
+                               "name": "a-source",
+                               "type": "jdbc",
+                               "data_source": "a-data-source",
+                               "sql": "SELECT id, name FROM my.table"
+                             }],
+                             "targets": {
+                               "nodes": [{
+                                 "active": true,
+                                 "name": "a-target",
+                                 "source": "a-source",
+                                 "labels": ["Label"],
+                                 "properties": [
+                                   {"source_field": "id", "target_property": "property"},
+                                   {"source_field": "name", "target_property": "property"}
+                                 ]
+                               }]
+                             }
+                           }"""
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "$.targets.nodes[0].properties[0].target_property \"property\" must be defined only once but found 2 occurrences");
+    }
+
+    @Test
+    public void fails_if_relationship_target_property_mappings_target_property_is_duplicated() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+                {
+                  "version": "1",
+                  "sources": [{
+                    "name": "a-source",
+                    "type": "jdbc",
+                    "data_source": "a-data-source",
+                    "sql": "SELECT id, name FROM my.table"
+                  }],
+                  "targets": {
+                    "nodes": [{
+                      "name": "a-node-target",
+                      "source": "a-source",
+                      "labels": ["Label"],
+                      "properties": [
+                        {"source_field": "id", "target_property": "id"}
+                      ]
+                    }],
+                    "relationships": [{
+                      "name": "a-relationship-target",
+                      "source": "a-source",
+                      "type": "TYPE",
+                      "start_node_reference": "a-node-target",
+                      "end_node_reference": "a-node-target",
+                      "properties": [
+                        {"source_field": "id", "target_property": "property"},
+                        {"source_field": "name", "target_property": "property"}
+                      ]
+                    }]
+                  }
+                }
+                """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "$.targets.relationships[0].properties[0].target_property \"property\" must be defined only once but found 2 occurrences");
+    }
+
+    @Test
+    public void fails_if_node_target_source_transformation_aggregations_field_names_clash() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+{
+"version": "1",
+"sources": [{
+"name": "a-source",
+"type": "text",
+"header": ["field_1"],
+"data": [
+    ["foo"], ["bar"]
+]
+}],
+"targets": {
+"nodes": [{
+    "name": "a-target",
+    "source": "a-source",
+    "write_mode": "merge",
+    "labels": ["Label"],
+    "properties": [
+        {"source_field": "field_1", "target_property": "property1"},
+        {"source_field": "field_2", "target_property": "property2"}
+    ],
+    "source_transformations": {
+        "aggregations": [{
+            "expression": "42",
+            "field_name": "field_2"
+        },{
+            "expression": "42",
+            "field_name": "field_2"
+        }]
+    }
+}]
+}
+}
+"""
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "$.targets.nodes[0].source_transformations.aggregations[0].field_name \"field_2\" must be defined only once but is currently defined 2 times within this target's aggregations");
+    }
+
+    @Test
+    public void fails_if_relationship_target_source_transformation_aggregations_field_names_clash() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+                {
+                  "version": "1",
+                  "sources": [{
+                    "name": "a-source",
+                    "type": "jdbc",
+                    "data_source": "a-data-source",
+                    "sql": "SELECT id, name FROM my.table"
+                  }],
+                  "targets": {
+                    "nodes": [{
+                      "name": "a-node-target",
+                      "source": "a-source",
+                      "labels": ["Label"],
+                      "properties": [
+                        {"source_field": "id", "target_property": "id"}
+                      ]
+                    }],
+                    "relationships": [{
+                      "name": "a-relationship-target",
+                      "source": "a-source",
+                      "type": "TYPE",
+                      "start_node_reference": "a-node-target",
+                      "end_node_reference": "a-node-target",
+                      "properties": [
+                        {"source_field": "id", "target_property": "id"}
+                      ],
+                      "source_transformations": {
+                          "aggregations": [{
+                              "expression": "42",
+                              "field_name": "field_2"
+                          },{
+                              "expression": "42",
+                              "field_name": "field_2"
+                          }]
+                      }
+                    }]
+                  }
+                }
+                """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "$.targets.relationships[0].source_transformations.aggregations[0].field_name \"field_2\" must be defined only once but is currently defined 2 times within this target's aggregations");
+    }
 }

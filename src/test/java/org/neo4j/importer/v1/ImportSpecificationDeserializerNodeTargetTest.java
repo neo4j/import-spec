@@ -59,6 +59,127 @@ public class ImportSpecificationDeserializerNodeTargetTest {
     }
 
     @Test
+    public void fails_if_node_target_source_attribute_is_missing() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+{
+"version": "1",
+"sources": [{
+"name": "a-source",
+"type": "jdbc",
+"data_source": "a-data-source",
+"sql": "SELECT id, name FROM my.table"
+}],
+"targets": {
+"nodes": [{
+    "name": "a-node-target",
+    "labels": ["Label"],
+    "properties": [
+        {"source_field": "id", "target_property": "id"}
+    ]
+}]
+}
+}
+"""
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)", "0 warning(s)", "$.targets.nodes[0]: required property 'source' not found");
+    }
+
+    @Test
+    public void fails_if_node_target_source_attribute_is_wrongly_typed() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+{
+"version": "1",
+"sources": [{
+"name": "a-source",
+"type": "jdbc",
+"data_source": "a-data-source",
+"sql": "SELECT id, name FROM my.table"
+}],
+"targets": {
+"nodes": [{
+    "name": "a-node-target",
+    "source": 42,
+    "labels": ["Label"],
+    "properties": [
+        {"source_field": "id", "target_property": "id"}
+    ]
+}]
+}
+}
+"""
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)", "0 warning(s)", "$.targets.nodes[0].source: integer found, string expected");
+    }
+
+    @Test
+    public void fails_if_node_target_source_attribute_is_empty() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+{
+"version": "1",
+"sources": [{
+"name": "a-source",
+"type": "jdbc",
+"data_source": "a-data-source",
+"sql": "SELECT id, name FROM my.table"
+}],
+"targets": {
+"nodes": [{
+    "name": "a-node-target",
+    "source": "",
+    "labels": ["Label"],
+    "properties": [
+        {"source_field": "id", "target_property": "id"}
+    ]
+}]
+}
+}
+"""
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "0 warning(s)", "$.targets.nodes[0].source: must be at least 1 characters long");
+    }
+
+    @Test
+    public void fails_if_node_target_source_attribute_is_blank() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+{
+"version": "1",
+"sources": [{
+"name": "a-source",
+"type": "jdbc",
+"data_source": "a-data-source",
+"sql": "SELECT id, name FROM my.table"
+}],
+"targets": {
+"nodes": [{
+    "name": "a-node-target",
+    "source": "   ",
+    "labels": ["Label"],
+    "properties": [
+        {"source_field": "id", "target_property": "id"}
+    ]
+}]
+}
+}
+"""
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "$.targets.nodes[0].source: does not match the regex pattern \\S+");
+    }
+
+    @Test
     public void fails_if_node_target_write_mode_has_wrong_type() {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
@@ -311,40 +432,6 @@ public class ImportSpecificationDeserializerNodeTargetTest {
                         "1 error(s)",
                         "0 warning(s)",
                         "$.targets.nodes[0].labels[0]: does not match the regex pattern \\S+");
-    }
-
-    @Test
-    public void fails_if_node_target_labels_are_duplicated() {
-        assertThatThrownBy(() -> deserialize(new StringReader(
-                        """
-{
-    "version": "1",
-    "sources": [{
-        "name": "a-source",
-        "type": "jdbc",
-        "data_source": "a-data-source",
-        "sql": "SELECT id, name FROM my.table"
-    }],
-    "targets": {
-        "nodes": [{
-            "active": true,
-            "name": "a-target",
-            "source": "a-source",
-            "labels": ["Label1", "Label1", "Label2", "Label2", "Label2"],
-            "properties": [
-                {"source_field": "field", "target_property": "property"}
-            ]
-        }]
-    }
-}
-"""
-                                .stripIndent())))
-                .isInstanceOf(InvalidSpecificationException.class)
-                .hasMessageContainingAll(
-                        "2 error(s)",
-                        "0 warning(s)",
-                        "$.targets.nodes[0].labels[0] \"Label1\" must be defined only once but found 2 occurrences",
-                        "$.targets.nodes[0].labels[2] \"Label2\" must be defined only once but found 3 occurrences");
     }
 
     @Test
@@ -731,40 +818,6 @@ public class ImportSpecificationDeserializerNodeTargetTest {
                         "1 error(s)",
                         "0 warning(s)",
                         "$.targets.nodes[0].properties[0].target_property: does not match the regex pattern \\S+");
-    }
-
-    @Test
-    public void fails_if_node_target_property_mappings_target_property_is_duplicated() {
-        assertThatThrownBy(() -> deserialize(new StringReader(
-                        """
-{
-"version": "1",
-"sources": [{
-"name": "a-source",
-"type": "jdbc",
-"data_source": "a-data-source",
-"sql": "SELECT id, name FROM my.table"
-}],
-"targets": {
-"nodes": [{
-    "active": true,
-    "name": "a-target",
-    "source": "a-source",
-    "labels": ["Label"],
-    "properties": [
-        {"source_field": "id", "target_property": "property"},
-        {"source_field": "name", "target_property": "property"}
-    ]
-}]
-}
-}
-"""
-                                .stripIndent())))
-                .isInstanceOf(InvalidSpecificationException.class)
-                .hasMessageContainingAll(
-                        "1 error(s)",
-                        "0 warning(s)",
-                        "$.targets.nodes[0].properties[0].target_property \"property\" must be defined only once but found 2 occurrences");
     }
 
     @Test
@@ -1257,51 +1310,6 @@ public class ImportSpecificationDeserializerNodeTargetTest {
                         "1 error(s)",
                         "0 warning(s)",
                         "$.targets.nodes[0].source_transformations.aggregations[0].field_name: does not match the regex pattern \\S+");
-    }
-
-    @Test
-    public void fails_if_node_target_source_transformation_aggregations_field_names_clash() {
-        assertThatThrownBy(() -> deserialize(new StringReader(
-                        """
-{
-    "version": "1",
-    "sources": [{
-        "name": "a-source",
-        "type": "text",
-        "header": ["field_1"],
-        "data": [
-            ["foo"], ["bar"]
-        ]
-    }],
-    "targets": {
-        "nodes": [{
-            "name": "a-target",
-            "source": "a-source",
-            "write_mode": "merge",
-            "labels": ["Label"],
-            "properties": [
-                {"source_field": "field_1", "target_property": "property1"},
-                {"source_field": "field_2", "target_property": "property2"}
-            ],
-            "source_transformations": {
-                "aggregations": [{
-                    "expression": "42",
-                    "field_name": "field_2"
-                },{
-                    "expression": "42",
-                    "field_name": "field_2"
-                }]
-            }
-        }]
-    }
-}
-"""
-                                .stripIndent())))
-                .isInstanceOf(InvalidSpecificationException.class)
-                .hasMessageContainingAll(
-                        "1 error(s)",
-                        "0 warning(s)",
-                        "$.targets.nodes[0].source_transformations.aggregations[0].field_name \"field_2\" must be defined only once but is currently defined 2 times within this target's aggregations");
     }
 
     @Test

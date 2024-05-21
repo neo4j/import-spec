@@ -109,7 +109,8 @@
         },
         "source": {
           "type": "string",
-          "minLength": 1
+          "minLength": 1,
+          "pattern": "\\S+"
         },
         "name": {
           "type": "string",
@@ -257,7 +258,8 @@
         },
         "type": {
           "type": "string",
-          "minLength": 1
+          "minLength": 1,
+          "pattern": "\\S+"
         },
         "start_node_reference": {
           "type": "string",
