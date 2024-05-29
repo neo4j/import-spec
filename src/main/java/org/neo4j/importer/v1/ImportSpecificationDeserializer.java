@@ -28,27 +28,15 @@ import com.networknt.schema.JsonSchemaFactory;
 import com.networknt.schema.SpecVersion.VersionFlag;
 import java.io.IOException;
 import java.io.Reader;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.ServiceLoader;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import org.neo4j.importer.v1.actions.Action;
 import org.neo4j.importer.v1.graph.Graph;
 import org.neo4j.importer.v1.sources.Source;
 import org.neo4j.importer.v1.sources.SourceDeserializer;
 import org.neo4j.importer.v1.sources.SourceProvider;
-import org.neo4j.importer.v1.validation.InvalidSpecificationException;
-import org.neo4j.importer.v1.validation.SourceError;
-import org.neo4j.importer.v1.validation.SpecificationException;
-import org.neo4j.importer.v1.validation.SpecificationValidationResult;
+import org.neo4j.importer.v1.validation.*;
 import org.neo4j.importer.v1.validation.SpecificationValidationResult.Builder;
-import org.neo4j.importer.v1.validation.SpecificationValidator;
-import org.neo4j.importer.v1.validation.UndeserializableSourceException;
-import org.neo4j.importer.v1.validation.UndeserializableSpecificationException;
-import org.neo4j.importer.v1.validation.UnparseableSpecificationException;
 
 public class ImportSpecificationDeserializer {
 
@@ -70,11 +58,20 @@ public class ImportSpecificationDeserializer {
      */
     @SuppressWarnings("deprecated")
     public static ImportSpecification deserialize(Reader spec) throws SpecificationException {
+        return deserialize(spec, Optional.empty());
+    }
+
+    @SuppressWarnings("deprecated")
+    public static ImportSpecification deserialize(Reader spec, Optional<Neo4jDistribution> neo4jDistributionOpt)
+            throws SpecificationException {
         YAMLMapper mapper = initMapper();
         JsonNode json = parse(mapper, spec);
         validate(SCHEMA, json);
         ImportSpecification result = deserialize(mapper, json);
         validate(result);
+        if (neo4jDistributionOpt.isPresent()) {
+            validate(neo4jDistributionOpt.get(), result);
+        }
         return result;
     }
 
@@ -206,5 +203,45 @@ public class ImportSpecificationDeserializer {
         return Graph.runTopologicalSort(validatorGraph).stream()
                 .map(validatorCatalog::get)
                 .collect(Collectors.toList());
+    }
+
+    private static void validate(Neo4jDistribution neo4jDistribution, ImportSpecification spec)
+            throws InvalidSpecificationException {
+        var validator = new Neo4jVersionValidator(neo4jDistribution);
+
+        validator.visitConfiguration(spec.getConfiguration());
+
+        var sources = spec.getSources();
+        for (int i = 0; i < sources.size(); i++) {
+            validator.visitSource(i, sources.get(i));
+        }
+
+        var targets = spec.getTargets();
+        var nodeTargets = targets.getNodes();
+        for (int i = 0; i < nodeTargets.size(); i++) {
+            validator.visitNodeTarget(i, nodeTargets.get(i));
+        }
+
+        var relationshipTargets = targets.getRelationships();
+        for (int i = 0; i < relationshipTargets.size(); i++) {
+            validator.visitRelationshipTarget(i, relationshipTargets.get(i));
+        }
+
+        var queryTargets = targets.getCustomQueries();
+        for (int i = 0; i < queryTargets.size(); i++) {
+            validator.visitCustomQueryTarget(i, queryTargets.get(i));
+        }
+
+        var actions = spec.getActions() == null ? Collections.<Action>emptyList() : spec.getActions();
+        for (int i = 0; i < actions.size(); i++) {
+            validator.visitAction(i, actions.get(i));
+        }
+
+        Builder builder = SpecificationValidationResult.builder();
+        validator.report(builder);
+        SpecificationValidationResult result = builder.build();
+        if (!result.passes()) {
+            throw new InvalidSpecificationException(result);
+        }
     }
 }
