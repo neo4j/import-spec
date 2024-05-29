@@ -22,6 +22,7 @@ Save the following import specification into `spec.json`:
 
 ```json
 {
+  "version": "1",
   "config": {
     "key": "value"
   },
