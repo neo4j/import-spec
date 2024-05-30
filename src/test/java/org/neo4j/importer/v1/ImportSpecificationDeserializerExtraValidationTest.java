@@ -32,32 +32,32 @@ public class ImportSpecificationDeserializerExtraValidationTest {
     void fails_if_source_name_is_duplicated() {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
-                {
-                    "version": "1",
-                    "sources": [{
-                        "type": "bigquery",
-                        "name": "duplicate",
-                        "query": "SELECT id, name FROM my.table"
-                    },
-                    {
-                        "type": "bigquery",
-                        "name": "duplicate",
-                        "query": "SELECT id, name FROM my.table"
-                    }],
-                    "targets": {
-                        "nodes": [{
-                            "name": "target",
-                            "source": "duplicate",
-                            "labels": ["Label1", "Label2"],
-                            "write_mode": "create",
-                            "properties": [
-                                {"source_field": "field_1", "target_property": "property1"},
-                                {"source_field": "field_2", "target_property": "property2"}
-                            ]
-                        }]
-                    }
-                }
-                """
+                        {
+                            "version": "1",
+                            "sources": [{
+                                "type": "bigquery",
+                                "name": "duplicate",
+                                "query": "SELECT id, name FROM my.table"
+                            },
+                            {
+                                "type": "bigquery",
+                                "name": "duplicate",
+                                "query": "SELECT id, name FROM my.table"
+                            }],
+                            "targets": {
+                                "nodes": [{
+                                    "name": "target",
+                                    "source": "duplicate",
+                                    "labels": ["Label1", "Label2"],
+                                    "write_mode": "create",
+                                    "properties": [
+                                        {"source_field": "field_1", "target_property": "property1"},
+                                        {"source_field": "field_2", "target_property": "property2"}
+                                    ]
+                                }]
+                            }
+                        }
+                        """
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
@@ -71,27 +71,27 @@ public class ImportSpecificationDeserializerExtraValidationTest {
         assertThatNoException()
                 .isThrownBy(() -> deserialize(new StringReader(
                         """
-                        {
-                            "version": "1",
-                            "sources": [{
-                                "type": "bigquery",
-                                "name": "not-duplicate",
-                                "query": "SELECT id, name FROM my.table"
-                            }],
-                            "targets": {
-                                "nodes": [{
-                                    "name": "not-duplicate",
-                                    "source": "not-duplicate",
-                                    "labels": ["Label1", "Label2"],
-                                    "write_mode": "create",
-                                    "properties": [
-                                        {"source_field": "field_1", "target_property": "property1"},
-                                        {"source_field": "field_2", "target_property": "property2"}
-                                    ]
-                                }]
-                            }
-                        }
-                        """
+                                {
+                                    "version": "1",
+                                    "sources": [{
+                                        "type": "bigquery",
+                                        "name": "not-duplicate",
+                                        "query": "SELECT id, name FROM my.table"
+                                    }],
+                                    "targets": {
+                                        "nodes": [{
+                                            "name": "not-duplicate",
+                                            "source": "not-duplicate",
+                                            "labels": ["Label1", "Label2"],
+                                            "write_mode": "create",
+                                            "properties": [
+                                                {"source_field": "field_1", "target_property": "property1"},
+                                                {"source_field": "field_2", "target_property": "property2"}
+                                            ]
+                                        }]
+                                    }
+                                }
+                                """
                                 .stripIndent())));
     }
 
@@ -100,34 +100,34 @@ public class ImportSpecificationDeserializerExtraValidationTest {
         assertThatNoException()
                 .isThrownBy(() -> deserialize(new StringReader(
                         """
-                        {
-                            "version": "1",
-                            "sources": [{
-                                "type": "bigquery",
-                                "name": "not-duplicate",
-                                "query": "SELECT id, name FROM my.table"
-                            }],
-                            "targets": {
-                                "nodes": [{
-                                    "name": "target",
-                                    "source": "not-duplicate",
-                                    "labels": ["Label1", "Label2"],
-                                    "write_mode": "create",
-                                    "properties": [
-                                        {"source_field": "field_1", "target_property": "property1"},
-                                        {"source_field": "field_2", "target_property": "property2"}
-                                    ]
-                                }]
-                            },
-                            "actions": [{
-                                "name": "not-duplicate",
-                                "type": "http",
-                                "method": "get",
-                                "stage": "pre_relationships",
-                                "url": "https://example.com"
-                            }]
-                        }
-                        """
+                                {
+                                    "version": "1",
+                                    "sources": [{
+                                        "type": "bigquery",
+                                        "name": "not-duplicate",
+                                        "query": "SELECT id, name FROM my.table"
+                                    }],
+                                    "targets": {
+                                        "nodes": [{
+                                            "name": "target",
+                                            "source": "not-duplicate",
+                                            "labels": ["Label1", "Label2"],
+                                            "write_mode": "create",
+                                            "properties": [
+                                                {"source_field": "field_1", "target_property": "property1"},
+                                                {"source_field": "field_2", "target_property": "property2"}
+                                            ]
+                                        }]
+                                    },
+                                    "actions": [{
+                                        "name": "not-duplicate",
+                                        "type": "http",
+                                        "method": "get",
+                                        "stage": "pre_relationships",
+                                        "url": "https://example.com"
+                                    }]
+                                }
+                                """
                                 .stripIndent())));
     }
 
@@ -588,44 +588,44 @@ public class ImportSpecificationDeserializerExtraValidationTest {
     void fails_if_active_relationship_target_refers_to_an_inactive_node_target_for_end() {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
-                {
-                    "version": "1",
-                    "sources": [{
-                        "type": "bigquery",
-                        "name": "a-source",
-                        "query": "SELECT id, name FROM my.table"
-                    }],
-                    "targets": {
-                        "nodes": [{
-                            "source": "a-source",
-                            "name": "a-node-target",
-                            "write_mode": "merge",
-                            "labels": ["Label1", "Label2"],
-                            "properties": [
-                                {"source_field": "field_1", "target_property": "property1"},
-                                {"source_field": "field_2", "target_property": "property2"}
-                            ]
-                        },{
-                            "active": false,
-                            "source": "a-source",
-                            "name": "another-node-target",
-                            "write_mode": "merge",
-                            "labels": ["Label3"],
-                            "properties": [
-                                {"source_field": "field_1", "target_property": "property1"},
-                                {"source_field": "field_2", "target_property": "property2"}
-                            ]
-                        }],
-                        "relationships": [{
-                            "name": "a-target",
-                            "source": "a-source",
-                            "type": "TYPE",
-                            "start_node_reference": "a-node-target",
-                            "end_node_reference": "another-node-target"
-                        }]
-                    }
-                }
-                """
+                        {
+                            "version": "1",
+                            "sources": [{
+                                "type": "bigquery",
+                                "name": "a-source",
+                                "query": "SELECT id, name FROM my.table"
+                            }],
+                            "targets": {
+                                "nodes": [{
+                                    "source": "a-source",
+                                    "name": "a-node-target",
+                                    "write_mode": "merge",
+                                    "labels": ["Label1", "Label2"],
+                                    "properties": [
+                                        {"source_field": "field_1", "target_property": "property1"},
+                                        {"source_field": "field_2", "target_property": "property2"}
+                                    ]
+                                },{
+                                    "active": false,
+                                    "source": "a-source",
+                                    "name": "another-node-target",
+                                    "write_mode": "merge",
+                                    "labels": ["Label3"],
+                                    "properties": [
+                                        {"source_field": "field_1", "target_property": "property1"},
+                                        {"source_field": "field_2", "target_property": "property2"}
+                                    ]
+                                }],
+                                "relationships": [{
+                                    "name": "a-target",
+                                    "source": "a-source",
+                                    "type": "TYPE",
+                                    "start_node_reference": "a-node-target",
+                                    "end_node_reference": "another-node-target"
+                                }]
+                            }
+                        }
+                        """
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
@@ -639,45 +639,45 @@ public class ImportSpecificationDeserializerExtraValidationTest {
         assertThatNoException()
                 .isThrownBy(() -> deserialize(new StringReader(
                         """
-                        {
-                            "version": "1",
-                            "sources": [{
-                                "type": "bigquery",
-                                "name": "a-source",
-                                "query": "SELECT id, name FROM my.table"
-                            }],
-                            "targets": {
-                                "nodes": [{
-                                    "active": false,
-                                    "source": "a-source",
-                                    "name": "a-node-target",
-                                    "write_mode": "merge",
-                                    "labels": ["Label1", "Label2"],
-                                    "properties": [
-                                        {"source_field": "field_1", "target_property": "property1"},
-                                        {"source_field": "field_2", "target_property": "property2"}
-                                    ]
-                                },{
-                                    "source": "a-source",
-                                    "name": "another-node-target",
-                                    "write_mode": "merge",
-                                    "labels": ["Label3"],
-                                    "properties": [
-                                        {"source_field": "field_1", "target_property": "property1"},
-                                        {"source_field": "field_2", "target_property": "property2"}
-                                    ]
-                                }],
-                                "relationships": [{
-                                    "active": false,
-                                    "name": "a-target",
-                                    "source": "a-source",
-                                    "type": "TYPE",
-                                    "start_node_reference": "a-node-target",
-                                    "end_node_reference": "another-node-target"
-                                }]
-                            }
-                        }
-                        """
+                                {
+                                    "version": "1",
+                                    "sources": [{
+                                        "type": "bigquery",
+                                        "name": "a-source",
+                                        "query": "SELECT id, name FROM my.table"
+                                    }],
+                                    "targets": {
+                                        "nodes": [{
+                                            "active": false,
+                                            "source": "a-source",
+                                            "name": "a-node-target",
+                                            "write_mode": "merge",
+                                            "labels": ["Label1", "Label2"],
+                                            "properties": [
+                                                {"source_field": "field_1", "target_property": "property1"},
+                                                {"source_field": "field_2", "target_property": "property2"}
+                                            ]
+                                        },{
+                                            "source": "a-source",
+                                            "name": "another-node-target",
+                                            "write_mode": "merge",
+                                            "labels": ["Label3"],
+                                            "properties": [
+                                                {"source_field": "field_1", "target_property": "property1"},
+                                                {"source_field": "field_2", "target_property": "property2"}
+                                            ]
+                                        }],
+                                        "relationships": [{
+                                            "active": false,
+                                            "name": "a-target",
+                                            "source": "a-source",
+                                            "type": "TYPE",
+                                            "start_node_reference": "a-node-target",
+                                            "end_node_reference": "another-node-target"
+                                        }]
+                                    }
+                                }
+                                """
                                 .stripIndent())));
     }
 
@@ -686,45 +686,45 @@ public class ImportSpecificationDeserializerExtraValidationTest {
         assertThatNoException()
                 .isThrownBy(() -> deserialize(new StringReader(
                         """
-                        {
-                            "version": "1",
-                            "sources": [{
-                                "type": "bigquery",
-                                "name": "a-source",
-                                "query": "SELECT id, name FROM my.table"
-                            }],
-                            "targets": {
-                                "nodes": [{
-                                    "source": "a-source",
-                                    "name": "a-node-target",
-                                    "write_mode": "merge",
-                                    "labels": ["Label1", "Label2"],
-                                    "properties": [
-                                        {"source_field": "field_1", "target_property": "property1"},
-                                        {"source_field": "field_2", "target_property": "property2"}
-                                    ]
-                                },{
-                                    "active": false,
-                                    "source": "a-source",
-                                    "name": "another-node-target",
-                                    "write_mode": "merge",
-                                    "labels": ["Label3"],
-                                    "properties": [
-                                        {"source_field": "field_1", "target_property": "property1"},
-                                        {"source_field": "field_2", "target_property": "property2"}
-                                    ]
-                                }],
-                                "relationships": [{
-                                    "active": false,
-                                    "name": "a-target",
-                                    "source": "a-source",
-                                    "type": "TYPE",
-                                    "start_node_reference": "a-node-target",
-                                    "end_node_reference": "another-node-target"
-                                }]
-                            }
-                        }
-                        """
+                                {
+                                    "version": "1",
+                                    "sources": [{
+                                        "type": "bigquery",
+                                        "name": "a-source",
+                                        "query": "SELECT id, name FROM my.table"
+                                    }],
+                                    "targets": {
+                                        "nodes": [{
+                                            "source": "a-source",
+                                            "name": "a-node-target",
+                                            "write_mode": "merge",
+                                            "labels": ["Label1", "Label2"],
+                                            "properties": [
+                                                {"source_field": "field_1", "target_property": "property1"},
+                                                {"source_field": "field_2", "target_property": "property2"}
+                                            ]
+                                        },{
+                                            "active": false,
+                                            "source": "a-source",
+                                            "name": "another-node-target",
+                                            "write_mode": "merge",
+                                            "labels": ["Label3"],
+                                            "properties": [
+                                                {"source_field": "field_1", "target_property": "property1"},
+                                                {"source_field": "field_2", "target_property": "property2"}
+                                            ]
+                                        }],
+                                        "relationships": [{
+                                            "active": false,
+                                            "name": "a-target",
+                                            "source": "a-source",
+                                            "type": "TYPE",
+                                            "start_node_reference": "a-node-target",
+                                            "end_node_reference": "another-node-target"
+                                        }]
+                                    }
+                                }
+                                """
                                 .stripIndent())));
     }
 
@@ -1409,27 +1409,27 @@ public class ImportSpecificationDeserializerExtraValidationTest {
     public void fails_if_node_target_labels_are_duplicated() {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
-                {
-                    "version": "1",
-                    "sources": [{
-                        "name": "a-source",
-                        "type": "jdbc",
-                        "data_source": "a-data-source",
-                        "sql": "SELECT id, name FROM my.table"
-                    }],
-                    "targets": {
-                        "nodes": [{
-                            "active": true,
-                            "name": "a-target",
-                            "source": "a-source",
-                            "labels": ["Label1", "Label1", "Label2", "Label2", "Label2"],
-                            "properties": [
-                                {"source_field": "field", "target_property": "property"}
-                            ]
-                        }]
-                    }
-                }
-                """
+                        {
+                            "version": "1",
+                            "sources": [{
+                                "name": "a-source",
+                                "type": "jdbc",
+                                "data_source": "a-data-source",
+                                "sql": "SELECT id, name FROM my.table"
+                            }],
+                            "targets": {
+                                "nodes": [{
+                                    "active": true,
+                                    "name": "a-target",
+                                    "source": "a-source",
+                                    "labels": ["Label1", "Label1", "Label2", "Label2", "Label2"],
+                                    "properties": [
+                                        {"source_field": "field", "target_property": "property"}
+                                    ]
+                                }]
+                            }
+                        }
+                        """
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
@@ -1443,27 +1443,27 @@ public class ImportSpecificationDeserializerExtraValidationTest {
     public void fails_if_node_target_property_mappings_target_property_is_duplicated() {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
-                             {
-                             "version": "1",
-                             "sources": [{
-                               "name": "a-source",
-                               "type": "jdbc",
-                               "data_source": "a-data-source",
-                               "sql": "SELECT id, name FROM my.table"
-                             }],
-                             "targets": {
-                               "nodes": [{
-                                 "active": true,
-                                 "name": "a-target",
-                                 "source": "a-source",
-                                 "labels": ["Label"],
-                                 "properties": [
-                                   {"source_field": "id", "target_property": "property"},
-                                   {"source_field": "name", "target_property": "property"}
-                                 ]
-                               }]
-                             }
-                           }"""
+                          {
+                          "version": "1",
+                          "sources": [{
+                            "name": "a-source",
+                            "type": "jdbc",
+                            "data_source": "a-data-source",
+                            "sql": "SELECT id, name FROM my.table"
+                          }],
+                          "targets": {
+                            "nodes": [{
+                              "active": true,
+                              "name": "a-target",
+                              "source": "a-source",
+                              "labels": ["Label"],
+                              "properties": [
+                                {"source_field": "id", "target_property": "property"},
+                                {"source_field": "name", "target_property": "property"}
+                              ]
+                            }]
+                          }
+                        }"""
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
@@ -1476,37 +1476,37 @@ public class ImportSpecificationDeserializerExtraValidationTest {
     public void fails_if_relationship_target_property_mappings_target_property_is_duplicated() {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
-                {
-                  "version": "1",
-                  "sources": [{
-                    "name": "a-source",
-                    "type": "jdbc",
-                    "data_source": "a-data-source",
-                    "sql": "SELECT id, name FROM my.table"
-                  }],
-                  "targets": {
-                    "nodes": [{
-                      "name": "a-node-target",
-                      "source": "a-source",
-                      "labels": ["Label"],
-                      "properties": [
-                        {"source_field": "id", "target_property": "id"}
-                      ]
-                    }],
-                    "relationships": [{
-                      "name": "a-relationship-target",
-                      "source": "a-source",
-                      "type": "TYPE",
-                      "start_node_reference": "a-node-target",
-                      "end_node_reference": "a-node-target",
-                      "properties": [
-                        {"source_field": "id", "target_property": "property"},
-                        {"source_field": "name", "target_property": "property"}
-                      ]
-                    }]
-                  }
-                }
-                """
+                        {
+                          "version": "1",
+                          "sources": [{
+                            "name": "a-source",
+                            "type": "jdbc",
+                            "data_source": "a-data-source",
+                            "sql": "SELECT id, name FROM my.table"
+                          }],
+                          "targets": {
+                            "nodes": [{
+                              "name": "a-node-target",
+                              "source": "a-source",
+                              "labels": ["Label"],
+                              "properties": [
+                                {"source_field": "id", "target_property": "id"}
+                              ]
+                            }],
+                            "relationships": [{
+                              "name": "a-relationship-target",
+                              "source": "a-source",
+                              "type": "TYPE",
+                              "start_node_reference": "a-node-target",
+                              "end_node_reference": "a-node-target",
+                              "properties": [
+                                {"source_field": "id", "target_property": "property"},
+                                {"source_field": "name", "target_property": "property"}
+                              ]
+                            }]
+                          }
+                        }
+                        """
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
@@ -1519,39 +1519,39 @@ public class ImportSpecificationDeserializerExtraValidationTest {
     public void fails_if_node_target_source_transformation_aggregations_field_names_clash() {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
-{
-"version": "1",
-"sources": [{
-"name": "a-source",
-"type": "text",
-"header": ["field_1"],
-"data": [
-    ["foo"], ["bar"]
-]
-}],
-"targets": {
-"nodes": [{
-    "name": "a-target",
-    "source": "a-source",
-    "write_mode": "merge",
-    "labels": ["Label"],
-    "properties": [
-        {"source_field": "field_1", "target_property": "property1"},
-        {"source_field": "field_2", "target_property": "property2"}
-    ],
-    "source_transformations": {
-        "aggregations": [{
-            "expression": "42",
-            "field_name": "field_2"
-        },{
-            "expression": "42",
-            "field_name": "field_2"
-        }]
-    }
-}]
-}
-}
-"""
+                        {
+                        "version": "1",
+                        "sources": [{
+                        "name": "a-source",
+                        "type": "text",
+                        "header": ["field_1"],
+                        "data": [
+                            ["foo"], ["bar"]
+                        ]
+                        }],
+                        "targets": {
+                        "nodes": [{
+                            "name": "a-target",
+                            "source": "a-source",
+                            "write_mode": "merge",
+                            "labels": ["Label"],
+                            "properties": [
+                                {"source_field": "field_1", "target_property": "property1"},
+                                {"source_field": "field_2", "target_property": "property2"}
+                            ],
+                            "source_transformations": {
+                                "aggregations": [{
+                                    "expression": "42",
+                                    "field_name": "field_2"
+                                },{
+                                    "expression": "42",
+                                    "field_name": "field_2"
+                                }]
+                            }
+                        }]
+                        }
+                        }
+                        """
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
@@ -1564,45 +1564,45 @@ public class ImportSpecificationDeserializerExtraValidationTest {
     public void fails_if_relationship_target_source_transformation_aggregations_field_names_clash() {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
-                {
-                  "version": "1",
-                  "sources": [{
-                    "name": "a-source",
-                    "type": "jdbc",
-                    "data_source": "a-data-source",
-                    "sql": "SELECT id, name FROM my.table"
-                  }],
-                  "targets": {
-                    "nodes": [{
-                      "name": "a-node-target",
-                      "source": "a-source",
-                      "labels": ["Label"],
-                      "properties": [
-                        {"source_field": "id", "target_property": "id"}
-                      ]
-                    }],
-                    "relationships": [{
-                      "name": "a-relationship-target",
-                      "source": "a-source",
-                      "type": "TYPE",
-                      "start_node_reference": "a-node-target",
-                      "end_node_reference": "a-node-target",
-                      "properties": [
-                        {"source_field": "id", "target_property": "id"}
-                      ],
-                      "source_transformations": {
-                          "aggregations": [{
-                              "expression": "42",
-                              "field_name": "field_2"
-                          },{
-                              "expression": "42",
-                              "field_name": "field_2"
-                          }]
-                      }
-                    }]
-                  }
-                }
-                """
+                        {
+                          "version": "1",
+                          "sources": [{
+                            "name": "a-source",
+                            "type": "jdbc",
+                            "data_source": "a-data-source",
+                            "sql": "SELECT id, name FROM my.table"
+                          }],
+                          "targets": {
+                            "nodes": [{
+                              "name": "a-node-target",
+                              "source": "a-source",
+                              "labels": ["Label"],
+                              "properties": [
+                                {"source_field": "id", "target_property": "id"}
+                              ]
+                            }],
+                            "relationships": [{
+                              "name": "a-relationship-target",
+                              "source": "a-source",
+                              "type": "TYPE",
+                              "start_node_reference": "a-node-target",
+                              "end_node_reference": "a-node-target",
+                              "properties": [
+                                {"source_field": "id", "target_property": "id"}
+                              ],
+                              "source_transformations": {
+                                  "aggregations": [{
+                                      "expression": "42",
+                                      "field_name": "field_2"
+                                  },{
+                                      "expression": "42",
+                                      "field_name": "field_2"
+                                  }]
+                              }
+                            }]
+                          }
+                        }
+                        """
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(

@@ -39,21 +39,21 @@ public class ImportSpecificationDeserializerSourceTest {
     void fails_if_source_is_missing_type() {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
-        {
-            "version": "1",
-            "sources": [{
-                "name": "a-source",
-                "query": "SELECT id, name FROM my.table"
-            }],
-            "targets": {
-                "queries": [{
-                    "name": "a-target",
-                    "source": "a-source",
-                    "query": "UNWIND $rows AS row CREATE (n:ANode) SET n = row"
-                }]
-            }
-        }
-        """
+                        {
+                            "version": "1",
+                            "sources": [{
+                                "name": "a-source",
+                                "query": "SELECT id, name FROM my.table"
+                            }],
+                            "targets": {
+                                "queries": [{
+                                    "name": "a-target",
+                                    "source": "a-source",
+                                    "query": "UNWIND $rows AS row CREATE (n:ANode) SET n = row"
+                                }]
+                            }
+                        }
+                        """
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll("0 warning(s)", "$.sources[0]: required property 'type' not found");
@@ -63,22 +63,22 @@ public class ImportSpecificationDeserializerSourceTest {
     void fails_if_source_type_is_wrongly_typed() {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
-        {
-            "version": "1",
-            "sources": [{
-                "name": "a-source",
-                "type": 42,
-                "query": "SELECT id, name FROM my.table"
-            }],
-            "targets": {
-                "queries": [{
-                    "name": "a-target",
-                    "source": "a-source",
-                    "query": "UNWIND $rows AS row CREATE (n:ANode) SET n = row"
-                }]
-            }
-        }
-        """
+                        {
+                            "version": "1",
+                            "sources": [{
+                                "name": "a-source",
+                                "type": 42,
+                                "query": "SELECT id, name FROM my.table"
+                            }],
+                            "targets": {
+                                "queries": [{
+                                    "name": "a-target",
+                                    "source": "a-source",
+                                    "query": "UNWIND $rows AS row CREATE (n:ANode) SET n = row"
+                                }]
+                            }
+                        }
+                        """
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll("0 warning(s)", "$.sources[0].type: integer found, string expected");
@@ -88,22 +88,22 @@ public class ImportSpecificationDeserializerSourceTest {
     void fails_if_source_type_is_not_supported_by_any_loaded_source_provider() {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
-        {
-            "version": "1",
-            "sources": [{
-                "name": "a-source",
-                "type": "unsupported",
-                "query": "SELECT id, name FROM my.table"
-            }],
-            "targets": {
-                "queries": [{
-                    "name": "a-target",
-                    "source": "a-source",
-                    "query": "UNWIND $rows AS row CREATE (n:ANode) SET n = row"
-                }]
-            }
-        }
-        """
+                        {
+                            "version": "1",
+                            "sources": [{
+                                "name": "a-source",
+                                "type": "unsupported",
+                                "query": "SELECT id, name FROM my.table"
+                            }],
+                            "targets": {
+                                "queries": [{
+                                    "name": "a-target",
+                                    "source": "a-source",
+                                    "query": "UNWIND $rows AS row CREATE (n:ANode) SET n = row"
+                                }]
+                            }
+                        }
+                        """
                                 .stripIndent())))
                 .isInstanceOf(UndeserializableSourceException.class)
                 .hasMessageContainingAll(
@@ -114,22 +114,22 @@ public class ImportSpecificationDeserializerSourceTest {
     void fails_if_third_party_source_and_supplier_do_not_match() {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
-        {
-            "version": "1",
-            "sources": [{
-                "name": "a-source",
-                "type": "jdbc",
-                "sql": "SELECT p.productname FROM products p ORDER BY p.productname ASC "
-            }],
-            "targets": {
-                "queries": [{
-                    "name": "a-target",
-                    "source": "a-source",
-                    "query": "UNWIND $rows AS row CREATE (n:ANode) SET n = row"
-                }]
-            }
-        }
-        """
+                        {
+                            "version": "1",
+                            "sources": [{
+                                "name": "a-source",
+                                "type": "jdbc",
+                                "sql": "SELECT p.productname FROM products p ORDER BY p.productname ASC "
+                            }],
+                            "targets": {
+                                "queries": [{
+                                    "name": "a-target",
+                                    "source": "a-source",
+                                    "query": "UNWIND $rows AS row CREATE (n:ANode) SET n = row"
+                                }]
+                            }
+                        }
+                        """
                                 .stripIndent())))
                 .isInstanceOf(UndeserializableSourceException.class)
                 .hasMessageContainingAll(

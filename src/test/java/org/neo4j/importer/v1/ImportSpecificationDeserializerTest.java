@@ -41,22 +41,22 @@ class ImportSpecificationDeserializerTest {
     void deserializes_minimal_job_spec() throws Exception {
         var json =
                 """
-            {
-                "version": "1",
-                "sources": [{
-                    "name": "my-bigquery-source",
-                    "type": "bigquery",
-                    "query": "SELECT id, name FROM my.table"
-                }],
-                "targets": {
-                    "queries": [{
-                        "name": "my-query",
-                        "source": "my-bigquery-source",
-                        "query": "UNWIND $rows AS row CREATE (n:ANode) SET n = row"
-                    }]
-                }
-            }
-        """
+                            {
+                                "version": "1",
+                                "sources": [{
+                                    "name": "my-bigquery-source",
+                                    "type": "bigquery",
+                                    "query": "SELECT id, name FROM my.table"
+                                }],
+                                "targets": {
+                                    "queries": [{
+                                        "name": "my-query",
+                                        "source": "my-bigquery-source",
+                                        "query": "UNWIND $rows AS row CREATE (n:ANode) SET n = row"
+                                    }]
+                                }
+                            }
+                        """
                         .stripIndent();
 
         var spec = deserialize(new StringReader(json));
@@ -81,34 +81,34 @@ class ImportSpecificationDeserializerTest {
     void deserializes_job_spec() throws Exception {
         var json =
                 """
-            {
-                "version": "1",
-                "config": {
-                    "foo": "bar",
-                    "baz": 42,
-                    "qix": [true, 1.0, {}]
-                },
-                "sources": [{
-                    "name": "my-bigquery-source",
-                    "type": "bigquery",
-                    "query": "SELECT id, name FROM my.table"
-                }],
-                "targets": {
-                    "queries": [{
-                        "name": "my-query",
-                        "source": "my-bigquery-source",
-                        "query": "UNWIND $rows AS row CREATE (n:ANode) SET n = row"
-                    }]
-                },
-                "actions": [{
-                    "name": "my-http-get-action",
-                    "type": "http",
-                    "method": "get",
-                    "url": "https://example.com",
-                    "stage": "start"
-                }]
-            }
-        """
+                            {
+                                "version": "1",
+                                "config": {
+                                    "foo": "bar",
+                                    "baz": 42,
+                                    "qix": [true, 1.0, {}]
+                                },
+                                "sources": [{
+                                    "name": "my-bigquery-source",
+                                    "type": "bigquery",
+                                    "query": "SELECT id, name FROM my.table"
+                                }],
+                                "targets": {
+                                    "queries": [{
+                                        "name": "my-query",
+                                        "source": "my-bigquery-source",
+                                        "query": "UNWIND $rows AS row CREATE (n:ANode) SET n = row"
+                                    }]
+                                },
+                                "actions": [{
+                                    "name": "my-http-get-action",
+                                    "type": "http",
+                                    "method": "get",
+                                    "url": "https://example.com",
+                                    "stage": "start"
+                                }]
+                            }
+                        """
                         .stripIndent();
 
         var spec = deserialize(new StringReader(json));
@@ -149,21 +149,21 @@ class ImportSpecificationDeserializerTest {
     void fails_if_version_is_missing() {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
-                {
-                    "sources": [{
-                        "name": "a-source",
-                        "type": "bigquery",
-                        "query": "SELECT id, name FROM my.table"
-                    }],
-                    "targets": {
-                        "queries": [{
-                            "name": "a-target",
-                            "source": "a-source",
-                            "query": "UNWIND $rows AS row CREATE (n:ANode) SET n = row"
-                        }]
-                    }
-                }
-                """
+                        {
+                            "sources": [{
+                                "name": "a-source",
+                                "type": "bigquery",
+                                "query": "SELECT id, name FROM my.table"
+                            }],
+                            "targets": {
+                                "queries": [{
+                                    "name": "a-target",
+                                    "source": "a-source",
+                                    "query": "UNWIND $rows AS row CREATE (n:ANode) SET n = row"
+                                }]
+                            }
+                        }
+                        """
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll("1 error(s)", "0 warning(s)", "$: required property 'version' not found");
@@ -173,22 +173,22 @@ class ImportSpecificationDeserializerTest {
     void fails_if_version_is_invalid() {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
-                {
-                    "version": [],
-                    "sources": [{
-                        "name": "a-source",
-                        "type": "bigquery",
-                        "query": "SELECT id, name FROM my.table"
-                    }],
-                    "targets": {
-                        "queries": [{
-                            "name": "a-target",
-                            "source": "a-source",
-                            "query": "UNWIND $rows AS row CREATE (n:ANode) SET n = row"
-                        }]
-                    }
-                }
-                """
+                        {
+                            "version": [],
+                            "sources": [{
+                                "name": "a-source",
+                                "type": "bigquery",
+                                "query": "SELECT id, name FROM my.table"
+                            }],
+                            "targets": {
+                                "queries": [{
+                                    "name": "a-target",
+                                    "source": "a-source",
+                                    "query": "UNWIND $rows AS row CREATE (n:ANode) SET n = row"
+                                }]
+                            }
+                        }
+                        """
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll("1 error(s)", "0 warning(s)", "$.version: must be the constant value '1'");
@@ -198,17 +198,17 @@ class ImportSpecificationDeserializerTest {
     void fails_if_sources_are_missing() {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
-                {
-                    "version": "1",
-                    "targets": {
-                        "queries": [{
-                            "name": "a-target",
-                            "source": "a-source",
-                            "query": "UNWIND $rows AS row CREATE (n:ANode) SET n = row"
-                        }]
-                    }
-                }
-                """
+                        {
+                            "version": "1",
+                            "targets": {
+                                "queries": [{
+                                    "name": "a-target",
+                                    "source": "a-source",
+                                    "query": "UNWIND $rows AS row CREATE (n:ANode) SET n = row"
+                                }]
+                            }
+                        }
+                        """
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll("1 error(s)", "0 warning(s)", "$: required property 'sources' not found");
@@ -218,18 +218,18 @@ class ImportSpecificationDeserializerTest {
     void fails_if_sources_are_wrongly_typed() {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
-                {
-                    "version": "1",
-                    "sources": 42,
-                    "targets": {
-                        "queries": [{
-                            "name": "a-target",
-                            "source": "a-source",
-                            "query": "UNWIND $rows AS row CREATE (n:ANode) SET n = row"
-                        }]
-                    }
-                }
-                """
+                        {
+                            "version": "1",
+                            "sources": 42,
+                            "targets": {
+                                "queries": [{
+                                    "name": "a-target",
+                                    "source": "a-source",
+                                    "query": "UNWIND $rows AS row CREATE (n:ANode) SET n = row"
+                                }]
+                            }
+                        }
+                        """
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll("1 error(s)", "0 warning(s)", "$.sources: integer found, array expected");
@@ -239,18 +239,18 @@ class ImportSpecificationDeserializerTest {
     void fails_if_source_is_wrongly_typed() {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
-                {
-                    "version": "1",
-                    "sources": [42],
-                    "targets": {
-                        "queries": [{
-                            "name": "a-target",
-                            "source": "a-source",
-                            "query": "UNWIND $rows AS row CREATE (n:ANode) SET n = row"
-                        }]
-                    }
-                }
-                """
+                        {
+                            "version": "1",
+                            "sources": [42],
+                            "targets": {
+                                "queries": [{
+                                    "name": "a-target",
+                                    "source": "a-source",
+                                    "query": "UNWIND $rows AS row CREATE (n:ANode) SET n = row"
+                                }]
+                            }
+                        }
+                        """
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll("1 error(s)", "0 warning(s)", "$.sources[0]: integer found, object expected");
@@ -260,18 +260,18 @@ class ImportSpecificationDeserializerTest {
     void fails_if_sources_are_empty() {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
-                {
-                    "version": "1",
-                    "sources": [],
-                    "targets": {
-                        "queries": [{
-                            "name": "a-target",
-                            "source": "a-source",
-                            "query": "UNWIND $rows AS row CREATE (n:ANode) SET n = row"
-                        }]
-                    }
-                }
-                """
+                        {
+                            "version": "1",
+                            "sources": [],
+                            "targets": {
+                                "queries": [{
+                                    "name": "a-target",
+                                    "source": "a-source",
+                                    "query": "UNWIND $rows AS row CREATE (n:ANode) SET n = row"
+                                }]
+                            }
+                        }
+                        """
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
@@ -282,15 +282,15 @@ class ImportSpecificationDeserializerTest {
     void fails_if_targets_are_missing() {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
-                {
-                    "version": "1",
-                    "sources": [{
-                        "name": "a-source",
-                        "type": "bigquery",
-                        "query": "SELECT id, name FROM my.table"
-                    }]
-                }
-                """
+                        {
+                            "version": "1",
+                            "sources": [{
+                                "name": "a-source",
+                                "type": "bigquery",
+                                "query": "SELECT id, name FROM my.table"
+                            }]
+                        }
+                        """
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll("1 error(s)", "0 warning(s)", "$: required property 'targets' not found");
@@ -300,16 +300,16 @@ class ImportSpecificationDeserializerTest {
     void fails_if_targets_are_wrongly_typed() {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
-                {
-                    "version": "1",
-                    "sources": [{
-                        "name": "a-source",
-                        "type": "bigquery",
-                        "query": "SELECT id, name FROM my.table"
-                    }],
-                    "targets": 42
-                }
-                """
+                        {
+                            "version": "1",
+                            "sources": [{
+                                "name": "a-source",
+                                "type": "bigquery",
+                                "query": "SELECT id, name FROM my.table"
+                            }],
+                            "targets": 42
+                        }
+                        """
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll("1 error(s)", "0 warning(s)", "$.targets: integer found, object expected");
@@ -319,16 +319,16 @@ class ImportSpecificationDeserializerTest {
     void fails_if_targets_are_empty() {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
-                {
-                    "version": "1",
-                    "sources": [{
-                        "name": "a-source",
-                        "type": "bigquery",
-                        "query": "SELECT id, name FROM my.table"
-                    }],
-                    "targets": {}
-                }
-                """
+                        {
+                            "version": "1",
+                            "sources": [{
+                                "name": "a-source",
+                                "type": "bigquery",
+                                "query": "SELECT id, name FROM my.table"
+                            }],
+                            "targets": {}
+                        }
+                        """
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
@@ -343,18 +343,18 @@ class ImportSpecificationDeserializerTest {
     void fails_if_node_targets_are_wrongly_typed() {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
-                {
-                    "version": "1",
-                    "sources": [{
-                        "name": "a-source",
-                        "type": "bigquery",
-                        "query": "SELECT id, name FROM my.table"
-                    }],
-                    "targets": {
-                        "nodes": 42
-                    }
-                }
-                """
+                        {
+                            "version": "1",
+                            "sources": [{
+                                "name": "a-source",
+                                "type": "bigquery",
+                                "query": "SELECT id, name FROM my.table"
+                            }],
+                            "targets": {
+                                "nodes": 42
+                            }
+                        }
+                        """
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
@@ -365,18 +365,18 @@ class ImportSpecificationDeserializerTest {
     void fails_if_relationship_targets_are_wrongly_typed() {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
-                {
-                    "version": "1",
-                    "sources": [{
-                        "name": "a-source",
-                        "type": "bigquery",
-                        "query": "SELECT id, name FROM my.table"
-                    }],
-                    "targets": {
-                        "relationships": 42
-                    }
-                }
-                """
+                        {
+                            "version": "1",
+                            "sources": [{
+                                "name": "a-source",
+                                "type": "bigquery",
+                                "query": "SELECT id, name FROM my.table"
+                            }],
+                            "targets": {
+                                "relationships": 42
+                            }
+                        }
+                        """
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
@@ -387,18 +387,18 @@ class ImportSpecificationDeserializerTest {
     void fails_if_custom_query_targets_are_wrongly_typed() {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
-                {
-                    "version": "1",
-                    "sources": [{
-                        "name": "a-source",
-                        "type": "bigquery",
-                        "query": "SELECT id, name FROM my.table"
-                    }],
-                    "targets": {
-                        "queries": 42
-                    }
-                }
-                """
+                        {
+                            "version": "1",
+                            "sources": [{
+                                "name": "a-source",
+                                "type": "bigquery",
+                                "query": "SELECT id, name FROM my.table"
+                            }],
+                            "targets": {
+                                "queries": 42
+                            }
+                        }
+                        """
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
@@ -409,23 +409,23 @@ class ImportSpecificationDeserializerTest {
     void fails_if_actions_are_wrongly_typed() {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
-                {
-                    "version": "1",
-                    "sources": [{
-                        "type": "bigquery",
-                        "name": "a-source",
-                        "query": "SELECT id, name FROM my.table"
-                    }],
-                    "targets": {
-                        "queries": [{
-                            "name": "a-target",
-                            "source": "a-source",
-                            "query": "UNWIND $rows AS row CREATE (n:ANode) SET n = row"
-                        }]
-                    },
-                    "actions": 42
-                }
-                """
+                        {
+                            "version": "1",
+                            "sources": [{
+                                "type": "bigquery",
+                                "name": "a-source",
+                                "query": "SELECT id, name FROM my.table"
+                            }],
+                            "targets": {
+                                "queries": [{
+                                    "name": "a-target",
+                                    "source": "a-source",
+                                    "query": "UNWIND $rows AS row CREATE (n:ANode) SET n = row"
+                                }]
+                            },
+                            "actions": 42
+                        }
+                        """
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll("1 error(s)", "0 warning(s)", "$.actions: integer found, array expected");
@@ -435,23 +435,23 @@ class ImportSpecificationDeserializerTest {
     void fails_if_action_is_wrongly_typed() {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
-                {
-                    "version": "1",
-                    "sources": [{
-                        "type": "bigquery",
-                        "name": "a-source",
-                        "query": "SELECT id, name FROM my.table"
-                    }],
-                    "targets": {
-                        "queries": [{
-                            "name": "a-target",
-                            "source": "a-source",
-                            "query": "UNWIND $rows AS row CREATE (n:ANode) SET n = row"
-                        }]
-                    },
-                    "actions": [42]
-                }
-                """
+                        {
+                            "version": "1",
+                            "sources": [{
+                                "type": "bigquery",
+                                "name": "a-source",
+                                "query": "SELECT id, name FROM my.table"
+                            }],
+                            "targets": {
+                                "queries": [{
+                                    "name": "a-target",
+                                    "source": "a-source",
+                                    "query": "UNWIND $rows AS row CREATE (n:ANode) SET n = row"
+                                }]
+                            },
+                            "actions": [42]
+                        }
+                        """
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll("1 error(s)", "0 warning(s)", "$.actions[0]: integer found, object expected");
@@ -461,21 +461,21 @@ class ImportSpecificationDeserializerTest {
     void fails_if_name_is_missing_in_source() {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
-                {
-                    "version": "1",
-                    "sources": [{
-                        "type": "bigquery",
-                        "query": "SELECT id, name FROM my.table"
-                    }],
-                    "targets": {
-                        "queries": [{
-                            "name": "a-target",
-                            "source": "a-source",
-                            "query": "UNWIND $rows AS row CREATE (n:ANode) SET n = row"
-                        }]
-                    }
-                }
-                """
+                        {
+                            "version": "1",
+                            "sources": [{
+                                "type": "bigquery",
+                                "query": "SELECT id, name FROM my.table"
+                            }],
+                            "targets": {
+                                "queries": [{
+                                    "name": "a-target",
+                                    "source": "a-source",
+                                    "query": "UNWIND $rows AS row CREATE (n:ANode) SET n = row"
+                                }]
+                            }
+                        }
+                        """
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
@@ -486,26 +486,26 @@ class ImportSpecificationDeserializerTest {
     void fails_if_name_is_missing_in_node_target() {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
-                {
-                    "version": "1",
-                    "sources": [{
-                        "type": "bigquery",
-                        "name": "a-source",
-                        "query": "SELECT id, name FROM my.table"
-                    }],
-                    "targets": {
-                        "nodes": [{
-                            "source": "a-source",
-                            "write_mode": "merge",
-                            "labels": ["Label1", "Label2"],
-                            "properties": [
-                                {"source_field": "field_1", "target_property": "property1"},
-                                {"source_field": "field_2", "target_property": "property2"}
-                            ]
-                        }]
-                    }
-                }
-                """
+                        {
+                            "version": "1",
+                            "sources": [{
+                                "type": "bigquery",
+                                "name": "a-source",
+                                "query": "SELECT id, name FROM my.table"
+                            }],
+                            "targets": {
+                                "nodes": [{
+                                    "source": "a-source",
+                                    "write_mode": "merge",
+                                    "labels": ["Label1", "Label2"],
+                                    "properties": [
+                                        {"source_field": "field_1", "target_property": "property1"},
+                                        {"source_field": "field_2", "target_property": "property2"}
+                                    ]
+                                }]
+                            }
+                        }
+                        """
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
@@ -516,35 +516,35 @@ class ImportSpecificationDeserializerTest {
     void fails_if_name_is_missing_in_relationship_target() {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
-                {
-                    "version": "1",
-                    "sources": [{
-                        "type": "bigquery",
-                        "name": "a-source",
-                        "query": "SELECT id, name FROM my.table"
-                    }],
-                    "targets": {
-                        "nodes": [{
-                            "source": "a-source",
-                            "name": "a-node-target",
-                            "write_mode": "merge",
-                            "labels": ["Label1", "Label2"],
-                            "properties": [
-                                {"source_field": "field_1", "target_property": "property1"},
-                                {"source_field": "field_2", "target_property": "property2"}
-                            ]
-                        }],
-                        "relationships": [{
-                            "source": "a-source",
-                            "type": "TYPE",
-                            "write_mode": "create",
-                            "node_match_mode": "match",
-                            "start_node_reference": "a-node-target",
-                            "end_node_reference": "a-node-target"
-                        }]
-                    }
-                }
-                """
+                        {
+                            "version": "1",
+                            "sources": [{
+                                "type": "bigquery",
+                                "name": "a-source",
+                                "query": "SELECT id, name FROM my.table"
+                            }],
+                            "targets": {
+                                "nodes": [{
+                                    "source": "a-source",
+                                    "name": "a-node-target",
+                                    "write_mode": "merge",
+                                    "labels": ["Label1", "Label2"],
+                                    "properties": [
+                                        {"source_field": "field_1", "target_property": "property1"},
+                                        {"source_field": "field_2", "target_property": "property2"}
+                                    ]
+                                }],
+                                "relationships": [{
+                                    "source": "a-source",
+                                    "type": "TYPE",
+                                    "write_mode": "create",
+                                    "node_match_mode": "match",
+                                    "start_node_reference": "a-node-target",
+                                    "end_node_reference": "a-node-target"
+                                }]
+                            }
+                        }
+                        """
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
@@ -555,21 +555,21 @@ class ImportSpecificationDeserializerTest {
     void fails_if_name_is_missing_in_custom_query_target() {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
-                {
-                    "version": "1",
-                    "sources": [{
-                        "type": "bigquery",
-                        "name": "a-source",
-                        "query": "SELECT id, name FROM my.table"
-                    }],
-                    "targets": {
-                        "queries": [{
-                            "source": "a-source",
-                            "query": "UNWIND $rows AS row CREATE (n:ANode) SET n = row"
-                        }]
-                    }
-                }
-                """
+                        {
+                            "version": "1",
+                            "sources": [{
+                                "type": "bigquery",
+                                "name": "a-source",
+                                "query": "SELECT id, name FROM my.table"
+                            }],
+                            "targets": {
+                                "queries": [{
+                                    "source": "a-source",
+                                    "query": "UNWIND $rows AS row CREATE (n:ANode) SET n = row"
+                                }]
+                            }
+                        }
+                        """
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
@@ -580,28 +580,28 @@ class ImportSpecificationDeserializerTest {
     void fails_if_name_is_missing_in_action() {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
-                {
-                    "version": "1",
-                    "sources": [{
-                        "type": "bigquery",
-                        "name": "a-source",
-                        "query": "SELECT id, name FROM my.table"
-                    }],
-                    "targets": {
-                        "queries": [{
-                            "name": "a-target",
-                            "source": "a-source",
-                            "query": "UNWIND $rows AS row CREATE (n:ANode) SET n = row"
-                        }]
-                    },
-                    "actions": [{
-                        "type": "http",
-                        "method": "get",
-                        "stage": "start",
-                        "url": "https://example.com"
-                    }]
-                }
-                """
+                        {
+                            "version": "1",
+                            "sources": [{
+                                "type": "bigquery",
+                                "name": "a-source",
+                                "query": "SELECT id, name FROM my.table"
+                            }],
+                            "targets": {
+                                "queries": [{
+                                    "name": "a-target",
+                                    "source": "a-source",
+                                    "query": "UNWIND $rows AS row CREATE (n:ANode) SET n = row"
+                                }]
+                            },
+                            "actions": [{
+                                "type": "http",
+                                "method": "get",
+                                "stage": "start",
+                                "url": "https://example.com"
+                            }]
+                        }
+                        """
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
@@ -612,22 +612,22 @@ class ImportSpecificationDeserializerTest {
     void fails_if_name_is_blank_in_source() {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
-                {
-                    "version": "1",
-                    "sources": [{
-                        "name": "  ",
-                        "type": "bigquery",
-                        "query": "SELECT id, name FROM my.table"
-                    }],
-                    "targets": {
-                        "queries": [{
-                            "name": "a-target",
-                            "source": "a-source",
-                            "query": "UNWIND $rows AS row CREATE (n:ANode) SET n = row"
-                        }]
-                    }
-                }
-                """
+                        {
+                            "version": "1",
+                            "sources": [{
+                                "name": "  ",
+                                "type": "bigquery",
+                                "query": "SELECT id, name FROM my.table"
+                            }],
+                            "targets": {
+                                "queries": [{
+                                    "name": "a-target",
+                                    "source": "a-source",
+                                    "query": "UNWIND $rows AS row CREATE (n:ANode) SET n = row"
+                                }]
+                            }
+                        }
+                        """
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
@@ -638,27 +638,27 @@ class ImportSpecificationDeserializerTest {
     void fails_if_name_is_blank_in_node_target() {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
-                {
-                    "version": "1",
-                    "sources": [{
-                        "type": "bigquery",
-                        "name": "a-source",
-                        "query": "SELECT id, name FROM my.table"
-                    }],
-                    "targets": {
-                        "nodes": [{
-                            "name": "  ",
-                            "source": "a-source",
-                            "labels": ["Label1", "Label2"],
-                            "write_mode": "create",
-                            "properties": [
-                                {"source_field": "field_1", "target_property": "property1"},
-                                {"source_field": "field_2", "target_property": "property2"}
-                            ]
-                        }]
-                    }
-                }
-                """
+                        {
+                            "version": "1",
+                            "sources": [{
+                                "type": "bigquery",
+                                "name": "a-source",
+                                "query": "SELECT id, name FROM my.table"
+                            }],
+                            "targets": {
+                                "nodes": [{
+                                    "name": "  ",
+                                    "source": "a-source",
+                                    "labels": ["Label1", "Label2"],
+                                    "write_mode": "create",
+                                    "properties": [
+                                        {"source_field": "field_1", "target_property": "property1"},
+                                        {"source_field": "field_2", "target_property": "property2"}
+                                    ]
+                                }]
+                            }
+                        }
+                        """
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
@@ -669,36 +669,36 @@ class ImportSpecificationDeserializerTest {
     void fails_if_name_is_blank_in_relationship_target() {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
-                {
-                    "version": "1",
-                    "sources": [{
-                        "type": "bigquery",
-                        "name": "a-source",
-                        "query": "SELECT id, name FROM my.table"
-                    }],
-                    "targets": {
-                        "nodes": [{
-                            "source": "a-source",
-                            "name": "a-node-target",
-                            "write_mode": "merge",
-                            "labels": ["Label1", "Label2"],
-                            "properties": [
-                                {"source_field": "field_1", "target_property": "property1"},
-                                {"source_field": "field_2", "target_property": "property2"}
-                            ]
-                        }],
-                        "relationships": [{
-                            "name": "   ",
-                            "source": "a-source",
-                            "write_mode": "create",
-                            "node_match_mode": "merge",
-                            "type": "TYPE",
-                            "start_node_reference": "a-node-target",
-                            "end_node_reference": "a-node-target"
-                        }]
-                    }
-                }
-                """
+                        {
+                            "version": "1",
+                            "sources": [{
+                                "type": "bigquery",
+                                "name": "a-source",
+                                "query": "SELECT id, name FROM my.table"
+                            }],
+                            "targets": {
+                                "nodes": [{
+                                    "source": "a-source",
+                                    "name": "a-node-target",
+                                    "write_mode": "merge",
+                                    "labels": ["Label1", "Label2"],
+                                    "properties": [
+                                        {"source_field": "field_1", "target_property": "property1"},
+                                        {"source_field": "field_2", "target_property": "property2"}
+                                    ]
+                                }],
+                                "relationships": [{
+                                    "name": "   ",
+                                    "source": "a-source",
+                                    "write_mode": "create",
+                                    "node_match_mode": "merge",
+                                    "type": "TYPE",
+                                    "start_node_reference": "a-node-target",
+                                    "end_node_reference": "a-node-target"
+                                }]
+                            }
+                        }
+                        """
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
@@ -711,22 +711,22 @@ class ImportSpecificationDeserializerTest {
     void fails_if_name_is_blank_in_custom_query_target() {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
-                {
-                    "version": "1",
-                    "sources": [{
-                        "type": "bigquery",
-                        "name": "a-source",
-                        "query": "SELECT id, name FROM my.table"
-                    }],
-                    "targets": {
-                        "queries": [{
-                            "name": "   ",
-                            "source": "a-source",
-                            "query": "UNWIND $rows AS row CREATE (n:ANode) SET n = row"
-                        }]
-                    }
-                }
-                """
+                        {
+                            "version": "1",
+                            "sources": [{
+                                "type": "bigquery",
+                                "name": "a-source",
+                                "query": "SELECT id, name FROM my.table"
+                            }],
+                            "targets": {
+                                "queries": [{
+                                    "name": "   ",
+                                    "source": "a-source",
+                                    "query": "UNWIND $rows AS row CREATE (n:ANode) SET n = row"
+                                }]
+                            }
+                        }
+                        """
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
@@ -739,29 +739,29 @@ class ImportSpecificationDeserializerTest {
     void fails_if_name_is_blank_in_action() {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
-                {
-                    "version": "1",
-                    "sources": [{
-                        "type": "bigquery",
-                        "name": "a-source",
-                        "query": "SELECT id, name FROM my.table"
-                    }],
-                    "targets": {
-                        "queries": [{
-                            "name": "a-target",
-                            "source": "a-source",
-                            "query": "UNWIND $rows AS row CREATE (n:ANode) SET n = row"
-                        }]
-                    },
-                    "actions": [{
-                        "name": "   ",
-                        "type": "http",
-                        "method": "get",
-                        "stage": "post_nodes",
-                        "url": "https://example.com"
-                    }]
-                }
-                """
+                        {
+                            "version": "1",
+                            "sources": [{
+                                "type": "bigquery",
+                                "name": "a-source",
+                                "query": "SELECT id, name FROM my.table"
+                            }],
+                            "targets": {
+                                "queries": [{
+                                    "name": "a-target",
+                                    "source": "a-source",
+                                    "query": "UNWIND $rows AS row CREATE (n:ANode) SET n = row"
+                                }]
+                            },
+                            "actions": [{
+                                "name": "   ",
+                                "type": "http",
+                                "method": "get",
+                                "stage": "post_nodes",
+                                "url": "https://example.com"
+                            }]
+                        }
+                        """
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(

@@ -30,28 +30,28 @@ public class ImportSpecificationDeserializerNodeTargetTest {
     public void fails_if_node_target_active_attribute_has_wrong_type() {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
-{
-    "version": "1",
-    "sources": [{
-        "name": "a-source",
-        "type": "jdbc",
-        "data_source": "a-data-source",
-        "sql": "SELECT id, name FROM my.table"
-    }],
-    "targets": {
-        "nodes": [{
-            "active": 42,
-            "name": "a-target",
-            "source": "a-source",
-            "write_mode": "merge",
-            "labels": ["Label"],
-            "properties": [
-                {"source_field": "field", "target_property": "property"}
-            ]
-        }]
-    }
-}
-"""
+                        {
+                            "version": "1",
+                            "sources": [{
+                                "name": "a-source",
+                                "type": "jdbc",
+                                "data_source": "a-data-source",
+                                "sql": "SELECT id, name FROM my.table"
+                            }],
+                            "targets": {
+                                "nodes": [{
+                                    "active": 42,
+                                    "name": "a-target",
+                                    "source": "a-source",
+                                    "write_mode": "merge",
+                                    "labels": ["Label"],
+                                    "properties": [
+                                        {"source_field": "field", "target_property": "property"}
+                                    ]
+                                }]
+                            }
+                        }
+                        """
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
@@ -62,25 +62,25 @@ public class ImportSpecificationDeserializerNodeTargetTest {
     public void fails_if_node_target_source_attribute_is_missing() {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
-{
-"version": "1",
-"sources": [{
-"name": "a-source",
-"type": "jdbc",
-"data_source": "a-data-source",
-"sql": "SELECT id, name FROM my.table"
-}],
-"targets": {
-"nodes": [{
-    "name": "a-node-target",
-    "labels": ["Label"],
-    "properties": [
-        {"source_field": "id", "target_property": "id"}
-    ]
-}]
-}
-}
-"""
+                        {
+                        "version": "1",
+                        "sources": [{
+                        "name": "a-source",
+                        "type": "jdbc",
+                        "data_source": "a-data-source",
+                        "sql": "SELECT id, name FROM my.table"
+                        }],
+                        "targets": {
+                        "nodes": [{
+                            "name": "a-node-target",
+                            "labels": ["Label"],
+                            "properties": [
+                                {"source_field": "id", "target_property": "id"}
+                            ]
+                        }]
+                        }
+                        }
+                        """
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
@@ -91,26 +91,26 @@ public class ImportSpecificationDeserializerNodeTargetTest {
     public void fails_if_node_target_source_attribute_is_wrongly_typed() {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
-{
-"version": "1",
-"sources": [{
-"name": "a-source",
-"type": "jdbc",
-"data_source": "a-data-source",
-"sql": "SELECT id, name FROM my.table"
-}],
-"targets": {
-"nodes": [{
-    "name": "a-node-target",
-    "source": 42,
-    "labels": ["Label"],
-    "properties": [
-        {"source_field": "id", "target_property": "id"}
-    ]
-}]
-}
-}
-"""
+                        {
+                        "version": "1",
+                        "sources": [{
+                        "name": "a-source",
+                        "type": "jdbc",
+                        "data_source": "a-data-source",
+                        "sql": "SELECT id, name FROM my.table"
+                        }],
+                        "targets": {
+                        "nodes": [{
+                            "name": "a-node-target",
+                            "source": 42,
+                            "labels": ["Label"],
+                            "properties": [
+                                {"source_field": "id", "target_property": "id"}
+                            ]
+                        }]
+                        }
+                        }
+                        """
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
@@ -121,26 +121,26 @@ public class ImportSpecificationDeserializerNodeTargetTest {
     public void fails_if_node_target_source_attribute_is_empty() {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
-{
-"version": "1",
-"sources": [{
-"name": "a-source",
-"type": "jdbc",
-"data_source": "a-data-source",
-"sql": "SELECT id, name FROM my.table"
-}],
-"targets": {
-"nodes": [{
-    "name": "a-node-target",
-    "source": "",
-    "labels": ["Label"],
-    "properties": [
-        {"source_field": "id", "target_property": "id"}
-    ]
-}]
-}
-}
-"""
+                        {
+                        "version": "1",
+                        "sources": [{
+                        "name": "a-source",
+                        "type": "jdbc",
+                        "data_source": "a-data-source",
+                        "sql": "SELECT id, name FROM my.table"
+                        }],
+                        "targets": {
+                        "nodes": [{
+                            "name": "a-node-target",
+                            "source": "",
+                            "labels": ["Label"],
+                            "properties": [
+                                {"source_field": "id", "target_property": "id"}
+                            ]
+                        }]
+                        }
+                        }
+                        """
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
@@ -151,26 +151,26 @@ public class ImportSpecificationDeserializerNodeTargetTest {
     public void fails_if_node_target_source_attribute_is_blank() {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
-{
-"version": "1",
-"sources": [{
-"name": "a-source",
-"type": "jdbc",
-"data_source": "a-data-source",
-"sql": "SELECT id, name FROM my.table"
-}],
-"targets": {
-"nodes": [{
-    "name": "a-node-target",
-    "source": "   ",
-    "labels": ["Label"],
-    "properties": [
-        {"source_field": "id", "target_property": "id"}
-    ]
-}]
-}
-}
-"""
+                        {
+                        "version": "1",
+                        "sources": [{
+                        "name": "a-source",
+                        "type": "jdbc",
+                        "data_source": "a-data-source",
+                        "sql": "SELECT id, name FROM my.table"
+                        }],
+                        "targets": {
+                        "nodes": [{
+                            "name": "a-node-target",
+                            "source": "   ",
+                            "labels": ["Label"],
+                            "properties": [
+                                {"source_field": "id", "target_property": "id"}
+                            ]
+                        }]
+                        }
+                        }
+                        """
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
@@ -183,28 +183,28 @@ public class ImportSpecificationDeserializerNodeTargetTest {
     public void fails_if_node_target_write_mode_has_wrong_type() {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
-{
-    "version": "1",
-    "sources": [{
-        "name": "a-source",
-        "type": "jdbc",
-        "data_source": "a-data-source",
-        "sql": "SELECT id, name FROM my.table"
-    }],
-    "targets": {
-        "nodes": [{
-            "active": true,
-            "name": "a-target",
-            "source": "a-source",
-            "write_mode": 42,
-            "labels": ["Label"],
-            "properties": [
-                {"source_field": "field", "target_property": "property"}
-            ]
-        }]
-    }
-}
-"""
+                        {
+                            "version": "1",
+                            "sources": [{
+                                "name": "a-source",
+                                "type": "jdbc",
+                                "data_source": "a-data-source",
+                                "sql": "SELECT id, name FROM my.table"
+                            }],
+                            "targets": {
+                                "nodes": [{
+                                    "active": true,
+                                    "name": "a-target",
+                                    "source": "a-source",
+                                    "write_mode": 42,
+                                    "labels": ["Label"],
+                                    "properties": [
+                                        {"source_field": "field", "target_property": "property"}
+                                    ]
+                                }]
+                            }
+                        }
+                        """
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
@@ -215,28 +215,28 @@ public class ImportSpecificationDeserializerNodeTargetTest {
     public void fails_if_node_target_write_mode_has_wrong_value() {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
-{
-    "version": "1",
-    "sources": [{
-        "name": "a-source",
-        "type": "jdbc",
-        "data_source": "a-data-source",
-        "sql": "SELECT id, name FROM my.table"
-    }],
-    "targets": {
-        "nodes": [{
-            "active": true,
-            "name": "a-target",
-            "source": "a-source",
-            "write_mode": "reticulating_splines",
-            "labels": ["Label"],
-            "properties": [
-                {"source_field": "field", "target_property": "property"}
-            ]
-        }]
-    }
-}
-"""
+                        {
+                            "version": "1",
+                            "sources": [{
+                                "name": "a-source",
+                                "type": "jdbc",
+                                "data_source": "a-data-source",
+                                "sql": "SELECT id, name FROM my.table"
+                            }],
+                            "targets": {
+                                "nodes": [{
+                                    "active": true,
+                                    "name": "a-target",
+                                    "source": "a-source",
+                                    "write_mode": "reticulating_splines",
+                                    "labels": ["Label"],
+                                    "properties": [
+                                        {"source_field": "field", "target_property": "property"}
+                                    ]
+                                }]
+                            }
+                        }
+                        """
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
@@ -249,26 +249,26 @@ public class ImportSpecificationDeserializerNodeTargetTest {
     public void fails_if_node_target_labels_is_missing() {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
-{
-    "version": "1",
-    "sources": [{
-        "name": "a-source",
-        "type": "jdbc",
-        "data_source": "a-data-source",
-        "sql": "SELECT id, name FROM my.table"
-    }],
-    "targets": {
-        "nodes": [{
-            "active": true,
-            "name": "a-target",
-            "source": "a-source",
-            "properties": [
-                {"source_field": "field", "target_property": "property"}
-            ]
-        }]
-    }
-}
-"""
+                        {
+                            "version": "1",
+                            "sources": [{
+                                "name": "a-source",
+                                "type": "jdbc",
+                                "data_source": "a-data-source",
+                                "sql": "SELECT id, name FROM my.table"
+                            }],
+                            "targets": {
+                                "nodes": [{
+                                    "active": true,
+                                    "name": "a-target",
+                                    "source": "a-source",
+                                    "properties": [
+                                        {"source_field": "field", "target_property": "property"}
+                                    ]
+                                }]
+                            }
+                        }
+                        """
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
@@ -279,27 +279,27 @@ public class ImportSpecificationDeserializerNodeTargetTest {
     public void fails_if_node_target_labels_is_wrongly_typed() {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
-{
-    "version": "1",
-    "sources": [{
-        "name": "a-source",
-        "type": "jdbc",
-        "data_source": "a-data-source",
-        "sql": "SELECT id, name FROM my.table"
-    }],
-    "targets": {
-        "nodes": [{
-            "active": true,
-            "name": "a-target",
-            "source": "a-source",
-            "labels": 42,
-            "properties": [
-                {"source_field": "field", "target_property": "property"}
-            ]
-        }]
-    }
-}
-"""
+                        {
+                            "version": "1",
+                            "sources": [{
+                                "name": "a-source",
+                                "type": "jdbc",
+                                "data_source": "a-data-source",
+                                "sql": "SELECT id, name FROM my.table"
+                            }],
+                            "targets": {
+                                "nodes": [{
+                                    "active": true,
+                                    "name": "a-target",
+                                    "source": "a-source",
+                                    "labels": 42,
+                                    "properties": [
+                                        {"source_field": "field", "target_property": "property"}
+                                    ]
+                                }]
+                            }
+                        }
+                        """
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
@@ -310,27 +310,27 @@ public class ImportSpecificationDeserializerNodeTargetTest {
     public void fails_if_node_target_labels_is_empty() {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
-{
-    "version": "1",
-    "sources": [{
-        "name": "a-source",
-        "type": "jdbc",
-        "data_source": "a-data-source",
-        "sql": "SELECT id, name FROM my.table"
-    }],
-    "targets": {
-        "nodes": [{
-            "active": true,
-            "name": "a-target",
-            "source": "a-source",
-            "labels": [],
-            "properties": [
-                {"source_field": "field", "target_property": "property"}
-            ]
-        }]
-    }
-}
-"""
+                        {
+                            "version": "1",
+                            "sources": [{
+                                "name": "a-source",
+                                "type": "jdbc",
+                                "data_source": "a-data-source",
+                                "sql": "SELECT id, name FROM my.table"
+                            }],
+                            "targets": {
+                                "nodes": [{
+                                    "active": true,
+                                    "name": "a-target",
+                                    "source": "a-source",
+                                    "labels": [],
+                                    "properties": [
+                                        {"source_field": "field", "target_property": "property"}
+                                    ]
+                                }]
+                            }
+                        }
+                        """
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
@@ -343,27 +343,27 @@ public class ImportSpecificationDeserializerNodeTargetTest {
     public void fails_if_node_target_labels_element_is_wrongly_typed() {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
-{
-    "version": "1",
-    "sources": [{
-        "name": "a-source",
-        "type": "jdbc",
-        "data_source": "a-data-source",
-        "sql": "SELECT id, name FROM my.table"
-    }],
-    "targets": {
-        "nodes": [{
-            "active": true,
-            "name": "a-target",
-            "source": "a-source",
-            "labels": [42],
-            "properties": [
-                {"source_field": "field", "target_property": "property"}
-            ]
-        }]
-    }
-}
-"""
+                        {
+                            "version": "1",
+                            "sources": [{
+                                "name": "a-source",
+                                "type": "jdbc",
+                                "data_source": "a-data-source",
+                                "sql": "SELECT id, name FROM my.table"
+                            }],
+                            "targets": {
+                                "nodes": [{
+                                    "active": true,
+                                    "name": "a-target",
+                                    "source": "a-source",
+                                    "labels": [42],
+                                    "properties": [
+                                        {"source_field": "field", "target_property": "property"}
+                                    ]
+                                }]
+                            }
+                        }
+                        """
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
@@ -374,27 +374,27 @@ public class ImportSpecificationDeserializerNodeTargetTest {
     public void fails_if_node_target_labels_element_is_empty() {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
-{
-    "version": "1",
-    "sources": [{
-        "name": "a-source",
-        "type": "jdbc",
-        "data_source": "a-data-source",
-        "sql": "SELECT id, name FROM my.table"
-    }],
-    "targets": {
-        "nodes": [{
-            "active": true,
-            "name": "a-target",
-            "source": "a-source",
-            "labels": [""],
-            "properties": [
-                {"source_field": "field", "target_property": "property"}
-            ]
-        }]
-    }
-}
-"""
+                        {
+                            "version": "1",
+                            "sources": [{
+                                "name": "a-source",
+                                "type": "jdbc",
+                                "data_source": "a-data-source",
+                                "sql": "SELECT id, name FROM my.table"
+                            }],
+                            "targets": {
+                                "nodes": [{
+                                    "active": true,
+                                    "name": "a-target",
+                                    "source": "a-source",
+                                    "labels": [""],
+                                    "properties": [
+                                        {"source_field": "field", "target_property": "property"}
+                                    ]
+                                }]
+                            }
+                        }
+                        """
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
@@ -405,27 +405,27 @@ public class ImportSpecificationDeserializerNodeTargetTest {
     public void fails_if_node_target_labels_element_is_blank() {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
-{
-    "version": "1",
-    "sources": [{
-        "name": "a-source",
-        "type": "jdbc",
-        "data_source": "a-data-source",
-        "sql": "SELECT id, name FROM my.table"
-    }],
-    "targets": {
-        "nodes": [{
-            "active": true,
-            "name": "a-target",
-            "source": "a-source",
-            "labels": ["   "],
-            "properties": [
-                {"source_field": "field", "target_property": "property"}
-            ]
-        }]
-    }
-}
-"""
+                        {
+                            "version": "1",
+                            "sources": [{
+                                "name": "a-source",
+                                "type": "jdbc",
+                                "data_source": "a-data-source",
+                                "sql": "SELECT id, name FROM my.table"
+                            }],
+                            "targets": {
+                                "nodes": [{
+                                    "active": true,
+                                    "name": "a-target",
+                                    "source": "a-source",
+                                    "labels": ["   "],
+                                    "properties": [
+                                        {"source_field": "field", "target_property": "property"}
+                                    ]
+                                }]
+                            }
+                        }
+                        """
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
@@ -438,24 +438,24 @@ public class ImportSpecificationDeserializerNodeTargetTest {
     public void fails_if_node_target_property_mappings_is_missing() {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
-{
-    "version": "1",
-    "sources": [{
-        "name": "a-source",
-        "type": "jdbc",
-        "data_source": "a-data-source",
-        "sql": "SELECT id, name FROM my.table"
-    }],
-    "targets": {
-        "nodes": [{
-            "active": true,
-            "name": "a-target",
-            "source": "a-source",
-            "labels": ["Label"]
-        }]
-    }
-}
-"""
+                        {
+                            "version": "1",
+                            "sources": [{
+                                "name": "a-source",
+                                "type": "jdbc",
+                                "data_source": "a-data-source",
+                                "sql": "SELECT id, name FROM my.table"
+                            }],
+                            "targets": {
+                                "nodes": [{
+                                    "active": true,
+                                    "name": "a-target",
+                                    "source": "a-source",
+                                    "labels": ["Label"]
+                                }]
+                            }
+                        }
+                        """
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
@@ -466,25 +466,25 @@ public class ImportSpecificationDeserializerNodeTargetTest {
     public void fails_if_node_target_property_mappings_is_wrongly_typed() {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
-{
-    "version": "1",
-    "sources": [{
-        "name": "a-source",
-        "type": "jdbc",
-        "data_source": "a-data-source",
-        "sql": "SELECT id, name FROM my.table"
-    }],
-    "targets": {
-        "nodes": [{
-            "active": true,
-            "name": "a-target",
-            "source": "a-source",
-            "labels": ["Label"],
-            "properties": 42
-        }]
-    }
-}
-"""
+                        {
+                            "version": "1",
+                            "sources": [{
+                                "name": "a-source",
+                                "type": "jdbc",
+                                "data_source": "a-data-source",
+                                "sql": "SELECT id, name FROM my.table"
+                            }],
+                            "targets": {
+                                "nodes": [{
+                                    "active": true,
+                                    "name": "a-target",
+                                    "source": "a-source",
+                                    "labels": ["Label"],
+                                    "properties": 42
+                                }]
+                            }
+                        }
+                        """
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
@@ -495,25 +495,25 @@ public class ImportSpecificationDeserializerNodeTargetTest {
     public void fails_if_node_target_property_mappings_element_is_wrongly_typed() {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
-{
-    "version": "1",
-    "sources": [{
-        "name": "a-source",
-        "type": "jdbc",
-        "data_source": "a-data-source",
-        "sql": "SELECT id, name FROM my.table"
-    }],
-    "targets": {
-        "nodes": [{
-            "active": true,
-            "name": "a-target",
-            "source": "a-source",
-            "labels": ["Label"],
-            "properties": [42]
-        }]
-    }
-}
-"""
+                        {
+                            "version": "1",
+                            "sources": [{
+                                "name": "a-source",
+                                "type": "jdbc",
+                                "data_source": "a-data-source",
+                                "sql": "SELECT id, name FROM my.table"
+                            }],
+                            "targets": {
+                                "nodes": [{
+                                    "active": true,
+                                    "name": "a-target",
+                                    "source": "a-source",
+                                    "labels": ["Label"],
+                                    "properties": [42]
+                                }]
+                            }
+                        }
+                        """
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
@@ -526,27 +526,27 @@ public class ImportSpecificationDeserializerNodeTargetTest {
     public void fails_if_node_target_property_mappings_source_field_is_missing() {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
-{
-    "version": "1",
-    "sources": [{
-        "name": "a-source",
-        "type": "jdbc",
-        "data_source": "a-data-source",
-        "sql": "SELECT id, name FROM my.table"
-    }],
-    "targets": {
-        "nodes": [{
-            "active": true,
-            "name": "a-target",
-            "source": "a-source",
-            "labels": ["Label"],
-            "properties": [
-                {"target_property": "property"}
-            ]
-        }]
-    }
-}
-"""
+                        {
+                            "version": "1",
+                            "sources": [{
+                                "name": "a-source",
+                                "type": "jdbc",
+                                "data_source": "a-data-source",
+                                "sql": "SELECT id, name FROM my.table"
+                            }],
+                            "targets": {
+                                "nodes": [{
+                                    "active": true,
+                                    "name": "a-target",
+                                    "source": "a-source",
+                                    "labels": ["Label"],
+                                    "properties": [
+                                        {"target_property": "property"}
+                                    ]
+                                }]
+                            }
+                        }
+                        """
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
@@ -559,27 +559,27 @@ public class ImportSpecificationDeserializerNodeTargetTest {
     public void fails_if_node_target_property_mappings_source_field_is_wrongly_typed() {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
-{
-    "version": "1",
-    "sources": [{
-        "name": "a-source",
-        "type": "jdbc",
-        "data_source": "a-data-source",
-        "sql": "SELECT id, name FROM my.table"
-    }],
-    "targets": {
-        "nodes": [{
-            "active": true,
-            "name": "a-target",
-            "source": "a-source",
-            "labels": ["Label"],
-            "properties": [
-                {"source_field": 42, "target_property": "property"}
-            ]
-        }]
-    }
-}
-"""
+                        {
+                            "version": "1",
+                            "sources": [{
+                                "name": "a-source",
+                                "type": "jdbc",
+                                "data_source": "a-data-source",
+                                "sql": "SELECT id, name FROM my.table"
+                            }],
+                            "targets": {
+                                "nodes": [{
+                                    "active": true,
+                                    "name": "a-target",
+                                    "source": "a-source",
+                                    "labels": ["Label"],
+                                    "properties": [
+                                        {"source_field": 42, "target_property": "property"}
+                                    ]
+                                }]
+                            }
+                        }
+                        """
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
@@ -592,27 +592,27 @@ public class ImportSpecificationDeserializerNodeTargetTest {
     public void fails_if_node_target_property_mappings_source_field_is_empty() {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
-{
-    "version": "1",
-    "sources": [{
-        "name": "a-source",
-        "type": "jdbc",
-        "data_source": "a-data-source",
-        "sql": "SELECT id, name FROM my.table"
-    }],
-    "targets": {
-        "nodes": [{
-            "active": true,
-            "name": "a-target",
-            "source": "a-source",
-            "labels": ["Label"],
-            "properties": [
-                {"source_field": "", "target_property": "property"}
-            ]
-        }]
-    }
-}
-"""
+                        {
+                            "version": "1",
+                            "sources": [{
+                                "name": "a-source",
+                                "type": "jdbc",
+                                "data_source": "a-data-source",
+                                "sql": "SELECT id, name FROM my.table"
+                            }],
+                            "targets": {
+                                "nodes": [{
+                                    "active": true,
+                                    "name": "a-target",
+                                    "source": "a-source",
+                                    "labels": ["Label"],
+                                    "properties": [
+                                        {"source_field": "", "target_property": "property"}
+                                    ]
+                                }]
+                            }
+                        }
+                        """
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
@@ -624,27 +624,27 @@ public class ImportSpecificationDeserializerNodeTargetTest {
     public void fails_if_node_target_property_mappings_source_field_is_blank() {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
-{
-    "version": "1",
-    "sources": [{
-        "name": "a-source",
-        "type": "jdbc",
-        "data_source": "a-data-source",
-        "sql": "SELECT id, name FROM my.table"
-    }],
-    "targets": {
-        "nodes": [{
-            "active": true,
-            "name": "a-target",
-            "source": "a-source",
-            "labels": ["Label"],
-            "properties": [
-                {"source_field": "   ", "target_property": "property"}
-            ]
-        }]
-    }
-}
-"""
+                        {
+                            "version": "1",
+                            "sources": [{
+                                "name": "a-source",
+                                "type": "jdbc",
+                                "data_source": "a-data-source",
+                                "sql": "SELECT id, name FROM my.table"
+                            }],
+                            "targets": {
+                                "nodes": [{
+                                    "active": true,
+                                    "name": "a-target",
+                                    "source": "a-source",
+                                    "labels": ["Label"],
+                                    "properties": [
+                                        {"source_field": "   ", "target_property": "property"}
+                                    ]
+                                }]
+                            }
+                        }
+                        """
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
@@ -657,34 +657,34 @@ public class ImportSpecificationDeserializerNodeTargetTest {
     public void does_not_fail_if_node_target_property_mappings_source_field_is_listed_in_target_aggregations() {
         assertThatCode(() -> deserialize(new StringReader(
                         """
-{
-    "version": "1",
-    "sources": [{
-        "name": "a-source",
-        "type": "text",
-        "header": ["field-1"],
-        "data": [
-            ["foo"], ["bar"]
-        ]
-    }],
-    "targets": {
-        "nodes": [{
-            "active": true,
-            "name": "a-target",
-            "source": "a-source",
-            "labels": ["Label"],
-            "source_transformations": {
-                "aggregations": [{
-                    "field_name": "aggregated", "expression": "42"
-                }]
-            },
-            "properties": [
-                {"source_field": "aggregated", "target_property": "property"}
-            ]
-        }]
-    }
-}
-"""
+                        {
+                            "version": "1",
+                            "sources": [{
+                                "name": "a-source",
+                                "type": "text",
+                                "header": ["field-1"],
+                                "data": [
+                                    ["foo"], ["bar"]
+                                ]
+                            }],
+                            "targets": {
+                                "nodes": [{
+                                    "active": true,
+                                    "name": "a-target",
+                                    "source": "a-source",
+                                    "labels": ["Label"],
+                                    "source_transformations": {
+                                        "aggregations": [{
+                                            "field_name": "aggregated", "expression": "42"
+                                        }]
+                                    },
+                                    "properties": [
+                                        {"source_field": "aggregated", "target_property": "property"}
+                                    ]
+                                }]
+                            }
+                        }
+                        """
                                 .stripIndent())))
                 .doesNotThrowAnyException();
     }
@@ -693,27 +693,27 @@ public class ImportSpecificationDeserializerNodeTargetTest {
     public void fails_if_node_target_property_mappings_target_property_is_missing() {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
-{
-"version": "1",
-"sources": [{
-"name": "a-source",
-"type": "jdbc",
-"data_source": "a-data-source",
-"sql": "SELECT id, name FROM my.table"
-}],
-"targets": {
-"nodes": [{
-    "active": true,
-    "name": "a-target",
-    "source": "a-source",
-    "labels": ["Label"],
-    "properties": [
-        {"source_field": "id"}
-    ]
-}]
-}
-}
-"""
+                        {
+                        "version": "1",
+                        "sources": [{
+                        "name": "a-source",
+                        "type": "jdbc",
+                        "data_source": "a-data-source",
+                        "sql": "SELECT id, name FROM my.table"
+                        }],
+                        "targets": {
+                        "nodes": [{
+                            "active": true,
+                            "name": "a-target",
+                            "source": "a-source",
+                            "labels": ["Label"],
+                            "properties": [
+                                {"source_field": "id"}
+                            ]
+                        }]
+                        }
+                        }
+                        """
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
@@ -726,27 +726,27 @@ public class ImportSpecificationDeserializerNodeTargetTest {
     public void fails_if_node_target_property_mappings_target_property_is_wrongly_typed() {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
-{
-"version": "1",
-"sources": [{
-"name": "a-source",
-"type": "jdbc",
-"data_source": "a-data-source",
-"sql": "SELECT id, name FROM my.table"
-}],
-"targets": {
-"nodes": [{
-    "active": true,
-    "name": "a-target",
-    "source": "a-source",
-    "labels": ["Label"],
-    "properties": [
-        {"source_field": "id", "target_property": 42}
-    ]
-}]
-}
-}
-"""
+                        {
+                        "version": "1",
+                        "sources": [{
+                        "name": "a-source",
+                        "type": "jdbc",
+                        "data_source": "a-data-source",
+                        "sql": "SELECT id, name FROM my.table"
+                        }],
+                        "targets": {
+                        "nodes": [{
+                            "active": true,
+                            "name": "a-target",
+                            "source": "a-source",
+                            "labels": ["Label"],
+                            "properties": [
+                                {"source_field": "id", "target_property": 42}
+                            ]
+                        }]
+                        }
+                        }
+                        """
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
@@ -759,27 +759,27 @@ public class ImportSpecificationDeserializerNodeTargetTest {
     public void fails_if_node_target_property_mappings_target_property_is_empty() {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
-{
-"version": "1",
-"sources": [{
-"name": "a-source",
-"type": "jdbc",
-"data_source": "a-data-source",
-"sql": "SELECT id, name FROM my.table"
-}],
-"targets": {
-"nodes": [{
-    "active": true,
-    "name": "a-target",
-    "source": "a-source",
-    "labels": ["Label"],
-    "properties": [
-        {"source_field": "id", "target_property": ""}
-    ]
-}]
-}
-}
-"""
+                        {
+                        "version": "1",
+                        "sources": [{
+                        "name": "a-source",
+                        "type": "jdbc",
+                        "data_source": "a-data-source",
+                        "sql": "SELECT id, name FROM my.table"
+                        }],
+                        "targets": {
+                        "nodes": [{
+                            "active": true,
+                            "name": "a-target",
+                            "source": "a-source",
+                            "labels": ["Label"],
+                            "properties": [
+                                {"source_field": "id", "target_property": ""}
+                            ]
+                        }]
+                        }
+                        }
+                        """
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
@@ -791,27 +791,27 @@ public class ImportSpecificationDeserializerNodeTargetTest {
     public void fails_if_node_target_property_mappings_target_property_is_blank() {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
-{
-"version": "1",
-"sources": [{
-"name": "a-source",
-"type": "jdbc",
-"data_source": "a-data-source",
-"sql": "SELECT id, name FROM my.table"
-}],
-"targets": {
-"nodes": [{
-    "active": true,
-    "name": "a-target",
-    "source": "a-source",
-    "labels": ["Label"],
-    "properties": [
-        {"source_field": "id", "target_property": "   "}
-    ]
-}]
-}
-}
-"""
+                        {
+                        "version": "1",
+                        "sources": [{
+                        "name": "a-source",
+                        "type": "jdbc",
+                        "data_source": "a-data-source",
+                        "sql": "SELECT id, name FROM my.table"
+                        }],
+                        "targets": {
+                        "nodes": [{
+                            "active": true,
+                            "name": "a-target",
+                            "source": "a-source",
+                            "labels": ["Label"],
+                            "properties": [
+                                {"source_field": "id", "target_property": "   "}
+                            ]
+                        }]
+                        }
+                        }
+                        """
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
@@ -824,27 +824,27 @@ public class ImportSpecificationDeserializerNodeTargetTest {
     public void fails_if_node_target_property_mappings_target_property_type_is_wrongly_typed() {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
-{
-"version": "1",
-"sources": [{
-"name": "a-source",
-"type": "jdbc",
-"data_source": "a-data-source",
-"sql": "SELECT id, name FROM my.table"
-}],
-"targets": {
-"nodes": [{
-    "active": true,
-    "name": "a-target",
-    "source": "a-source",
-    "labels": ["Label"],
-    "properties": [
-        {"source_field": "id", "target_property": "property", "target_property_type": 42}
-    ]
-}]
-}
-}
-"""
+                        {
+                        "version": "1",
+                        "sources": [{
+                        "name": "a-source",
+                        "type": "jdbc",
+                        "data_source": "a-data-source",
+                        "sql": "SELECT id, name FROM my.table"
+                        }],
+                        "targets": {
+                        "nodes": [{
+                            "active": true,
+                            "name": "a-target",
+                            "source": "a-source",
+                            "labels": ["Label"],
+                            "properties": [
+                                {"source_field": "id", "target_property": "property", "target_property_type": 42}
+                            ]
+                        }]
+                        }
+                        }
+                        """
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
@@ -856,27 +856,27 @@ public class ImportSpecificationDeserializerNodeTargetTest {
     public void fails_if_node_target_property_mappings_target_property_type_is_unsupported() {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
-{
-"version": "1",
-"sources": [{
-"name": "a-source",
-"type": "jdbc",
-"data_source": "a-data-source",
-"sql": "SELECT id, name FROM my.table"
-}],
-"targets": {
-"nodes": [{
-    "active": true,
-    "name": "a-target",
-    "source": "a-source",
-    "labels": ["Label"],
-    "properties": [
-        {"source_field": "id", "target_property": "property", "target_property_type": "blackhole"}
-    ]
-}]
-}
-}
-"""
+                        {
+                        "version": "1",
+                        "sources": [{
+                        "name": "a-source",
+                        "type": "jdbc",
+                        "data_source": "a-data-source",
+                        "sql": "SELECT id, name FROM my.table"
+                        }],
+                        "targets": {
+                        "nodes": [{
+                            "active": true,
+                            "name": "a-target",
+                            "source": "a-source",
+                            "labels": ["Label"],
+                            "properties": [
+                                {"source_field": "id", "target_property": "property", "target_property_type": "blackhole"}
+                            ]
+                        }]
+                        }
+                        }
+                        """
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
@@ -889,31 +889,31 @@ public class ImportSpecificationDeserializerNodeTargetTest {
     public void fails_if_node_target_source_transformation_enable_grouping_has_wrong_type() {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
-{
-    "version": "1",
-    "sources": [{
-        "name": "a-source",
-        "type": "jdbc",
-        "data_source": "a-data-source",
-        "sql": "SELECT id, name FROM my.table"
-    }],
-    "targets": {
-        "nodes": [{
-            "active": true,
-            "name": "a-target",
-            "source": "a-source",
-            "write_mode": "merge",
-            "labels": ["Label"],
-            "properties": [
-                {"source_field": "field", "target_property": "property"}
-            ],
-            "source_transformations": {
-                "enable_grouping": 42
-            }
-        }]
-    }
-}
-"""
+                        {
+                            "version": "1",
+                            "sources": [{
+                                "name": "a-source",
+                                "type": "jdbc",
+                                "data_source": "a-data-source",
+                                "sql": "SELECT id, name FROM my.table"
+                            }],
+                            "targets": {
+                                "nodes": [{
+                                    "active": true,
+                                    "name": "a-target",
+                                    "source": "a-source",
+                                    "write_mode": "merge",
+                                    "labels": ["Label"],
+                                    "properties": [
+                                        {"source_field": "field", "target_property": "property"}
+                                    ],
+                                    "source_transformations": {
+                                        "enable_grouping": 42
+                                    }
+                                }]
+                            }
+                        }
+                        """
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
@@ -926,31 +926,31 @@ public class ImportSpecificationDeserializerNodeTargetTest {
     public void fails_if_node_target_source_transformation_aggregations_have_wrong_type() {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
-{
-    "version": "1",
-    "sources": [{
-        "name": "a-source",
-        "type": "jdbc",
-        "data_source": "a-data-source",
-        "sql": "SELECT id, name FROM my.table"
-    }],
-    "targets": {
-        "nodes": [{
-            "active": true,
-            "name": "a-target",
-            "source": "a-source",
-            "write_mode": "merge",
-            "labels": ["Label"],
-            "properties": [
-                {"source_field": "field", "target_property": "property"}
-            ],
-            "source_transformations": {
-                "aggregations": 42
-            }
-        }]
-    }
-}
-"""
+                        {
+                            "version": "1",
+                            "sources": [{
+                                "name": "a-source",
+                                "type": "jdbc",
+                                "data_source": "a-data-source",
+                                "sql": "SELECT id, name FROM my.table"
+                            }],
+                            "targets": {
+                                "nodes": [{
+                                    "active": true,
+                                    "name": "a-target",
+                                    "source": "a-source",
+                                    "write_mode": "merge",
+                                    "labels": ["Label"],
+                                    "properties": [
+                                        {"source_field": "field", "target_property": "property"}
+                                    ],
+                                    "source_transformations": {
+                                        "aggregations": 42
+                                    }
+                                }]
+                            }
+                        }
+                        """
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
@@ -963,31 +963,31 @@ public class ImportSpecificationDeserializerNodeTargetTest {
     public void fails_if_node_target_source_transformation_aggregations_element_has_wrong_type() {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
-{
-    "version": "1",
-    "sources": [{
-        "name": "a-source",
-        "type": "jdbc",
-        "data_source": "a-data-source",
-        "sql": "SELECT id, name FROM my.table"
-    }],
-    "targets": {
-        "nodes": [{
-            "active": true,
-            "name": "a-target",
-            "source": "a-source",
-            "write_mode": "merge",
-            "labels": ["Label"],
-            "properties": [
-                {"source_field": "field", "target_property": "property"}
-            ],
-            "source_transformations": {
-                "aggregations": [42]
-            }
-        }]
-    }
-}
-"""
+                        {
+                            "version": "1",
+                            "sources": [{
+                                "name": "a-source",
+                                "type": "jdbc",
+                                "data_source": "a-data-source",
+                                "sql": "SELECT id, name FROM my.table"
+                            }],
+                            "targets": {
+                                "nodes": [{
+                                    "active": true,
+                                    "name": "a-target",
+                                    "source": "a-source",
+                                    "write_mode": "merge",
+                                    "labels": ["Label"],
+                                    "properties": [
+                                        {"source_field": "field", "target_property": "property"}
+                                    ],
+                                    "source_transformations": {
+                                        "aggregations": [42]
+                                    }
+                                }]
+                            }
+                        }
+                        """
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
@@ -1000,33 +1000,33 @@ public class ImportSpecificationDeserializerNodeTargetTest {
     public void fails_if_node_target_source_transformation_aggregations_expression_is_missing() {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
-{
-    "version": "1",
-    "sources": [{
-        "name": "a-source",
-        "type": "jdbc",
-        "data_source": "a-data-source",
-        "sql": "SELECT id, name FROM my.table"
-    }],
-    "targets": {
-        "nodes": [{
-            "active": true,
-            "name": "a-target",
-            "source": "a-source",
-            "write_mode": "merge",
-            "labels": ["Label"],
-            "properties": [
-                {"source_field": "field_1", "target_property": "property"}
-            ],
-            "source_transformations": {
-                "aggregations": [{
-                    "field_name": "field_2"
-                }]
-            }
-        }]
-    }
-}
-"""
+                        {
+                            "version": "1",
+                            "sources": [{
+                                "name": "a-source",
+                                "type": "jdbc",
+                                "data_source": "a-data-source",
+                                "sql": "SELECT id, name FROM my.table"
+                            }],
+                            "targets": {
+                                "nodes": [{
+                                    "active": true,
+                                    "name": "a-target",
+                                    "source": "a-source",
+                                    "write_mode": "merge",
+                                    "labels": ["Label"],
+                                    "properties": [
+                                        {"source_field": "field_1", "target_property": "property"}
+                                    ],
+                                    "source_transformations": {
+                                        "aggregations": [{
+                                            "field_name": "field_2"
+                                        }]
+                                    }
+                                }]
+                            }
+                        }
+                        """
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
@@ -1039,34 +1039,34 @@ public class ImportSpecificationDeserializerNodeTargetTest {
     public void fails_if_node_target_source_transformation_aggregations_expression_has_wrong_type() {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
-{
-    "version": "1",
-    "sources": [{
-        "name": "a-source",
-        "type": "jdbc",
-        "data_source": "a-data-source",
-        "sql": "SELECT id, name FROM my.table"
-    }],
-    "targets": {
-        "nodes": [{
-            "active": true,
-            "name": "a-target",
-            "source": "a-source",
-            "write_mode": "merge",
-            "labels": ["Label"],
-            "properties": [
-                {"source_field": "field_1", "target_property": "property"}
-            ],
-            "source_transformations": {
-                "aggregations": [{
-                    "expression": 42,
-                    "field_name": "field_2"
-                }]
-            }
-        }]
-    }
-}
-"""
+                        {
+                            "version": "1",
+                            "sources": [{
+                                "name": "a-source",
+                                "type": "jdbc",
+                                "data_source": "a-data-source",
+                                "sql": "SELECT id, name FROM my.table"
+                            }],
+                            "targets": {
+                                "nodes": [{
+                                    "active": true,
+                                    "name": "a-target",
+                                    "source": "a-source",
+                                    "write_mode": "merge",
+                                    "labels": ["Label"],
+                                    "properties": [
+                                        {"source_field": "field_1", "target_property": "property"}
+                                    ],
+                                    "source_transformations": {
+                                        "aggregations": [{
+                                            "expression": 42,
+                                            "field_name": "field_2"
+                                        }]
+                                    }
+                                }]
+                            }
+                        }
+                        """
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
@@ -1079,34 +1079,34 @@ public class ImportSpecificationDeserializerNodeTargetTest {
     public void fails_if_node_target_source_transformation_aggregations_expression_is_empty() {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
-{
-    "version": "1",
-    "sources": [{
-        "name": "a-source",
-        "type": "jdbc",
-        "data_source": "a-data-source",
-        "sql": "SELECT id, name FROM my.table"
-    }],
-    "targets": {
-        "nodes": [{
-            "active": true,
-            "name": "a-target",
-            "source": "a-source",
-            "write_mode": "merge",
-            "labels": ["Label"],
-            "properties": [
-                {"source_field": "field_1", "target_property": "property"}
-            ],
-            "source_transformations": {
-                "aggregations": [{
-                    "expression": "",
-                    "field_name": "field_2"
-                }]
-            }
-        }]
-    }
-}
-"""
+                        {
+                            "version": "1",
+                            "sources": [{
+                                "name": "a-source",
+                                "type": "jdbc",
+                                "data_source": "a-data-source",
+                                "sql": "SELECT id, name FROM my.table"
+                            }],
+                            "targets": {
+                                "nodes": [{
+                                    "active": true,
+                                    "name": "a-target",
+                                    "source": "a-source",
+                                    "write_mode": "merge",
+                                    "labels": ["Label"],
+                                    "properties": [
+                                        {"source_field": "field_1", "target_property": "property"}
+                                    ],
+                                    "source_transformations": {
+                                        "aggregations": [{
+                                            "expression": "",
+                                            "field_name": "field_2"
+                                        }]
+                                    }
+                                }]
+                            }
+                        }
+                        """
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
@@ -1118,34 +1118,34 @@ public class ImportSpecificationDeserializerNodeTargetTest {
     public void fails_if_node_target_source_transformation_aggregations_expression_is_blank() {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
-{
-    "version": "1",
-    "sources": [{
-        "name": "a-source",
-        "type": "jdbc",
-        "data_source": "a-data-source",
-        "sql": "SELECT id, name FROM my.table"
-    }],
-    "targets": {
-        "nodes": [{
-            "active": true,
-            "name": "a-target",
-            "source": "a-source",
-            "write_mode": "merge",
-            "labels": ["Label"],
-            "properties": [
-                {"source_field": "field_1", "target_property": "property"}
-            ],
-            "source_transformations": {
-                "aggregations": [{
-                    "expression": "  ",
-                    "field_name": "field_2"
-                }]
-            }
-        }]
-    }
-}
-"""
+                        {
+                            "version": "1",
+                            "sources": [{
+                                "name": "a-source",
+                                "type": "jdbc",
+                                "data_source": "a-data-source",
+                                "sql": "SELECT id, name FROM my.table"
+                            }],
+                            "targets": {
+                                "nodes": [{
+                                    "active": true,
+                                    "name": "a-target",
+                                    "source": "a-source",
+                                    "write_mode": "merge",
+                                    "labels": ["Label"],
+                                    "properties": [
+                                        {"source_field": "field_1", "target_property": "property"}
+                                    ],
+                                    "source_transformations": {
+                                        "aggregations": [{
+                                            "expression": "  ",
+                                            "field_name": "field_2"
+                                        }]
+                                    }
+                                }]
+                            }
+                        }
+                        """
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
@@ -1158,33 +1158,33 @@ public class ImportSpecificationDeserializerNodeTargetTest {
     public void fails_if_node_target_source_transformation_aggregations_field_name_is_missing() {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
-{
-    "version": "1",
-    "sources": [{
-        "name": "a-source",
-        "type": "jdbc",
-        "data_source": "a-data-source",
-        "sql": "SELECT id, name FROM my.table"
-    }],
-    "targets": {
-        "nodes": [{
-            "active": true,
-            "name": "a-target",
-            "source": "a-source",
-            "write_mode": "merge",
-            "labels": ["Label"],
-            "properties": [
-                {"source_field": "field_1", "target_property": "property"}
-            ],
-            "source_transformations": {
-                "aggregations": [{
-                    "expression": "42"
-                }]
-            }
-        }]
-    }
-}
-"""
+                        {
+                            "version": "1",
+                            "sources": [{
+                                "name": "a-source",
+                                "type": "jdbc",
+                                "data_source": "a-data-source",
+                                "sql": "SELECT id, name FROM my.table"
+                            }],
+                            "targets": {
+                                "nodes": [{
+                                    "active": true,
+                                    "name": "a-target",
+                                    "source": "a-source",
+                                    "write_mode": "merge",
+                                    "labels": ["Label"],
+                                    "properties": [
+                                        {"source_field": "field_1", "target_property": "property"}
+                                    ],
+                                    "source_transformations": {
+                                        "aggregations": [{
+                                            "expression": "42"
+                                        }]
+                                    }
+                                }]
+                            }
+                        }
+                        """
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
@@ -1197,34 +1197,34 @@ public class ImportSpecificationDeserializerNodeTargetTest {
     public void fails_if_node_target_source_transformation_aggregations_field_name_has_wrong_type() {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
-{
-    "version": "1",
-    "sources": [{
-        "name": "a-source",
-        "type": "jdbc",
-        "data_source": "a-data-source",
-        "sql": "SELECT id, name FROM my.table"
-    }],
-    "targets": {
-        "nodes": [{
-            "active": true,
-            "name": "a-target",
-            "source": "a-source",
-            "write_mode": "merge",
-            "labels": ["Label"],
-            "properties": [
-                {"source_field": "field_1", "target_property": "property"}
-            ],
-            "source_transformations": {
-                "aggregations": [{
-                    "expression": "42",
-                    "field_name": 42
-                }]
-            }
-        }]
-    }
-}
-"""
+                        {
+                            "version": "1",
+                            "sources": [{
+                                "name": "a-source",
+                                "type": "jdbc",
+                                "data_source": "a-data-source",
+                                "sql": "SELECT id, name FROM my.table"
+                            }],
+                            "targets": {
+                                "nodes": [{
+                                    "active": true,
+                                    "name": "a-target",
+                                    "source": "a-source",
+                                    "write_mode": "merge",
+                                    "labels": ["Label"],
+                                    "properties": [
+                                        {"source_field": "field_1", "target_property": "property"}
+                                    ],
+                                    "source_transformations": {
+                                        "aggregations": [{
+                                            "expression": "42",
+                                            "field_name": 42
+                                        }]
+                                    }
+                                }]
+                            }
+                        }
+                        """
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
@@ -1237,34 +1237,34 @@ public class ImportSpecificationDeserializerNodeTargetTest {
     public void fails_if_node_target_source_transformation_aggregations_field_name_is_empty() {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
-{
-    "version": "1",
-    "sources": [{
-        "name": "a-source",
-        "type": "jdbc",
-        "data_source": "a-data-source",
-        "sql": "SELECT id, name FROM my.table"
-    }],
-    "targets": {
-        "nodes": [{
-            "active": true,
-            "name": "a-target",
-            "source": "a-source",
-            "write_mode": "merge",
-            "labels": ["Label"],
-            "properties": [
-                {"source_field": "field_1", "target_property": "property"}
-            ],
-            "source_transformations": {
-                "aggregations": [{
-                    "expression": "42",
-                    "field_name": ""
-                }]
-            }
-        }]
-    }
-}
-"""
+                        {
+                            "version": "1",
+                            "sources": [{
+                                "name": "a-source",
+                                "type": "jdbc",
+                                "data_source": "a-data-source",
+                                "sql": "SELECT id, name FROM my.table"
+                            }],
+                            "targets": {
+                                "nodes": [{
+                                    "active": true,
+                                    "name": "a-target",
+                                    "source": "a-source",
+                                    "write_mode": "merge",
+                                    "labels": ["Label"],
+                                    "properties": [
+                                        {"source_field": "field_1", "target_property": "property"}
+                                    ],
+                                    "source_transformations": {
+                                        "aggregations": [{
+                                            "expression": "42",
+                                            "field_name": ""
+                                        }]
+                                    }
+                                }]
+                            }
+                        }
+                        """
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
@@ -1276,34 +1276,34 @@ public class ImportSpecificationDeserializerNodeTargetTest {
     public void fails_if_node_target_source_transformation_aggregations_field_name_is_blank() {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
-{
-    "version": "1",
-    "sources": [{
-        "name": "a-source",
-        "type": "jdbc",
-        "data_source": "a-data-source",
-        "sql": "SELECT id, name FROM my.table"
-    }],
-    "targets": {
-        "nodes": [{
-            "active": true,
-            "name": "a-target",
-            "source": "a-source",
-            "write_mode": "merge",
-            "labels": ["Label"],
-            "properties": [
-                {"source_field": "field_1", "target_property": "property"}
-            ],
-            "source_transformations": {
-                "aggregations": [{
-                    "expression": "42",
-                    "field_name": " "
-                }]
-            }
-        }]
-    }
-}
-"""
+                        {
+                            "version": "1",
+                            "sources": [{
+                                "name": "a-source",
+                                "type": "jdbc",
+                                "data_source": "a-data-source",
+                                "sql": "SELECT id, name FROM my.table"
+                            }],
+                            "targets": {
+                                "nodes": [{
+                                    "active": true,
+                                    "name": "a-target",
+                                    "source": "a-source",
+                                    "write_mode": "merge",
+                                    "labels": ["Label"],
+                                    "properties": [
+                                        {"source_field": "field_1", "target_property": "property"}
+                                    ],
+                                    "source_transformations": {
+                                        "aggregations": [{
+                                            "expression": "42",
+                                            "field_name": " "
+                                        }]
+                                    }
+                                }]
+                            }
+                        }
+                        """
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
@@ -1316,31 +1316,31 @@ public class ImportSpecificationDeserializerNodeTargetTest {
     public void fails_if_node_target_source_transformation_where_clause_has_wrong_type() {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
-{
-    "version": "1",
-    "sources": [{
-        "name": "a-source",
-        "type": "jdbc",
-        "data_source": "a-data-source",
-        "sql": "SELECT id, name FROM my.table"
-    }],
-    "targets": {
-        "nodes": [{
-            "active": true,
-            "name": "a-target",
-            "source": "a-source",
-            "write_mode": "merge",
-            "labels": ["Label"],
-            "properties": [
-                {"source_field": "field_1", "target_property": "property"}
-            ],
-            "source_transformations": {
-                "where": 42
-            }
-        }]
-    }
-}
-"""
+                        {
+                            "version": "1",
+                            "sources": [{
+                                "name": "a-source",
+                                "type": "jdbc",
+                                "data_source": "a-data-source",
+                                "sql": "SELECT id, name FROM my.table"
+                            }],
+                            "targets": {
+                                "nodes": [{
+                                    "active": true,
+                                    "name": "a-target",
+                                    "source": "a-source",
+                                    "write_mode": "merge",
+                                    "labels": ["Label"],
+                                    "properties": [
+                                        {"source_field": "field_1", "target_property": "property"}
+                                    ],
+                                    "source_transformations": {
+                                        "where": 42
+                                    }
+                                }]
+                            }
+                        }
+                        """
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
@@ -1353,31 +1353,31 @@ public class ImportSpecificationDeserializerNodeTargetTest {
     public void fails_if_node_target_source_transformation_where_clause_is_empty() {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
-{
-    "version": "1",
-    "sources": [{
-        "name": "a-source",
-        "type": "jdbc",
-        "data_source": "a-data-source",
-        "sql": "SELECT id, name FROM my.table"
-    }],
-    "targets": {
-        "nodes": [{
-            "active": true,
-            "name": "a-target",
-            "source": "a-source",
-            "write_mode": "merge",
-            "labels": ["Label"],
-            "properties": [
-                {"source_field": "field_1", "target_property": "property"}
-            ],
-            "source_transformations": {
-                "where": ""
-            }
-        }]
-    }
-}
-"""
+                        {
+                            "version": "1",
+                            "sources": [{
+                                "name": "a-source",
+                                "type": "jdbc",
+                                "data_source": "a-data-source",
+                                "sql": "SELECT id, name FROM my.table"
+                            }],
+                            "targets": {
+                                "nodes": [{
+                                    "active": true,
+                                    "name": "a-target",
+                                    "source": "a-source",
+                                    "write_mode": "merge",
+                                    "labels": ["Label"],
+                                    "properties": [
+                                        {"source_field": "field_1", "target_property": "property"}
+                                    ],
+                                    "source_transformations": {
+                                        "where": ""
+                                    }
+                                }]
+                            }
+                        }
+                        """
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
@@ -1389,31 +1389,31 @@ public class ImportSpecificationDeserializerNodeTargetTest {
     public void fails_if_node_target_source_transformation_where_clause_is_blank() {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
-{
-    "version": "1",
-    "sources": [{
-        "name": "a-source",
-        "type": "jdbc",
-        "data_source": "a-data-source",
-        "sql": "SELECT id, name FROM my.table"
-    }],
-    "targets": {
-        "nodes": [{
-            "active": true,
-            "name": "a-target",
-            "source": "a-source",
-            "write_mode": "merge",
-            "labels": ["Label"],
-            "properties": [
-                {"source_field": "field_1", "target_property": "property"}
-            ],
-            "source_transformations": {
-                "where": "  "
-            }
-        }]
-    }
-}
-"""
+                        {
+                            "version": "1",
+                            "sources": [{
+                                "name": "a-source",
+                                "type": "jdbc",
+                                "data_source": "a-data-source",
+                                "sql": "SELECT id, name FROM my.table"
+                            }],
+                            "targets": {
+                                "nodes": [{
+                                    "active": true,
+                                    "name": "a-target",
+                                    "source": "a-source",
+                                    "write_mode": "merge",
+                                    "labels": ["Label"],
+                                    "properties": [
+                                        {"source_field": "field_1", "target_property": "property"}
+                                    ],
+                                    "source_transformations": {
+                                        "where": "  "
+                                    }
+                                }]
+                            }
+                        }
+                        """
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
@@ -1426,31 +1426,31 @@ public class ImportSpecificationDeserializerNodeTargetTest {
     public void fails_if_node_target_source_transformation_order_by_is_wrongly_typed() {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
-{
-    "version": "1",
-    "sources": [{
-        "name": "a-source",
-        "type": "jdbc",
-        "data_source": "a-data-source",
-        "sql": "SELECT id, name FROM my.table"
-    }],
-    "targets": {
-        "nodes": [{
-            "active": true,
-            "name": "a-target",
-            "source": "a-source",
-            "write_mode": "merge",
-            "labels": ["Label"],
-            "properties": [
-                {"source_field": "field_1", "target_property": "property"}
-            ],
-            "source_transformations": {
-                "order_by": 42
-            }
-        }]
-    }
-}
-"""
+                        {
+                            "version": "1",
+                            "sources": [{
+                                "name": "a-source",
+                                "type": "jdbc",
+                                "data_source": "a-data-source",
+                                "sql": "SELECT id, name FROM my.table"
+                            }],
+                            "targets": {
+                                "nodes": [{
+                                    "active": true,
+                                    "name": "a-target",
+                                    "source": "a-source",
+                                    "write_mode": "merge",
+                                    "labels": ["Label"],
+                                    "properties": [
+                                        {"source_field": "field_1", "target_property": "property"}
+                                    ],
+                                    "source_transformations": {
+                                        "order_by": 42
+                                    }
+                                }]
+                            }
+                        }
+                        """
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
@@ -1463,31 +1463,31 @@ public class ImportSpecificationDeserializerNodeTargetTest {
     public void fails_if_node_target_source_transformation_order_by_element_is_wrongly_typed() {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
-{
-    "version": "1",
-    "sources": [{
-        "name": "a-source",
-        "type": "jdbc",
-        "data_source": "a-data-source",
-        "sql": "SELECT id, name FROM my.table"
-    }],
-    "targets": {
-        "nodes": [{
-            "active": true,
-            "name": "a-target",
-            "source": "a-source",
-            "write_mode": "merge",
-            "labels": ["Label"],
-            "properties": [
-                {"source_field": "field_1", "target_property": "property"}
-            ],
-            "source_transformations": {
-                "order_by": [42]
-            }
-        }]
-    }
-}
-"""
+                        {
+                            "version": "1",
+                            "sources": [{
+                                "name": "a-source",
+                                "type": "jdbc",
+                                "data_source": "a-data-source",
+                                "sql": "SELECT id, name FROM my.table"
+                            }],
+                            "targets": {
+                                "nodes": [{
+                                    "active": true,
+                                    "name": "a-target",
+                                    "source": "a-source",
+                                    "write_mode": "merge",
+                                    "labels": ["Label"],
+                                    "properties": [
+                                        {"source_field": "field_1", "target_property": "property"}
+                                    ],
+                                    "source_transformations": {
+                                        "order_by": [42]
+                                    }
+                                }]
+                            }
+                        }
+                        """
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
@@ -1500,31 +1500,31 @@ public class ImportSpecificationDeserializerNodeTargetTest {
     public void fails_if_node_target_source_transformation_order_by_expression_is_missing() {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
-{
-    "version": "1",
-    "sources": [{
-        "name": "a-source",
-        "type": "jdbc",
-        "data_source": "a-data-source",
-        "sql": "SELECT id, name FROM my.table"
-    }],
-    "targets": {
-        "nodes": [{
-            "active": true,
-            "name": "a-target",
-            "source": "a-source",
-            "write_mode": "merge",
-            "labels": ["Label"],
-            "properties": [
-                {"source_field": "field_1", "target_property": "property"}
-            ],
-            "source_transformations": {
-                "order_by": [{}]
-            }
-        }]
-    }
-}
-"""
+                        {
+                            "version": "1",
+                            "sources": [{
+                                "name": "a-source",
+                                "type": "jdbc",
+                                "data_source": "a-data-source",
+                                "sql": "SELECT id, name FROM my.table"
+                            }],
+                            "targets": {
+                                "nodes": [{
+                                    "active": true,
+                                    "name": "a-target",
+                                    "source": "a-source",
+                                    "write_mode": "merge",
+                                    "labels": ["Label"],
+                                    "properties": [
+                                        {"source_field": "field_1", "target_property": "property"}
+                                    ],
+                                    "source_transformations": {
+                                        "order_by": [{}]
+                                    }
+                                }]
+                            }
+                        }
+                        """
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
@@ -1537,33 +1537,33 @@ public class ImportSpecificationDeserializerNodeTargetTest {
     public void fails_if_node_target_source_transformation_order_by_expression_is_wrongly_typed() {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
-{
-    "version": "1",
-    "sources": [{
-        "name": "a-source",
-        "type": "jdbc",
-        "data_source": "a-data-source",
-        "sql": "SELECT id, name FROM my.table"
-    }],
-    "targets": {
-        "nodes": [{
-            "active": true,
-            "name": "a-target",
-            "source": "a-source",
-            "write_mode": "merge",
-            "labels": ["Label"],
-            "properties": [
-                {"source_field": "field_1", "target_property": "property"}
-            ],
-            "source_transformations": {
-                "order_by": [{
-                    "expression": 42
-                }]
-            }
-        }]
-    }
-}
-"""
+                        {
+                            "version": "1",
+                            "sources": [{
+                                "name": "a-source",
+                                "type": "jdbc",
+                                "data_source": "a-data-source",
+                                "sql": "SELECT id, name FROM my.table"
+                            }],
+                            "targets": {
+                                "nodes": [{
+                                    "active": true,
+                                    "name": "a-target",
+                                    "source": "a-source",
+                                    "write_mode": "merge",
+                                    "labels": ["Label"],
+                                    "properties": [
+                                        {"source_field": "field_1", "target_property": "property"}
+                                    ],
+                                    "source_transformations": {
+                                        "order_by": [{
+                                            "expression": 42
+                                        }]
+                                    }
+                                }]
+                            }
+                        }
+                        """
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
@@ -1576,33 +1576,33 @@ public class ImportSpecificationDeserializerNodeTargetTest {
     public void fails_if_node_target_source_transformation_order_by_expression_is_empty() {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
-{
-    "version": "1",
-    "sources": [{
-        "name": "a-source",
-        "type": "jdbc",
-        "data_source": "a-data-source",
-        "sql": "SELECT id, name FROM my.table"
-    }],
-    "targets": {
-        "nodes": [{
-            "active": true,
-            "name": "a-target",
-            "source": "a-source",
-            "write_mode": "merge",
-            "labels": ["Label"],
-            "properties": [
-                {"source_field": "field_1", "target_property": "property"}
-            ],
-            "source_transformations": {
-                "order_by": [{
-                    "expression": ""
-                }]
-            }
-        }]
-    }
-}
-"""
+                        {
+                            "version": "1",
+                            "sources": [{
+                                "name": "a-source",
+                                "type": "jdbc",
+                                "data_source": "a-data-source",
+                                "sql": "SELECT id, name FROM my.table"
+                            }],
+                            "targets": {
+                                "nodes": [{
+                                    "active": true,
+                                    "name": "a-target",
+                                    "source": "a-source",
+                                    "write_mode": "merge",
+                                    "labels": ["Label"],
+                                    "properties": [
+                                        {"source_field": "field_1", "target_property": "property"}
+                                    ],
+                                    "source_transformations": {
+                                        "order_by": [{
+                                            "expression": ""
+                                        }]
+                                    }
+                                }]
+                            }
+                        }
+                        """
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
@@ -1614,33 +1614,33 @@ public class ImportSpecificationDeserializerNodeTargetTest {
     public void fails_if_node_target_source_transformation_order_by_expression_is_blank() {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
-{
-    "version": "1",
-    "sources": [{
-        "name": "a-source",
-        "type": "jdbc",
-        "data_source": "a-data-source",
-        "sql": "SELECT id, name FROM my.table"
-    }],
-    "targets": {
-        "nodes": [{
-            "active": true,
-            "name": "a-target",
-            "source": "a-source",
-            "write_mode": "merge",
-            "labels": ["Label"],
-            "properties": [
-                {"source_field": "field_1", "target_property": "property"}
-            ],
-            "source_transformations": {
-                "order_by": [{
-                    "expression": "   "
-                }]
-            }
-        }]
-    }
-}
-"""
+                        {
+                            "version": "1",
+                            "sources": [{
+                                "name": "a-source",
+                                "type": "jdbc",
+                                "data_source": "a-data-source",
+                                "sql": "SELECT id, name FROM my.table"
+                            }],
+                            "targets": {
+                                "nodes": [{
+                                    "active": true,
+                                    "name": "a-target",
+                                    "source": "a-source",
+                                    "write_mode": "merge",
+                                    "labels": ["Label"],
+                                    "properties": [
+                                        {"source_field": "field_1", "target_property": "property"}
+                                    ],
+                                    "source_transformations": {
+                                        "order_by": [{
+                                            "expression": "   "
+                                        }]
+                                    }
+                                }]
+                            }
+                        }
+                        """
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
@@ -1653,34 +1653,34 @@ public class ImportSpecificationDeserializerNodeTargetTest {
     public void fails_if_node_target_source_transformation_order_by_order_is_wrongly_typed() {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
-{
-    "version": "1",
-    "sources": [{
-        "name": "a-source",
-        "type": "jdbc",
-        "data_source": "a-data-source",
-        "sql": "SELECT id, name FROM my.table"
-    }],
-    "targets": {
-        "nodes": [{
-            "active": true,
-            "name": "a-target",
-            "source": "a-source",
-            "write_mode": "merge",
-            "labels": ["Label"],
-            "properties": [
-                {"source_field": "field_1", "target_property": "property"}
-            ],
-            "source_transformations": {
-                "order_by": [{
-                    "expression": "42",
-                    "order": 42
-                }]
-            }
-        }]
-    }
-}
-"""
+                        {
+                            "version": "1",
+                            "sources": [{
+                                "name": "a-source",
+                                "type": "jdbc",
+                                "data_source": "a-data-source",
+                                "sql": "SELECT id, name FROM my.table"
+                            }],
+                            "targets": {
+                                "nodes": [{
+                                    "active": true,
+                                    "name": "a-target",
+                                    "source": "a-source",
+                                    "write_mode": "merge",
+                                    "labels": ["Label"],
+                                    "properties": [
+                                        {"source_field": "field_1", "target_property": "property"}
+                                    ],
+                                    "source_transformations": {
+                                        "order_by": [{
+                                            "expression": "42",
+                                            "order": 42
+                                        }]
+                                    }
+                                }]
+                            }
+                        }
+                        """
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
@@ -1692,34 +1692,34 @@ public class ImportSpecificationDeserializerNodeTargetTest {
     public void fails_if_node_target_source_transformation_order_by_order_has_wrong_value() {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
-{
-    "version": "1",
-    "sources": [{
-        "name": "a-source",
-        "type": "jdbc",
-        "data_source": "a-data-source",
-        "sql": "SELECT id, name FROM my.table"
-    }],
-    "targets": {
-        "nodes": [{
-            "active": true,
-            "name": "a-target",
-            "source": "a-source",
-            "write_mode": "merge",
-            "labels": ["Label"],
-            "properties": [
-                {"source_field": "field_1", "target_property": "property"}
-            ],
-            "source_transformations": {
-                "order_by": [{
-                    "expression": "42",
-                    "order": "new"
-                }]
-            }
-        }]
-    }
-}
-"""
+                        {
+                            "version": "1",
+                            "sources": [{
+                                "name": "a-source",
+                                "type": "jdbc",
+                                "data_source": "a-data-source",
+                                "sql": "SELECT id, name FROM my.table"
+                            }],
+                            "targets": {
+                                "nodes": [{
+                                    "active": true,
+                                    "name": "a-target",
+                                    "source": "a-source",
+                                    "write_mode": "merge",
+                                    "labels": ["Label"],
+                                    "properties": [
+                                        {"source_field": "field_1", "target_property": "property"}
+                                    ],
+                                    "source_transformations": {
+                                        "order_by": [{
+                                            "expression": "42",
+                                            "order": "new"
+                                        }]
+                                    }
+                                }]
+                            }
+                        }
+                        """
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
@@ -1731,31 +1731,31 @@ public class ImportSpecificationDeserializerNodeTargetTest {
     public void fails_if_node_target_source_transformation_limit_is_wrongly_typed() {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
-{
-    "version": "1",
-    "sources": [{
-        "name": "a-source",
-        "type": "jdbc",
-        "data_source": "a-data-source",
-        "sql": "SELECT id, name FROM my.table"
-    }],
-    "targets": {
-        "nodes": [{
-            "active": true,
-            "name": "a-target",
-            "source": "a-source",
-            "write_mode": "merge",
-            "labels": ["Label"],
-            "properties": [
-                {"source_field": "field_1", "target_property": "property"}
-            ],
-            "source_transformations": {
-                "limit": []
-            }
-        }]
-    }
-}
-"""
+                        {
+                            "version": "1",
+                            "sources": [{
+                                "name": "a-source",
+                                "type": "jdbc",
+                                "data_source": "a-data-source",
+                                "sql": "SELECT id, name FROM my.table"
+                            }],
+                            "targets": {
+                                "nodes": [{
+                                    "active": true,
+                                    "name": "a-target",
+                                    "source": "a-source",
+                                    "write_mode": "merge",
+                                    "labels": ["Label"],
+                                    "properties": [
+                                        {"source_field": "field_1", "target_property": "property"}
+                                    ],
+                                    "source_transformations": {
+                                        "limit": []
+                                    }
+                                }]
+                            }
+                        }
+                        """
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
@@ -1768,31 +1768,31 @@ public class ImportSpecificationDeserializerNodeTargetTest {
     public void fails_if_node_target_source_transformation_limit_is_negative() {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
-{
-    "version": "1",
-    "sources": [{
-        "name": "a-source",
-        "type": "jdbc",
-        "data_source": "a-data-source",
-        "sql": "SELECT id, name FROM my.table"
-    }],
-    "targets": {
-        "nodes": [{
-            "active": true,
-            "name": "a-target",
-            "source": "a-source",
-            "write_mode": "merge",
-            "labels": ["Label"],
-            "properties": [
-                {"source_field": "field", "target_property": "property"}
-            ],
-            "source_transformations": {
-                "limit": -42
-            }
-        }]
-    }
-}
-"""
+                        {
+                            "version": "1",
+                            "sources": [{
+                                "name": "a-source",
+                                "type": "jdbc",
+                                "data_source": "a-data-source",
+                                "sql": "SELECT id, name FROM my.table"
+                            }],
+                            "targets": {
+                                "nodes": [{
+                                    "active": true,
+                                    "name": "a-target",
+                                    "source": "a-source",
+                                    "write_mode": "merge",
+                                    "labels": ["Label"],
+                                    "properties": [
+                                        {"source_field": "field", "target_property": "property"}
+                                    ],
+                                    "source_transformations": {
+                                        "limit": -42
+                                    }
+                                }]
+                            }
+                        }
+                        """
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
@@ -1805,31 +1805,31 @@ public class ImportSpecificationDeserializerNodeTargetTest {
     public void fails_if_node_target_source_transformation_limit_is_zero() {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
-{
-    "version": "1",
-    "sources": [{
-        "name": "a-source",
-        "type": "jdbc",
-        "data_source": "a-data-source",
-        "sql": "SELECT id, name FROM my.table"
-    }],
-    "targets": {
-        "nodes": [{
-            "active": true,
-            "name": "a-target",
-            "source": "a-source",
-            "write_mode": "merge",
-            "labels": ["Label"],
-            "properties": [
-                {"source_field": "field", "target_property": "property"}
-            ],
-            "source_transformations": {
-                "limit": 0
-            }
-        }]
-    }
-}
-"""
+                        {
+                            "version": "1",
+                            "sources": [{
+                                "name": "a-source",
+                                "type": "jdbc",
+                                "data_source": "a-data-source",
+                                "sql": "SELECT id, name FROM my.table"
+                            }],
+                            "targets": {
+                                "nodes": [{
+                                    "active": true,
+                                    "name": "a-target",
+                                    "source": "a-source",
+                                    "write_mode": "merge",
+                                    "labels": ["Label"],
+                                    "properties": [
+                                        {"source_field": "field", "target_property": "property"}
+                                    ],
+                                    "source_transformations": {
+                                        "limit": 0
+                                    }
+                                }]
+                            }
+                        }
+                        """
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
