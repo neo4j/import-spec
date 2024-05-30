@@ -1,21 +1,23 @@
 package org.neo4j.importer.v1.validation;
 
-import org.neo4j.importer.v1.Neo4jDistribution;
+import org.neo4j.importer.v1.distribution.Neo4jDistribution;
 import org.neo4j.importer.v1.targets.NodeTarget;
 import org.neo4j.importer.v1.targets.RelationshipTarget;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Neo4jVersionValidator implements SpecificationValidator {
     private static final String ERROR_CODE = "VERS-001";
 
     private final Neo4jDistribution neo4jDistribution;
-    private final List<String> unsupportedPaths;
+    private final Map<String, List<String>> unsupportedPaths;
 
     public Neo4jVersionValidator(Neo4jDistribution neo4jDistribution) {
         this.neo4jDistribution = neo4jDistribution;
-        this.unsupportedPaths = new ArrayList<>();
+        this.unsupportedPaths = new LinkedHashMap<>();
     }
 
     @Override
@@ -24,33 +26,37 @@ public class Neo4jVersionValidator implements SpecificationValidator {
         if (schema == null) {
             return;
         }
-
+        var unsupportedFeatures = new ArrayList<String>();
         if (!isEmpty(schema.getTypeConstraints()) && !neo4jDistribution.hasNodeTypeConstraints()) {
-            unsupportedPaths.add(String.format("$.targets.nodes[%d].schema.type_constraints", index));
+            unsupportedFeatures.add("type_constraints");
         }
         if (!isEmpty(schema.getKeyConstraints()) && !neo4jDistribution.hasNodeKeyConstraints()) {
-            unsupportedPaths.add(String.format("$.targets.nodes[%d].schema.key_constraints", index));
+            unsupportedFeatures.add("key_constraints");
         }
         if (!isEmpty(schema.getUniqueConstraints()) && !neo4jDistribution.hasNodeUniqueConstraints()) {
-            unsupportedPaths.add(String.format("$.targets.nodes[%d].schema.unique_constraints", index));
+            unsupportedFeatures.add("unique_constraints");
         }
         if (!isEmpty(schema.getExistenceConstraints()) && !neo4jDistribution.hasNodeExistenceConstraints()) {
-            unsupportedPaths.add(String.format("$.targets.nodes[%d].schema.existence_constraints", index));
+            unsupportedFeatures.add("existence_constraints");
         }
         if (!isEmpty(schema.getRangeIndexes()) && !neo4jDistribution.hasNodeRangeIndexes()) {
-            unsupportedPaths.add(String.format("$.targets.nodes[%d].schema.range_indexes", index));
+            unsupportedFeatures.add("range_indexes");
         }
         if (!isEmpty(schema.getTextIndexes()) && !neo4jDistribution.hasNodeTextIndexes()) {
-            unsupportedPaths.add(String.format("$.targets.nodes[%d].schema.text_indexes", index));
+            unsupportedFeatures.add("text_indexes");
         }
         if (!isEmpty(schema.getPointIndexes()) && !neo4jDistribution.hasNodePointIndexes()) {
-            unsupportedPaths.add(String.format("$.targets.nodes[%d].schema.text_indexes", index));
+            unsupportedFeatures.add("text_indexes");
         }
         if (!isEmpty(schema.getFullTextIndexes()) && !neo4jDistribution.hasNodeFullTextIndexes()) {
-            unsupportedPaths.add(String.format("$.targets.nodes[%d].schema.fulltext_indexes", index));
+            unsupportedFeatures.add("fulltext_indexes");
         }
         if (!isEmpty(schema.getVectorIndexes()) && !neo4jDistribution.hasNodeVectorIndexes()) {
-            unsupportedPaths.add(String.format("$.targets.nodes[%d].schema.vector_indexes", index));
+            unsupportedFeatures.add("vector_indexes");
+        }
+
+        if (!unsupportedFeatures.isEmpty()) {
+            unsupportedPaths.put(String.format("$.targets.nodes[%d].schema", index), unsupportedFeatures);
         }
     }
 
@@ -61,41 +67,46 @@ public class Neo4jVersionValidator implements SpecificationValidator {
             return;
         }
 
+        var unsupportedFeatures = new ArrayList<String>();
         if (!isEmpty(schema.getTypeConstraints()) && !neo4jDistribution.hasRelationshipTypeConstraints()) {
-            unsupportedPaths.add(String.format("$.targets.relationships[%d].schema.type_constraints", index));
+            unsupportedFeatures.add("type_constraints");
         }
         if (!isEmpty(schema.getKeyConstraints()) && !neo4jDistribution.hasRelationshipKeyConstraints()) {
-            unsupportedPaths.add(String.format("$.targets.relationships[%d].schema.key_constraints", index));
+            unsupportedFeatures.add("key_constraints");
         }
         if (!isEmpty(schema.getUniqueConstraints()) && !neo4jDistribution.hasRelationshipUniqueConstraints()) {
-            unsupportedPaths.add(String.format("$.targets.relationships[%d].schema.unique_constraints", index));
+            unsupportedFeatures.add("unique_constraints");
         }
         if (!isEmpty(schema.getExistenceConstraints()) && !neo4jDistribution.hasRelationshipExistenceConstraints()) {
-            unsupportedPaths.add(String.format("$.targets.relationships[%d].schema.existence_constraints", index));
+            unsupportedFeatures.add("existence_constraints");
         }
         if (!isEmpty(schema.getRangeIndexes()) && !neo4jDistribution.hasRelationshipRangeIndexes()) {
-            unsupportedPaths.add(String.format("$.targets.relationships[%d].schema.range_indexes", index));
+            unsupportedFeatures.add("range_indexes");
         }
         if (!isEmpty(schema.getTextIndexes()) && !neo4jDistribution.hasRelationshipTextIndexes()) {
-            unsupportedPaths.add(String.format("$.targets.relationships[%d].schema.text_indexes", index));
+            unsupportedFeatures.add("text_indexes");
         }
         if (!isEmpty(schema.getPointIndexes()) && !neo4jDistribution.hasRelationshipPointIndexes()) {
-            unsupportedPaths.add(String.format("$.targets.relationships[%d].schema.text_indexes", index));
+            unsupportedFeatures.add("text_indexes");
         }
         if (!isEmpty(schema.getFullTextIndexes()) && !neo4jDistribution.hasRelationshipFullTextIndexes()) {
-            unsupportedPaths.add(String.format("$.targets.relationships[%d].schema.fulltext_indexes", index));
+            unsupportedFeatures.add("fulltext_indexes");
         }
         if (!isEmpty(schema.getVectorIndexes()) && !neo4jDistribution.hasRelationshipVectorIndexes()) {
-            unsupportedPaths.add(String.format("$.targets.relationships[%d].schema.vector_indexes", index));
+            unsupportedFeatures.add("vector_indexes");
+        }
+
+        if (!unsupportedFeatures.isEmpty()) {
+            unsupportedPaths.put(String.format("$.targets.relationships[%d].schema", index), unsupportedFeatures);
         }
     }
 
     @Override
     public boolean report(SpecificationValidationResult.Builder builder) {
-        unsupportedPaths.forEach(path -> builder.addError(
+        unsupportedPaths.forEach((path, features) -> builder.addError(
                 path,
                 ERROR_CODE,
-                String.format("%s is not supported by version %s", path, neo4jDistribution.toString())));
+                String.format("%s, features are not supported by %s.", features, neo4jDistribution.toString())));
         return !unsupportedPaths.isEmpty();
     }
 

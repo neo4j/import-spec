@@ -31,6 +31,8 @@ import java.io.Reader;
 import java.util.*;
 import java.util.stream.Collectors;
 import org.neo4j.importer.v1.actions.Action;
+import org.neo4j.importer.v1.distribution.Neo4jDistribution;
+import org.neo4j.importer.v1.distribution.Neo4jDistributions;
 import org.neo4j.importer.v1.graph.Graph;
 import org.neo4j.importer.v1.sources.Source;
 import org.neo4j.importer.v1.sources.SourceDeserializer;
@@ -61,8 +63,12 @@ public class ImportSpecificationDeserializer {
         return deserialize(spec, Optional.empty());
     }
 
+    public static ImportSpecification deserialize(Reader spec, Neo4jDistribution neo4jDistribution) throws SpecificationException {
+        return deserialize(spec, Optional.of(neo4jDistribution));
+    }
+
     @SuppressWarnings("deprecated")
-    public static ImportSpecification deserialize(Reader spec, Optional<Neo4jDistribution> neo4jDistributionOpt)
+    private static ImportSpecification deserialize(Reader spec, Optional<Neo4jDistribution> neo4jDistributionOpt)
             throws SpecificationException {
         YAMLMapper mapper = initMapper();
         JsonNode json = parse(mapper, spec);
