@@ -1,6 +1,5 @@
 package org.neo4j.importer.v1.distribution;
 
-//todo: check version feature matrix
 public class Neo4jDistribution {
     private final String versionString;
     private final Neo4jDistributions.Edition edition;
@@ -10,6 +9,10 @@ public class Neo4jDistribution {
         this.edition = edition;
         this.version = version;
         this.versionString = String.format("Neo4j %s %s", version, edition);
+    }
+
+    public boolean isVersionHigherThanLTS() {
+        return version.isBiggerThanOrEqual("4.4");
     }
 
     public boolean isEnterprise() {

@@ -32,7 +32,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 import org.neo4j.importer.v1.actions.Action;
 import org.neo4j.importer.v1.distribution.Neo4jDistribution;
-import org.neo4j.importer.v1.distribution.Neo4jDistributions;
 import org.neo4j.importer.v1.graph.Graph;
 import org.neo4j.importer.v1.sources.Source;
 import org.neo4j.importer.v1.sources.SourceDeserializer;
@@ -63,7 +62,8 @@ public class ImportSpecificationDeserializer {
         return deserialize(spec, Optional.empty());
     }
 
-    public static ImportSpecification deserialize(Reader spec, Neo4jDistribution neo4jDistribution) throws SpecificationException {
+    public static ImportSpecification deserialize(Reader spec, Neo4jDistribution neo4jDistribution)
+            throws SpecificationException {
         return deserialize(spec, Optional.of(neo4jDistribution));
     }
 
@@ -75,7 +75,7 @@ public class ImportSpecificationDeserializer {
         validate(SCHEMA, json);
         ImportSpecification result = deserialize(mapper, json);
         validate(result);
-        if (neo4jDistributionOpt.isPresent()) {
+        if (neo4jDistributionOpt.isPresent() && neo4jDistributionOpt.get().isVersionHigherThanLTS()) {
             validate(neo4jDistributionOpt.get(), result);
         }
         return result;
