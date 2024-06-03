@@ -1,14 +1,13 @@
 package org.neo4j.importer.v1;
 
-import org.junit.Test;
-import org.neo4j.importer.v1.distribution.Neo4jDistributions;
-import org.neo4j.importer.v1.validation.InvalidSpecificationException;
-
-import java.io.StringReader;
-
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.neo4j.importer.v1.ImportSpecificationDeserializer.deserialize;
+
+import java.io.StringReader;
+import org.junit.Test;
+import org.neo4j.importer.v1.distribution.Neo4jDistributions;
+import org.neo4j.importer.v1.validation.InvalidSpecificationException;
 
 public class ImportSpecificationDeserializerNeo4jVersionValidationTest {
 
@@ -297,8 +296,8 @@ public class ImportSpecificationDeserializerNeo4jVersionValidationTest {
     @Test
     public void does_not_fail_if_above_the_version() {
         assertDoesNotThrow(() -> deserialize(
-                    new StringReader(
-                            """
+                new StringReader(
+                        """
                     {
                         "version": "1",
                         "sources": [

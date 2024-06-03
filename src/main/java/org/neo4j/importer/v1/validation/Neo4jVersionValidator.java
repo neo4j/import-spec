@@ -1,13 +1,12 @@
 package org.neo4j.importer.v1.validation;
 
-import org.neo4j.importer.v1.distribution.Neo4jDistribution;
-import org.neo4j.importer.v1.targets.NodeTarget;
-import org.neo4j.importer.v1.targets.RelationshipTarget;
-
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import org.neo4j.importer.v1.distribution.Neo4jDistribution;
+import org.neo4j.importer.v1.targets.NodeTarget;
+import org.neo4j.importer.v1.targets.RelationshipTarget;
 
 public class Neo4jVersionValidator implements SpecificationValidator {
     private static final String ERROR_CODE = "VERS-001";
