@@ -11,8 +11,8 @@ public class Neo4jDistribution {
         this.versionString = String.format("Neo4j %s %s", version, edition);
     }
 
-    public boolean isVersionHigherThanLTS() {
-        return version.isBiggerThanOrEqual("4.4");
+    public boolean isLargerThanOrEqual4_4() {
+        return version.isLargerThanOrEqual("4.4");
     }
 
     public boolean isEnterprise() {
@@ -20,7 +20,7 @@ public class Neo4jDistribution {
     }
 
     public boolean hasNodeTypeConstraints() {
-        return isEnterprise() && version.isBiggerThanOrEqual("5.9");
+        return isEnterprise() && version.isLargerThanOrEqual("5.9");
     }
 
     public boolean hasNodeKeyConstraints() {
@@ -52,19 +52,19 @@ public class Neo4jDistribution {
     }
 
     public boolean hasNodeVectorIndexes() {
-        return version.isBiggerThanOrEqual("5.13");
+        return version.isLargerThanOrEqual("5.13");
     }
 
     public boolean hasRelationshipKeyConstraints() {
-        return isEnterprise() && version.isBiggerThanOrEqual("5.7");
+        return isEnterprise() && version.isLargerThanOrEqual("5.7");
     }
 
     public boolean hasRelationshipTypeConstraints() {
-        return isEnterprise() && version.isBiggerThanOrEqual("5.9");
+        return isEnterprise() && version.isLargerThanOrEqual("5.9");
     }
 
     public boolean hasRelationshipUniqueConstraints() {
-        return version.isBiggerThanOrEqual("5.7");
+        return version.isLargerThanOrEqual("5.7");
     }
 
     public boolean hasRelationshipExistenceConstraints() {
@@ -88,7 +88,7 @@ public class Neo4jDistribution {
     }
 
     public boolean hasRelationshipVectorIndexes() {
-        return version.isBiggerThanOrEqual("5.13");
+        return version.isLargerThanOrEqual("5.13");
     }
 
     @Override

@@ -28,7 +28,13 @@ import com.networknt.schema.JsonSchemaFactory;
 import com.networknt.schema.SpecVersion.VersionFlag;
 import java.io.IOException;
 import java.io.Reader;
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.ServiceLoader;
+import java.util.Set;
 import java.util.stream.Collectors;
 import org.neo4j.importer.v1.actions.Action;
 import org.neo4j.importer.v1.distribution.Neo4jDistribution;
@@ -36,8 +42,16 @@ import org.neo4j.importer.v1.graph.Graph;
 import org.neo4j.importer.v1.sources.Source;
 import org.neo4j.importer.v1.sources.SourceDeserializer;
 import org.neo4j.importer.v1.sources.SourceProvider;
-import org.neo4j.importer.v1.validation.*;
+import org.neo4j.importer.v1.validation.InvalidSpecificationException;
+import org.neo4j.importer.v1.validation.Neo4jVersionValidator;
+import org.neo4j.importer.v1.validation.SourceError;
+import org.neo4j.importer.v1.validation.SpecificationException;
+import org.neo4j.importer.v1.validation.SpecificationValidationResult;
 import org.neo4j.importer.v1.validation.SpecificationValidationResult.Builder;
+import org.neo4j.importer.v1.validation.SpecificationValidator;
+import org.neo4j.importer.v1.validation.UndeserializableSourceException;
+import org.neo4j.importer.v1.validation.UndeserializableSpecificationException;
+import org.neo4j.importer.v1.validation.UnparseableSpecificationException;
 
 public class ImportSpecificationDeserializer {
 
@@ -62,12 +76,12 @@ public class ImportSpecificationDeserializer {
         return deserialize(spec, Optional.empty());
     }
 
+    @SuppressWarnings("deprecated")
     public static ImportSpecification deserialize(Reader spec, Neo4jDistribution neo4jDistribution)
             throws SpecificationException {
         return deserialize(spec, Optional.of(neo4jDistribution));
     }
 
-    @SuppressWarnings("deprecated")
     private static ImportSpecification deserialize(Reader spec, Optional<Neo4jDistribution> neo4jDistributionOpt)
             throws SpecificationException {
         YAMLMapper mapper = initMapper();
@@ -75,7 +89,7 @@ public class ImportSpecificationDeserializer {
         validate(SCHEMA, json);
         ImportSpecification result = deserialize(mapper, json);
         validate(result);
-        if (neo4jDistributionOpt.isPresent() && neo4jDistributionOpt.get().isVersionHigherThanLTS()) {
+        if (neo4jDistributionOpt.isPresent() && neo4jDistributionOpt.get().isLargerThanOrEqual4_4()) {
             validate(neo4jDistributionOpt.get(), result);
         }
         return result;

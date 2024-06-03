@@ -27,31 +27,31 @@ public class Neo4jVersionValidator implements SpecificationValidator {
             return;
         }
         var unsupportedFeatures = new ArrayList<String>();
-        if (!isEmpty(schema.getTypeConstraints()) && !neo4jDistribution.hasNodeTypeConstraints()) {
+        if (!schema.getTypeConstraints().isEmpty() && !neo4jDistribution.hasNodeTypeConstraints()) {
             unsupportedFeatures.add("type_constraints");
         }
-        if (!isEmpty(schema.getKeyConstraints()) && !neo4jDistribution.hasNodeKeyConstraints()) {
+        if (!schema.getKeyConstraints().isEmpty() && !neo4jDistribution.hasNodeKeyConstraints()) {
             unsupportedFeatures.add("key_constraints");
         }
-        if (!isEmpty(schema.getUniqueConstraints()) && !neo4jDistribution.hasNodeUniqueConstraints()) {
+        if (!schema.getUniqueConstraints().isEmpty() && !neo4jDistribution.hasNodeUniqueConstraints()) {
             unsupportedFeatures.add("unique_constraints");
         }
-        if (!isEmpty(schema.getExistenceConstraints()) && !neo4jDistribution.hasNodeExistenceConstraints()) {
+        if (!schema.getExistenceConstraints().isEmpty() && !neo4jDistribution.hasNodeExistenceConstraints()) {
             unsupportedFeatures.add("existence_constraints");
         }
-        if (!isEmpty(schema.getRangeIndexes()) && !neo4jDistribution.hasNodeRangeIndexes()) {
+        if (!schema.getRangeIndexes().isEmpty() && !neo4jDistribution.hasNodeRangeIndexes()) {
             unsupportedFeatures.add("range_indexes");
         }
-        if (!isEmpty(schema.getTextIndexes()) && !neo4jDistribution.hasNodeTextIndexes()) {
+        if (!schema.getTextIndexes().isEmpty() && !neo4jDistribution.hasNodeTextIndexes()) {
             unsupportedFeatures.add("text_indexes");
         }
-        if (!isEmpty(schema.getPointIndexes()) && !neo4jDistribution.hasNodePointIndexes()) {
-            unsupportedFeatures.add("text_indexes");
+        if (!schema.getPointIndexes().isEmpty() && !neo4jDistribution.hasNodePointIndexes()) {
+            unsupportedFeatures.add("point_indexes");
         }
-        if (!isEmpty(schema.getFullTextIndexes()) && !neo4jDistribution.hasNodeFullTextIndexes()) {
+        if (!schema.getFullTextIndexes().isEmpty() && !neo4jDistribution.hasNodeFullTextIndexes()) {
             unsupportedFeatures.add("fulltext_indexes");
         }
-        if (!isEmpty(schema.getVectorIndexes()) && !neo4jDistribution.hasNodeVectorIndexes()) {
+        if (!schema.getVectorIndexes().isEmpty() && !neo4jDistribution.hasNodeVectorIndexes()) {
             unsupportedFeatures.add("vector_indexes");
         }
 
@@ -68,31 +68,31 @@ public class Neo4jVersionValidator implements SpecificationValidator {
         }
 
         var unsupportedFeatures = new ArrayList<String>();
-        if (!isEmpty(schema.getTypeConstraints()) && !neo4jDistribution.hasRelationshipTypeConstraints()) {
+        if (!schema.getTypeConstraints().isEmpty() && !neo4jDistribution.hasRelationshipTypeConstraints()) {
             unsupportedFeatures.add("type_constraints");
         }
-        if (!isEmpty(schema.getKeyConstraints()) && !neo4jDistribution.hasRelationshipKeyConstraints()) {
+        if (!schema.getKeyConstraints().isEmpty() && !neo4jDistribution.hasRelationshipKeyConstraints()) {
             unsupportedFeatures.add("key_constraints");
         }
-        if (!isEmpty(schema.getUniqueConstraints()) && !neo4jDistribution.hasRelationshipUniqueConstraints()) {
+        if (!schema.getUniqueConstraints().isEmpty() && !neo4jDistribution.hasRelationshipUniqueConstraints()) {
             unsupportedFeatures.add("unique_constraints");
         }
-        if (!isEmpty(schema.getExistenceConstraints()) && !neo4jDistribution.hasRelationshipExistenceConstraints()) {
+        if (!schema.getExistenceConstraints().isEmpty() && !neo4jDistribution.hasRelationshipExistenceConstraints()) {
             unsupportedFeatures.add("existence_constraints");
         }
-        if (!isEmpty(schema.getRangeIndexes()) && !neo4jDistribution.hasRelationshipRangeIndexes()) {
+        if (!schema.getRangeIndexes().isEmpty() && !neo4jDistribution.hasRelationshipRangeIndexes()) {
             unsupportedFeatures.add("range_indexes");
         }
-        if (!isEmpty(schema.getTextIndexes()) && !neo4jDistribution.hasRelationshipTextIndexes()) {
+        if (!schema.getTextIndexes().isEmpty() && !neo4jDistribution.hasRelationshipTextIndexes()) {
             unsupportedFeatures.add("text_indexes");
         }
-        if (!isEmpty(schema.getPointIndexes()) && !neo4jDistribution.hasRelationshipPointIndexes()) {
-            unsupportedFeatures.add("text_indexes");
+        if (!schema.getPointIndexes().isEmpty() && !neo4jDistribution.hasRelationshipPointIndexes()) {
+            unsupportedFeatures.add("point_indexes");
         }
-        if (!isEmpty(schema.getFullTextIndexes()) && !neo4jDistribution.hasRelationshipFullTextIndexes()) {
+        if (!schema.getFullTextIndexes().isEmpty() && !neo4jDistribution.hasRelationshipFullTextIndexes()) {
             unsupportedFeatures.add("fulltext_indexes");
         }
-        if (!isEmpty(schema.getVectorIndexes()) && !neo4jDistribution.hasRelationshipVectorIndexes()) {
+        if (!schema.getVectorIndexes().isEmpty() && !neo4jDistribution.hasRelationshipVectorIndexes()) {
             unsupportedFeatures.add("vector_indexes");
         }
 
@@ -106,11 +106,18 @@ public class Neo4jVersionValidator implements SpecificationValidator {
         unsupportedPaths.forEach((path, features) -> builder.addError(
                 path,
                 ERROR_CODE,
-                String.format("%s, features are not supported by %s.", features, neo4jDistribution.toString())));
+                String.format(
+                        "%s are not supported by %s.", getFeaturesString(features), neo4jDistribution.toString())));
         return !unsupportedPaths.isEmpty();
     }
 
-    private boolean isEmpty(List<?> list) {
-        return list == null || list.isEmpty();
+    private String getFeaturesString(List<String> unsupportedFeatures) {
+        var sb = new StringBuilder();
+
+        for (String feature : unsupportedFeatures) {
+            sb.append(feature).append(", ");
+        }
+
+        return sb.substring(0, sb.length() - 2);
     }
 }

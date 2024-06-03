@@ -4,11 +4,20 @@ import java.util.Locale;
 import java.util.Objects;
 
 public class Neo4jDistributions {
-    public static final Edition COMMUNITY = Edition.COMMUNITY;
-    public static final Edition ENTERPRISE = Edition.ENTERPRISE;
-    public static final Edition AURA = Edition.AURA;
 
     private Neo4jDistributions() {}
+
+    public static Edition community() {
+        return Edition.COMMUNITY;
+    }
+
+    public static Edition enterprise() {
+        return Edition.ENTERPRISE;
+    }
+
+    public static Edition aura() {
+        return Edition.AURA;
+    }
 
     public enum Edition {
         COMMUNITY,
@@ -16,10 +25,6 @@ public class Neo4jDistributions {
         AURA;
 
         public Neo4jDistribution of(String version) {
-            if (version.toLowerCase(Locale.ROOT).endsWith("-aura")) {
-                return new Neo4jDistribution(AURA, Version.of(version.substring(0, version.length() - 5)));
-            }
-
             return new Neo4jDistribution(this, Version.of(version));
         }
     }
@@ -34,16 +39,16 @@ public class Neo4jDistributions {
         }
 
         public static Version of(String version) {
-            String[] parts = version.split("\\.");
-            if (parts.length != 2) {
-                throw new InvalidNeo4jVersionException(
-                        String.format("Invalid version format: %s. Version format should be {major}.{minor}", version));
+            if (version.toLowerCase(Locale.ROOT).endsWith("-aura")) {
+                version = version.substring(0, version.length() - 5);
             }
+
+            String[] parts = version.split("\\.");
 
             int major;
             try {
                 major = Integer.parseInt(parts[0]);
-            } catch (Exception e) {
+            } catch (NumberFormatException e) {
                 throw new InvalidNeo4jVersionException(
                         String.format("Major version number %s is invalid. Must be a number.", parts[0]));
             }
@@ -51,7 +56,9 @@ public class Neo4jDistributions {
             int minor;
             try {
                 minor = Integer.parseInt(parts[1]);
-            } catch (Exception e) {
+            } catch (IndexOutOfBoundsException e) {
+                throw new InvalidNeo4jVersionException("Minor version should be specified. Examples: 5.9, 5.17");
+            } catch (NumberFormatException e) {
                 throw new InvalidNeo4jVersionException(
                         String.format("Minor version number %s is invalid. Must be a number.", parts[1]));
             }
@@ -64,7 +71,7 @@ public class Neo4jDistributions {
             return new Version(major, minor);
         }
 
-        public boolean isBiggerThanOrEqual(String version) {
+        public boolean isLargerThanOrEqual(String version) {
             var givenVersion = of(version);
             return this.major > givenVersion.major
                     || (this.major == givenVersion.major && (this.minor >= givenVersion.minor));

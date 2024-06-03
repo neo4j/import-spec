@@ -33,7 +33,7 @@ public class ImportSpecificationDeserializerNeo4jVersionValidationTest {
                             "source": "a-source",
                             "labels": ["Label1"],
                             "properties": [
-                                {"source_field": "field_1", "target_property": "property1"}
+                                {"source_field": "field_1", "target_property": "property1", "target_property_type": "integer"}
                             ],
                             "schema": {
                                 "type_constraints": [
@@ -46,12 +46,12 @@ public class ImportSpecificationDeserializerNeo4jVersionValidationTest {
             }
             """
                                         .stripIndent()),
-                        Neo4jDistributions.ENTERPRISE.of("5.0")))
+                        Neo4jDistributions.enterprise().of("5.0")))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
                         "1 error(s)",
                         "0 warning(s)",
-                        "[$.targets.nodes[0].schema] [type_constraints], features are not supported by Neo4j 5.0 ENTERPRISE.");
+                        "[$.targets.nodes[0].schema] type_constraints are not supported by Neo4j 5.0 ENTERPRISE.");
     }
 
     @Test
@@ -75,7 +75,7 @@ public class ImportSpecificationDeserializerNeo4jVersionValidationTest {
                             "source": "a-source",
                             "labels": ["Label1"],
                             "properties": [
-                                {"source_field": "field_1", "target_property": "property1"},
+                                {"source_field": "field_1", "target_property": "property1", "target_property_type": "integer"},
                             ],
                             "schema": {
                                 "key_constraints": [
@@ -88,12 +88,12 @@ public class ImportSpecificationDeserializerNeo4jVersionValidationTest {
             }
             """
                                         .stripIndent()),
-                        Neo4jDistributions.COMMUNITY.of("5.0")))
+                        Neo4jDistributions.community().of("5.0")))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
                         "1 error(s)",
                         "0 warning(s)",
-                        "[$.targets.nodes[0].schema] [key_constraints], features are not supported by Neo4j 5.0 COMMUNITY.");
+                        "[$.targets.nodes[0].schema] key_constraints are not supported by Neo4j 5.0 COMMUNITY.");
     }
 
     @Test
@@ -117,7 +117,7 @@ public class ImportSpecificationDeserializerNeo4jVersionValidationTest {
                             "source": "a-source",
                             "labels": ["Label1"],
                             "properties": [
-                                {"source_field": "field_1", "target_property": "property1"}
+                                {"source_field": "field_1", "target_property": "property1", "target_property_type": "integer"}
                             ],
                             "schema": {
                                 "vector_indexes": [
@@ -130,12 +130,12 @@ public class ImportSpecificationDeserializerNeo4jVersionValidationTest {
             }
             """
                                         .stripIndent()),
-                        Neo4jDistributions.ENTERPRISE.of("5.12")))
+                        Neo4jDistributions.enterprise().of("5.12")))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
                         "1 error(s)",
                         "0 warning(s)",
-                        "[$.targets.nodes[0].schema] [vector_indexes], features are not supported by Neo4j 5.12 ENTERPRISE.");
+                        "[$.targets.nodes[0].schema] vector_indexes are not supported by Neo4j 5.12 ENTERPRISE.");
     }
 
     @Test
@@ -159,7 +159,7 @@ public class ImportSpecificationDeserializerNeo4jVersionValidationTest {
                             "source": "a-source",
                             "labels": ["Label1"],
                             "properties": [
-                                {"source_field": "field_1", "target_property": "property1"}
+                                {"source_field": "field_1", "target_property": "property1", "target_property_type": "integer"}
                             ]
                         },
                         {
@@ -167,7 +167,7 @@ public class ImportSpecificationDeserializerNeo4jVersionValidationTest {
                             "source": "a-source",
                             "labels": ["Label2"],
                             "properties": [
-                                {"source_field": "field_2", "target_property": "property2"}
+                                {"source_field": "field_2", "target_property": "property2", "target_property_type": "integer"}
                             ]
                         }
                     ],
@@ -179,8 +179,7 @@ public class ImportSpecificationDeserializerNeo4jVersionValidationTest {
                             "start_node_reference": "a-node-target",
                             "end_node_reference": "another-node-target",
                             "properties": [
-                                {"source_field": "field_1", "target_property": "property1"},
-                                {"source_field": "field_2", "target_property": "property2"},
+                                {"source_field": "field_1", "target_property": "property1", "target_property_type": "integer"}
                             ],
                             "schema": {
                                 "type_constraints": [
@@ -194,12 +193,12 @@ public class ImportSpecificationDeserializerNeo4jVersionValidationTest {
 
             """
                                         .stripIndent()),
-                        Neo4jDistributions.ENTERPRISE.of("5.8")))
+                        Neo4jDistributions.enterprise().of("5.8")))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
                         "1 error(s)",
                         "0 warning(s)",
-                        "[$.targets.relationships[0].schema] [type_constraints], features are not supported by Neo4j 5.8 ENTERPRISE.");
+                        "[$.targets.relationships[0].schema] type_constraints are not supported by Neo4j 5.8 ENTERPRISE.");
     }
 
     @Test
@@ -223,7 +222,7 @@ public class ImportSpecificationDeserializerNeo4jVersionValidationTest {
                             "source": "a-source",
                             "labels": ["Label1"],
                             "properties": [
-                                {"source_field": "field_1", "target_property": "property1"}
+                                {"source_field": "field_1", "target_property": "property1", "target_property_type": "integer"}
                             ],
                             "schema": {
                                 "type_constraints": [
@@ -239,7 +238,7 @@ public class ImportSpecificationDeserializerNeo4jVersionValidationTest {
                             "source": "a-source",
                             "labels": ["Label2"],
                             "properties": [
-                                {"source_field": "field_2", "target_property": "property2"}
+                                {"source_field": "field_2", "target_property": "property2", "target_property_type": "integer"}
                             ],
                             "schema": {
                                 "vector_indexes": [
@@ -256,7 +255,7 @@ public class ImportSpecificationDeserializerNeo4jVersionValidationTest {
                             "start_node_reference": "a-node-target",
                             "end_node_reference": "another-node-target",
                             "properties": [
-                                {"source_field": "field_1", "target_property": "property1"}
+                                {"source_field": "field_1", "target_property": "property1", "target_property_type": "integer"}
                             ],
                             "schema": {
                                 "type_constraints": [
@@ -271,7 +270,7 @@ public class ImportSpecificationDeserializerNeo4jVersionValidationTest {
                             "start_node_reference": "a-node-target",
                             "end_node_reference": "another-node-target",
                             "properties": [
-                                {"source_field": "field_2", "target_property": "property2"}
+                                {"source_field": "field_2", "target_property": "property2", "target_property_type": "integer"}
                             ],
                             "schema": {
                                 "vector_indexes": [
@@ -284,19 +283,19 @@ public class ImportSpecificationDeserializerNeo4jVersionValidationTest {
             }
             """
                                         .stripIndent()),
-                        Neo4jDistributions.COMMUNITY.of("5.0")))
+                        Neo4jDistributions.community().of("5.0")))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
                         "4 error(s)",
                         "0 warning(s)",
-                        "[VERS-001][$.targets.nodes[0].schema] [type_constraints, existence_constraints], features are not supported by Neo4j 5.0 COMMUNITY.",
-                        "[VERS-001][$.targets.nodes[1].schema] [vector_indexes], features are not supported by Neo4j 5.0 COMMUNITY.",
-                        "[VERS-001][$.targets.relationships[0].schema] [type_constraints], features are not supported by Neo4j 5.0 COMMUNITY.",
-                        "[VERS-001][$.targets.relationships[1].schema] [vector_indexes], features are not supported by Neo4j 5.0 COMMUNITY.");
+                        "[VERS-001][$.targets.nodes[0].schema] type_constraints, existence_constraints are not supported by Neo4j 5.0 COMMUNITY.",
+                        "[VERS-001][$.targets.nodes[1].schema] vector_indexes are not supported by Neo4j 5.0 COMMUNITY.",
+                        "[VERS-001][$.targets.relationships[0].schema] type_constraints are not supported by Neo4j 5.0 COMMUNITY.",
+                        "[VERS-001][$.targets.relationships[1].schema] vector_indexes are not supported by Neo4j 5.0 COMMUNITY.");
     }
 
     @Test
-    public void doesnt_fails_if_above_the_version() {
+    public void does_not_fail_if_above_the_version() {
         assertDoesNotThrow(() -> deserialize(
                     new StringReader(
                             """
@@ -316,7 +315,7 @@ public class ImportSpecificationDeserializerNeo4jVersionValidationTest {
                                     "source": "a-source",
                                     "labels": ["Label1"],
                                     "properties": [
-                                        {"source_field": "field_1", "target_property": "property1"}
+                                        {"source_field": "field_1", "target_property": "property1", "target_property_type": "integer"}
                                     ],
                                     "schema": {
                                         "type_constraints": [
@@ -332,7 +331,7 @@ public class ImportSpecificationDeserializerNeo4jVersionValidationTest {
                                     "source": "a-source",
                                     "labels": ["Label2"],
                                     "properties": [
-                                        {"source_field": "field_2", "target_property": "property2"}
+                                        {"source_field": "field_2", "target_property": "property2", "target_property_type": "integer"}
                                     ],
                                     "schema": {
                                         "vector_indexes": [
@@ -349,7 +348,7 @@ public class ImportSpecificationDeserializerNeo4jVersionValidationTest {
                                     "start_node_reference": "a-node-target",
                                     "end_node_reference": "another-node-target",
                                     "properties": [
-                                        {"source_field": "field_1", "target_property": "property1"}
+                                        {"source_field": "field_1", "target_property": "property1", "target_property_type": "integer"}
                                     ],
                                     "schema": {
                                         "type_constraints": [
@@ -364,7 +363,7 @@ public class ImportSpecificationDeserializerNeo4jVersionValidationTest {
                                     "start_node_reference": "a-node-target",
                                     "end_node_reference": "another-node-target",
                                     "properties": [
-                                        {"source_field": "field_2", "target_property": "property2"}
+                                        {"source_field": "field_2", "target_property": "property2", "target_property_type": "integer"}
                                     ],
                                     "schema": {
                                         "vector_indexes": [
@@ -377,6 +376,6 @@ public class ImportSpecificationDeserializerNeo4jVersionValidationTest {
                     }
                     """
                                 .stripIndent()),
-                Neo4jDistributions.ENTERPRISE.of("5.20")));
+                Neo4jDistributions.enterprise().of("5.20")));
     }
 }
