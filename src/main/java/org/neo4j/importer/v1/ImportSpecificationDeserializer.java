@@ -71,12 +71,10 @@ public class ImportSpecificationDeserializer {
      * @return an {@link ImportSpecification}
      * @throws SpecificationException if parsing, deserialization or validation fail
      */
-    @SuppressWarnings("deprecated")
     public static ImportSpecification deserialize(Reader spec) throws SpecificationException {
         return deserialize(spec, Optional.empty());
     }
 
-    @SuppressWarnings("deprecated")
     public static ImportSpecification deserialize(Reader spec, Neo4jDistribution neo4jDistribution)
             throws SpecificationException {
         return deserialize(spec, Optional.of(neo4jDistribution));
@@ -89,7 +87,9 @@ public class ImportSpecificationDeserializer {
         validate(SCHEMA, json);
         ImportSpecification result = deserialize(mapper, json);
         validate(result);
-        if (neo4jDistributionOpt.isPresent() && neo4jDistributionOpt.get().isLargerThanOrEqual4_4()) {
+        if (neo4jDistributionOpt
+                .map((dist) -> dist.isVersionLargerThanOrEqual("4.4"))
+                .orElse(false)) {
             validate(neo4jDistributionOpt.get(), result);
         }
         return result;

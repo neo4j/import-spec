@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) "Neo4j"
+ * Neo4j Sweden AB [https://neo4j.com]
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.neo4j.importer.v1.distribution;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -10,13 +26,17 @@ public class Neo4jDistributionsTest {
     @Test
     public void version_of_should_discard_aura_string_in_the_end() {
         var dist = Neo4jDistributions.enterprise().of("5.19-aura");
-        assertThat(dist.toString()).isEqualTo("Neo4j 5.19 ENTERPRISE");
+        assertThat(dist)
+                .isEqualTo(new Neo4jDistribution(
+                        Neo4jDistributions.Edition.ENTERPRISE, new Neo4jDistributions.Version(5, 19)));
     }
 
     @Test
     public void version_of_should_parse_version_string_with_patch_version() {
         var dist = Neo4jDistributions.community().of("5.20.0");
-        assertThat(dist.toString()).isEqualTo("Neo4j 5.20 COMMUNITY");
+        assertThat(dist)
+                .isEqualTo(new Neo4jDistribution(
+                        Neo4jDistributions.Edition.COMMUNITY, new Neo4jDistributions.Version(5, 20)));
     }
 
     @Test
