@@ -1610,4 +1610,115 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                         "0 warning(s)",
                         "$.targets.relationships[0].source_transformations.aggregations[0].field_name \"field_2\" must be defined only once but is currently defined 2 times within this target's aggregations");
     }
+
+    @Test
+    public void fails_if_node_target_type_constraint_refer_to_non_existent_property() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+                        {
+                          "version": "1",
+                          "sources": [{
+                            "name": "a-source",
+                            "type": "jdbc",
+                            "data_source": "a-data-source",
+                            "sql": "SELECT id, name FROM my.table"
+                          }],
+                          "targets": {
+                            "nodes": [{
+                              "name": "a-node-target",
+                              "source": "a-source",
+                              "labels": ["Label"],
+                              "properties": [
+                                {"source_field": "id", "target_property": "id", "target_property_type": "integer"}
+                              ],
+                              "schema": {
+                                "type_constraints": [
+                                    {"name": "a type constraint", "label": "Label", "property": "invalid"}
+                                ]
+                              }
+                            }]
+                          }
+                        }
+                        """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "$.targets.nodes[0].schema.type_constraints[0].property \"invalid\" is not part of the property mappings");
+    }
+
+    @Test
+    public void fails_if_node_target_type_constraint_refer_to_non_existent_label() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+                        {
+                          "version": "1",
+                          "sources": [{
+                            "name": "a-source",
+                            "type": "jdbc",
+                            "data_source": "a-data-source",
+                            "sql": "SELECT id, name FROM my.table"
+                          }],
+                          "targets": {
+                            "nodes": [{
+                              "name": "a-node-target",
+                              "source": "a-source",
+                              "labels": ["Label"],
+                              "properties": [
+                                {"source_field": "id", "target_property": "id", "target_property_type": "integer"}
+                              ],
+                              "schema": {
+                                "type_constraints": [
+                                    {"name": "a type constraint", "label": "Invalid", "property": "id"}
+                                ]
+                              }
+                            }]
+                          }
+                        }
+                        """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "$.targets.nodes[0].schema.type_constraints[0].label \"Invalid\" is not part of the defined labels");
+    }
+
+    @Test
+    public void fails_if_node_target_type_constraint_property_refers_to_an_untyped_property() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+                        {
+                          "version": "1",
+                          "sources": [{
+                            "name": "a-source",
+                            "type": "jdbc",
+                            "data_source": "a-data-source",
+                            "sql": "SELECT id, name FROM my.table"
+                          }],
+                          "targets": {
+                            "nodes": [{
+                              "name": "a-node-target",
+                              "source": "a-source",
+                              "labels": ["Label"],
+                              "properties": [
+                                {"source_field": "id", "target_property": "untyped"}
+                              ],
+                              "schema": {
+                                "type_constraints": [
+                                    {"name": "a type constraint", "label": "Label", "property": "untyped"}
+                                ]
+                              }
+                            }]
+                          }
+                        }
+                        """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "$.targets.nodes[0].schema.type_constraints[0].property \"untyped\" refers to an untyped property");
+    }
 }

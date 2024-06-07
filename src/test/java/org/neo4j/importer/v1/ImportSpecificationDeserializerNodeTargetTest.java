@@ -1837,4 +1837,576 @@ public class ImportSpecificationDeserializerNodeTargetTest {
                         "0 warning(s)",
                         "$.targets.nodes[0].source_transformations.limit: must have a minimum value of 1");
     }
+
+    @Test
+    public void fails_if_node_schema_is_wrongly_typed() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+                {
+                    "version": "1",
+                    "sources": [{
+                        "name": "a-source",
+                        "type": "jdbc",
+                        "data_source": "a-data-source",
+                        "sql": "SELECT id, name FROM my.table"
+                    }],
+                    "targets": {
+                        "nodes": [{
+                            "active": true,
+                            "name": "a-target",
+                            "source": "a-source",
+                            "write_mode": "merge",
+                            "labels": ["Label"],
+                            "properties": [
+                                {"source_field": "field", "target_property": "property"}
+                            ],
+                            "schema": 42
+                        }]
+                    }
+                }
+                """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)", "0 warning(s)", "$.targets.nodes[0].schema: integer found, object expected");
+    }
+
+    @Test
+    public void fails_if_node_schema_type_constraints_is_wrongly_typed() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+                {
+                    "version": "1",
+                    "sources": [{
+                        "name": "a-source",
+                        "type": "jdbc",
+                        "data_source": "a-data-source",
+                        "sql": "SELECT id, name FROM my.table"
+                    }],
+                    "targets": {
+                        "nodes": [{
+                            "active": true,
+                            "name": "a-target",
+                            "source": "a-source",
+                            "write_mode": "merge",
+                            "labels": ["Label"],
+                            "properties": [
+                                {"source_field": "field", "target_property": "property"}
+                            ],
+                            "schema": {
+                                "type_constraints": 42
+                            }
+                        }]
+                    }
+                }
+                """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "$.targets.nodes[0].schema.type_constraints: integer found, array expected");
+    }
+
+    @Test
+    public void fails_if_node_schema_type_constraints_element_is_wrongly_typed() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+                {
+                    "version": "1",
+                    "sources": [{
+                        "name": "a-source",
+                        "type": "jdbc",
+                        "data_source": "a-data-source",
+                        "sql": "SELECT id, name FROM my.table"
+                    }],
+                    "targets": {
+                        "nodes": [{
+                            "active": true,
+                            "name": "a-target",
+                            "source": "a-source",
+                            "write_mode": "merge",
+                            "labels": ["Label"],
+                            "properties": [
+                                {"source_field": "field", "target_property": "property"}
+                            ],
+                            "schema": {
+                                "type_constraints": [42]
+                            }
+                        }]
+                    }
+                }
+                """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "$.targets.nodes[0].schema.type_constraints[0]: integer found, object expected");
+    }
+
+    @Test
+    public void fails_if_node_schema_type_constraint_name_is_missing() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+                {
+                    "version": "1",
+                    "sources": [{
+                        "name": "a-source",
+                        "type": "jdbc",
+                        "data_source": "a-data-source",
+                        "sql": "SELECT id, name FROM my.table"
+                    }],
+                    "targets": {
+                        "nodes": [{
+                            "active": true,
+                            "name": "a-target",
+                            "source": "a-source",
+                            "write_mode": "merge",
+                            "labels": ["Label"],
+                            "properties": [
+                                {"source_field": "field", "target_property": "property"}
+                            ],
+                            "schema": {
+                                "type_constraints": [
+                                    {"label": "Label", "property": "property"}
+                                ]
+                            }
+                        }]
+                    }
+                }
+                """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "$.targets.nodes[0].schema.type_constraints[0]: required property 'name' not found");
+    }
+
+    @Test
+    public void fails_if_node_schema_type_constraint_name_is_wrongly_typed() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+                {
+                    "version": "1",
+                    "sources": [{
+                        "name": "a-source",
+                        "type": "jdbc",
+                        "data_source": "a-data-source",
+                        "sql": "SELECT id, name FROM my.table"
+                    }],
+                    "targets": {
+                        "nodes": [{
+                            "active": true,
+                            "name": "a-target",
+                            "source": "a-source",
+                            "write_mode": "merge",
+                            "labels": ["Label"],
+                            "properties": [
+                                {"source_field": "field", "target_property": "property"}
+                            ],
+                            "schema": {
+                                "type_constraints": [
+                                    {"name": 42, "label": "Label", "property": "property"}
+                                ]
+                            }
+                        }]
+                    }
+                }
+                """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "$.targets.nodes[0].schema.type_constraints[0].name: integer found, string expected");
+    }
+
+    @Test
+    public void fails_if_node_schema_type_constraint_name_is_empty() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+                {
+                    "version": "1",
+                    "sources": [{
+                        "name": "a-source",
+                        "type": "jdbc",
+                        "data_source": "a-data-source",
+                        "sql": "SELECT id, name FROM my.table"
+                    }],
+                    "targets": {
+                        "nodes": [{
+                            "active": true,
+                            "name": "a-target",
+                            "source": "a-source",
+                            "write_mode": "merge",
+                            "labels": ["Label"],
+                            "properties": [
+                                {"source_field": "field", "target_property": "property"}
+                            ],
+                            "schema": {
+                                "type_constraints": [
+                                    {"name": "", "label": "Label", "property": "property"}
+                                ]
+                            }
+                        }]
+                    }
+                }
+                """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "0 warning(s)",
+                        "$.targets.nodes[0].schema.type_constraints[0].name: must be at least 1 characters long");
+    }
+
+    @Test
+    public void fails_if_node_schema_type_constraint_name_is_blank() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+                {
+                    "version": "1",
+                    "sources": [{
+                        "name": "a-source",
+                        "type": "jdbc",
+                        "data_source": "a-data-source",
+                        "sql": "SELECT id, name FROM my.table"
+                    }],
+                    "targets": {
+                        "nodes": [{
+                            "active": true,
+                            "name": "a-target",
+                            "source": "a-source",
+                            "write_mode": "merge",
+                            "labels": ["Label"],
+                            "properties": [
+                                {"source_field": "field", "target_property": "property"}
+                            ],
+                            "schema": {
+                                "type_constraints": [
+                                    {"name": "   ", "label": "Label", "property": "property"}
+                                ]
+                            }
+                        }]
+                    }
+                }
+                """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "$.targets.nodes[0].schema.type_constraints[0].name: does not match the regex pattern \\S+");
+    }
+
+    @Test
+    public void fails_if_node_schema_type_constraint_label_is_missing() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+                {
+                    "version": "1",
+                    "sources": [{
+                        "name": "a-source",
+                        "type": "jdbc",
+                        "data_source": "a-data-source",
+                        "sql": "SELECT id, name FROM my.table"
+                    }],
+                    "targets": {
+                        "nodes": [{
+                            "active": true,
+                            "name": "a-target",
+                            "source": "a-source",
+                            "write_mode": "merge",
+                            "labels": ["Label"],
+                            "properties": [
+                                {"source_field": "field", "target_property": "property"}
+                            ],
+                            "schema": {
+                                "type_constraints": [
+                                    {"name": "a type constraint", "property": "property"}
+                                ]
+                            }
+                        }]
+                    }
+                }
+                """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "$.targets.nodes[0].schema.type_constraints[0]: required property 'label' not found");
+    }
+
+    @Test
+    public void fails_if_node_schema_type_constraint_label_is_wrongly_typed() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+                {
+                    "version": "1",
+                    "sources": [{
+                        "name": "a-source",
+                        "type": "jdbc",
+                        "data_source": "a-data-source",
+                        "sql": "SELECT id, name FROM my.table"
+                    }],
+                    "targets": {
+                        "nodes": [{
+                            "active": true,
+                            "name": "a-target",
+                            "source": "a-source",
+                            "write_mode": "merge",
+                            "labels": ["Label"],
+                            "properties": [
+                                {"source_field": "field", "target_property": "property"}
+                            ],
+                            "schema": {
+                                "type_constraints": [
+                                    {"name": "a type constraint", "label": 42, "property": "property"}
+                                ]
+                            }
+                        }]
+                    }
+                }
+                """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "$.targets.nodes[0].schema.type_constraints[0].label: integer found, string expected");
+    }
+
+    @Test
+    public void fails_if_node_schema_type_constraint_label_is_empty() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+                {
+                    "version": "1",
+                    "sources": [{
+                        "name": "a-source",
+                        "type": "jdbc",
+                        "data_source": "a-data-source",
+                        "sql": "SELECT id, name FROM my.table"
+                    }],
+                    "targets": {
+                        "nodes": [{
+                            "active": true,
+                            "name": "a-target",
+                            "source": "a-source",
+                            "write_mode": "merge",
+                            "labels": ["Label"],
+                            "properties": [
+                                {"source_field": "field", "target_property": "property"}
+                            ],
+                            "schema": {
+                                "type_constraints": [
+                                    {"name": "a type constraint", "label": "", "property": "property"}
+                                ]
+                            }
+                        }]
+                    }
+                }
+                """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "0 warning(s)",
+                        "$.targets.nodes[0].schema.type_constraints[0].label: must be at least 1 characters long");
+    }
+
+    @Test
+    public void fails_if_node_schema_type_constraint_label_is_blank() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+                {
+                    "version": "1",
+                    "sources": [{
+                        "name": "a-source",
+                        "type": "jdbc",
+                        "data_source": "a-data-source",
+                        "sql": "SELECT id, name FROM my.table"
+                    }],
+                    "targets": {
+                        "nodes": [{
+                            "active": true,
+                            "name": "a-target",
+                            "source": "a-source",
+                            "write_mode": "merge",
+                            "labels": ["Label"],
+                            "properties": [
+                                {"source_field": "field", "target_property": "property"}
+                            ],
+                            "schema": {
+                                "type_constraints": [
+                                    {"name": "a type constraint", "label": "  ", "property": "property"}
+                                ]
+                            }
+                        }]
+                    }
+                }
+                """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "$.targets.nodes[0].schema.type_constraints[0].label: does not match the regex pattern \\S+");
+    }
+
+    @Test
+    public void fails_if_node_schema_type_constraint_property_is_missing() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+                {
+                    "version": "1",
+                    "sources": [{
+                        "name": "a-source",
+                        "type": "jdbc",
+                        "data_source": "a-data-source",
+                        "sql": "SELECT id, name FROM my.table"
+                    }],
+                    "targets": {
+                        "nodes": [{
+                            "active": true,
+                            "name": "a-target",
+                            "source": "a-source",
+                            "write_mode": "merge",
+                            "labels": ["Label"],
+                            "properties": [
+                                {"source_field": "field", "target_property": "property"}
+                            ],
+                            "schema": {
+                                "type_constraints": [
+                                    {"name": "a type constraint", "label": "Label"}
+                                ]
+                            }
+                        }]
+                    }
+                }
+                """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "$.targets.nodes[0].schema.type_constraints[0]: required property 'property' not found");
+    }
+
+    @Test
+    public void fails_if_node_schema_type_constraint_property_is_wrongly_typed() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+                {
+                    "version": "1",
+                    "sources": [{
+                        "name": "a-source",
+                        "type": "jdbc",
+                        "data_source": "a-data-source",
+                        "sql": "SELECT id, name FROM my.table"
+                    }],
+                    "targets": {
+                        "nodes": [{
+                            "active": true,
+                            "name": "a-target",
+                            "source": "a-source",
+                            "write_mode": "merge",
+                            "labels": ["Label"],
+                            "properties": [
+                                {"source_field": "field", "target_property": "property"}
+                            ],
+                            "schema": {
+                                "type_constraints": [
+                                    {"name": "a type constraint", "label": "Label", "property": 42}
+                                ]
+                            }
+                        }]
+                    }
+                }
+                """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "$.targets.nodes[0].schema.type_constraints[0].property: integer found, string expected");
+    }
+
+    @Test
+    public void fails_if_node_schema_type_constraint_property_is_empty() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+                {
+                    "version": "1",
+                    "sources": [{
+                        "name": "a-source",
+                        "type": "jdbc",
+                        "data_source": "a-data-source",
+                        "sql": "SELECT id, name FROM my.table"
+                    }],
+                    "targets": {
+                        "nodes": [{
+                            "active": true,
+                            "name": "a-target",
+                            "source": "a-source",
+                            "write_mode": "merge",
+                            "labels": ["Label"],
+                            "properties": [
+                                {"source_field": "field", "target_property": "property"}
+                            ],
+                            "schema": {
+                                "type_constraints": [
+                                    {"name": "a type constraint", "label": "Label", "property": ""}
+                                ]
+                            }
+                        }]
+                    }
+                }
+                """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "0 warning(s)",
+                        "$.targets.nodes[0].schema.type_constraints[0].property: must be at least 1 characters long");
+    }
+
+    @Test
+    public void fails_if_node_schema_type_constraint_property_is_blank() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+                {
+                    "version": "1",
+                    "sources": [{
+                        "name": "a-source",
+                        "type": "jdbc",
+                        "data_source": "a-data-source",
+                        "sql": "SELECT id, name FROM my.table"
+                    }],
+                    "targets": {
+                        "nodes": [{
+                            "active": true,
+                            "name": "a-target",
+                            "source": "a-source",
+                            "write_mode": "merge",
+                            "labels": ["Label"],
+                            "properties": [
+                                {"source_field": "field", "target_property": "property"}
+                            ],
+                            "schema": {
+                                "type_constraints": [
+                                    {"name": "a type constraint", "label": "Label", "property": "   "}
+                                ]
+                            }
+                        }]
+                    }
+                }
+                """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "$.targets.nodes[0].schema.type_constraints[0].property: does not match the regex pattern \\S+");
+    }
 }
