@@ -1,9 +1,12 @@
+# keep this alphabetically sorted
 org.neo4j.importer.v1.validation.plugin.AtLeastOneActiveTargetValidator
 org.neo4j.importer.v1.validation.plugin.NoDanglingActiveNodeReferenceValidator
 org.neo4j.importer.v1.validation.plugin.NoDanglingDependsOnValidator
+org.neo4j.importer.v1.validation.plugin.NoDanglingLabelInKeyConstraintValidator
 org.neo4j.importer.v1.validation.plugin.NoDanglingLabelInTypeConstraintValidator
 org.neo4j.importer.v1.validation.plugin.NoDanglingLabelInUniqueConstraintValidator
 org.neo4j.importer.v1.validation.plugin.NoDanglingNodeReferenceValidator
+org.neo4j.importer.v1.validation.plugin.NoDanglingPropertyInKeyConstraintValidator
 org.neo4j.importer.v1.validation.plugin.NoDanglingPropertyInTypeConstraintValidator
 org.neo4j.importer.v1.validation.plugin.NoDanglingPropertyInUniqueConstraintValidator
 org.neo4j.importer.v1.validation.plugin.NoDanglingSourceValidator
