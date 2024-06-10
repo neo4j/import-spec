@@ -685,17 +685,20 @@
       "properties": {
         "name": {
           "type": "string",
-          "minLength": 1
+          "minLength": 1,
+          "pattern": "\\S+"
         },
         "label": {
           "type": "string",
-          "minLength": 1
+          "minLength": 1,
+          "pattern": "\\S+"
         },
         "properties": {
           "type": "array",
           "items": {
             "type": "string",
-            "minLength": 1
+            "minLength": 1,
+            "pattern": "\\S+"
           },
           "minItems": 1
         },

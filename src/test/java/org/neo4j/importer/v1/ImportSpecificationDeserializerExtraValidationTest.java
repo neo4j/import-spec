@@ -1721,4 +1721,78 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                         "0 warning(s)",
                         "$.targets.nodes[0].schema.type_constraints[0].property \"untyped\" refers to an untyped property");
     }
+
+    @Test
+    public void fails_if_node_target_unique_constraint_refers_to_non_existent_property() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+                        {
+                          "version": "1",
+                          "sources": [{
+                            "name": "a-source",
+                            "type": "jdbc",
+                            "data_source": "a-data-source",
+                            "sql": "SELECT id, name FROM my.table"
+                          }],
+                          "targets": {
+                            "nodes": [{
+                              "name": "a-node-target",
+                              "source": "a-source",
+                              "labels": ["Label"],
+                              "properties": [
+                                {"source_field": "id", "target_property": "id"}
+                              ],
+                              "schema": {
+                                "unique_constraints": [
+                                    {"name": "a key constraint", "label": "Label", "properties": ["invalid"]}
+                                ]
+                              }
+                            }]
+                          }
+                        }
+                        """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "$.targets.nodes[0].schema.unique_constraints[0].properties[0] \"invalid\" is not part of the property mappings");
+    }
+
+    @Test
+    public void fails_if_node_target_unique_constraint_refers_to_non_existent_label() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+                        {
+                          "version": "1",
+                          "sources": [{
+                            "name": "a-source",
+                            "type": "jdbc",
+                            "data_source": "a-data-source",
+                            "sql": "SELECT id, name FROM my.table"
+                          }],
+                          "targets": {
+                            "nodes": [{
+                              "name": "a-node-target",
+                              "source": "a-source",
+                              "labels": ["Label"],
+                              "properties": [
+                                {"source_field": "id", "target_property": "id"}
+                              ],
+                              "schema": {
+                                "unique_constraints": [
+                                    {"name": "a key constraint", "label": "Invalid", "properties": ["id"]}
+                                ]
+                              }
+                            }]
+                          }
+                        }
+                        """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "$.targets.nodes[0].schema.unique_constraints[0].label \"Invalid\" is not part of the defined labels");
+    }
 }
