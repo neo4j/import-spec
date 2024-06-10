@@ -1869,4 +1869,78 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                         "0 warning(s)",
                         "$.targets.nodes[0].schema.key_constraints[0].label \"Invalid\" is not part of the defined labels");
     }
+
+    @Test
+    public void fails_if_node_target_existence_constraint_refer_to_non_existent_label() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+                {
+                  "version": "1",
+                  "sources": [{
+                    "name": "a-source",
+                    "type": "jdbc",
+                    "data_source": "a-data-source",
+                    "sql": "SELECT id, name FROM my.table"
+                  }],
+                  "targets": {
+                    "nodes": [{
+                      "name": "a-node-target",
+                      "source": "a-source",
+                      "labels": ["Label"],
+                      "properties": [
+                        {"source_field": "id", "target_property": "id"}
+                      ],
+                      "schema": {
+                        "existence_constraints": [
+                            {"name": "a type constraint", "label": "Invalid", "property": "id"}
+                        ]
+                      }
+                    }]
+                  }
+                }
+                """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "$.targets.nodes[0].schema.existence_constraints[0].label \"Invalid\" is not part of the defined labels");
+    }
+
+    @Test
+    public void fails_if_node_target_existence_constraint_property_refers_to_non_existent_property() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+                {
+                  "version": "1",
+                  "sources": [{
+                    "name": "a-source",
+                    "type": "jdbc",
+                    "data_source": "a-data-source",
+                    "sql": "SELECT id, name FROM my.table"
+                  }],
+                  "targets": {
+                    "nodes": [{
+                      "name": "a-node-target",
+                      "source": "a-source",
+                      "labels": ["Label"],
+                      "properties": [
+                        {"source_field": "id", "target_property": "id"}
+                      ],
+                      "schema": {
+                        "existence_constraints": [
+                            {"name": "a type constraint", "label": "Label", "property": "invalid"}
+                        ]
+                      }
+                    }]
+                  }
+                }
+                """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "$.targets.nodes[0].schema.existence_constraints[0].property \"invalid\" is not part of the property mappings");
+    }
 }
