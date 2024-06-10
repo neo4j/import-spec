@@ -26,13 +26,13 @@ import org.neo4j.importer.v1.targets.PropertyMapping;
 import org.neo4j.importer.v1.validation.SpecificationValidationResult.Builder;
 import org.neo4j.importer.v1.validation.SpecificationValidator;
 
-public class NoDanglingTypeConstraintPropertyReferenceValidator implements SpecificationValidator {
+public class NoDanglingPropertyInTypeConstraintValidator implements SpecificationValidator {
 
     private static final String ERROR_CODE = "DANG-005";
 
     private final Map<String, String> invalidPaths;
 
-    public NoDanglingTypeConstraintPropertyReferenceValidator() {
+    public NoDanglingPropertyInTypeConstraintValidator() {
         this.invalidPaths = new LinkedHashMap<>();
     }
 

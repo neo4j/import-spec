@@ -18,27 +18,18 @@ package org.neo4j.importer.v1.validation.plugin;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
-import org.neo4j.importer.v1.targets.EntityTarget;
 import org.neo4j.importer.v1.targets.NodeTarget;
-import org.neo4j.importer.v1.targets.PropertyMapping;
 import org.neo4j.importer.v1.validation.SpecificationValidationResult.Builder;
 import org.neo4j.importer.v1.validation.SpecificationValidator;
 
-public class NoUntypedTypeConstraintPropertyReferenceValidator implements SpecificationValidator {
+public class NoDanglingLabelInTypeConstraintValidator implements SpecificationValidator {
 
-    private static final String ERROR_CODE = "TYPE-001";
+    private static final String ERROR_CODE = "DANG-006";
 
     private final Map<String, String> invalidPaths;
 
-    public NoUntypedTypeConstraintPropertyReferenceValidator() {
+    public NoDanglingLabelInTypeConstraintValidator() {
         this.invalidPaths = new LinkedHashMap<>();
-    }
-
-    @Override
-    public Set<Class<? extends SpecificationValidator>> requires() {
-        return Set.of(NoDanglingTypeConstraintPropertyReferenceValidator.class);
     }
 
     @Override
@@ -48,28 +39,21 @@ public class NoUntypedTypeConstraintPropertyReferenceValidator implements Specif
             return;
         }
         var basePath = String.format("$.targets.nodes[%d].schema.type_constraints", index);
-        var properties = typedPropertiesOf(target);
+        var labels = target.getLabels();
         var typeConstraints = schema.getTypeConstraints();
         for (int i = 0; i < typeConstraints.size(); i++) {
-            var property = typeConstraints.get(i).getProperty();
-            if (!properties.contains(property)) {
-                var path = String.format("%s[%d].property", basePath, i);
-                invalidPaths.put(path, property);
+            var label = typeConstraints.get(i).getLabel();
+            if (!labels.contains(label)) {
+                var path = String.format("%s[%d].label", basePath, i);
+                invalidPaths.put(path, label);
             }
         }
     }
 
     @Override
     public boolean report(Builder builder) {
-        invalidPaths.forEach((path, bogusProperty) -> builder.addError(
-                path, ERROR_CODE, String.format("%s \"%s\" refers to an untyped property", path, bogusProperty)));
+        invalidPaths.forEach((path, bogusLabel) -> builder.addError(
+                path, ERROR_CODE, String.format("%s \"%s\" is not part of the defined labels", path, bogusLabel)));
         return !invalidPaths.isEmpty();
-    }
-
-    private static Set<String> typedPropertiesOf(EntityTarget target) {
-        return target.getProperties().stream()
-                .filter(p -> p.getTargetPropertyType() != null)
-                .map(PropertyMapping::getTargetProperty)
-                .collect(Collectors.toSet());
     }
 }
