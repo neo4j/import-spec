@@ -1871,7 +1871,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
     }
 
     @Test
-    public void fails_if_node_target_existence_constraint_refer_to_non_existent_label() {
+    public void fails_if_node_target_existence_constraint_refers_to_non_existent_label() {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
                 {
@@ -1945,7 +1945,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
     }
 
     @Test
-    public void fails_if_node_target_range_index_refer_to_non_existent_label() {
+    public void fails_if_node_target_range_index_refers_to_non_existent_label() {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
                 {
