@@ -4440,7 +4440,7 @@ public class ImportSpecificationDeserializerNodeTargetTest {
                                     ],
                                     "schema": {
                                         "range_indexes": [
-                                            {"name": "a key constraint", "properties": ["property"]}
+                                            {"name": "a range index", "properties": ["property"]}
                                         ]
                                     }
                                 }]
@@ -4479,7 +4479,7 @@ public class ImportSpecificationDeserializerNodeTargetTest {
                                     ],
                                     "schema": {
                                         "range_indexes": [
-                                            {"name": "a key constraint", "label": 42, "properties": ["property"]}
+                                            {"name": "a range index", "label": 42, "properties": ["property"]}
                                         ]
                                     }
                                 }]
@@ -4518,7 +4518,7 @@ public class ImportSpecificationDeserializerNodeTargetTest {
                                     ],
                                     "schema": {
                                         "range_indexes": [
-                                            {"name": "a key constraint", "label": "", "properties": ["property"]}
+                                            {"name": "a range index", "label": "", "properties": ["property"]}
                                         ]
                                     }
                                 }]
@@ -4556,7 +4556,7 @@ public class ImportSpecificationDeserializerNodeTargetTest {
                                     ],
                                     "schema": {
                                         "range_indexes": [
-                                            {"name": "a key constraint", "label": "   ", "properties": ["property"]}
+                                            {"name": "a range index", "label": "   ", "properties": ["property"]}
                                         ]
                                     }
                                 }]
@@ -4595,7 +4595,7 @@ public class ImportSpecificationDeserializerNodeTargetTest {
                                     ],
                                     "schema": {
                                         "range_indexes": [
-                                            {"name": "a key constraint", "label": "Label"}
+                                            {"name": "a range index", "label": "Label"}
                                         ]
                                     }
                                 }]
@@ -4634,7 +4634,7 @@ public class ImportSpecificationDeserializerNodeTargetTest {
                                     ],
                                     "schema": {
                                         "range_indexes": [
-                                            {"name": "a key constraint", "label": "Label", "properties": 42}
+                                            {"name": "a range index", "label": "Label", "properties": 42}
                                         ]
                                     }
                                 }]
@@ -4673,7 +4673,7 @@ public class ImportSpecificationDeserializerNodeTargetTest {
                                     ],
                                     "schema": {
                                         "range_indexes": [
-                                            {"name": "a key constraint", "label": "Label", "properties": []}
+                                            {"name": "a range index", "label": "Label", "properties": []}
                                         ]
                                     }
                                 }]
@@ -4712,7 +4712,7 @@ public class ImportSpecificationDeserializerNodeTargetTest {
                                     ],
                                     "schema": {
                                         "range_indexes": [
-                                            {"name": "a key constraint", "label": "Label", "properties": [42]}
+                                            {"name": "a range index", "label": "Label", "properties": [42]}
                                         ]
                                     }
                                 }]
@@ -4751,7 +4751,7 @@ public class ImportSpecificationDeserializerNodeTargetTest {
                                     ],
                                     "schema": {
                                         "range_indexes": [
-                                            {"name": "a key constraint", "label": "Label", "properties": [""]}
+                                            {"name": "a range index", "label": "Label", "properties": [""]}
                                         ]
                                     }
                                 }]
@@ -4789,7 +4789,7 @@ public class ImportSpecificationDeserializerNodeTargetTest {
                                     ],
                                     "schema": {
                                         "range_indexes": [
-                                            {"name": "a key constraint", "label": "Label", "properties": ["   "]}
+                                            {"name": "a range index", "label": "Label", "properties": ["   "]}
                                         ]
                                     }
                                 }]
