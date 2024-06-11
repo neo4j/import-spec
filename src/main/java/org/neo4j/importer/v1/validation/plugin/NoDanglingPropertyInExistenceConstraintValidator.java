@@ -28,7 +28,7 @@ import org.neo4j.importer.v1.validation.SpecificationValidator;
 
 public class NoDanglingPropertyInExistenceConstraintValidator implements SpecificationValidator {
 
-    private static final String ERROR_CODE = "DANG-009";
+    private static final String ERROR_CODE = "DANG-011";
 
     private final Map<String, String> invalidPaths;
 
