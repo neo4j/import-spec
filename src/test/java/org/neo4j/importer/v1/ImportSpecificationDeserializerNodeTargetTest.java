@@ -5057,7 +5057,7 @@ public class ImportSpecificationDeserializerNodeTargetTest {
                             ],
                             "schema": {
                                 "text_indexes": [
-                                    {"name": "a key constraint", "property": "property"}
+                                    {"name": "a text index", "property": "property"}
                                 ]
                             }
                         }]
@@ -5096,7 +5096,7 @@ public class ImportSpecificationDeserializerNodeTargetTest {
                             ],
                             "schema": {
                                 "text_indexes": [
-                                    {"name": "a key constraint", "label": 42, "property": "property"}
+                                    {"name": "a text index", "label": 42, "property": "property"}
                                 ]
                             }
                         }]
@@ -5135,7 +5135,7 @@ public class ImportSpecificationDeserializerNodeTargetTest {
                             ],
                             "schema": {
                                 "text_indexes": [
-                                    {"name": "a key constraint", "label": "", "properties": ["property"]}
+                                    {"name": "a text index", "label": "", "properties": ["property"]}
                                 ]
                             }
                         }]
@@ -5173,7 +5173,7 @@ public class ImportSpecificationDeserializerNodeTargetTest {
                             ],
                             "schema": {
                                 "text_indexes": [
-                                    {"name": "a key constraint", "label": "   ", "property": "property"}
+                                    {"name": "a text index", "label": "   ", "property": "property"}
                                 ]
                             }
                         }]
@@ -5212,7 +5212,7 @@ public class ImportSpecificationDeserializerNodeTargetTest {
                             ],
                             "schema": {
                                 "text_indexes": [
-                                    {"name": "a key constraint", "label": "Label"}
+                                    {"name": "a text index", "label": "Label"}
                                 ]
                             }
                         }]
@@ -5251,7 +5251,7 @@ public class ImportSpecificationDeserializerNodeTargetTest {
                             ],
                             "schema": {
                                 "text_indexes": [
-                                    {"name": "a key constraint", "label": "Label", "property": 42}
+                                    {"name": "a text index", "label": "Label", "property": 42}
                                 ]
                             }
                         }]
@@ -5290,7 +5290,7 @@ public class ImportSpecificationDeserializerNodeTargetTest {
                             ],
                             "schema": {
                                 "text_indexes": [
-                                    {"name": "a key constraint", "label": "Label", "property": ""}
+                                    {"name": "a text index", "label": "Label", "property": ""}
                                 ]
                             }
                         }]
@@ -5328,7 +5328,7 @@ public class ImportSpecificationDeserializerNodeTargetTest {
                             ],
                             "schema": {
                                 "text_indexes": [
-                                    {"name": "a key constraint", "label": "Label", "property": "   "}
+                                    {"name": "a text index", "label": "Label", "property": "   "}
                                 ]
                             }
                         }]
@@ -5367,7 +5367,7 @@ public class ImportSpecificationDeserializerNodeTargetTest {
                             ],
                             "schema": {
                                 "text_indexes": [
-                                    {"name": "a key constraint", "label": "Label", "property": "property", "options": 42}
+                                    {"name": "a text index", "label": "Label", "property": "property", "options": 42}
                                 ]
                             }
                         }]
