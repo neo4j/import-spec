@@ -24,7 +24,7 @@ import org.neo4j.importer.v1.validation.SpecificationValidator;
 
 public class NoDanglingLabelInKeyConstraintValidator implements SpecificationValidator {
 
-    private static final String ERROR_CODE = "DANG-008";
+    private static final String ERROR_CODE = "DANG-010";
 
     private final Map<String, String> invalidPaths;
 
