@@ -2169,33 +2169,33 @@ public class ImportSpecificationDeserializerExtraValidationTest {
     @Test
     public void fails_if_node_target_fulltext_index_refers_to_non_existent_label() {
         assertThatThrownBy(() -> deserialize(new StringReader(
+                """
+                        {
+                          "version": "1",
+                          "sources": [{
+                            "name": "a-source",
+                            "type": "jdbc",
+                            "data_source": "a-data-source",
+                            "sql": "SELECT id, name FROM my.table"
+                          }],
+                          "targets": {
+                            "nodes": [{
+                              "name": "a-node-target",
+                              "source": "a-source",
+                              "labels": ["Label"],
+                              "properties": [
+                                {"source_field": "id", "target_property": "id"}
+                              ],
+                              "schema": {
+                                "fulltext_indexes": [
+                                    {"name": "a full text index", "labels": ["Invalid"], "properties": ["id"]}
+                                ]
+                              }
+                            }]
+                          }
+                        }
                         """
-        {
-          "version": "1",
-          "sources": [{
-            "name": "a-source",
-            "type": "jdbc",
-            "data_source": "a-data-source",
-            "sql": "SELECT id, name FROM my.table"
-          }],
-          "targets": {
-            "nodes": [{
-              "name": "a-node-target",
-              "source": "a-source",
-              "labels": ["Label"],
-              "properties": [
-                {"source_field": "id", "target_property": "id"}
-              ],
-              "schema": {
-                "fulltext_indexes": [
-                    {"name": "a type constraint", "labels": ["Invalid"], "properties": ["id"]}
-                ]
-              }
-            }]
-          }
-        }
-        """
-                                .stripIndent())))
+                        .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
                         "1 error(s)",
@@ -2206,33 +2206,33 @@ public class ImportSpecificationDeserializerExtraValidationTest {
     @Test
     public void fails_if_node_target_fulltext_index_property_refers_to_non_existent_property() {
         assertThatThrownBy(() -> deserialize(new StringReader(
+                """
+                        {
+                          "version": "1",
+                          "sources": [{
+                            "name": "a-source",
+                            "type": "jdbc",
+                            "data_source": "a-data-source",
+                            "sql": "SELECT id, name FROM my.table"
+                          }],
+                          "targets": {
+                            "nodes": [{
+                              "name": "a-node-target",
+                              "source": "a-source",
+                              "labels": ["Label"],
+                              "properties": [
+                                {"source_field": "id", "target_property": "id"}
+                              ],
+                              "schema": {
+                                "fulltext_indexes": [
+                                    {"name": "a full text index", "labels": ["Label"], "properties": ["invalid"]}
+                                ]
+                              }
+                            }]
+                          }
+                        }
                         """
-        {
-          "version": "1",
-          "sources": [{
-            "name": "a-source",
-            "type": "jdbc",
-            "data_source": "a-data-source",
-            "sql": "SELECT id, name FROM my.table"
-          }],
-          "targets": {
-            "nodes": [{
-              "name": "a-node-target",
-              "source": "a-source",
-              "labels": ["Label"],
-              "properties": [
-                {"source_field": "id", "target_property": "id"}
-              ],
-              "schema": {
-                "fulltext_indexes": [
-                    {"name": "a type constraint", "labels": ["Label"], "properties": ["invalid"]}
-                ]
-              }
-            }]
-          }
-        }
-        """
-                                .stripIndent())))
+                        .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
                         "1 error(s)",
