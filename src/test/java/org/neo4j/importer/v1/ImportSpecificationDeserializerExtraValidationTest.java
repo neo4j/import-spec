@@ -2244,31 +2244,31 @@ public class ImportSpecificationDeserializerExtraValidationTest {
     public void fails_if_node_target_vector_index_refers_to_non_existent_label() {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
-                {
-                  "version": "1",
-                  "sources": [{
-                    "name": "a-source",
-                    "type": "jdbc",
-                    "data_source": "a-data-source",
-                    "sql": "SELECT id, name FROM my.table"
-                  }],
-                  "targets": {
-                    "nodes": [{
-                      "name": "a-node-target",
-                      "source": "a-source",
-                      "labels": ["Label"],
-                      "properties": [
-                        {"source_field": "id", "target_property": "id"}
-                      ],
-                      "schema": {
-                        "vector_indexes": [
-                            {"name": "a text index", "label": "Invalid", "property": "id", "options": {}}
-                        ]
-                      }
-                    }]
-                  }
-                }
-                """
+                        {
+                          "version": "1",
+                          "sources": [{
+                            "name": "a-source",
+                            "type": "jdbc",
+                            "data_source": "a-data-source",
+                            "sql": "SELECT id, name FROM my.table"
+                          }],
+                          "targets": {
+                            "nodes": [{
+                              "name": "a-node-target",
+                              "source": "a-source",
+                              "labels": ["Label"],
+                              "properties": [
+                                {"source_field": "id", "target_property": "id"}
+                              ],
+                              "schema": {
+                                "vector_indexes": [
+                                    {"name": "a vector index", "label": "Invalid", "property": "id", "options": {}}
+                                ]
+                              }
+                            }]
+                          }
+                        }
+                        """
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
@@ -2281,31 +2281,31 @@ public class ImportSpecificationDeserializerExtraValidationTest {
     public void fails_if_node_target_vector_index_property_refers_to_non_existent_property() {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
-                {
-                  "version": "1",
-                  "sources": [{
-                    "name": "a-source",
-                    "type": "jdbc",
-                    "data_source": "a-data-source",
-                    "sql": "SELECT id, name FROM my.table"
-                  }],
-                  "targets": {
-                    "nodes": [{
-                      "name": "a-node-target",
-                      "source": "a-source",
-                      "labels": ["Label"],
-                      "properties": [
-                        {"source_field": "id", "target_property": "id"}
-                      ],
-                      "schema": {
-                        "vector_indexes": [
-                            {"name": "a text index", "label": "Label", "property": "invalid", "options": {}}
-                        ]
-                      }
-                    }]
-                  }
-                }
-                """
+                        {
+                          "version": "1",
+                          "sources": [{
+                            "name": "a-source",
+                            "type": "jdbc",
+                            "data_source": "a-data-source",
+                            "sql": "SELECT id, name FROM my.table"
+                          }],
+                          "targets": {
+                            "nodes": [{
+                              "name": "a-node-target",
+                              "source": "a-source",
+                              "labels": ["Label"],
+                              "properties": [
+                                {"source_field": "id", "target_property": "id"}
+                              ],
+                              "schema": {
+                                "vector_indexes": [
+                                    {"name": "a vector index", "label": "Label", "property": "invalid", "options": {}}
+                                ]
+                              }
+                            }]
+                          }
+                        }
+                        """
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
