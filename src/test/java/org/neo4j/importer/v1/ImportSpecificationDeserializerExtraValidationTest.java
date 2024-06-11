@@ -1744,7 +1744,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                               ],
                               "schema": {
                                 "unique_constraints": [
-                                    {"name": "a key constraint", "label": "Label", "properties": ["invalid"]}
+                                    {"name": "a unique constraint", "label": "Label", "properties": ["invalid"]}
                                 ]
                               }
                             }]
@@ -1781,7 +1781,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                               ],
                               "schema": {
                                 "unique_constraints": [
-                                    {"name": "a key constraint", "label": "Invalid", "properties": ["id"]}
+                                    {"name": "a unique constraint", "label": "Invalid", "properties": ["id"]}
                                 ]
                               }
                             }]
@@ -1892,7 +1892,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                       ],
                       "schema": {
                         "existence_constraints": [
-                            {"name": "a type constraint", "label": "Invalid", "property": "id"}
+                            {"name": "an existence constraint", "label": "Invalid", "property": "id"}
                         ]
                       }
                     }]
@@ -1929,7 +1929,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                       ],
                       "schema": {
                         "existence_constraints": [
-                            {"name": "a type constraint", "label": "Label", "property": "invalid"}
+                            {"name": "an existence constraint", "label": "Label", "property": "invalid"}
                         ]
                       }
                     }]
