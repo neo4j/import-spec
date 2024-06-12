@@ -4980,7 +4980,7 @@ public class ImportSpecificationDeserializerNodeTargetTest {
                             ],
                             "schema": {
                                 "text_indexes": [
-                                    {"name": "", "label": "Label", "properties": ["property"]}
+                                    {"name": "", "label": "Label", "property": "property"}
                                 ]
                             }
                         }]
@@ -5135,7 +5135,7 @@ public class ImportSpecificationDeserializerNodeTargetTest {
                             ],
                             "schema": {
                                 "text_indexes": [
-                                    {"name": "a text index", "label": "", "properties": ["property"]}
+                                    {"name": "a text index", "label": "", "property": "property"}
                                 ]
                             }
                         }]
@@ -5189,7 +5189,7 @@ public class ImportSpecificationDeserializerNodeTargetTest {
     }
 
     @Test
-    public void fails_if_node_schema_text_index_properties_is_missing() {
+    public void fails_if_node_schema_text_index_property_is_missing() {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
                 {
