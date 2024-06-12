@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 import org.neo4j.importer.v1.targets.EntityTarget;
 import org.neo4j.importer.v1.targets.NodeTarget;
 import org.neo4j.importer.v1.targets.PropertyMapping;
+import org.neo4j.importer.v1.targets.RelationshipTarget;
 import org.neo4j.importer.v1.validation.SpecificationValidationResult.Builder;
 import org.neo4j.importer.v1.validation.SpecificationValidator;
 
@@ -43,6 +44,24 @@ public class NoDanglingPropertyInTypeConstraintValidator implements Specificatio
             return;
         }
         var basePath = String.format("$.targets.nodes[%d].schema.type_constraints", index);
+        var properties = propertiesOf(target);
+        var typeConstraints = schema.getTypeConstraints();
+        for (int i = 0; i < typeConstraints.size(); i++) {
+            var property = typeConstraints.get(i).getProperty();
+            if (!properties.contains(property)) {
+                var path = String.format("%s[%d].property", basePath, i);
+                invalidPaths.put(path, property);
+            }
+        }
+    }
+
+    @Override
+    public void visitRelationshipTarget(int index, RelationshipTarget target) {
+        var schema = target.getSchema();
+        if (schema == null) {
+            return;
+        }
+        var basePath = String.format("$.targets.relationships[%d].schema.type_constraints", index);
         var properties = propertiesOf(target);
         var typeConstraints = schema.getTypeConstraints();
         for (int i = 0; i < typeConstraints.size(); i++) {
