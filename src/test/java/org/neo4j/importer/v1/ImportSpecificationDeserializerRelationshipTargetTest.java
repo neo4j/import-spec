@@ -2339,4 +2339,511 @@ public class ImportSpecificationDeserializerRelationshipTargetTest {
                         "0 warning(s)",
                         "$.targets.relationships[0].source_transformations.limit: must have a minimum value of 1");
     }
+
+    @Test
+    public void fails_if_relationship_schema_is_wrongly_typed() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+                        {
+                            "version": "1",
+                            "sources": [{
+                                "name": "a-source",
+                                "type": "jdbc",
+                                "data_source": "a-data-source",
+                                "sql": "SELECT id, name FROM my.table"
+                            }],
+                            "targets": {
+                                "nodes": [{
+                                  "name": "a-node-target",
+                                  "source": "a-source",
+                                  "labels": ["Label"],
+                                  "properties": [
+                                    {"source_field": "id", "target_property": "id"}
+                                  ]
+                                }],
+                                "relationships": [{
+                                  "name": "a-relationship-target",
+                                  "source": "a-source",
+                                  "type": "TYPE",
+                                  "start_node_reference": "a-node-target",
+                                  "end_node_reference": "a-node-target",
+                                  "properties": [
+                                    {"source_field": "id", "target_property": "id"}
+                                  ],
+                                  "schema": 42
+                                }]
+                            }
+                        }
+                        """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "$.targets.relationships[0].schema: integer found, object expected");
+    }
+
+    @Test
+    public void fails_if_relationship_schema_type_constraints_are_wrongly_typed() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+                        {
+                            "version": "1",
+                            "sources": [{
+                                "name": "a-source",
+                                "type": "jdbc",
+                                "data_source": "a-data-source",
+                                "sql": "SELECT id, name FROM my.table"
+                            }],
+                            "targets": {
+                                "nodes": [{
+                                  "name": "a-node-target",
+                                  "source": "a-source",
+                                  "labels": ["Label"],
+                                  "properties": [
+                                    {"source_field": "id", "target_property": "id"}
+                                  ]
+                                }],
+                                "relationships": [{
+                                  "name": "a-relationship-target",
+                                  "source": "a-source",
+                                  "type": "TYPE",
+                                  "start_node_reference": "a-node-target",
+                                  "end_node_reference": "a-node-target",
+                                  "properties": [
+                                    {"source_field": "id", "target_property": "id"}
+                                  ],
+                                  "schema": {
+                                    "type_constraints": 42
+                                  }
+                                }]
+                            }
+                        }
+                        """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "$.targets.relationships[0].schema.type_constraints: integer found, array expected");
+    }
+
+    @Test
+    public void fails_if_relationship_schema_type_constraints_element_is_wrongly_typed() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+                        {
+                            "version": "1",
+                            "sources": [{
+                                "name": "a-source",
+                                "type": "jdbc",
+                                "data_source": "a-data-source",
+                                "sql": "SELECT id, name FROM my.table"
+                            }],
+                            "targets": {
+                                "nodes": [{
+                                  "name": "a-node-target",
+                                  "source": "a-source",
+                                  "labels": ["Label"],
+                                  "properties": [
+                                    {"source_field": "id", "target_property": "id"}
+                                  ]
+                                }],
+                                "relationships": [{
+                                  "name": "a-relationship-target",
+                                  "source": "a-source",
+                                  "type": "TYPE",
+                                  "start_node_reference": "a-node-target",
+                                  "end_node_reference": "a-node-target",
+                                  "properties": [
+                                    {"source_field": "id", "target_property": "id"}
+                                  ],
+                                  "schema": {
+                                    "type_constraints": [42]
+                                  }
+                                }]
+                            }
+                        }
+                        """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "$.targets.relationships[0].schema.type_constraints[0]: integer found, object expected");
+    }
+
+    @Test
+    public void fails_if_relationship_schema_type_constraint_name_is_missing() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+                        {
+                            "version": "1",
+                            "sources": [{
+                                "name": "a-source",
+                                "type": "jdbc",
+                                "data_source": "a-data-source",
+                                "sql": "SELECT id, name FROM my.table"
+                            }],
+                            "targets": {
+                                "nodes": [{
+                                  "name": "a-node-target",
+                                  "source": "a-source",
+                                  "labels": ["Label"],
+                                  "properties": [
+                                    {"source_field": "id", "target_property": "id"}
+                                  ]
+                                }],
+                                "relationships": [{
+                                  "name": "a-relationship-target",
+                                  "source": "a-source",
+                                  "type": "TYPE",
+                                  "start_node_reference": "a-node-target",
+                                  "end_node_reference": "a-node-target",
+                                  "properties": [
+                                    {"source_field": "id", "target_property": "id"}
+                                  ],
+                                  "schema": {
+                                    "type_constraints": [{
+                                        "property": "id"
+                                    }]
+                                  }
+                                }]
+                            }
+                        }
+                        """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "$.targets.relationships[0].schema.type_constraints[0]: required property 'name' not found");
+    }
+
+    @Test
+    public void fails_if_relationship_schema_type_constraint_name_is_wrongly_typed() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+                        {
+                            "version": "1",
+                            "sources": [{
+                                "name": "a-source",
+                                "type": "jdbc",
+                                "data_source": "a-data-source",
+                                "sql": "SELECT id, name FROM my.table"
+                            }],
+                            "targets": {
+                                "nodes": [{
+                                  "name": "a-node-target",
+                                  "source": "a-source",
+                                  "labels": ["Label"],
+                                  "properties": [
+                                    {"source_field": "id", "target_property": "id"}
+                                  ]
+                                }],
+                                "relationships": [{
+                                  "name": "a-relationship-target",
+                                  "source": "a-source",
+                                  "type": "TYPE",
+                                  "start_node_reference": "a-node-target",
+                                  "end_node_reference": "a-node-target",
+                                  "properties": [
+                                    {"source_field": "id", "target_property": "id"}
+                                  ],
+                                  "schema": {
+                                    "type_constraints": [{
+                                        "name": 42, "property": "id"
+                                    }]
+                                  }
+                                }]
+                            }
+                        }
+                        """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "$.targets.relationships[0].schema.type_constraints[0].name: integer found, string expected");
+    }
+
+    @Test
+    public void fails_if_relationship_schema_type_constraint_name_is_empty() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+                        {
+                            "version": "1",
+                            "sources": [{
+                                "name": "a-source",
+                                "type": "jdbc",
+                                "data_source": "a-data-source",
+                                "sql": "SELECT id, name FROM my.table"
+                            }],
+                            "targets": {
+                                "nodes": [{
+                                  "name": "a-node-target",
+                                  "source": "a-source",
+                                  "labels": ["Label"],
+                                  "properties": [
+                                    {"source_field": "id", "target_property": "id"}
+                                  ]
+                                }],
+                                "relationships": [{
+                                  "name": "a-relationship-target",
+                                  "source": "a-source",
+                                  "type": "TYPE",
+                                  "start_node_reference": "a-node-target",
+                                  "end_node_reference": "a-node-target",
+                                  "properties": [
+                                    {"source_field": "id", "target_property": "id"}
+                                  ],
+                                  "schema": {
+                                    "type_constraints": [{
+                                        "name": "", "property": "id"
+                                    }]
+                                  }
+                                }]
+                            }
+                        }
+                        """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "0 warning(s)",
+                        "$.targets.relationships[0].schema.type_constraints[0].name: must be at least 1 characters long");
+    }
+
+    @Test
+    public void fails_if_relationship_schema_type_constraint_name_is_blank() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+                        {
+                            "version": "1",
+                            "sources": [{
+                                "name": "a-source",
+                                "type": "jdbc",
+                                "data_source": "a-data-source",
+                                "sql": "SELECT id, name FROM my.table"
+                            }],
+                            "targets": {
+                                "nodes": [{
+                                  "name": "a-node-target",
+                                  "source": "a-source",
+                                  "labels": ["Label"],
+                                  "properties": [
+                                    {"source_field": "id", "target_property": "id"}
+                                  ]
+                                }],
+                                "relationships": [{
+                                  "name": "a-relationship-target",
+                                  "source": "a-source",
+                                  "type": "TYPE",
+                                  "start_node_reference": "a-node-target",
+                                  "end_node_reference": "a-node-target",
+                                  "properties": [
+                                    {"source_field": "id", "target_property": "id"}
+                                  ],
+                                  "schema": {
+                                    "type_constraints": [{
+                                        "name": "    ", "property": "id"
+                                    }]
+                                  }
+                                }]
+                            }
+                        }
+                        """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "$.targets.relationships[0].schema.type_constraints[0].name: does not match the regex pattern \\S+");
+    }
+
+    @Test
+    public void fails_if_relationship_schema_type_constraint_property_is_missing() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+                        {
+                            "version": "1",
+                            "sources": [{
+                                "name": "a-source",
+                                "type": "jdbc",
+                                "data_source": "a-data-source",
+                                "sql": "SELECT id, name FROM my.table"
+                            }],
+                            "targets": {
+                                "nodes": [{
+                                  "name": "a-node-target",
+                                  "source": "a-source",
+                                  "labels": ["Label"],
+                                  "properties": [
+                                    {"source_field": "id", "target_property": "id"}
+                                  ]
+                                }],
+                                "relationships": [{
+                                  "name": "a-relationship-target",
+                                  "source": "a-source",
+                                  "type": "TYPE",
+                                  "start_node_reference": "a-node-target",
+                                  "end_node_reference": "a-node-target",
+                                  "properties": [
+                                    {"source_field": "id", "target_property": "id"}
+                                  ],
+                                  "schema": {
+                                    "type_constraints": [
+                                        {"name": "a type constraint"}
+                                    ]
+                                  }
+                                }]
+                            }
+                        }
+                        """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "$.targets.relationships[0].schema.type_constraints[0]: required property 'property' not found");
+    }
+
+    @Test
+    public void fails_if_relationship_schema_type_constraint_property_is_wrongly_typed() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+                        {
+                            "version": "1",
+                            "sources": [{
+                                "name": "a-source",
+                                "type": "jdbc",
+                                "data_source": "a-data-source",
+                                "sql": "SELECT id, name FROM my.table"
+                            }],
+                            "targets": {
+                                "nodes": [{
+                                  "name": "a-node-target",
+                                  "source": "a-source",
+                                  "labels": ["Label"],
+                                  "properties": [
+                                    {"source_field": "id", "target_property": "id"}
+                                  ]
+                                }],
+                                "relationships": [{
+                                  "name": "a-relationship-target",
+                                  "source": "a-source",
+                                  "type": "TYPE",
+                                  "start_node_reference": "a-node-target",
+                                  "end_node_reference": "a-node-target",
+                                  "properties": [
+                                    {"source_field": "id", "target_property": "id"}
+                                  ],
+                                  "schema": {
+                                    "type_constraints": [
+                                        {"name": "a type constraint", "property": 42}
+                                    ]
+                                  }
+                                }]
+                            }
+                        }
+                        """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "$.targets.relationships[0].schema.type_constraints[0].property: integer found, string expected");
+    }
+
+    @Test
+    public void fails_if_relationship_schema_type_constraint_property_is_empty() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+                        {
+                            "version": "1",
+                            "sources": [{
+                                "name": "a-source",
+                                "type": "jdbc",
+                                "data_source": "a-data-source",
+                                "sql": "SELECT id, name FROM my.table"
+                            }],
+                            "targets": {
+                                "nodes": [{
+                                  "name": "a-node-target",
+                                  "source": "a-source",
+                                  "labels": ["Label"],
+                                  "properties": [
+                                    {"source_field": "id", "target_property": "id"}
+                                  ]
+                                }],
+                                "relationships": [{
+                                  "name": "a-relationship-target",
+                                  "source": "a-source",
+                                  "type": "TYPE",
+                                  "start_node_reference": "a-node-target",
+                                  "end_node_reference": "a-node-target",
+                                  "properties": [
+                                    {"source_field": "id", "target_property": "id"}
+                                  ],
+                                  "schema": {
+                                    "type_constraints": [
+                                        {"name": "a type constraint", "property": ""}
+                                    ]
+                                  }
+                                }]
+                            }
+                        }
+                        """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "0 warning(s)",
+                        "$.targets.relationships[0].schema.type_constraints[0].property: must be at least 1 characters long");
+    }
+
+    @Test
+    public void fails_if_relationship_schema_type_constraint_property_is_blank() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+                        {
+                            "version": "1",
+                            "sources": [{
+                                "name": "a-source",
+                                "type": "jdbc",
+                                "data_source": "a-data-source",
+                                "sql": "SELECT id, name FROM my.table"
+                            }],
+                            "targets": {
+                                "nodes": [{
+                                  "name": "a-node-target",
+                                  "source": "a-source",
+                                  "labels": ["Label"],
+                                  "properties": [
+                                    {"source_field": "id", "target_property": "id"}
+                                  ]
+                                }],
+                                "relationships": [{
+                                  "name": "a-relationship-target",
+                                  "source": "a-source",
+                                  "type": "TYPE",
+                                  "start_node_reference": "a-node-target",
+                                  "end_node_reference": "a-node-target",
+                                  "properties": [
+                                    {"source_field": "id", "target_property": "id"}
+                                  ],
+                                  "schema": {
+                                    "type_constraints": [
+                                        {"name": "a type constraint", "property": "    "}
+                                    ]
+                                  }
+                                }]
+                            }
+                        }
+                        """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "$.targets.relationships[0].schema.type_constraints[0].property: does not match the regex pattern \\S+");
+    }
 }

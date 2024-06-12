@@ -2313,4 +2313,51 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                         "0 warning(s)",
                         "$.targets.nodes[0].schema.vector_indexes[0].property \"invalid\" is not part of the property mappings");
     }
+
+    @Test
+    public void fails_if_relationship_target_type_constraint_property_refers_to_non_existent_property() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+                        {
+                            "version": "1",
+                            "sources": [{
+                                "name": "a-source",
+                                "type": "jdbc",
+                                "data_source": "a-data-source",
+                                "sql": "SELECT id, name FROM my.table"
+                            }],
+                            "targets": {
+                                "nodes": [{
+                                  "name": "a-node-target",
+                                  "source": "a-source",
+                                  "labels": ["Label"],
+                                  "properties": [
+                                    {"source_field": "id", "target_property": "id"}
+                                  ]
+                                }],
+                                "relationships": [{
+                                  "name": "a-relationship-target",
+                                  "source": "a-source",
+                                  "type": "TYPE",
+                                  "start_node_reference": "a-node-target",
+                                  "end_node_reference": "a-node-target",
+                                  "properties": [
+                                    {"source_field": "id", "target_property": "id"}
+                                  ],
+                                  "schema": {
+                                    "type_constraints": [{
+                                        "name": "a type constraint", "property": "invalid"
+                                    }]
+                                  }
+                                }]
+                            }
+                        }
+                        """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "$.targets.relationships[0].schema.type_constraints[0].property \"invalid\" is not part of the property mappings");
+    }
 }
