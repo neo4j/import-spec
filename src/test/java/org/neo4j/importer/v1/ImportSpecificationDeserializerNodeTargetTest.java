@@ -4186,4 +4186,621 @@ public class ImportSpecificationDeserializerNodeTargetTest {
                         "0 warning(s)",
                         "$.targets.nodes[0].schema.key_constraints[0].options: integer found, object expected");
     }
+
+    @Test
+    public void fails_if_node_schema_range_indexes_is_wrongly_typed() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+                        {
+                            "version": "1",
+                            "sources": [{
+                                "name": "a-source",
+                                "type": "jdbc",
+                                "data_source": "a-data-source",
+                                "sql": "SELECT id, name FROM my.table"
+                            }],
+                            "targets": {
+                                "nodes": [{
+                                    "active": true,
+                                    "name": "a-target",
+                                    "source": "a-source",
+                                    "write_mode": "merge",
+                                    "labels": ["Label"],
+                                    "properties": [
+                                        {"source_field": "field", "target_property": "property"}
+                                    ],
+                                    "schema": {
+                                        "range_indexes": 42
+                                    }
+                                }]
+                            }
+                        }
+                        """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "$.targets.nodes[0].schema.range_indexes: integer found, array expected");
+    }
+
+    @Test
+    public void fails_if_node_schema_range_indexes_element_is_wrongly_typed() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+                        {
+                            "version": "1",
+                            "sources": [{
+                                "name": "a-source",
+                                "type": "jdbc",
+                                "data_source": "a-data-source",
+                                "sql": "SELECT id, name FROM my.table"
+                            }],
+                            "targets": {
+                                "nodes": [{
+                                    "active": true,
+                                    "name": "a-target",
+                                    "source": "a-source",
+                                    "write_mode": "merge",
+                                    "labels": ["Label"],
+                                    "properties": [
+                                        {"source_field": "field", "target_property": "property"}
+                                    ],
+                                    "schema": {
+                                        "range_indexes": [42]
+                                    }
+                                }]
+                            }
+                        }
+                        """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "$.targets.nodes[0].schema.range_indexes[0]: integer found, object expected");
+    }
+
+    @Test
+    public void fails_if_node_schema_range_index_name_is_missing() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+                        {
+                            "version": "1",
+                            "sources": [{
+                                "name": "a-source",
+                                "type": "jdbc",
+                                "data_source": "a-data-source",
+                                "sql": "SELECT id, name FROM my.table"
+                            }],
+                            "targets": {
+                                "nodes": [{
+                                    "active": true,
+                                    "name": "a-target",
+                                    "source": "a-source",
+                                    "write_mode": "merge",
+                                    "labels": ["Label"],
+                                    "properties": [
+                                        {"source_field": "field", "target_property": "property"}
+                                    ],
+                                    "schema": {
+                                        "range_indexes": [
+                                            {"label": "Label", "properties": ["property"]}
+                                        ]
+                                    }
+                                }]
+                            }
+                        }
+                        """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "$.targets.nodes[0].schema.range_indexes[0]: required property 'name' not found");
+    }
+
+    @Test
+    public void fails_if_node_schema_range_index_name_is_wrongly_typed() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+                        {
+                            "version": "1",
+                            "sources": [{
+                                "name": "a-source",
+                                "type": "jdbc",
+                                "data_source": "a-data-source",
+                                "sql": "SELECT id, name FROM my.table"
+                            }],
+                            "targets": {
+                                "nodes": [{
+                                    "active": true,
+                                    "name": "a-target",
+                                    "source": "a-source",
+                                    "write_mode": "merge",
+                                    "labels": ["Label"],
+                                    "properties": [
+                                        {"source_field": "field", "target_property": "property"}
+                                    ],
+                                    "schema": {
+                                        "range_indexes": [
+                                            {"name": 42, "label": "Label", "properties": ["property"]}
+                                        ]
+                                    }
+                                }]
+                            }
+                        }
+                        """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "$.targets.nodes[0].schema.range_indexes[0].name: integer found, string expected");
+    }
+
+    @Test
+    public void fails_if_node_schema_range_index_name_is_empty() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+                        {
+                            "version": "1",
+                            "sources": [{
+                                "name": "a-source",
+                                "type": "jdbc",
+                                "data_source": "a-data-source",
+                                "sql": "SELECT id, name FROM my.table"
+                            }],
+                            "targets": {
+                                "nodes": [{
+                                    "active": true,
+                                    "name": "a-target",
+                                    "source": "a-source",
+                                    "write_mode": "merge",
+                                    "labels": ["Label"],
+                                    "properties": [
+                                        {"source_field": "field", "target_property": "property"}
+                                    ],
+                                    "schema": {
+                                        "range_indexes": [
+                                            {"name": "", "label": "Label", "properties": ["property"]}
+                                        ]
+                                    }
+                                }]
+                            }
+                        }
+                        """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "0 warning(s)",
+                        "$.targets.nodes[0].schema.range_indexes[0].name: must be at least 1 characters long");
+    }
+
+    @Test
+    public void fails_if_node_schema_range_index_name_is_blank() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+                        {
+                            "version": "1",
+                            "sources": [{
+                                "name": "a-source",
+                                "type": "jdbc",
+                                "data_source": "a-data-source",
+                                "sql": "SELECT id, name FROM my.table"
+                            }],
+                            "targets": {
+                                "nodes": [{
+                                    "active": true,
+                                    "name": "a-target",
+                                    "source": "a-source",
+                                    "write_mode": "merge",
+                                    "labels": ["Label"],
+                                    "properties": [
+                                        {"source_field": "field", "target_property": "property"}
+                                    ],
+                                    "schema": {
+                                        "range_indexes": [
+                                            {"name": "   ", "label": "Label", "properties": ["property"]}
+                                        ]
+                                    }
+                                }]
+                            }
+                        }
+                        """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "$.targets.nodes[0].schema.range_indexes[0].name: does not match the regex pattern \\S+");
+    }
+
+    @Test
+    public void fails_if_node_schema_range_index_label_is_missing() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+                        {
+                            "version": "1",
+                            "sources": [{
+                                "name": "a-source",
+                                "type": "jdbc",
+                                "data_source": "a-data-source",
+                                "sql": "SELECT id, name FROM my.table"
+                            }],
+                            "targets": {
+                                "nodes": [{
+                                    "active": true,
+                                    "name": "a-target",
+                                    "source": "a-source",
+                                    "write_mode": "merge",
+                                    "labels": ["Label"],
+                                    "properties": [
+                                        {"source_field": "field", "target_property": "property"}
+                                    ],
+                                    "schema": {
+                                        "range_indexes": [
+                                            {"name": "a range index", "properties": ["property"]}
+                                        ]
+                                    }
+                                }]
+                            }
+                        }
+                        """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "$.targets.nodes[0].schema.range_indexes[0]: required property 'label' not found");
+    }
+
+    @Test
+    public void fails_if_node_schema_range_index_label_is_wrongly_typed() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+                        {
+                            "version": "1",
+                            "sources": [{
+                                "name": "a-source",
+                                "type": "jdbc",
+                                "data_source": "a-data-source",
+                                "sql": "SELECT id, name FROM my.table"
+                            }],
+                            "targets": {
+                                "nodes": [{
+                                    "active": true,
+                                    "name": "a-target",
+                                    "source": "a-source",
+                                    "write_mode": "merge",
+                                    "labels": ["Label"],
+                                    "properties": [
+                                        {"source_field": "field", "target_property": "property"}
+                                    ],
+                                    "schema": {
+                                        "range_indexes": [
+                                            {"name": "a range index", "label": 42, "properties": ["property"]}
+                                        ]
+                                    }
+                                }]
+                            }
+                        }
+                        """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "$.targets.nodes[0].schema.range_indexes[0].label: integer found, string expected");
+    }
+
+    @Test
+    public void fails_if_node_schema_range_index_label_is_empty() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+                        {
+                            "version": "1",
+                            "sources": [{
+                                "name": "a-source",
+                                "type": "jdbc",
+                                "data_source": "a-data-source",
+                                "sql": "SELECT id, name FROM my.table"
+                            }],
+                            "targets": {
+                                "nodes": [{
+                                    "active": true,
+                                    "name": "a-target",
+                                    "source": "a-source",
+                                    "write_mode": "merge",
+                                    "labels": ["Label"],
+                                    "properties": [
+                                        {"source_field": "field", "target_property": "property"}
+                                    ],
+                                    "schema": {
+                                        "range_indexes": [
+                                            {"name": "a range index", "label": "", "properties": ["property"]}
+                                        ]
+                                    }
+                                }]
+                            }
+                        }
+                        """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "0 warning(s)",
+                        "$.targets.nodes[0].schema.range_indexes[0].label: must be at least 1 characters long");
+    }
+
+    @Test
+    public void fails_if_node_schema_range_index_label_is_blank() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+                        {
+                            "version": "1",
+                            "sources": [{
+                                "name": "a-source",
+                                "type": "jdbc",
+                                "data_source": "a-data-source",
+                                "sql": "SELECT id, name FROM my.table"
+                            }],
+                            "targets": {
+                                "nodes": [{
+                                    "active": true,
+                                    "name": "a-target",
+                                    "source": "a-source",
+                                    "write_mode": "merge",
+                                    "labels": ["Label"],
+                                    "properties": [
+                                        {"source_field": "field", "target_property": "property"}
+                                    ],
+                                    "schema": {
+                                        "range_indexes": [
+                                            {"name": "a range index", "label": "   ", "properties": ["property"]}
+                                        ]
+                                    }
+                                }]
+                            }
+                        }
+                        """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "$.targets.nodes[0].schema.range_indexes[0].label: does not match the regex pattern \\S+");
+    }
+
+    @Test
+    public void fails_if_node_schema_range_index_properties_is_missing() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+                        {
+                            "version": "1",
+                            "sources": [{
+                                "name": "a-source",
+                                "type": "jdbc",
+                                "data_source": "a-data-source",
+                                "sql": "SELECT id, name FROM my.table"
+                            }],
+                            "targets": {
+                                "nodes": [{
+                                    "active": true,
+                                    "name": "a-target",
+                                    "source": "a-source",
+                                    "write_mode": "merge",
+                                    "labels": ["Label"],
+                                    "properties": [
+                                        {"source_field": "field", "target_property": "property"}
+                                    ],
+                                    "schema": {
+                                        "range_indexes": [
+                                            {"name": "a range index", "label": "Label"}
+                                        ]
+                                    }
+                                }]
+                            }
+                        }
+                        """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "$.targets.nodes[0].schema.range_indexes[0]: required property 'properties' not found");
+    }
+
+    @Test
+    public void fails_if_node_schema_range_index_properties_is_wrongly_typed() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+                        {
+                            "version": "1",
+                            "sources": [{
+                                "name": "a-source",
+                                "type": "jdbc",
+                                "data_source": "a-data-source",
+                                "sql": "SELECT id, name FROM my.table"
+                            }],
+                            "targets": {
+                                "nodes": [{
+                                    "active": true,
+                                    "name": "a-target",
+                                    "source": "a-source",
+                                    "write_mode": "merge",
+                                    "labels": ["Label"],
+                                    "properties": [
+                                        {"source_field": "field", "target_property": "property"}
+                                    ],
+                                    "schema": {
+                                        "range_indexes": [
+                                            {"name": "a range index", "label": "Label", "properties": 42}
+                                        ]
+                                    }
+                                }]
+                            }
+                        }
+                        """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "$.targets.nodes[0].schema.range_indexes[0].properties: integer found, array expected");
+    }
+
+    @Test
+    public void fails_if_node_schema_range_index_properties_is_empty() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+                        {
+                            "version": "1",
+                            "sources": [{
+                                "name": "a-source",
+                                "type": "jdbc",
+                                "data_source": "a-data-source",
+                                "sql": "SELECT id, name FROM my.table"
+                            }],
+                            "targets": {
+                                "nodes": [{
+                                    "active": true,
+                                    "name": "a-target",
+                                    "source": "a-source",
+                                    "write_mode": "merge",
+                                    "labels": ["Label"],
+                                    "properties": [
+                                        {"source_field": "field", "target_property": "property"}
+                                    ],
+                                    "schema": {
+                                        "range_indexes": [
+                                            {"name": "a range index", "label": "Label", "properties": []}
+                                        ]
+                                    }
+                                }]
+                            }
+                        }
+                        """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "$.targets.nodes[0].schema.range_indexes[0].properties: must have at least 1 items but found 0");
+    }
+
+    @Test
+    public void fails_if_node_schema_range_index_properties_element_is_wrongly_typed() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+                        {
+                            "version": "1",
+                            "sources": [{
+                                "name": "a-source",
+                                "type": "jdbc",
+                                "data_source": "a-data-source",
+                                "sql": "SELECT id, name FROM my.table"
+                            }],
+                            "targets": {
+                                "nodes": [{
+                                    "active": true,
+                                    "name": "a-target",
+                                    "source": "a-source",
+                                    "write_mode": "merge",
+                                    "labels": ["Label"],
+                                    "properties": [
+                                        {"source_field": "field", "target_property": "property"}
+                                    ],
+                                    "schema": {
+                                        "range_indexes": [
+                                            {"name": "a range index", "label": "Label", "properties": [42]}
+                                        ]
+                                    }
+                                }]
+                            }
+                        }
+                        """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "$.targets.nodes[0].schema.range_indexes[0].properties[0]: integer found, string expected");
+    }
+
+    @Test
+    public void fails_if_node_schema_range_index_properties_element_is_empty() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+                        {
+                            "version": "1",
+                            "sources": [{
+                                "name": "a-source",
+                                "type": "jdbc",
+                                "data_source": "a-data-source",
+                                "sql": "SELECT id, name FROM my.table"
+                            }],
+                            "targets": {
+                                "nodes": [{
+                                    "active": true,
+                                    "name": "a-target",
+                                    "source": "a-source",
+                                    "write_mode": "merge",
+                                    "labels": ["Label"],
+                                    "properties": [
+                                        {"source_field": "field", "target_property": "property"}
+                                    ],
+                                    "schema": {
+                                        "range_indexes": [
+                                            {"name": "a range index", "label": "Label", "properties": [""]}
+                                        ]
+                                    }
+                                }]
+                            }
+                        }
+                        """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "0 warning(s)",
+                        "$.targets.nodes[0].schema.range_indexes[0].properties[0]: must be at least 1 characters long");
+    }
+
+    @Test
+    public void fails_if_node_schema_range_index_properties_element_is_blank() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+                        {
+                            "version": "1",
+                            "sources": [{
+                                "name": "a-source",
+                                "type": "jdbc",
+                                "data_source": "a-data-source",
+                                "sql": "SELECT id, name FROM my.table"
+                            }],
+                            "targets": {
+                                "nodes": [{
+                                    "active": true,
+                                    "name": "a-target",
+                                    "source": "a-source",
+                                    "write_mode": "merge",
+                                    "labels": ["Label"],
+                                    "properties": [
+                                        {"source_field": "field", "target_property": "property"}
+                                    ],
+                                    "schema": {
+                                        "range_indexes": [
+                                            {"name": "a range index", "label": "Label", "properties": ["   "]}
+                                        ]
+                                    }
+                                }]
+                            }
+                        }
+                        """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "$.targets.nodes[0].schema.range_indexes[0].properties[0]: does not match the regex pattern \\S+");
+    }
 }
