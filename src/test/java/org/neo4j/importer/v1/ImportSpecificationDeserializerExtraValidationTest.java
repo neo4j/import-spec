@@ -2169,7 +2169,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
     @Test
     public void fails_if_node_target_fulltext_index_refers_to_non_existent_label() {
         assertThatThrownBy(() -> deserialize(new StringReader(
-                """
+                        """
                         {
                           "version": "1",
                           "sources": [{
@@ -2195,7 +2195,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                           }
                         }
                         """
-                        .stripIndent())))
+                                .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
                         "1 error(s)",
@@ -2206,7 +2206,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
     @Test
     public void fails_if_node_target_fulltext_index_property_refers_to_non_existent_property() {
         assertThatThrownBy(() -> deserialize(new StringReader(
-                """
+                        """
                         {
                           "version": "1",
                           "sources": [{
@@ -2232,7 +2232,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                           }
                         }
                         """
-                        .stripIndent())))
+                                .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
                         "1 error(s)",
