@@ -16,13 +16,11 @@
  */
 package org.neo4j.importer.v1.validation.plugin;
 
+import static org.neo4j.importer.v1.validation.plugin.EntityTargets.propertiesOf;
+
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
-import org.neo4j.importer.v1.targets.EntityTarget;
 import org.neo4j.importer.v1.targets.NodeTarget;
-import org.neo4j.importer.v1.targets.PropertyMapping;
 import org.neo4j.importer.v1.validation.SpecificationValidationResult.Builder;
 import org.neo4j.importer.v1.validation.SpecificationValidator;
 
@@ -61,11 +59,5 @@ public class NoDanglingPropertyInExistenceConstraintValidator implements Specifi
                 ERROR_CODE,
                 String.format("%s \"%s\" is not part of the property mappings", path, bogusProperty)));
         return !invalidPaths.isEmpty();
-    }
-
-    private static Set<String> propertiesOf(EntityTarget target) {
-        return target.getProperties().stream()
-                .map(PropertyMapping::getTargetProperty)
-                .collect(Collectors.toSet());
     }
 }
