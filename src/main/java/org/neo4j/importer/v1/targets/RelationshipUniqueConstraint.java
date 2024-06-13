@@ -31,7 +31,7 @@ public class RelationshipUniqueConstraint extends Constraint {
     public RelationshipUniqueConstraint(
             @JsonProperty(value = "name", required = true) String name,
             @JsonProperty(value = "properties", required = true) List<String> properties,
-            @JsonProperty(value = "options", required = true) Map<String, Object> options) {
+            @JsonProperty("options") Map<String, Object> options) {
 
         super(name);
         this.properties = properties;

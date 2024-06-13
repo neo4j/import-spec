@@ -18,11 +18,8 @@ package org.neo4j.importer.v1.validation.plugin;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
-import org.neo4j.importer.v1.targets.EntityTarget;
 import org.neo4j.importer.v1.targets.NodeTarget;
-import org.neo4j.importer.v1.targets.PropertyMapping;
+import org.neo4j.importer.v1.targets.RelationshipTarget;
 import org.neo4j.importer.v1.validation.SpecificationValidationResult.Builder;
 import org.neo4j.importer.v1.validation.SpecificationValidator;
 
@@ -43,7 +40,28 @@ public class NoDanglingPropertyInUniqueConstraintValidator implements Specificat
             return;
         }
         var basePath = String.format("$.targets.nodes[%d].schema.unique_constraints", index);
-        var properties = propertiesOf(target);
+        var properties = EntityTargets.propertiesOf(target);
+        var uniqueConstraints = schema.getUniqueConstraints();
+        for (int i = 0; i < uniqueConstraints.size(); i++) {
+            var constraintProperties = uniqueConstraints.get(i).getProperties();
+            for (int j = 0; j < constraintProperties.size(); j++) {
+                var property = constraintProperties.get(j);
+                if (!properties.contains(property)) {
+                    var path = String.format("%s[%d].properties[%d]", basePath, i, j);
+                    invalidPaths.put(path, property);
+                }
+            }
+        }
+    }
+
+    @Override
+    public void visitRelationshipTarget(int index, RelationshipTarget target) {
+        var schema = target.getSchema();
+        if (schema == null) {
+            return;
+        }
+        var basePath = String.format("$.targets.relationships[%d].schema.unique_constraints", index);
+        var properties = EntityTargets.propertiesOf(target);
         var uniqueConstraints = schema.getUniqueConstraints();
         for (int i = 0; i < uniqueConstraints.size(); i++) {
             var constraintProperties = uniqueConstraints.get(i).getProperties();
@@ -64,11 +82,5 @@ public class NoDanglingPropertyInUniqueConstraintValidator implements Specificat
                 ERROR_CODE,
                 String.format("%s \"%s\" is not part of the property mappings", path, bogusProperty)));
         return !invalidPaths.isEmpty();
-    }
-
-    private static Set<String> propertiesOf(EntityTarget target) {
-        return target.getProperties().stream()
-                .map(PropertyMapping::getTargetProperty)
-                .collect(Collectors.toSet());
     }
 }
