@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 import org.neo4j.importer.v1.targets.EntityTarget;
 import org.neo4j.importer.v1.targets.NodeTarget;
 import org.neo4j.importer.v1.targets.PropertyMapping;
+import org.neo4j.importer.v1.targets.RelationshipTarget;
 import org.neo4j.importer.v1.validation.SpecificationValidationResult.Builder;
 import org.neo4j.importer.v1.validation.SpecificationValidator;
 
@@ -43,6 +44,27 @@ public class NoDanglingPropertyInKeyConstraintValidator implements Specification
             return;
         }
         var basePath = String.format("$.targets.nodes[%d].schema.key_constraints", index);
+        var properties = propertiesOf(target);
+        var keyConstraints = schema.getKeyConstraints();
+        for (int i = 0; i < keyConstraints.size(); i++) {
+            var actualProperties = keyConstraints.get(i).getProperties();
+            for (int j = 0; j < actualProperties.size(); j++) {
+                String property = actualProperties.get(j);
+                if (!properties.contains(property)) {
+                    var path = String.format("%s[%d].properties[%d]", basePath, i, j);
+                    invalidPaths.put(path, property);
+                }
+            }
+        }
+    }
+
+    @Override
+    public void visitRelationshipTarget(int index, RelationshipTarget target) {
+        var schema = target.getSchema();
+        if (schema == null) {
+            return;
+        }
+        var basePath = String.format("$.targets.relationships[%d].schema.key_constraints", index);
         var properties = propertiesOf(target);
         var keyConstraints = schema.getKeyConstraints();
         for (int i = 0; i < keyConstraints.size(); i++) {
