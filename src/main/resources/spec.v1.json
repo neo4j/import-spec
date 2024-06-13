@@ -976,10 +976,13 @@
       "properties": {
         "name": {
           "type": "string",
-          "minLength": 1
+          "minLength": 1,
+          "pattern": "\\S+"
         },
         "property": {
-          "type": "string"
+          "type": "string",
+          "minLength": 1,
+          "pattern": "\\S+"
         }
       },
       "required": [
