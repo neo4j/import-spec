@@ -2642,4 +2642,51 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                         "0 warning(s)",
                         "$.targets.relationships[0].schema.point_indexes[0].property \"invalid\" is not part of the property mappings");
     }
+
+    @Test
+    public void fails_if_relationship_target_fulltext_index_property_refers_to_non_existent_property() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+                        {
+                            "version": "1",
+                            "sources": [{
+                                "name": "a-source",
+                                "type": "jdbc",
+                                "data_source": "a-data-source",
+                                "sql": "SELECT id, name FROM my.table"
+                            }],
+                            "targets": {
+                                "nodes": [{
+                                  "name": "a-node-target",
+                                  "source": "a-source",
+                                  "labels": ["Label"],
+                                  "properties": [
+                                    {"source_field": "id", "target_property": "id"}
+                                  ]
+                                }],
+                                "relationships": [{
+                                  "name": "a-relationship-target",
+                                  "source": "a-source",
+                                  "type": "TYPE",
+                                  "start_node_reference": "a-node-target",
+                                  "end_node_reference": "a-node-target",
+                                  "properties": [
+                                    {"source_field": "id", "target_property": "id"}
+                                  ],
+                                  "schema": {
+                                    "fulltext_indexes": [{
+                                        "name": "a fulltext index", "properties": ["invalid"]
+                                    }]
+                                  }
+                                }]
+                            }
+                        }
+                        """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "$.targets.relationships[0].schema.fulltext_indexes[0].properties[0] \"invalid\" is not part of the property mappings");
+    }
 }
