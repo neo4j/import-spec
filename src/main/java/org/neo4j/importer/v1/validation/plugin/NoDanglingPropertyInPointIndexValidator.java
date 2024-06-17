@@ -21,6 +21,7 @@ import static org.neo4j.importer.v1.validation.plugin.EntityTargets.propertiesOf
 import java.util.LinkedHashMap;
 import java.util.Map;
 import org.neo4j.importer.v1.targets.NodeTarget;
+import org.neo4j.importer.v1.targets.RelationshipTarget;
 import org.neo4j.importer.v1.validation.SpecificationValidationResult.Builder;
 import org.neo4j.importer.v1.validation.SpecificationValidator;
 
@@ -41,6 +42,24 @@ public class NoDanglingPropertyInPointIndexValidator implements SpecificationVal
             return;
         }
         var basePath = String.format("$.targets.nodes[%d].schema.point_indexes", index);
+        var properties = propertiesOf(target);
+        var pointIndexes = schema.getPointIndexes();
+        for (int i = 0; i < pointIndexes.size(); i++) {
+            var property = pointIndexes.get(i).getProperty();
+            if (!properties.contains(property)) {
+                var path = String.format("%s[%d].property", basePath, i);
+                invalidPaths.put(path, property);
+            }
+        }
+    }
+
+    @Override
+    public void visitRelationshipTarget(int index, RelationshipTarget target) {
+        var schema = target.getSchema();
+        if (schema == null) {
+            return;
+        }
+        var basePath = String.format("$.targets.relationships[%d].schema.point_indexes", index);
         var properties = propertiesOf(target);
         var pointIndexes = schema.getPointIndexes();
         for (int i = 0; i < pointIndexes.size(); i++) {
