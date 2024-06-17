@@ -4520,4 +4520,515 @@ public class ImportSpecificationDeserializerRelationshipTargetTest {
                         "0 warning(s)",
                         "$.targets.relationships[0].schema.existence_constraints[0].property: does not match the regex pattern \\S+");
     }
+
+    @Test
+    public void fails_if_relationship_schema_range_indexes_are_wrongly_typed() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+                        {
+                            "version": "1",
+                            "sources": [{
+                                "name": "a-source",
+                                "type": "jdbc",
+                                "data_source": "a-data-source",
+                                "sql": "SELECT id, name FROM my.table"
+                            }],
+                            "targets": {
+                                "nodes": [{
+                                  "name": "a-node-target",
+                                  "source": "a-source",
+                                  "labels": ["Label"],
+                                  "properties": [
+                                    {"source_field": "id", "target_property": "id"}
+                                  ]
+                                }],
+                                "relationships": [{
+                                  "name": "a-relationship-target",
+                                  "source": "a-source",
+                                  "type": "TYPE",
+                                  "start_node_reference": "a-node-target",
+                                  "end_node_reference": "a-node-target",
+                                  "properties": [
+                                    {"source_field": "id", "target_property": "id"}
+                                  ],
+                                  "schema": {
+                                    "range_indexes": 42
+                                  }
+                                }]
+                            }
+                        }
+                        """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "$.targets.relationships[0].schema.range_indexes: integer found, array expected");
+    }
+
+    @Test
+    public void fails_if_relationship_schema_range_indexes_element_is_wrongly_typed() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+                        {
+                            "version": "1",
+                            "sources": [{
+                                "name": "a-source",
+                                "type": "jdbc",
+                                "data_source": "a-data-source",
+                                "sql": "SELECT id, name FROM my.table"
+                            }],
+                            "targets": {
+                                "nodes": [{
+                                  "name": "a-node-target",
+                                  "source": "a-source",
+                                  "labels": ["Label"],
+                                  "properties": [
+                                    {"source_field": "id", "target_property": "id"}
+                                  ]
+                                }],
+                                "relationships": [{
+                                  "name": "a-relationship-target",
+                                  "source": "a-source",
+                                  "type": "TYPE",
+                                  "start_node_reference": "a-node-target",
+                                  "end_node_reference": "a-node-target",
+                                  "properties": [
+                                    {"source_field": "id", "target_property": "id"}
+                                  ],
+                                  "schema": {
+                                    "range_indexes": [42]
+                                  }
+                                }]
+                            }
+                        }
+                        """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "$.targets.relationships[0].schema.range_indexes[0]: integer found, object expected");
+    }
+
+    @Test
+    public void fails_if_relationship_schema_range_index_name_is_missing() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+                        {
+                            "version": "1",
+                            "sources": [{
+                                "name": "a-source",
+                                "type": "jdbc",
+                                "data_source": "a-data-source",
+                                "sql": "SELECT id, name FROM my.table"
+                            }],
+                            "targets": {
+                                "nodes": [{
+                                  "name": "a-node-target",
+                                  "source": "a-source",
+                                  "labels": ["Label"],
+                                  "properties": [
+                                    {"source_field": "id", "target_property": "id"}
+                                  ]
+                                }],
+                                "relationships": [{
+                                  "name": "a-relationship-target",
+                                  "source": "a-source",
+                                  "type": "TYPE",
+                                  "start_node_reference": "a-node-target",
+                                  "end_node_reference": "a-node-target",
+                                  "properties": [
+                                    {"source_field": "id", "target_property": "id"}
+                                  ],
+                                  "schema": {
+                                    "range_indexes": [{
+                                        "properties": ["id"]
+                                    }]
+                                  }
+                                }]
+                            }
+                        }
+                        """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "$.targets.relationships[0].schema.range_indexes[0]: required property 'name' not found");
+    }
+
+    @Test
+    public void fails_if_relationship_schema_range_index_name_is_wrongly_typed() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+                        {
+                            "version": "1",
+                            "sources": [{
+                                "name": "a-source",
+                                "type": "jdbc",
+                                "data_source": "a-data-source",
+                                "sql": "SELECT id, name FROM my.table"
+                            }],
+                            "targets": {
+                                "nodes": [{
+                                  "name": "a-node-target",
+                                  "source": "a-source",
+                                  "labels": ["Label"],
+                                  "properties": [
+                                    {"source_field": "id", "target_property": "id"}
+                                  ]
+                                }],
+                                "relationships": [{
+                                  "name": "a-relationship-target",
+                                  "source": "a-source",
+                                  "type": "TYPE",
+                                  "start_node_reference": "a-node-target",
+                                  "end_node_reference": "a-node-target",
+                                  "properties": [
+                                    {"source_field": "id", "target_property": "id"}
+                                  ],
+                                  "schema": {
+                                    "range_indexes": [{
+                                        "name": 42, "properties": ["id"]
+                                    }]
+                                  }
+                                }]
+                            }
+                        }
+                        """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "$.targets.relationships[0].schema.range_indexes[0].name: integer found, string expected");
+    }
+
+    @Test
+    public void fails_if_relationship_schema_range_index_name_is_empty() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+                        {
+                            "version": "1",
+                            "sources": [{
+                                "name": "a-source",
+                                "type": "jdbc",
+                                "data_source": "a-data-source",
+                                "sql": "SELECT id, name FROM my.table"
+                            }],
+                            "targets": {
+                                "nodes": [{
+                                  "name": "a-node-target",
+                                  "source": "a-source",
+                                  "labels": ["Label"],
+                                  "properties": [
+                                    {"source_field": "id", "target_property": "id"}
+                                  ]
+                                }],
+                                "relationships": [{
+                                  "name": "a-relationship-target",
+                                  "source": "a-source",
+                                  "type": "TYPE",
+                                  "start_node_reference": "a-node-target",
+                                  "end_node_reference": "a-node-target",
+                                  "properties": [
+                                    {"source_field": "id", "target_property": "id"}
+                                  ],
+                                  "schema": {
+                                    "range_indexes": [{
+                                        "name": "", "properties": ["id"]
+                                    }]
+                                  }
+                                }]
+                            }
+                        }
+                        """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "0 warning(s)",
+                        "$.targets.relationships[0].schema.range_indexes[0].name: must be at least 1 characters long");
+    }
+
+    @Test
+    public void fails_if_relationship_schema_range_index_name_is_blank() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+                        {
+                            "version": "1",
+                            "sources": [{
+                                "name": "a-source",
+                                "type": "jdbc",
+                                "data_source": "a-data-source",
+                                "sql": "SELECT id, name FROM my.table"
+                            }],
+                            "targets": {
+                                "nodes": [{
+                                  "name": "a-node-target",
+                                  "source": "a-source",
+                                  "labels": ["Label"],
+                                  "properties": [
+                                    {"source_field": "id", "target_property": "id"}
+                                  ]
+                                }],
+                                "relationships": [{
+                                  "name": "a-relationship-target",
+                                  "source": "a-source",
+                                  "type": "TYPE",
+                                  "start_node_reference": "a-node-target",
+                                  "end_node_reference": "a-node-target",
+                                  "properties": [
+                                    {"source_field": "id", "target_property": "id"}
+                                  ],
+                                  "schema": {
+                                    "range_indexes": [{
+                                        "name": "    ", "properties": ["id"]
+                                    }]
+                                  }
+                                }]
+                            }
+                        }
+                        """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "$.targets.relationships[0].schema.range_indexes[0].name: does not match the regex pattern \\S+");
+    }
+
+    @Test
+    public void fails_if_relationship_schema_range_index_properties_are_missing() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+                        {
+                            "version": "1",
+                            "sources": [{
+                                "name": "a-source",
+                                "type": "jdbc",
+                                "data_source": "a-data-source",
+                                "sql": "SELECT id, name FROM my.table"
+                            }],
+                            "targets": {
+                                "nodes": [{
+                                  "name": "a-node-target",
+                                  "source": "a-source",
+                                  "labels": ["Label"],
+                                  "properties": [
+                                    {"source_field": "id", "target_property": "id"}
+                                  ]
+                                }],
+                                "relationships": [{
+                                  "name": "a-relationship-target",
+                                  "source": "a-source",
+                                  "type": "TYPE",
+                                  "start_node_reference": "a-node-target",
+                                  "end_node_reference": "a-node-target",
+                                  "properties": [
+                                    {"source_field": "id", "target_property": "id"}
+                                  ],
+                                  "schema": {
+                                    "range_indexes": [
+                                        {"name": "a range index"}
+                                    ]
+                                  }
+                                }]
+                            }
+                        }
+                        """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "$.targets.relationships[0].schema.range_indexes[0]: required property 'properties' not found");
+    }
+
+    @Test
+    public void fails_if_relationship_schema_range_index_properties_are_wrongly_typed() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+                        {
+                            "version": "1",
+                            "sources": [{
+                                "name": "a-source",
+                                "type": "jdbc",
+                                "data_source": "a-data-source",
+                                "sql": "SELECT id, name FROM my.table"
+                            }],
+                            "targets": {
+                                "nodes": [{
+                                  "name": "a-node-target",
+                                  "source": "a-source",
+                                  "labels": ["Label"],
+                                  "properties": [
+                                    {"source_field": "id", "target_property": "id"}
+                                  ]
+                                }],
+                                "relationships": [{
+                                  "name": "a-relationship-target",
+                                  "source": "a-source",
+                                  "type": "TYPE",
+                                  "start_node_reference": "a-node-target",
+                                  "end_node_reference": "a-node-target",
+                                  "properties": [
+                                    {"source_field": "id", "target_property": "id"}
+                                  ],
+                                  "schema": {
+                                    "range_indexes": [
+                                        {"name": "a range index", "properties": 42}
+                                    ]
+                                  }
+                                }]
+                            }
+                        }
+                        """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "$.targets.relationships[0].schema.range_indexes[0].properties: integer found, array expected");
+    }
+
+    @Test
+    public void fails_if_relationship_schema_range_index_properties_element_is_wrongly_typed() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+                        {
+                            "version": "1",
+                            "sources": [{
+                                "name": "a-source",
+                                "type": "jdbc",
+                                "data_source": "a-data-source",
+                                "sql": "SELECT id, name FROM my.table"
+                            }],
+                            "targets": {
+                                "nodes": [{
+                                  "name": "a-node-target",
+                                  "source": "a-source",
+                                  "labels": ["Label"],
+                                  "properties": [
+                                    {"source_field": "id", "target_property": "id"}
+                                  ]
+                                }],
+                                "relationships": [{
+                                  "name": "a-relationship-target",
+                                  "source": "a-source",
+                                  "type": "TYPE",
+                                  "start_node_reference": "a-node-target",
+                                  "end_node_reference": "a-node-target",
+                                  "properties": [
+                                    {"source_field": "id", "target_property": "id"}
+                                  ],
+                                  "schema": {
+                                    "range_indexes": [
+                                        {"name": "a range index", "properties": [42]}
+                                    ]
+                                  }
+                                }]
+                            }
+                        }
+                        """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "$.targets.relationships[0].schema.range_indexes[0].properties[0]: integer found, string expected");
+    }
+
+    @Test
+    public void fails_if_relationship_schema_range_index_property_is_empty() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+                        {
+                            "version": "1",
+                            "sources": [{
+                                "name": "a-source",
+                                "type": "jdbc",
+                                "data_source": "a-data-source",
+                                "sql": "SELECT id, name FROM my.table"
+                            }],
+                            "targets": {
+                                "nodes": [{
+                                  "name": "a-node-target",
+                                  "source": "a-source",
+                                  "labels": ["Label"],
+                                  "properties": [
+                                    {"source_field": "id", "target_property": "id"}
+                                  ]
+                                }],
+                                "relationships": [{
+                                  "name": "a-relationship-target",
+                                  "source": "a-source",
+                                  "type": "TYPE",
+                                  "start_node_reference": "a-node-target",
+                                  "end_node_reference": "a-node-target",
+                                  "properties": [
+                                    {"source_field": "id", "target_property": "id"}
+                                  ],
+                                  "schema": {
+                                    "range_indexes": [
+                                        {"name": "a range index", "properties": [""]}
+                                    ]
+                                  }
+                                }]
+                            }
+                        }
+                        """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "0 warning(s)",
+                        "$.targets.relationships[0].schema.range_indexes[0].properties[0]: must be at least 1 characters long");
+    }
+
+    @Test
+    public void fails_if_relationship_schema_range_index_property_is_blank() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+                        {
+                            "version": "1",
+                            "sources": [{
+                                "name": "a-source",
+                                "type": "jdbc",
+                                "data_source": "a-data-source",
+                                "sql": "SELECT id, name FROM my.table"
+                            }],
+                            "targets": {
+                                "nodes": [{
+                                  "name": "a-node-target",
+                                  "source": "a-source",
+                                  "labels": ["Label"],
+                                  "properties": [
+                                    {"source_field": "id", "target_property": "id"}
+                                  ]
+                                }],
+                                "relationships": [{
+                                  "name": "a-relationship-target",
+                                  "source": "a-source",
+                                  "type": "TYPE",
+                                  "start_node_reference": "a-node-target",
+                                  "end_node_reference": "a-node-target",
+                                  "properties": [
+                                    {"source_field": "id", "target_property": "id"}
+                                  ],
+                                  "schema": {
+                                    "range_indexes": [
+                                        {"name": "a range index", "properties": ["    "]}
+                                    ]
+                                  }
+                                }]
+                            }
+                        }
+                        """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "$.targets.relationships[0].schema.range_indexes[0].properties[0]: does not match the regex pattern \\S+");
+    }
 }
