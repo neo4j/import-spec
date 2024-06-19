@@ -7,7 +7,7 @@
     <version>1.0-SNAPSHOT</version>
     <name>import-spec</name>
     <description>Uniform Import Specification Library for Neo4j</description>
-    <url>https://github.com/fbiville/dataflow-import-spec</url>
+    <url>https://github.com/neo4j/import-spec</url>
     <inceptionYear>2024</inceptionYear>
     <organization>
         <name>Neo4j, Neo4j Sweden AB</name>
