@@ -32,7 +32,7 @@ public interface Source extends Serializable {
 
     /**
      * Type of the source (example: "jdbc", "text", "parquet", ...)
-     * The type name must be unique in a case-insensitive (per {@link java.util.Locale.ROOT} casing rules).
+     * The type name must be unique in a case-insensitive (per {@link java.util.Locale#ROOT} casing rules).
      * Having multiple sources loaded with the same type is invalid and will lead to an exception being raised.
      * Note: it is recommended that the type returned here be the same as the one this source's {@link SourceProvider} supports.
      */
