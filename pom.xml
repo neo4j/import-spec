@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.neo4j.importer</groupId>
     <artifactId>import-spec</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0.0-rc02</version>
     <name>import-spec</name>
     <description>Neo4j Connector for Kafka</description>
     <url>https://github.com/fbiville/dataflow-import-spec</url>
