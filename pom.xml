@@ -282,7 +282,7 @@
                     <dependency>
                         <groupId>org.neo4j.build</groupId>
                         <artifactId>resources</artifactId>
-                        <version>2024-05.1</version>
+                        <version>2024-07.1</version>
                     </dependency>
                 </dependencies>
                 <executions>
