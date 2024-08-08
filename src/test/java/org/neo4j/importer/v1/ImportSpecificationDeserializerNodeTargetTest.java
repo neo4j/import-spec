@@ -2433,7 +2433,7 @@ public class ImportSpecificationDeserializerNodeTargetTest {
                                         {"source_field": "field", "target_property": "property"}
                                     ],
                                     "schema": {
-                                        "type_constraints": 42
+                                        "existence_constraints": 42
                                     }
                                 }]
                             }
@@ -2444,7 +2444,7 @@ public class ImportSpecificationDeserializerNodeTargetTest {
                 .hasMessageContainingAll(
                         "1 error(s)",
                         "0 warning(s)",
-                        "$.targets.nodes[0].schema.type_constraints: integer found, array expected");
+                        "$.targets.nodes[0].schema.existence_constraints: integer found, array expected");
     }
 
     @Test
@@ -2470,7 +2470,7 @@ public class ImportSpecificationDeserializerNodeTargetTest {
                                         {"source_field": "field", "target_property": "property"}
                                     ],
                                     "schema": {
-                                        "type_constraints": [42]
+                                        "existence_constraints": [42]
                                     }
                                 }]
                             }
@@ -2481,7 +2481,7 @@ public class ImportSpecificationDeserializerNodeTargetTest {
                 .hasMessageContainingAll(
                         "1 error(s)",
                         "0 warning(s)",
-                        "$.targets.nodes[0].schema.type_constraints[0]: integer found, object expected");
+                        "$.targets.nodes[0].schema.existence_constraints[0]: integer found, object expected");
     }
 
     @Test
