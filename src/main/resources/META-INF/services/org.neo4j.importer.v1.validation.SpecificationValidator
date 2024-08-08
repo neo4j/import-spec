@@ -29,4 +29,5 @@ org.neo4j.importer.v1.validation.plugin.NoDuplicatedLabelValidator
 org.neo4j.importer.v1.validation.plugin.NoDuplicatedSourceNameValidator
 org.neo4j.importer.v1.validation.plugin.NoDuplicatedTargetActionNameValidator
 org.neo4j.importer.v1.validation.plugin.NoDuplicatedTargetPropertyValidator
+org.neo4j.importer.v1.validation.plugin.NoOverlapBetweenKeyAndExistenceConstraintsValidator
 org.neo4j.importer.v1.validation.plugin.NoUntypedPropertyInTypeConstraintValidator

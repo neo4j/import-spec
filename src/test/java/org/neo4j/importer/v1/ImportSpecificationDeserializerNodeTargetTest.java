@@ -7306,4 +7306,377 @@ public class ImportSpecificationDeserializerNodeTargetTest {
                         "0 warning(s)",
                         "$.targets.nodes[0].schema.vector_indexes[0].options: integer found, object expected");
     }
+
+    @Test
+    public void fails_if_key_and_existence_constraints_are_defined_on_same_labels_and_properties() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+                {
+                    "version": "1",
+                    "sources": [{
+                        "name": "a-source",
+                        "type": "jdbc",
+                        "data_source": "a-data-source",
+                        "sql": "SELECT id, name FROM my.table"
+                    }],
+                    "targets": {
+                        "nodes": [{
+                            "active": true,
+                            "name": "a-target",
+                            "source": "a-source",
+                            "write_mode": "merge",
+                            "labels": ["Label"],
+                            "properties": [
+                                {"source_field": "id", "target_property": "property"}
+                            ],
+                            "schema": {
+                                "key_constraints": [
+                                    {"name": "a key constraint", "label": "Label", "properties": ["property"]}
+                                ],
+                                "existence_constraints": [
+                                    {"name": "an existence constraint", "label": "Label", "property": "property"}
+                                ]
+                            }
+                        }]
+                    }
+                }
+                """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "$.targets.nodes[0].schema defines overlapping key and existence constraint definitions: existence_constraints[0], key_constraints[0]");
+    }
+
+    @Test
+    public void does_not_fail_if_key_and_existence_constraints_are_defined_on_same_properties_but_different_labels() {
+        assertThatCode(() -> deserialize(new StringReader(
+                        """
+                {
+                    "version": "1",
+                    "sources": [{
+                        "name": "a-source",
+                        "type": "jdbc",
+                        "data_source": "a-data-source",
+                        "sql": "SELECT id, name FROM my.table"
+                    }],
+                    "targets": {
+                        "nodes": [{
+                            "active": true,
+                            "name": "a-target",
+                            "source": "a-source",
+                            "write_mode": "merge",
+                            "labels": ["Label1", "Label2"],
+                            "properties": [
+                                {"source_field": "id", "target_property": "property"}
+                            ],
+                            "schema": {
+                                "key_constraints": [
+                                    {"name": "a key constraint", "label": "Label1", "properties": ["property"]}
+                                ],
+                                "existence_constraints": [
+                                    {"name": "an existence constraint", "label": "Label2", "property": "property"}
+                                ]
+                            }
+                        }]
+                    }
+                }
+                """
+                                .stripIndent())))
+                .doesNotThrowAnyException();
+    }
+
+    @Test
+    public void fails_if_key_constraint_overlap_with_existence_properties() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+                {
+                    "version": "1",
+                    "sources": [{
+                        "name": "a-source",
+                        "type": "jdbc",
+                        "data_source": "a-data-source",
+                        "sql": "SELECT id, name FROM my.table"
+                    }],
+                    "targets": {
+                        "nodes": [{
+                            "active": true,
+                            "name": "a-target",
+                            "source": "a-source",
+                            "write_mode": "merge",
+                            "labels": ["Label"],
+                            "properties": [
+                                {"source_field": "id", "target_property": "property1"},
+                                {"source_field": "id", "target_property": "property2"}
+                            ],
+                            "schema": {
+                                "key_constraints": [
+                                    {"name": "a key constraint", "label": "Label", "properties": ["property1", "property2"]}
+                                ],
+                                "existence_constraints": [
+                                    {"name": "an existence constraint", "label": "Label", "property": "property2"}
+                                ]
+                            }
+                        }]
+                    }
+                }
+                """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "$.targets.nodes[0].schema defines overlapping key and existence constraint definitions: existence_constraints[0], key_constraints[0]");
+    }
+
+    @Test
+    public void does_not_fail_if_key_and_existence_constraints_properties_overlap_but_reference_different_labels() {
+        assertThatCode(() -> deserialize(new StringReader(
+                        """
+        {
+            "version": "1",
+            "sources": [{
+                "name": "a-source",
+                "type": "jdbc",
+                "data_source": "a-data-source",
+                "sql": "SELECT id, name FROM my.table"
+            }],
+            "targets": {
+                "nodes": [{
+                    "active": true,
+                    "name": "a-target",
+                    "source": "a-source",
+                    "write_mode": "merge",
+                    "labels": ["Label1", "Label2"],
+                    "properties": [
+                        {"source_field": "id", "target_property": "property1"},
+                        {"source_field": "id", "target_property": "property2"}
+                    ],
+                    "schema": {
+                        "key_constraints": [
+                            {"name": "a key constraint", "label": "Label1", "properties": ["property1", "property2"]}
+                        ],
+                        "existence_constraints": [
+                            {"name": "an existence constraint", "label": "Label2", "property": "property2"}
+                        ]
+                    }
+                }]
+            }
+        }
+        """
+                                .stripIndent())))
+                .doesNotThrowAnyException();
+    }
+
+    @Test
+    public void does_not_fail_if_key_and_existence_constraints_are_not_defined_on_same_labels_and_properties() {
+        assertThatCode(() -> deserialize(new StringReader(
+                        """
+                {
+                    "version": "1",
+                    "sources": [{
+                        "name": "a-source",
+                        "type": "jdbc",
+                        "data_source": "a-data-source",
+                        "sql": "SELECT id, name FROM my.table"
+                    }],
+                    "targets": {
+                        "nodes": [{
+                            "active": true,
+                            "name": "a-target",
+                            "source": "a-source",
+                            "write_mode": "merge",
+                            "labels": ["Label"],
+                            "properties": [
+                                {"source_field": "id", "target_property": "property1"},
+                                {"source_field": "name", "target_property": "property2"}
+                            ],
+                            "schema": {
+                                "key_constraints": [
+                                    {"name": "a key constraint", "label": "Label", "properties": ["property1"]}
+                                ],
+                                "existence_constraints": [
+                                    {"name": "an existence constraint", "label": "Label", "property": "property2"}
+                                ]
+                            }
+                        }]
+                    }
+                }
+                """
+                                .stripIndent())))
+                .doesNotThrowAnyException();
+    }
+
+    @Test
+    public void does_not_report_overlap_fail_if_key_constraint_defines_invalid_label() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+                {
+                    "version": "1",
+                    "sources": [{
+                        "name": "a-source",
+                        "type": "jdbc",
+                        "data_source": "a-data-source",
+                        "sql": "SELECT id, name FROM my.table"
+                    }],
+                    "targets": {
+                        "nodes": [{
+                            "active": true,
+                            "name": "a-target",
+                            "source": "a-source",
+                            "write_mode": "merge",
+                            "labels": ["Label"],
+                            "properties": [
+                                {"source_field": "id", "target_property": "property1"},
+                                {"source_field": "name", "target_property": "property2"}
+                            ],
+                            "schema": {
+                                "key_constraints": [
+                                    {"name": "a key constraint", "label": "not-a-label", "properties": ["property1"]}
+                                ],
+                                "existence_constraints": [
+                                    {"name": "an existence constraint", "label": "Label", "property": "property2"}
+                                ]
+                            }
+                        }]
+                    }
+                }
+                """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "$.targets.nodes[0].schema.key_constraints[0].label \"not-a-label\" is not part of the defined labels");
+    }
+
+    @Test
+    public void does_not_report_overlap_fail_if_key_constraint_defines_invalid_property() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+                {
+                    "version": "1",
+                    "sources": [{
+                        "name": "a-source",
+                        "type": "jdbc",
+                        "data_source": "a-data-source",
+                        "sql": "SELECT id, name FROM my.table"
+                    }],
+                    "targets": {
+                        "nodes": [{
+                            "active": true,
+                            "name": "a-target",
+                            "source": "a-source",
+                            "write_mode": "merge",
+                            "labels": ["Label"],
+                            "properties": [
+                                {"source_field": "id", "target_property": "property1"},
+                                {"source_field": "name", "target_property": "property2"}
+                            ],
+                            "schema": {
+                                "key_constraints": [
+                                    {"name": "a key constraint", "label": "Label", "properties": ["not-a-prop"]}
+                                ],
+                                "existence_constraints": [
+                                    {"name": "an existence constraint", "label": "Label", "property": "property2"}
+                                ]
+                            }
+                        }]
+                    }
+                }
+                """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "$.targets.nodes[0].schema.key_constraints[0].properties[0] \"not-a-prop\" is not part of the property mappings");
+    }
+
+    @Test
+    public void does_not_report_overlap_fail_if_existence_constraint_defines_invalid_label() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+                {
+                    "version": "1",
+                    "sources": [{
+                        "name": "a-source",
+                        "type": "jdbc",
+                        "data_source": "a-data-source",
+                        "sql": "SELECT id, name FROM my.table"
+                    }],
+                    "targets": {
+                        "nodes": [{
+                            "active": true,
+                            "name": "a-target",
+                            "source": "a-source",
+                            "write_mode": "merge",
+                            "labels": ["Label"],
+                            "properties": [
+                                {"source_field": "id", "target_property": "property1"},
+                                {"source_field": "name", "target_property": "property2"}
+                            ],
+                            "schema": {
+                                "key_constraints": [
+                                    {"name": "a key constraint", "label": "Label", "properties": ["property1"]}
+                                ],
+                                "existence_constraints": [
+                                    {"name": "an existence constraint", "label": "not-a-label", "property": "property2"}
+                                ]
+                            }
+                        }]
+                    }
+                }
+                """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "$.targets.nodes[0].schema.existence_constraints[0].label \"not-a-label\" is not part of the defined labels");
+    }
+
+    @Test
+    public void does_not_report_overlap_fail_if_existence_constraint_defines_invalid_property() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+                {
+                    "version": "1",
+                    "sources": [{
+                        "name": "a-source",
+                        "type": "jdbc",
+                        "data_source": "a-data-source",
+                        "sql": "SELECT id, name FROM my.table"
+                    }],
+                    "targets": {
+                        "nodes": [{
+                            "active": true,
+                            "name": "a-target",
+                            "source": "a-source",
+                            "write_mode": "merge",
+                            "labels": ["Label"],
+                            "properties": [
+                                {"source_field": "id", "target_property": "property1"},
+                                {"source_field": "name", "target_property": "property2"}
+                            ],
+                            "schema": {
+                                "key_constraints": [
+                                    {"name": "a key constraint", "label": "Label", "properties": ["property1"]}
+                                ],
+                                "existence_constraints": [
+                                    {"name": "an existence constraint", "label": "Label", "property": "not-a-prop"}
+                                ]
+                            }
+                        }]
+                    }
+                }
+                """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "$.targets.nodes[0].schema.existence_constraints[0].property \"not-a-prop\" is not part of the property mappings");
+    }
 }
