@@ -24,6 +24,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.neo4j.importer.v1.targets.NodeTarget;
+import org.neo4j.importer.v1.targets.RelationshipTarget;
 import org.neo4j.importer.v1.validation.SpecificationValidationResult.Builder;
 import org.neo4j.importer.v1.validation.SpecificationValidator;
 
@@ -75,6 +76,36 @@ public class NoOverlapBetweenKeyAndExistenceConstraintsValidator implements Spec
                 paths.values().stream().filter(strings -> strings.size() > 1).collect(Collectors.toList());
 
         var schemaPath = String.format("$.targets.nodes[%d].schema", index);
+        invalidPaths.put(schemaPath, redundancies);
+    }
+
+    @Override
+    public void visitRelationshipTarget(int index, RelationshipTarget target) {
+        var schema = target.getSchema();
+        if (schema == null) {
+            return;
+        }
+        var paths = new LinkedHashMap<String, List<String>>();
+        var existenceBasePath = String.format("$.targets.relationships[%d].schema.existence_constraints", index);
+        var existenceConstraints = schema.getExistenceConstraints();
+        for (int i = 0; i < existenceConstraints.size(); i++) {
+            var constraint = existenceConstraints.get(i);
+            paths.computeIfAbsent(constraint.getProperty(), (key) -> new ArrayList<>(1))
+                    .add(String.format("%s[%d]", existenceBasePath, i));
+        }
+        var keyBasePath = String.format("$.targets.relationships[%d].schema.key_constraints", index);
+        var keyConstraints = schema.getKeyConstraints();
+        for (int i = 0; i < keyConstraints.size(); i++) {
+            var constraint = keyConstraints.get(i);
+            for (String property : constraint.getProperties()) {
+                paths.computeIfAbsent(property, (key) -> new ArrayList<>(1))
+                        .add(String.format("%s[%d]", keyBasePath, i));
+            }
+        }
+        List<List<String>> redundancies =
+                paths.values().stream().filter(strings -> strings.size() > 1).collect(Collectors.toList());
+
+        var schemaPath = String.format("$.targets.relationships[%d].schema", index);
         invalidPaths.put(schemaPath, redundancies);
     }
 
