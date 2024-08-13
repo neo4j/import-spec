@@ -8170,7 +8170,7 @@ public class ImportSpecificationDeserializerNodeTargetTest {
     }
 
     @Test
-    public void fails_if_unique_constraint_range_index_are_defined_on_same_labels_and_properties() {
+    public void fails_if_unique_constraint_and_range_index_are_defined_on_same_labels_and_properties() {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
                 {
