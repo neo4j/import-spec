@@ -55,12 +55,12 @@ public class NoRedundantKeyAndExistenceConstraintsValidator implements Specifica
         if (schema == null) {
             return;
         }
-        var paths = new LinkedHashMap<ConstraintPattern, List<String>>();
+        var paths = new LinkedHashMap<SchemaNodePattern, List<String>>();
         var existenceBasePath = String.format("$.targets.nodes[%d].schema.existence_constraints", index);
         var existenceConstraints = schema.getExistenceConstraints();
         for (int i = 0; i < existenceConstraints.size(); i++) {
             var constraint = existenceConstraints.get(i);
-            var labelAndProp = new ConstraintPattern(constraint.getLabel(), constraint.getProperty());
+            var labelAndProp = new SchemaNodePattern(constraint.getLabel(), constraint.getProperty());
             paths.computeIfAbsent(labelAndProp, (key) -> new ArrayList<>(1))
                     .add(String.format("%s[%d]", existenceBasePath, i));
         }
@@ -69,7 +69,7 @@ public class NoRedundantKeyAndExistenceConstraintsValidator implements Specifica
         for (int i = 0; i < keyConstraints.size(); i++) {
             var constraint = keyConstraints.get(i);
             for (String property : constraint.getProperties()) {
-                var labelAndProp = new ConstraintPattern(constraint.getLabel(), property);
+                var labelAndProp = new SchemaNodePattern(constraint.getLabel(), property);
                 paths.computeIfAbsent(labelAndProp, (key) -> new ArrayList<>(1))
                         .add(String.format("%s[%d]", keyBasePath, i));
             }
@@ -120,9 +120,7 @@ public class NoRedundantKeyAndExistenceConstraintsValidator implements Specifica
             builder.addError(
                     schemaPath,
                     ERROR_CODE,
-                    String.format(
-                            "%s defines overlapping key and existence constraint definitions: %s",
-                            schemaPath, redundantDefs));
+                    String.format("%s defines redundant key and existence constraints: %s", schemaPath, redundantDefs));
         }));
         return !invalidPaths.isEmpty();
     }

@@ -19,38 +19,38 @@ package org.neo4j.importer.v1.validation.plugin;
 import java.util.List;
 import java.util.Objects;
 
-final class ConstraintPattern {
+final class SchemaNodePattern {
 
     private final String label;
-    private final List<String> properties;
+    private final List<String> propertyNames;
 
-    public ConstraintPattern(String label, String property) {
-        this(label, List.of(property));
+    public SchemaNodePattern(String label, String propertyName) {
+        this(label, List.of(propertyName));
     }
 
-    public ConstraintPattern(String label, List<String> properties) {
+    public SchemaNodePattern(String label, List<String> propertyNames) {
         this.label = label;
-        this.properties = properties;
+        this.propertyNames = propertyNames;
     }
 
     public String getLabel() {
         return label;
     }
 
-    public List<String> getProperties() {
-        return properties;
+    public List<String> getPropertyNames() {
+        return propertyNames;
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof ConstraintPattern)) return false;
-        ConstraintPattern that = (ConstraintPattern) o;
-        return Objects.equals(label, that.label) && Objects.equals(properties, that.properties);
+        if (!(o instanceof SchemaNodePattern)) return false;
+        SchemaNodePattern that = (SchemaNodePattern) o;
+        return Objects.equals(label, that.label) && Objects.equals(propertyNames, that.propertyNames);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(label, properties);
+        return Objects.hash(label, propertyNames);
     }
 }

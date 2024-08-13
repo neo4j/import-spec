@@ -7170,7 +7170,7 @@ public class ImportSpecificationDeserializerRelationshipTargetTest {
                 .hasMessageContainingAll(
                         "1 error(s)",
                         "0 warning(s)",
-                        "$.targets.relationships[0].schema defines overlapping key and existence constraint definitions: existence_constraints[0], key_constraints[0]");
+                        "$.targets.relationships[0].schema defines redundant key and existence constraints: existence_constraints[0], key_constraints[0]");
     }
 
     @Test
@@ -7221,7 +7221,7 @@ public class ImportSpecificationDeserializerRelationshipTargetTest {
                 .hasMessageContainingAll(
                         "1 error(s)",
                         "0 warning(s)",
-                        "$.targets.relationships[0].schema defines overlapping key and existence constraint definitions: existence_constraints[0], key_constraints[0]");
+                        "$.targets.relationships[0].schema defines redundant key and existence constraints: existence_constraints[0], key_constraints[0]");
     }
 
     @Test
@@ -7371,7 +7371,7 @@ public class ImportSpecificationDeserializerRelationshipTargetTest {
                 .hasMessageContainingAll(
                         "1 error(s)",
                         "0 warning(s)",
-                        "$.targets.relationships[0].schema defines overlapping key and unique constraint definitions: unique_constraints[0], key_constraints[0]");
+                        "$.targets.relationships[0].schema defines redundant key and unique constraints: unique_constraints[0], key_constraints[0]");
     }
 
     @Test

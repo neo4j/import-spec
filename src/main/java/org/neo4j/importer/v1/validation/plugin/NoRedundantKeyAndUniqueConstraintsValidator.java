@@ -57,12 +57,12 @@ public class NoRedundantKeyAndUniqueConstraintsValidator implements Specificatio
         if (schema == null) {
             return;
         }
-        var paths = new LinkedHashMap<ConstraintPattern, List<String>>();
+        var paths = new LinkedHashMap<SchemaNodePattern, List<String>>();
         var uniqueBasePath = String.format("$.targets.nodes[%d].schema.unique_constraints", index);
         var uniqueConstraints = schema.getUniqueConstraints();
         for (int i = 0; i < uniqueConstraints.size(); i++) {
             var constraint = uniqueConstraints.get(i);
-            var labelAndProps = new ConstraintPattern(constraint.getLabel(), constraint.getProperties());
+            var labelAndProps = new SchemaNodePattern(constraint.getLabel(), constraint.getProperties());
             paths.computeIfAbsent(labelAndProps, (key) -> new ArrayList<>(1))
                     .add(String.format("%s[%d]", uniqueBasePath, i));
         }
@@ -70,7 +70,7 @@ public class NoRedundantKeyAndUniqueConstraintsValidator implements Specificatio
         var keyConstraints = schema.getKeyConstraints();
         for (int i = 0; i < keyConstraints.size(); i++) {
             var constraint = keyConstraints.get(i);
-            var labelAndProp = new ConstraintPattern(constraint.getLabel(), constraint.getProperties());
+            var labelAndProp = new SchemaNodePattern(constraint.getLabel(), constraint.getProperties());
             paths.computeIfAbsent(labelAndProp, (key) -> new ArrayList<>(1))
                     .add(String.format("%s[%d]", keyBasePath, i));
         }
@@ -118,9 +118,7 @@ public class NoRedundantKeyAndUniqueConstraintsValidator implements Specificatio
             builder.addError(
                     schemaPath,
                     ERROR_CODE,
-                    String.format(
-                            "%s defines overlapping key and unique constraint definitions: %s",
-                            schemaPath, redundantDefs));
+                    String.format("%s defines redundant key and unique constraints: %s", schemaPath, redundantDefs));
         }));
         return !invalidPaths.isEmpty();
     }
