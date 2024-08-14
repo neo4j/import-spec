@@ -18,7 +18,9 @@ The library does **NOT**:
 
 ## Getting Started
 
-Save the following import specification into `spec.json`:
+First, [implement](https://github.com/neo4j/import-spec/blob/main/src/test/java/org/neo4j/importer/v1/sources/BigQuerySourceProvider.java) and [register](https://github.com/neo4j/import-spec/blob/main/src/test/resources/META-INF/services/org.neo4j.importer.v1.sources.SourceProvider#L1) a source provider for BigQuery.
+
+Then, save the following import specification into `spec.json`:
 
 ```json
 {
