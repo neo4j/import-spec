@@ -2433,7 +2433,7 @@ public class ImportSpecificationDeserializerNodeTargetTest {
                                         {"source_field": "field", "target_property": "property"}
                                     ],
                                     "schema": {
-                                        "type_constraints": 42
+                                        "existence_constraints": 42
                                     }
                                 }]
                             }
@@ -2444,7 +2444,7 @@ public class ImportSpecificationDeserializerNodeTargetTest {
                 .hasMessageContainingAll(
                         "1 error(s)",
                         "0 warning(s)",
-                        "$.targets.nodes[0].schema.type_constraints: integer found, array expected");
+                        "$.targets.nodes[0].schema.existence_constraints: integer found, array expected");
     }
 
     @Test
@@ -2470,7 +2470,7 @@ public class ImportSpecificationDeserializerNodeTargetTest {
                                         {"source_field": "field", "target_property": "property"}
                                     ],
                                     "schema": {
-                                        "type_constraints": [42]
+                                        "existence_constraints": [42]
                                     }
                                 }]
                             }
@@ -2481,7 +2481,7 @@ public class ImportSpecificationDeserializerNodeTargetTest {
                 .hasMessageContainingAll(
                         "1 error(s)",
                         "0 warning(s)",
-                        "$.targets.nodes[0].schema.type_constraints[0]: integer found, object expected");
+                        "$.targets.nodes[0].schema.existence_constraints[0]: integer found, object expected");
     }
 
     @Test
@@ -7305,5 +7305,1156 @@ public class ImportSpecificationDeserializerNodeTargetTest {
                         "1 error(s)",
                         "0 warning(s)",
                         "$.targets.nodes[0].schema.vector_indexes[0].options: integer found, object expected");
+    }
+
+    @Test
+    public void fails_if_key_and_existence_constraints_are_defined_on_same_labels_and_properties() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+                {
+                    "version": "1",
+                    "sources": [{
+                        "name": "a-source",
+                        "type": "jdbc",
+                        "data_source": "a-data-source",
+                        "sql": "SELECT id, name FROM my.table"
+                    }],
+                    "targets": {
+                        "nodes": [{
+                            "active": true,
+                            "name": "a-target",
+                            "source": "a-source",
+                            "write_mode": "merge",
+                            "labels": ["Label"],
+                            "properties": [
+                                {"source_field": "id", "target_property": "property"}
+                            ],
+                            "schema": {
+                                "key_constraints": [
+                                    {"name": "a key constraint", "label": "Label", "properties": ["property"]}
+                                ],
+                                "existence_constraints": [
+                                    {"name": "an existence constraint", "label": "Label", "property": "property"}
+                                ]
+                            }
+                        }]
+                    }
+                }
+                """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "$.targets.nodes[0].schema defines redundant key and existence constraints: existence_constraints[0], key_constraints[0]");
+    }
+
+    @Test
+    public void does_not_fail_if_key_and_existence_constraints_are_defined_on_same_properties_but_different_labels() {
+        assertThatCode(() -> deserialize(new StringReader(
+                        """
+                {
+                    "version": "1",
+                    "sources": [{
+                        "name": "a-source",
+                        "type": "jdbc",
+                        "data_source": "a-data-source",
+                        "sql": "SELECT id, name FROM my.table"
+                    }],
+                    "targets": {
+                        "nodes": [{
+                            "active": true,
+                            "name": "a-target",
+                            "source": "a-source",
+                            "write_mode": "merge",
+                            "labels": ["Label1", "Label2"],
+                            "properties": [
+                                {"source_field": "id", "target_property": "property"}
+                            ],
+                            "schema": {
+                                "key_constraints": [
+                                    {"name": "a key constraint", "label": "Label1", "properties": ["property"]}
+                                ],
+                                "existence_constraints": [
+                                    {"name": "an existence constraint", "label": "Label2", "property": "property"}
+                                ]
+                            }
+                        }]
+                    }
+                }
+                """
+                                .stripIndent())))
+                .doesNotThrowAnyException();
+    }
+
+    @Test
+    public void fails_if_key_constraint_overlap_with_existence_properties() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+                {
+                    "version": "1",
+                    "sources": [{
+                        "name": "a-source",
+                        "type": "jdbc",
+                        "data_source": "a-data-source",
+                        "sql": "SELECT id, name FROM my.table"
+                    }],
+                    "targets": {
+                        "nodes": [{
+                            "active": true,
+                            "name": "a-target",
+                            "source": "a-source",
+                            "write_mode": "merge",
+                            "labels": ["Label"],
+                            "properties": [
+                                {"source_field": "id", "target_property": "property1"},
+                                {"source_field": "id", "target_property": "property2"}
+                            ],
+                            "schema": {
+                                "key_constraints": [
+                                    {"name": "a key constraint", "label": "Label", "properties": ["property1", "property2"]}
+                                ],
+                                "existence_constraints": [
+                                    {"name": "an existence constraint", "label": "Label", "property": "property2"}
+                                ]
+                            }
+                        }]
+                    }
+                }
+                """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "$.targets.nodes[0].schema defines redundant key and existence constraints: existence_constraints[0], key_constraints[0]");
+    }
+
+    @Test
+    public void does_not_fail_if_key_and_existence_constraints_properties_overlap_but_reference_different_labels() {
+        assertThatCode(() -> deserialize(new StringReader(
+                        """
+        {
+            "version": "1",
+            "sources": [{
+                "name": "a-source",
+                "type": "jdbc",
+                "data_source": "a-data-source",
+                "sql": "SELECT id, name FROM my.table"
+            }],
+            "targets": {
+                "nodes": [{
+                    "active": true,
+                    "name": "a-target",
+                    "source": "a-source",
+                    "write_mode": "merge",
+                    "labels": ["Label1", "Label2"],
+                    "properties": [
+                        {"source_field": "id", "target_property": "property1"},
+                        {"source_field": "id", "target_property": "property2"}
+                    ],
+                    "schema": {
+                        "key_constraints": [
+                            {"name": "a key constraint", "label": "Label1", "properties": ["property1", "property2"]}
+                        ],
+                        "existence_constraints": [
+                            {"name": "an existence constraint", "label": "Label2", "property": "property2"}
+                        ]
+                    }
+                }]
+            }
+        }
+        """
+                                .stripIndent())))
+                .doesNotThrowAnyException();
+    }
+
+    @Test
+    public void does_not_fail_if_key_and_existence_constraints_are_defined_on_same_label_but_different_properties() {
+        assertThatCode(() -> deserialize(new StringReader(
+                        """
+                {
+                    "version": "1",
+                    "sources": [{
+                        "name": "a-source",
+                        "type": "jdbc",
+                        "data_source": "a-data-source",
+                        "sql": "SELECT id, name FROM my.table"
+                    }],
+                    "targets": {
+                        "nodes": [{
+                            "active": true,
+                            "name": "a-target",
+                            "source": "a-source",
+                            "write_mode": "merge",
+                            "labels": ["Label"],
+                            "properties": [
+                                {"source_field": "id", "target_property": "property1"},
+                                {"source_field": "name", "target_property": "property2"}
+                            ],
+                            "schema": {
+                                "key_constraints": [
+                                    {"name": "a key constraint", "label": "Label", "properties": ["property1"]}
+                                ],
+                                "existence_constraints": [
+                                    {"name": "an existence constraint", "label": "Label", "property": "property2"}
+                                ]
+                            }
+                        }]
+                    }
+                }
+                """
+                                .stripIndent())))
+                .doesNotThrowAnyException();
+    }
+
+    @Test
+    public void does_not_report_redundancy_if_key_and_existence_constraint_define_invalid_labels() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+                {
+                    "version": "1",
+                    "sources": [{
+                        "name": "a-source",
+                        "type": "jdbc",
+                        "data_source": "a-data-source",
+                        "sql": "SELECT id, name FROM my.table"
+                    }],
+                    "targets": {
+                        "nodes": [{
+                            "active": true,
+                            "name": "a-target",
+                            "source": "a-source",
+                            "write_mode": "merge",
+                            "labels": ["Label"],
+                            "properties": [
+                                {"source_field": "id", "target_property": "property1"},
+                                {"source_field": "name", "target_property": "property2"}
+                            ],
+                            "schema": {
+                                "key_constraints": [
+                                    {"name": "a key constraint", "label": "not-a-label", "properties": ["property1"]}
+                                ],
+                                "existence_constraints": [
+                                    {"name": "an existence constraint", "label": "not-a-label", "property": "property1"}
+                                ]
+                            }
+                        }]
+                    }
+                }
+                """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "2 error(s)",
+                        "0 warning(s)",
+                        "$.targets.nodes[0].schema.existence_constraints[0].label \"not-a-label\" is not part of the defined labels",
+                        "$.targets.nodes[0].schema.key_constraints[0].label \"not-a-label\" is not part of the defined labels");
+    }
+
+    @Test
+    public void does_not_report_redundancy_if_key_and_existence_constraint_defines_invalid_properties() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+                {
+                    "version": "1",
+                    "sources": [{
+                        "name": "a-source",
+                        "type": "jdbc",
+                        "data_source": "a-data-source",
+                        "sql": "SELECT id, name FROM my.table"
+                    }],
+                    "targets": {
+                        "nodes": [{
+                            "active": true,
+                            "name": "a-target",
+                            "source": "a-source",
+                            "write_mode": "merge",
+                            "labels": ["Label"],
+                            "properties": [
+                                {"source_field": "id", "target_property": "property1"},
+                                {"source_field": "name", "target_property": "property2"}
+                            ],
+                            "schema": {
+                                "key_constraints": [
+                                    {"name": "a key constraint", "label": "Label", "properties": ["property1"]}
+                                ],
+                                "existence_constraints": [
+                                    {"name": "an existence constraint", "label": "Label", "property": "not-a-prop"}
+                                ]
+                            }
+                        }]
+                    }
+                }
+                """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "$.targets.nodes[0].schema.existence_constraints[0].property \"not-a-prop\" is not part of the property mappings");
+    }
+
+    @Test
+    public void fails_if_key_and_unique_constraints_are_defined_on_same_labels_and_properties() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+                {
+                    "version": "1",
+                    "sources": [{
+                        "name": "a-source",
+                        "type": "jdbc",
+                        "data_source": "a-data-source",
+                        "sql": "SELECT id, name FROM my.table"
+                    }],
+                    "targets": {
+                        "nodes": [{
+                            "active": true,
+                            "name": "a-target",
+                            "source": "a-source",
+                            "write_mode": "merge",
+                            "labels": ["Label"],
+                            "properties": [
+                                {"source_field": "id", "target_property": "property1"},
+                                {"source_field": "name", "target_property": "property2"}
+                            ],
+                            "schema": {
+                                "key_constraints": [
+                                    {"name": "a key constraint", "label": "Label", "properties": ["property1", "property2"]}
+                                ],
+                                "unique_constraints": [
+                                    {"name": "a unique constraint", "label": "Label", "properties": ["property1", "property2"]}
+                                ]
+                            }
+                        }]
+                    }
+                }
+                """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "$.targets.nodes[0].schema defines redundant key and unique constraints: unique_constraints[0], key_constraints[0]");
+    }
+
+    @Test
+    public void does_not_fail_if_key_and_unique_constraints_are_defined_on_same_properties_but_different_labels() {
+        assertThatCode(() -> deserialize(new StringReader(
+                        """
+                {
+                    "version": "1",
+                    "sources": [{
+                        "name": "a-source",
+                        "type": "jdbc",
+                        "data_source": "a-data-source",
+                        "sql": "SELECT id, name FROM my.table"
+                    }],
+                    "targets": {
+                        "nodes": [{
+                            "active": true,
+                            "name": "a-target",
+                            "source": "a-source",
+                            "write_mode": "merge",
+                            "labels": ["Label1", "Label2"],
+                            "properties": [
+                                {"source_field": "id", "target_property": "property"}
+                            ],
+                            "schema": {
+                                "key_constraints": [
+                                    {"name": "a key constraint", "label": "Label1", "properties": ["property"]}
+                                ],
+                                "unique_constraints": [
+                                    {"name": "a unique constraint", "label": "Label2", "properties": ["property"]}
+                                ]
+                            }
+                        }]
+                    }
+                }
+                """
+                                .stripIndent())))
+                .doesNotThrowAnyException();
+    }
+
+    @Test
+    // https://neo4j.com/docs/cypher-manual/current/indexes/search-performance-indexes/using-indexes/#composite-indexes-property-order
+    public void does_not_fail_if_key_and_unique_constraints_are_defined_on_same_properties_in_different_order() {
+        assertThatCode(() -> deserialize(new StringReader(
+                        """
+                {
+                    "version": "1",
+                    "sources": [{
+                        "name": "a-source",
+                        "type": "jdbc",
+                        "data_source": "a-data-source",
+                        "sql": "SELECT id, name FROM my.table"
+                    }],
+                    "targets": {
+                        "nodes": [{
+                            "active": true,
+                            "name": "a-target",
+                            "source": "a-source",
+                            "write_mode": "merge",
+                            "labels": ["Label1", "Label2"],
+                            "properties": [
+                                {"source_field": "id", "target_property": "property1"},
+                                {"source_field": "name", "target_property": "property2"}
+                            ],
+                            "schema": {
+                                "key_constraints": [
+                                    {"name": "a key constraint", "label": "Label1", "properties": ["property1", "property2"]}
+                                ],
+                                "unique_constraints": [
+                                    {"name": "a unique constraint", "label": "Label1", "properties": ["property2", "property1"]}
+                                ]
+                            }
+                        }]
+                    }
+                }
+                """
+                                .stripIndent())))
+                .doesNotThrowAnyException();
+    }
+
+    @Test
+    public void does_not_fail_if_key_and_unique_constraints_only_share_property_subset() {
+        assertThatCode(() -> deserialize(new StringReader(
+                        """
+                {
+                    "version": "1",
+                    "sources": [{
+                        "name": "a-source",
+                        "type": "jdbc",
+                        "data_source": "a-data-source",
+                        "sql": "SELECT id, name FROM my.table"
+                    }],
+                    "targets": {
+                        "nodes": [{
+                            "active": true,
+                            "name": "a-target",
+                            "source": "a-source",
+                            "write_mode": "merge",
+                            "labels": ["Label1", "Label2"],
+                            "properties": [
+                                {"source_field": "id", "target_property": "property1"},
+                                {"source_field": "name", "target_property": "property2"}
+                            ],
+                            "schema": {
+                                "key_constraints": [
+                                    {"name": "a key constraint", "label": "Label1", "properties": ["property1", "property2"]}
+                                ],
+                                "unique_constraints": [
+                                    {"name": "a unique constraint", "label": "Label1", "properties": ["property2"]}
+                                ]
+                            }
+                        }]
+                    }
+                }
+                """
+                                .stripIndent())))
+                .doesNotThrowAnyException();
+    }
+
+    @Test
+    public void does_not_fail_if_key_and_unique_constraints_are_defined_on_same_label_but_different_properties() {
+        assertThatCode(() -> deserialize(new StringReader(
+                        """
+                {
+                    "version": "1",
+                    "sources": [{
+                        "name": "a-source",
+                        "type": "jdbc",
+                        "data_source": "a-data-source",
+                        "sql": "SELECT id, name FROM my.table"
+                    }],
+                    "targets": {
+                        "nodes": [{
+                            "active": true,
+                            "name": "a-target",
+                            "source": "a-source",
+                            "write_mode": "merge",
+                            "labels": ["Label"],
+                            "properties": [
+                                {"source_field": "id", "target_property": "property1"},
+                                {"source_field": "name", "target_property": "property2"}
+                            ],
+                            "schema": {
+                                "key_constraints": [
+                                    {"name": "a key constraint", "label": "Label", "properties": ["property1"]}
+                                ],
+                                "unique_constraints": [
+                                    {"name": "a unique constraint", "label": "Label", "properties": ["property2"]}
+                                ]
+                            }
+                        }]
+                    }
+                }
+                """
+                                .stripIndent())))
+                .doesNotThrowAnyException();
+    }
+
+    @Test
+    public void does_not_report_redundancy_if_key_and_unique_constraints_define_invalid_labels() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+                {
+                    "version": "1",
+                    "sources": [{
+                        "name": "a-source",
+                        "type": "jdbc",
+                        "data_source": "a-data-source",
+                        "sql": "SELECT id, name FROM my.table"
+                    }],
+                    "targets": {
+                        "nodes": [{
+                            "active": true,
+                            "name": "a-target",
+                            "source": "a-source",
+                            "write_mode": "merge",
+                            "labels": ["Label"],
+                            "properties": [
+                                {"source_field": "id", "target_property": "property1"},
+                                {"source_field": "name", "target_property": "property2"}
+                            ],
+                            "schema": {
+                                "key_constraints": [
+                                    {"name": "a key constraint", "label": "not-a-label", "properties": ["property1"]}
+                                ],
+                                "unique_constraints": [
+                                    {"name": "a unique constraint", "label": "not-a-label", "properties": ["property1"]}
+                                ]
+                            }
+                        }]
+                    }
+                }
+                """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "2 error(s)",
+                        "0 warning(s)",
+                        "$.targets.nodes[0].schema.key_constraints[0].label \"not-a-label\" is not part of the defined labels",
+                        "$.targets.nodes[0].schema.unique_constraints[0].label \"not-a-label\" is not part of the defined labels");
+    }
+
+    @Test
+    public void does_not_report_redundancy_if_key_and_unique_constraints_define_invalid_properties() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+                {
+                    "version": "1",
+                    "sources": [{
+                        "name": "a-source",
+                        "type": "jdbc",
+                        "data_source": "a-data-source",
+                        "sql": "SELECT id, name FROM my.table"
+                    }],
+                    "targets": {
+                        "nodes": [{
+                            "active": true,
+                            "name": "a-target",
+                            "source": "a-source",
+                            "write_mode": "merge",
+                            "labels": ["Label"],
+                            "properties": [
+                                {"source_field": "id", "target_property": "property1"},
+                                {"source_field": "name", "target_property": "property2"}
+                            ],
+                            "schema": {
+                                "key_constraints": [
+                                    {"name": "a key constraint", "label": "Label", "properties": ["not-a-prop"]}
+                                ],
+                                "unique_constraints": [
+                                    {"name": "a unique constraint", "label": "Label", "properties": ["not-a-prop"]}
+                                ]
+                            }
+                        }]
+                    }
+                }
+                """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "2 error(s)",
+                        "0 warning(s)",
+                        "$.targets.nodes[0].schema.key_constraints[0].properties[0] \"not-a-prop\" is not part of the property mappings",
+                        "$.targets.nodes[0].schema.unique_constraints[0].properties[0] \"not-a-prop\" is not part of the property mappings");
+    }
+
+    @Test
+    public void fails_if_key_constraint_and_range_index_are_defined_on_same_labels_and_properties() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+                {
+                    "version": "1",
+                    "sources": [{
+                        "name": "a-source",
+                        "type": "jdbc",
+                        "data_source": "a-data-source",
+                        "sql": "SELECT id, name FROM my.table"
+                    }],
+                    "targets": {
+                        "nodes": [{
+                            "active": true,
+                            "name": "a-target",
+                            "source": "a-source",
+                            "write_mode": "merge",
+                            "labels": ["Label"],
+                            "properties": [
+                                {"source_field": "id", "target_property": "property1"},
+                                {"source_field": "name", "target_property": "property2"}
+                            ],
+                            "schema": {
+                                "key_constraints": [
+                                    {"name": "a key constraint", "label": "Label", "properties": ["property1", "property2"]}
+                                ],
+                                "range_indexes": [
+                                    {"name": "a range index", "label": "Label", "properties": ["property1", "property2"]}
+                                ]
+                            }
+                        }]
+                    }
+                }
+                """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "$.targets.nodes[0].schema defines redundant key constraint and range index: range_indexes[0], key_constraints[0]");
+    }
+
+    @Test
+    public void does_not_fail_if_key_constraint_and_range_index_are_defined_on_same_properties_but_different_labels() {
+        assertThatCode(() -> deserialize(new StringReader(
+                        """
+                {
+                    "version": "1",
+                    "sources": [{
+                        "name": "a-source",
+                        "type": "jdbc",
+                        "data_source": "a-data-source",
+                        "sql": "SELECT id, name FROM my.table"
+                    }],
+                    "targets": {
+                        "nodes": [{
+                            "active": true,
+                            "name": "a-target",
+                            "source": "a-source",
+                            "write_mode": "merge",
+                            "labels": ["Label1", "Label2"],
+                            "properties": [
+                                {"source_field": "id", "target_property": "property"}
+                            ],
+                            "schema": {
+                                "key_constraints": [
+                                    {"name": "a key constraint", "label": "Label1", "properties": ["property"]}
+                                ],
+                                "range_indexes": [
+                                    {"name": "a range index", "label": "Label2", "properties": ["property"]}
+                                ]
+                            }
+                        }]
+                    }
+                }
+                """
+                                .stripIndent())))
+                .doesNotThrowAnyException();
+    }
+
+    @Test
+    // https://neo4j.com/docs/cypher-manual/current/indexes/search-performance-indexes/using-indexes/#composite-indexes-property-order
+    public void does_not_fail_if_key_constraint_and_range_index_are_defined_on_same_properties_in_different_order() {
+        assertThatCode(() -> deserialize(new StringReader(
+                        """
+                {
+                    "version": "1",
+                    "sources": [{
+                        "name": "a-source",
+                        "type": "jdbc",
+                        "data_source": "a-data-source",
+                        "sql": "SELECT id, name FROM my.table"
+                    }],
+                    "targets": {
+                        "nodes": [{
+                            "active": true,
+                            "name": "a-target",
+                            "source": "a-source",
+                            "write_mode": "merge",
+                            "labels": ["Label1", "Label2"],
+                            "properties": [
+                                {"source_field": "id", "target_property": "property1"},
+                                {"source_field": "name", "target_property": "property2"}
+                            ],
+                            "schema": {
+                                "key_constraints": [
+                                    {"name": "a key constraint", "label": "Label1", "properties": ["property1", "property2"]}
+                                ],
+                                "range_indexes": [
+                                    {"name": "a range index", "label": "Label1", "properties": ["property2", "property1"]}
+                                ]
+                            }
+                        }]
+                    }
+                }
+                """
+                                .stripIndent())))
+                .doesNotThrowAnyException();
+    }
+
+    @Test
+    public void does_not_fail_if_key_constraint_and_range_index_only_share_property_subset() {
+        assertThatCode(() -> deserialize(new StringReader(
+                        """
+                {
+                    "version": "1",
+                    "sources": [{
+                        "name": "a-source",
+                        "type": "jdbc",
+                        "data_source": "a-data-source",
+                        "sql": "SELECT id, name FROM my.table"
+                    }],
+                    "targets": {
+                        "nodes": [{
+                            "active": true,
+                            "name": "a-target",
+                            "source": "a-source",
+                            "write_mode": "merge",
+                            "labels": ["Label1", "Label2"],
+                            "properties": [
+                                {"source_field": "id", "target_property": "property1"},
+                                {"source_field": "name", "target_property": "property2"}
+                            ],
+                            "schema": {
+                                "key_constraints": [
+                                    {"name": "a key constraint", "label": "Label1", "properties": ["property1", "property2"]}
+                                ],
+                                "range_indexes": [
+                                    {"name": "a range index", "label": "Label1", "properties": ["property2"]}
+                                ]
+                            }
+                        }]
+                    }
+                }
+                """
+                                .stripIndent())))
+                .doesNotThrowAnyException();
+    }
+
+    @Test
+    public void does_not_fail_if_key_constraint_and_range_index_are_defined_on_same_label_but_different_properties() {
+        assertThatCode(() -> deserialize(new StringReader(
+                        """
+                {
+                    "version": "1",
+                    "sources": [{
+                        "name": "a-source",
+                        "type": "jdbc",
+                        "data_source": "a-data-source",
+                        "sql": "SELECT id, name FROM my.table"
+                    }],
+                    "targets": {
+                        "nodes": [{
+                            "active": true,
+                            "name": "a-target",
+                            "source": "a-source",
+                            "write_mode": "merge",
+                            "labels": ["Label"],
+                            "properties": [
+                                {"source_field": "id", "target_property": "property1"},
+                                {"source_field": "name", "target_property": "property2"}
+                            ],
+                            "schema": {
+                                "key_constraints": [
+                                    {"name": "a key constraint", "label": "Label", "properties": ["property1"]}
+                                ],
+                                "range_indexes": [
+                                    {"name": "a range index", "label": "Label", "properties": ["property2"]}
+                                ]
+                            }
+                        }]
+                    }
+                }
+                """
+                                .stripIndent())))
+                .doesNotThrowAnyException();
+    }
+
+    @Test
+    public void does_not_report_redundancy_if_key_constraint_and_range_index_define_invalid_labels() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+                {
+                    "version": "1",
+                    "sources": [{
+                        "name": "a-source",
+                        "type": "jdbc",
+                        "data_source": "a-data-source",
+                        "sql": "SELECT id, name FROM my.table"
+                    }],
+                    "targets": {
+                        "nodes": [{
+                            "active": true,
+                            "name": "a-target",
+                            "source": "a-source",
+                            "write_mode": "merge",
+                            "labels": ["Label"],
+                            "properties": [
+                                {"source_field": "id", "target_property": "property1"},
+                                {"source_field": "name", "target_property": "property2"}
+                            ],
+                            "schema": {
+                                "key_constraints": [
+                                    {"name": "a key constraint", "label": "not-a-label", "properties": ["property1"]}
+                                ],
+                                "range_indexes": [
+                                    {"name": "a range index", "label": "not-a-label", "properties": ["property1"]}
+                                ]
+                            }
+                        }]
+                    }
+                }
+                """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "2 error(s)",
+                        "0 warning(s)",
+                        "$.targets.nodes[0].schema.key_constraints[0].label \"not-a-label\" is not part of the defined labels",
+                        "$.targets.nodes[0].schema.range_indexes[0].label \"not-a-label\" is not part of the defined labels");
+    }
+
+    @Test
+    public void does_not_report_redundancy_if_key_constraint_and_range_index_define_invalid_properties() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+                {
+                    "version": "1",
+                    "sources": [{
+                        "name": "a-source",
+                        "type": "jdbc",
+                        "data_source": "a-data-source",
+                        "sql": "SELECT id, name FROM my.table"
+                    }],
+                    "targets": {
+                        "nodes": [{
+                            "active": true,
+                            "name": "a-target",
+                            "source": "a-source",
+                            "write_mode": "merge",
+                            "labels": ["Label"],
+                            "properties": [
+                                {"source_field": "id", "target_property": "property1"},
+                                {"source_field": "name", "target_property": "property2"}
+                            ],
+                            "schema": {
+                                "key_constraints": [
+                                    {"name": "a key constraint", "label": "Label", "properties": ["not-a-prop"]}
+                                ],
+                                "range_indexes": [
+                                    {"name": "a range index", "label": "Label", "properties": ["not-a-prop"]}
+                                ]
+                            }
+                        }]
+                    }
+                }
+                """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "2 error(s)",
+                        "0 warning(s)",
+                        "$.targets.nodes[0].schema.key_constraints[0].properties[0] \"not-a-prop\" is not part of the property mappings",
+                        "$.targets.nodes[0].schema.range_indexes[0].properties[0] \"not-a-prop\" is not part of the property mappings");
+    }
+
+    @Test
+    public void fails_if_unique_constraint_and_range_index_are_defined_on_same_labels_and_properties() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+                {
+                    "version": "1",
+                    "sources": [{
+                        "name": "a-source",
+                        "type": "jdbc",
+                        "data_source": "a-data-source",
+                        "sql": "SELECT id, name FROM my.table"
+                    }],
+                    "targets": {
+                        "nodes": [{
+                            "active": true,
+                            "name": "a-target",
+                            "source": "a-source",
+                            "write_mode": "merge",
+                            "labels": ["Label"],
+                            "properties": [
+                                {"source_field": "id", "target_property": "property1"},
+                                {"source_field": "name", "target_property": "property2"}
+                            ],
+                            "schema": {
+                                "unique_constraints": [
+                                    {"name": "a unique constraint", "label": "Label", "properties": ["property1", "property2"]}
+                                ],
+                                "range_indexes": [
+                                    {"name": "a range index", "label": "Label", "properties": ["property1", "property2"]}
+                                ]
+                            }
+                        }]
+                    }
+                }
+                """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "$.targets.nodes[0].schema defines redundant unique constraint and range index: range_indexes[0], unique_constraints[0]");
+    }
+
+    @Test
+    public void
+            does_not_fail_if_unique_constraint_and_range_index_are_defined_on_same_properties_but_different_labels() {
+        assertThatCode(() -> deserialize(new StringReader(
+                        """
+                {
+                    "version": "1",
+                    "sources": [{
+                        "name": "a-source",
+                        "type": "jdbc",
+                        "data_source": "a-data-source",
+                        "sql": "SELECT id, name FROM my.table"
+                    }],
+                    "targets": {
+                        "nodes": [{
+                            "active": true,
+                            "name": "a-target",
+                            "source": "a-source",
+                            "write_mode": "merge",
+                            "labels": ["Label1", "Label2"],
+                            "properties": [
+                                {"source_field": "id", "target_property": "property"}
+                            ],
+                            "schema": {
+                                "unique_constraints": [
+                                    {"name": "a unique constraint", "label": "Label1", "properties": ["property"]}
+                                ],
+                                "range_indexes": [
+                                    {"name": "a range index", "label": "Label2", "properties": ["property"]}
+                                ]
+                            }
+                        }]
+                    }
+                }
+                """
+                                .stripIndent())))
+                .doesNotThrowAnyException();
+    }
+
+    @Test
+    // https://neo4j.com/docs/cypher-manual/current/indexes/search-performance-indexes/using-indexes/#composite-indexes-property-order
+    public void does_not_fail_if_unique_constraint_and_range_index_are_defined_on_same_properties_in_different_order() {
+        assertThatCode(() -> deserialize(new StringReader(
+                        """
+                {
+                    "version": "1",
+                    "sources": [{
+                        "name": "a-source",
+                        "type": "jdbc",
+                        "data_source": "a-data-source",
+                        "sql": "SELECT id, name FROM my.table"
+                    }],
+                    "targets": {
+                        "nodes": [{
+                            "active": true,
+                            "name": "a-target",
+                            "source": "a-source",
+                            "write_mode": "merge",
+                            "labels": ["Label1", "Label2"],
+                            "properties": [
+                                {"source_field": "id", "target_property": "property1"},
+                                {"source_field": "name", "target_property": "property2"}
+                            ],
+                            "schema": {
+                                "unique_constraints": [
+                                    {"name": "a unique constraint", "label": "Label1", "properties": ["property1", "property2"]}
+                                ],
+                                "range_indexes": [
+                                    {"name": "a range index", "label": "Label1", "properties": ["property2", "property1"]}
+                                ]
+                            }
+                        }]
+                    }
+                }
+                """
+                                .stripIndent())))
+                .doesNotThrowAnyException();
+    }
+
+    @Test
+    public void does_not_fail_if_unique_constraint_and_range_index_only_share_property_subset() {
+        assertThatCode(() -> deserialize(new StringReader(
+                        """
+                {
+                    "version": "1",
+                    "sources": [{
+                        "name": "a-source",
+                        "type": "jdbc",
+                        "data_source": "a-data-source",
+                        "sql": "SELECT id, name FROM my.table"
+                    }],
+                    "targets": {
+                        "nodes": [{
+                            "active": true,
+                            "name": "a-target",
+                            "source": "a-source",
+                            "write_mode": "merge",
+                            "labels": ["Label1", "Label2"],
+                            "properties": [
+                                {"source_field": "id", "target_property": "property1"},
+                                {"source_field": "name", "target_property": "property2"}
+                            ],
+                            "schema": {
+                                "unique_constraints": [
+                                    {"name": "a unique constraint", "label": "Label1", "properties": ["property1", "property2"]}
+                                ],
+                                "range_indexes": [
+                                    {"name": "a range index", "label": "Label1", "properties": ["property2"]}
+                                ]
+                            }
+                        }]
+                    }
+                }
+                """
+                                .stripIndent())))
+                .doesNotThrowAnyException();
+    }
+
+    @Test
+    public void
+            does_not_fail_if_unique_constraint_and_range_index_are_defined_on_same_label_but_different_properties() {
+        assertThatCode(() -> deserialize(new StringReader(
+                        """
+                {
+                    "version": "1",
+                    "sources": [{
+                        "name": "a-source",
+                        "type": "jdbc",
+                        "data_source": "a-data-source",
+                        "sql": "SELECT id, name FROM my.table"
+                    }],
+                    "targets": {
+                        "nodes": [{
+                            "active": true,
+                            "name": "a-target",
+                            "source": "a-source",
+                            "write_mode": "merge",
+                            "labels": ["Label"],
+                            "properties": [
+                                {"source_field": "id", "target_property": "property1"},
+                                {"source_field": "name", "target_property": "property2"}
+                            ],
+                            "schema": {
+                                "unique_constraints": [
+                                    {"name": "a unique constraint", "label": "Label", "properties": ["property1"]}
+                                ],
+                                "range_indexes": [
+                                    {"name": "a range index", "label": "Label", "properties": ["property2"]}
+                                ]
+                            }
+                        }]
+                    }
+                }
+                """
+                                .stripIndent())))
+                .doesNotThrowAnyException();
+    }
+
+    @Test
+    public void does_not_report_redundancy_if_unique_constraint_and_range_index_define_invalid_labels() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+                {
+                    "version": "1",
+                    "sources": [{
+                        "name": "a-source",
+                        "type": "jdbc",
+                        "data_source": "a-data-source",
+                        "sql": "SELECT id, name FROM my.table"
+                    }],
+                    "targets": {
+                        "nodes": [{
+                            "active": true,
+                            "name": "a-target",
+                            "source": "a-source",
+                            "write_mode": "merge",
+                            "labels": ["Label"],
+                            "properties": [
+                                {"source_field": "id", "target_property": "property1"},
+                                {"source_field": "name", "target_property": "property2"}
+                            ],
+                            "schema": {
+                                "unique_constraints": [
+                                    {"name": "a unique constraint", "label": "not-a-label", "properties": ["property1"]}
+                                ],
+                                "range_indexes": [
+                                    {"name": "a range index", "label": "not-a-label", "properties": ["property1"]}
+                                ]
+                            }
+                        }]
+                    }
+                }
+                """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "2 error(s)",
+                        "0 warning(s)",
+                        "$.targets.nodes[0].schema.unique_constraints[0].label \"not-a-label\" is not part of the defined labels",
+                        "$.targets.nodes[0].schema.range_indexes[0].label \"not-a-label\" is not part of the defined labels");
+    }
+
+    @Test
+    public void does_not_report_redundancy_if_unique_constraint_and_range_index_define_invalid_properties() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+                {
+                    "version": "1",
+                    "sources": [{
+                        "name": "a-source",
+                        "type": "jdbc",
+                        "data_source": "a-data-source",
+                        "sql": "SELECT id, name FROM my.table"
+                    }],
+                    "targets": {
+                        "nodes": [{
+                            "active": true,
+                            "name": "a-target",
+                            "source": "a-source",
+                            "write_mode": "merge",
+                            "labels": ["Label"],
+                            "properties": [
+                                {"source_field": "id", "target_property": "property1"},
+                                {"source_field": "name", "target_property": "property2"}
+                            ],
+                            "schema": {
+                                "unique_constraints": [
+                                    {"name": "a unique constraint", "label": "Label", "properties": ["not-a-prop"]}
+                                ],
+                                "range_indexes": [
+                                    {"name": "a range index", "label": "Label", "properties": ["not-a-prop"]}
+                                ]
+                            }
+                        }]
+                    }
+                }
+                """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "2 error(s)",
+                        "0 warning(s)",
+                        "$.targets.nodes[0].schema.unique_constraints[0].properties[0] \"not-a-prop\" is not part of the property mappings",
+                        "$.targets.nodes[0].schema.range_indexes[0].properties[0] \"not-a-prop\" is not part of the property mappings");
     }
 }
