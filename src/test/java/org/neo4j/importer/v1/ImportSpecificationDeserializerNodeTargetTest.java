@@ -6458,6 +6458,87 @@ public class ImportSpecificationDeserializerNodeTargetTest {
     }
 
     @Test
+    public void fails_if_node_schema_fulltext_index_labels_is_duplicated() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+        {
+            "version": "1",
+            "sources": [{
+                "name": "a-source",
+                "type": "jdbc",
+                "data_source": "a-data-source",
+                "sql": "SELECT id, name FROM my.table"
+            }],
+            "targets": {
+                "nodes": [{
+                    "active": true,
+                    "name": "a-target",
+                    "source": "a-source",
+                    "write_mode": "merge",
+                    "labels": ["Label"],
+                    "properties": [
+                        {"source_field": "field", "target_property": "property"}
+                    ],
+                    "schema": {
+                        "fulltext_indexes": [
+                            {"name": "a fulltext index", "labels": ["Label", "Label", "Label"], "properties": ["property"]}
+                        ]
+                    }
+                }]
+            }
+        }
+        """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "[DUPL-010][$.targets.nodes[0].schema.fulltext_indexes[0].label] $.targets.nodes[0].schema.fulltext_indexes[0].label \"Label\" must be unique but 3 occurrences were found");
+    }
+
+    @Test
+    public void fails_if_node_schema_fulltext_index_labels_is_dangling_and_duplicated() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+                {
+                    "version": "1",
+                    "sources": [{
+                        "name": "a-source",
+                        "type": "jdbc",
+                        "data_source": "a-data-source",
+                        "sql": "SELECT id, name FROM my.table"
+                    }],
+                    "targets": {
+                        "nodes": [{
+                            "active": true,
+                            "name": "a-target",
+                            "source": "a-source",
+                            "write_mode": "merge",
+                            "labels": ["Label"],
+                            "properties": [
+                                {"source_field": "field", "target_property": "property"}
+                            ],
+                            "schema": {
+                                "fulltext_indexes": [
+                                    {"name": "a fulltext index", "labels": ["Label1", "Label1", "Label1"], "properties": ["property"]}
+                                ]
+                            }
+                        }]
+                    }
+                }
+                """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "3 error(s)",
+                        "0 warning(s)",
+                        "[DANG-019][$.targets.nodes[0].schema.fulltext_indexes[0].labels[0]] $.targets.nodes[0].schema.fulltext_indexes[0].labels[0] \"Label1\" is not part of the defined labels",
+                        "[DANG-019][$.targets.nodes[0].schema.fulltext_indexes[0].labels[1]] $.targets.nodes[0].schema.fulltext_indexes[0].labels[1] \"Label1\" is not part of the defined labels",
+                        "[DANG-019][$.targets.nodes[0].schema.fulltext_indexes[0].labels[2]] $.targets.nodes[0].schema.fulltext_indexes[0].labels[2] \"Label1\" is not part of the defined labels")
+                .hasMessageNotContaining("[DUPL-010]");
+    }
+
+    @Test
     public void fails_if_node_schema_fulltext_index_properties_are_missing() {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
@@ -8457,4 +8538,6 @@ public class ImportSpecificationDeserializerNodeTargetTest {
                         "$.targets.nodes[0].schema.unique_constraints[0].properties[0] \"not-a-prop\" is not part of the property mappings",
                         "$.targets.nodes[0].schema.range_indexes[0].properties[0] \"not-a-prop\" is not part of the property mappings");
     }
+
+    // todo
 }
