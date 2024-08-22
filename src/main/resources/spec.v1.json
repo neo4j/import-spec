@@ -126,7 +126,8 @@
         }
       },
       "required": [
-        "name"
+        "name",
+        "source"
       ]
     },
     "target.entity.base": {
@@ -154,10 +155,7 @@
           },
           "minItems": 1
         }
-      },
-      "required": [
-        "source"
-      ]
+      }
     },
     "target.node": {
       "type": "object",
