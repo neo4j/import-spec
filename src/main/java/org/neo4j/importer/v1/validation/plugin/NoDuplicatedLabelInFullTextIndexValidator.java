@@ -19,6 +19,7 @@ package org.neo4j.importer.v1.validation.plugin;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
+import org.neo4j.importer.v1.targets.NodeFullTextIndex;
 import org.neo4j.importer.v1.targets.NodeTarget;
 import org.neo4j.importer.v1.validation.SpecificationValidationResult.Builder;
 import org.neo4j.importer.v1.validation.SpecificationValidator;
@@ -49,14 +50,15 @@ public class NoDuplicatedLabelInFullTextIndexValidator implements SpecificationV
 
         var basePath = String.format("$.targets.nodes[%d].schema.fulltext_indexes", index);
 
-        fTIndexes.forEach(idx -> {
-            var i = fTIndexes.indexOf(idx);
+        for (int i = 0; i < fTIndexes.size(); i++) {
+            NodeFullTextIndex textIndex = fTIndexes.get(i);
 
-            Duplicate.findDuplicates(idx.getLabels()).forEach(duplicate -> {
-                var path = String.format("%s[%d].label", basePath, i);
+            int arrayIndex = i;
+            Duplicate.findDuplicates(textIndex.getLabels()).forEach(duplicate -> {
+                var path = String.format("%s[%d].label", basePath, arrayIndex);
                 duplicateLabels.put(path, duplicate);
             });
-        });
+        }
     }
 
     @Override
@@ -65,7 +67,7 @@ public class NoDuplicatedLabelInFullTextIndexValidator implements SpecificationV
                 path,
                 ERROR_CODE,
                 String.format(
-                        "%s \"%s\" must be unique but %d occurrences were found",
+                        "%s \"%s\" must be defined at most once but %d occurrences were found",
                         path, duplicate.getValue(), duplicate.getCount())));
         return !duplicateLabels.isEmpty();
     }

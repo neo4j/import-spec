@@ -6493,7 +6493,7 @@ public class ImportSpecificationDeserializerNodeTargetTest {
                 .hasMessageContainingAll(
                         "1 error(s)",
                         "0 warning(s)",
-                        "[DUPL-010][$.targets.nodes[0].schema.fulltext_indexes[0].label] $.targets.nodes[0].schema.fulltext_indexes[0].label \"Label\" must be unique but 3 occurrences were found");
+                        "[DUPL-010][$.targets.nodes[0].schema.fulltext_indexes[0].label] $.targets.nodes[0].schema.fulltext_indexes[0].label \"Label\" must be defined at most once but 3 occurrences were found");
     }
 
     @Test
