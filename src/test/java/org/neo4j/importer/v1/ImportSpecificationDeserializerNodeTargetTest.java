@@ -8538,6 +8538,4 @@ public class ImportSpecificationDeserializerNodeTargetTest {
                         "$.targets.nodes[0].schema.unique_constraints[0].properties[0] \"not-a-prop\" is not part of the property mappings",
                         "$.targets.nodes[0].schema.range_indexes[0].properties[0] \"not-a-prop\" is not part of the property mappings");
     }
-
-    // todo
 }
