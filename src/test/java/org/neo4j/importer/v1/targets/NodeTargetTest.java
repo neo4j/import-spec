@@ -26,6 +26,23 @@ class NodeTargetTest {
     private final Random random = new Random();
 
     @Test
+    void returns_no_keys_when_schema_is_not_defined() {
+        NodeSchema schema = null;
+        var target = new NodeTarget(
+                true,
+                "a-target",
+                "a-source",
+                null,
+                WriteMode.CREATE,
+                null,
+                List.of("Label"),
+                List.of(mappingTo("prop")),
+                schema);
+
+        assertThat(target.getKeyProperties()).isEmpty();
+    }
+
+    @Test
     void returns_key_properties() {
         var properties = List.of(mappingTo("prop1"), mappingTo("prop2"), mappingTo("prop3"), mappingTo("prop4"));
         var schema =

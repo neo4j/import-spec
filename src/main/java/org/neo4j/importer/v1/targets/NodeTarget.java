@@ -57,6 +57,9 @@ public class NodeTarget extends EntityTarget {
 
     @Override
     public List<String> getKeyProperties() {
+        if (schema == null) {
+            return new ArrayList<>(0);
+        }
         Set<String> result = schema.getKeyConstraints().stream()
                 .flatMap(NodeTarget::propertyStream)
                 .collect(Collectors.toCollection(LinkedHashSet::new));

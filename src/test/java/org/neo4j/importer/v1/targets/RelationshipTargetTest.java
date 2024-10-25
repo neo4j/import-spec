@@ -27,6 +27,26 @@ class RelationshipTargetTest {
     private final Random random = new Random();
 
     @Test
+    void returns_no_keys_when_schema_is_not_defined() {
+        RelationshipSchema schema = null;
+        var target = new RelationshipTarget(
+                true,
+                "a-target",
+                "a-source",
+                null,
+                "TYPE",
+                WriteMode.CREATE,
+                NodeMatchMode.MERGE,
+                null,
+                "a-node-target",
+                "a-node-target",
+                List.of(mappingTo("prop")),
+                schema);
+
+        assertThat(target.getKeyProperties()).isEmpty();
+    }
+
+    @Test
     void returns_key_properties() {
         var properties = List.of(mappingTo("prop1"), mappingTo("prop2"), mappingTo("prop3"), mappingTo("prop4"));
         var schema = schemaFor(List.of(key(List.of("prop1", "prop2")), key(List.of("prop2", "prop4"))));
