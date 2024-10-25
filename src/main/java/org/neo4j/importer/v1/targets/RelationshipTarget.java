@@ -98,6 +98,9 @@ public class RelationshipTarget extends EntityTarget {
 
     @Override
     public List<String> getKeyProperties() {
+        if (schema == null) {
+            return new ArrayList<>(0);
+        }
         Set<String> result = schema.getKeyConstraints().stream()
                 .flatMap(RelationshipTarget::propertyStream)
                 .collect(Collectors.toCollection(LinkedHashSet::new));
