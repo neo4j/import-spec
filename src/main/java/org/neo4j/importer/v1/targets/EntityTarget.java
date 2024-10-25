@@ -49,6 +49,10 @@ public abstract class EntityTarget extends Target {
         return sourceTransformations;
     }
 
+    public List<String> getAllProperties() {
+        return getProperties().stream().map(PropertyMapping::getTargetProperty).collect(Collectors.toList());
+    }
+
     public List<PropertyMapping> getProperties() {
         // properties can be null for relationship targets
         return properties != null ? properties : Collections.emptyList();
@@ -62,10 +66,6 @@ public abstract class EntityTarget extends Target {
      * part of key constraints.
      */
     public abstract List<String> getKeyProperties();
-
-    public List<String> getAllProperties() {
-        return properties.stream().map(PropertyMapping::getTargetProperty).collect(Collectors.toList());
-    }
 
     @Override
     public boolean equals(Object o) {
