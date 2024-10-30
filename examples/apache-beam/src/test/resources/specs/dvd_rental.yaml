@@ -1,0 +1,244 @@
+version: "1"
+sources:
+  - name: actor
+    type: parquet
+    uri: gs://connectors-dev/dvdrental/actor.parquet
+  - name: category
+    type: parquet
+    uri: gs://connectors-dev/dvdrental/category.parquet
+  - name: customer
+    type: parquet
+    uri: gs://connectors-dev/dvdrental/customer.parquet
+  - name: film_actor
+    type: parquet
+    uri: gs://connectors-dev/dvdrental/film_actor.parquet
+  - name: film_category
+    type: parquet
+    uri: gs://connectors-dev/dvdrental/film_category.parquet
+  - name: film
+    type: parquet
+    uri: gs://connectors-dev/dvdrental/film.parquet
+  - name: inventory
+    type: parquet
+    uri: gs://connectors-dev/dvdrental/inventory.parquet
+  - name: rental
+    type: parquet
+    uri: gs://connectors-dev/dvdrental/rental.parquet
+targets:
+  nodes:
+    - source: actor
+      name: actor_nodes
+      write_mode: merge
+      labels: [ Actor ]
+      properties:
+        - source_field: actor_id
+          target_property: id
+          target_property_type: integer
+        - source_field: first_name
+          target_property: first_name
+          target_property_type: string
+        - source_field: last_name
+          target_property: last_name
+          target_property_type: string
+      schema:
+        key_constraints:
+          - name: actor_id_key
+            label: Actor
+            properties: [ id ]
+        type_constraints:
+          - name: actor_id_type
+            label: Actor
+            property: id
+          - name: actor_first_name_type
+            label: Actor
+            property: first_name
+          - name: actor_last_name_type
+            label: Actor
+            property: last_name
+
+    - source: category
+      name: category_nodes
+      write_mode: merge
+      labels: [ Category ]
+      properties:
+        - source_field: category_id
+          target_property: id
+          target_property_type: integer
+        - source_field: name
+          target_property: name
+          target_property_type: string
+      schema:
+        key_constraints:
+          - name: category_id_key
+            label: Category
+            properties: [ id ]
+        unique_constraints:
+          - name: category_name_key
+            label: Category
+            properties: [ name ]
+        type_constraints:
+          - name: category_id_type
+            label: Category
+            property: id
+          - name: category_name_type
+            label: Category
+            property: name
+
+    - source: customer
+      name: customer_nodes
+      write_mode: merge
+      labels: [ Customer ]
+      properties:
+        - source_field: customer_id
+          target_property: id
+          target_property_type: integer
+        - source_field: first_name
+          target_property: first_name
+          target_property_type: string
+        - source_field: last_name
+          target_property: last_name
+          target_property_type: string
+        - source_field: email
+          target_property: email
+          target_property_type: string
+        - source_field: create_date
+          target_property: creation_date
+          target_property_type: date
+      schema:
+        key_constraints:
+          - name: customer_id_key
+            label: Customer
+            properties: [ id ]
+        unique_constraints:
+          - name: customer_email_unique
+            label: Customer
+            properties: [ email ]
+        type_constraints:
+          - name: customer_id_type
+            label: Customer
+            property: id
+          - name: customer_first_name_type
+            label: Customer
+            property: first_name
+          - name: customer_last_name_type
+            label: Customer
+            property: last_name
+          - name: customer_email_type
+            label: Customer
+            property: email
+          - name: customer_creation_date_type
+            label: Customer
+            property: creation_date
+
+    - source: film
+      name: movie_nodes
+      write_mode: merge
+      labels: [ Movie ]
+      properties:
+        - source_field: film_id
+          target_property: id
+          target_property_type: integer
+        - source_field: title
+          target_property: title
+          target_property_type: string
+        - source_field: description
+          target_property: description
+          target_property_type: string
+        - source_field: release_year
+          target_property: release_year
+      schema:
+        key_constraints:
+          - name: movie_id_key
+            label: Movie
+            properties: [ id ]
+        type_constraints:
+          - name: movie_id_type
+            label: Movie
+            property: id
+          - name: movie_title_type
+            label: Movie
+            property: title
+          - name: movie_description_type
+            label: Movie
+            property: description
+
+    - source: inventory
+      name: inventory_nodes
+      write_mode: merge
+      labels: [ Inventory ]
+      properties:
+        - source_field: inventory_id
+          target_property: id
+          target_property_type: integer
+        - source_field: film_id
+          target_property: movie_id
+          target_property_type: integer
+      schema:
+        key_constraints:
+          - name: inventory_id_key
+            label: Inventory
+            properties: [ id ]
+        type_constraints:
+          - name: inventory_id_type
+            label: Inventory
+            property: id
+          - name: inventory_film_id_type
+            label: Inventory
+            property: movie_id
+
+  relationships:
+    - source: film_actor
+      name: movie_actor_relationships
+      write_mode: merge
+      node_match_mode: match
+      type: ACTED_IN
+      start_node_reference: actor_nodes
+      end_node_reference: movie_nodes
+
+    - source: film_category
+      name: movie_category_relationships
+      write_mode: merge
+      node_match_mode: match
+      type: IN_CATEGORY
+      start_node_reference: movie_nodes
+      end_node_reference: category_nodes
+
+    - source: rental
+      name: rental_relationships
+      write_mode: merge
+      node_match_mode: merge
+      type: HAS_RENTED
+      start_node_reference: customer_nodes
+      end_node_reference: inventory_nodes
+      properties:
+        - source_field: rental_id
+          target_property: id
+          target_property_type: integer
+        - source_field: rental_date
+          target_property: date
+          target_property_type: date
+      schema:
+        key_constraints:
+          - name: rental_id_key
+            properties: [ id ]
+        type_constraints:
+          - name: rental_id_type
+            property: id
+
+actions:
+  - name: remove inventory indirection
+    type: cypher
+    stage: end
+    execution_mode: autocommit
+    query: |
+      MATCH (inventory:Inventory)
+      CALL (inventory) {
+        MATCH (inventory)<-[old_rental:HAS_RENTED]-(customer:Customer)
+        MATCH (movie:Movie WHERE movie.id = inventory.movie_id)
+        MERGE (customer)-[new_rental:HAS_RENTED {id: old_rental.id}]->(movie)
+          ON CREATE SET new_rental.date = old_rental.date
+        DELETE old_rental
+      } IN TRANSACTIONS
+      CALL (inventory) {
+        DELETE inventory
+      } IN TRANSACTIONS
