@@ -16,9 +16,20 @@
  */
 package org.neo4j.importer;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import java.io.File;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.sql.DriverManager;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.neo4j.cypherdsl.core.Cypher;
@@ -43,49 +54,22 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
 import org.testcontainers.utility.MountableFile;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
-import java.sql.DriverManager;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-
-import static org.assertj.core.api.Assertions.assertThat;
-
 @Testcontainers
 public class Neo4jAdminExampleIT {
 
     private static final String SHARED_FOLDER = "/admin-import/";
 
-    @BeforeAll
-    static void prepareCredentials() throws Exception {
-        copyGcpAppCredentialsTo("credentials.json");
-    }
-
     @Container
-    private static final GenericContainer<?> NEO4J =
-            new Neo4jContainer<>(DockerImageName.parse(System.getenv("BLEEDING_EDGE_NEO4J"))
-                    .asCompatibleSubstituteFor("neo4j"))
-                    .withEnv("NEO4J_ACCEPT_LICENSE_AGREEMENT", "yes")
-                    .withEnv("GOOGLE_APPLICATION_CREDENTIALS", "/import/credentials.json")
-                    .withNeo4jConfig("internal.dbms.cloud.storage.gs.project_id", "team-connectors-dev")
-                    .withAdminPassword("letmein!")
-                    .withCreateContainerCmdModifier(cmd -> cmd.withUser("neo4j"))
-                    .withFileSystemBind(
-                            MountableFile.forClasspathResource(SHARED_FOLDER).getFilesystemPath(),
-                            "/import",
-                            BindMode.READ_ONLY)
-                    .withLogConsumer(frame -> System.out.println(frame.getUtf8String()));
+    private static final GenericContainer<?> NEO4J = new Neo4jContainer<>(
+                    DockerImageName.parse(System.getenv("BLEEDING_EDGE_NEO4J")).asCompatibleSubstituteFor("neo4j"))
+            .withEnv("NEO4J_ACCEPT_LICENSE_AGREEMENT", "yes")
+            .withAdminPassword("letmein!")
+            .withCreateContainerCmdModifier(cmd -> cmd.withUser("neo4j"))
+            .withFileSystemBind(
+                    MountableFile.forClasspathResource(SHARED_FOLDER).getFilesystemPath(),
+                    "/import",
+                    BindMode.READ_ONLY)
+            .withLogConsumer(frame -> System.out.print(frame.getUtf8String()));
 
     private static final String TARGET_DATABASE = "dvdrental";
 
@@ -93,7 +77,9 @@ public class Neo4jAdminExampleIT {
 
     @BeforeEach
     void prepare() {
-        driver = GraphDatabase.driver(String.format("bolt://%s:%d".formatted(NEO4J.getHost(), NEO4J.getMappedPort(7687))), AuthTokens.basic("neo4j", "letmein!"));
+        driver = GraphDatabase.driver(
+                String.format("bolt://%s:%d".formatted(NEO4J.getHost(), NEO4J.getMappedPort(7687))),
+                AuthTokens.basic("neo4j", "letmein!"));
         driver.verifyConnectivity();
     }
 
@@ -120,14 +106,7 @@ public class Neo4jAdminExampleIT {
         assertNodeCount(driver, "Category", 16L);
         assertNodeCount(driver, "Customer", 599L);
         assertNodeCount(driver, "Movie", 1000L);
-        assertNodeCount(driver, "Movie", 4581L);
-    }
-
-    private static void copyGcpAppCredentialsTo(String fileName) throws Exception {
-        var home = System.getProperty("user.home");
-        var creds = Path.of(home, ".config", "gcloud", "application_default_credentials.json");
-        System.out.println(creds);
-        Files.copy(creds, new File(pathFor(SHARED_FOLDER), fileName).toPath(), StandardCopyOption.REPLACE_EXISTING);
+        assertNodeCount(driver, "Inventory", 4581L);
     }
 
     private static void assertNodeCount(Driver driver, String label, long expectedCount) {
@@ -135,11 +114,13 @@ public class Neo4jAdminExampleIT {
         var query = Cypher.match(node)
                 .returning(Cypher.count(node.getRequiredSymbolicName()).as("count"))
                 .build();
-        var records = driver.executableQuery(query.getCypher()).execute().records();
+        var records = driver.executableQuery(query.getCypher())
+                .withConfig(QueryConfig.builder().withDatabase(TARGET_DATABASE).build())
+                .execute()
+                .records();
         assertThat(records).hasSize(1);
         assertThat(records.getFirst().get("count").asLong()).isEqualTo(expectedCount);
     }
-
 
     public static class ParquetSourceProvider implements SourceProvider<ParquetSource> {
 
@@ -186,8 +167,7 @@ public class Neo4jAdminExampleIT {
             for (Target target : specification.getTargets().getAll()) {
                 switch (target) {
                     case NodeTarget nodeTarget -> {
-                        List<String> parquetHeader = readParquetHeader(specification, nodeTarget.getSource());
-                        copyFile(parquetHeader, nodeTarget);
+                        copyFile(specification.findSourceByName(nodeTarget.getSource()), nodeTarget);
                     }
                     case RelationshipTarget relationshipTarget -> {
                         // TODO
@@ -211,11 +191,10 @@ public class Neo4jAdminExampleIT {
 
         private static String[] importCommand(ImportSpecification specification, String database) {
             var command = new StringBuilder();
-            command.append("neo4j-admin database import full --input-type=parquet ");
+            command.append("neo4j-admin database import full --verbose --input-type=parquet ");
             command.append(database);
             Targets targets = specification.getTargets();
             for (NodeTarget nodeTarget : targets.getNodes()) {
-                var source = (ParquetSource) specification.findSourceByName(nodeTarget.getSource());
                 command.append(" --nodes=");
                 command.append(String.join(":", nodeTarget.getLabels()));
                 command.append("=");
@@ -227,36 +206,48 @@ public class Neo4jAdminExampleIT {
         }
 
         // FIXME: generate data in parquet format
-        private void copyFile(List<String> fields, NodeTarget nodeTarget) throws IOException {
+        private void copyFile(Source source, NodeTarget nodeTarget) throws Exception {
+            assertThat(source).isInstanceOf(ParquetSource.class);
             File parquetFile = new File(sharedFolder, fileName(nodeTarget));
-            try (var writer = new BufferedWriter(new FileWriter(parquetFile))) {
-                var keyProperties = new HashSet<>(nodeTarget.getKeyProperties());
-                var mappings = indexByField(nodeTarget.getProperties());
-                var count = 0;
-                for (String field : fields) {
-                    var property = mappings.get(field);
-                    if (property == null) {
-                        // parquet field not mapped to a property
-                        writer.append(":IGNORE");
-                    } else {
-                        writer.append(property);
-                        if (keyProperties.contains(property)) {
-                            writer.append(idSpaceFor(nodeTarget));
-                        }
-                    }
-                    if (count++ < fields.size() - 1) {
-                        writer.append(",");
-                    }
-                }
+            List<String> fields = readParquetHeader(source);
+            Map<String, String> fieldMappings = computeFieldMappings(fields, nodeTarget);
+
+            try (var connection = DriverManager.getConnection("jdbc:duckdb:");
+                    var statement = connection.prepareStatement(String.format(
+                            "COPY (SELECT %s FROM read_parquet($1)) TO '" + parquetFile.getAbsolutePath()
+                                    + "' (FORMAT 'parquet', CODEC 'zstd')",
+                            String.join(
+                                    ", ",
+                                    fieldMappings.entrySet().stream()
+                                            .map(e -> String.format("%s AS \"%s\"", e.getKey(), e.getValue()))
+                                            .toList())))) {
+
+                statement.setString(1, ((ParquetSource) source).uri());
+                statement.execute();
             }
         }
 
+        private static Map<String, String> computeFieldMappings(List<String> fields, NodeTarget nodeTarget) {
+            var mappings = indexByField(nodeTarget.getProperties());
+            var keyProperties = new HashSet<>(nodeTarget.getKeyProperties());
+
+            for (String field : fields) {
+                var property = mappings.get(field);
+                if (property != null) {
+                    mappings.put(
+                            field,
+                            String.format(
+                                    "%s%s", property, keyProperties.contains(property) ? idSpaceFor(nodeTarget) : ""));
+                }
+            }
+
+            return mappings;
+        }
+
         // 🐤
-        private static List<String> readParquetHeader(ImportSpecification specification, String sourceName) throws Exception {
-            var source = specification.findSourceByName(sourceName);
-            assertThat(source).isInstanceOf(ParquetSource.class);
+        private static List<String> readParquetHeader(Source source) throws Exception {
             try (var connection = DriverManager.getConnection("jdbc:duckdb:");
-                 var statement = connection.prepareStatement("DESCRIBE (SELECT * FROM read_parquet($1))")) {
+                    var statement = connection.prepareStatement("DESCRIBE (SELECT * FROM read_parquet($1))")) {
                 statement.setString(1, ((ParquetSource) source).uri());
                 var fields = new ArrayList<String>();
                 try (var results = statement.executeQuery()) {
@@ -275,7 +266,7 @@ public class Neo4jAdminExampleIT {
         }
 
         private static String fileName(Target target) {
-            return "%s_header.parquet".formatted(target.getName());
+            return "%s.parquet".formatted(target.getName());
         }
 
         private static String idSpaceFor(NodeTarget nodeTarget) {
