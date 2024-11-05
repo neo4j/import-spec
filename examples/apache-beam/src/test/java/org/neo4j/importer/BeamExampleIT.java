@@ -192,6 +192,7 @@ public class BeamExampleIT {
                 GraphDatabase.driver(NEO4J.getBoltUrl(), AuthTokens.basic("neo4j", NEO4J.getAdminPassword()))) {
             driver.verifyConnectivity();
 
+            assertSchema(driver);
             assertNodeCount(driver, "Actor", 200L);
             assertNodeCount(driver, "Category", 16L);
             assertNodeCount(driver, "Customer", 599L);
@@ -244,6 +245,87 @@ public class BeamExampleIT {
             Action action, Map<String, PCollection<WriteCounters>> targetOutputs) {
         assertThat(action.getStage()).isEqualTo(ActionStage.END);
         return new ArrayList<>(targetOutputs.values());
+    }
+
+    private static void assertSchema(Driver driver) {
+        assertNodeConstraint(driver, "NODE_KEY", "Actor", "id");
+        assertNodeTypeConstraint(driver, "Actor", "first_name", "STRING");
+        assertNodeTypeConstraint(driver, "Actor", "id", "INTEGER");
+        assertNodeTypeConstraint(driver, "Actor", "last_name", "STRING");
+        assertNodeConstraint(driver, "NODE_KEY", "Category", "id");
+        assertNodeTypeConstraint(driver, "Category", "id", "INTEGER");
+        assertNodeTypeConstraint(driver, "Category", "name", "STRING");
+        assertNodeConstraint(driver, "UNIQUENESS", "Category", "name");
+        assertNodeConstraint(driver, "NODE_KEY", "Customer", "id");
+        assertNodeTypeConstraint(driver, "Customer", "creation_date", "DATE");
+        assertNodeTypeConstraint(driver, "Customer", "email", "STRING");
+        assertNodeTypeConstraint(driver, "Customer", "first_name", "STRING");
+        assertNodeTypeConstraint(driver, "Customer", "id", "INTEGER");
+        assertNodeTypeConstraint(driver, "Customer", "last_name", "STRING");
+        assertNodeConstraint(driver, "UNIQUENESS", "Customer", "email");
+        assertNodeConstraint(driver, "NODE_KEY", "Inventory", "id");
+        assertNodeTypeConstraint(driver, "Inventory", "id", "INTEGER");
+        assertNodeTypeConstraint(driver, "Inventory", "movie_id", "INTEGER");
+        assertNodeConstraint(driver, "NODE_KEY", "Movie", "id");
+        assertNodeTypeConstraint(driver, "Movie", "description", "STRING");
+        assertNodeTypeConstraint(driver, "Movie", "id", "INTEGER");
+        assertNodeTypeConstraint(driver, "Movie", "title", "STRING");
+        assertRelationshipConstraint(driver, "RELATIONSHIP_KEY", "HAS_RENTED", "id");
+        assertRelationshipTypeConstraint(driver, "HAS_RENTED", "id", "INTEGER");
+    }
+
+    private static void assertNodeConstraint(Driver driver, String constraintType, String label, String property) {
+        var records = driver.executableQuery(
+                        """
+                        SHOW CONSTRAINTS YIELD type, entityType, labelsOrTypes, properties \
+                        WHERE type = $constraintType AND entityType = 'NODE' AND labelsOrTypes = [$label] AND properties = [$property] \
+                        RETURN count(*) = 1 AS result""")
+                .withParameters(Map.of("constraintType", constraintType, "label", label, "property", property))
+                .execute()
+                .records();
+        assertThat(records).hasSize(1);
+        assertThat(records.getFirst().get("result").asBoolean()).isTrue();
+    }
+
+    private static void assertNodeTypeConstraint(Driver driver, String label, String property, String propertyType) {
+        var records = driver.executableQuery(
+                        """
+                        SHOW CONSTRAINTS YIELD type, entityType, labelsOrTypes, properties, propertyType \
+                        WHERE type = 'NODE_PROPERTY_TYPE' AND entityType = 'NODE' AND labelsOrTypes = [$label] AND properties = [$property] AND propertyType = $propertyType \
+                        RETURN count(*) = 1 AS result""")
+                .withParameters(Map.of("label", label, "property", property, "propertyType", propertyType))
+                .execute()
+                .records();
+        assertThat(records).hasSize(1);
+        assertThat(records.getFirst().get("result").asBoolean()).isTrue();
+    }
+
+    private static void assertRelationshipConstraint(
+            Driver driver, String constraintType, String relType, String property) {
+        var records = driver.executableQuery(
+                        """
+                        SHOW CONSTRAINTS YIELD type, entityType, labelsOrTypes, properties \
+                        WHERE type = $constraintType AND entityType = 'RELATIONSHIP' AND labelsOrTypes = [$type] AND properties = [$property] \
+                        RETURN count(*) = 1 AS result""")
+                .withParameters(Map.of("constraintType", constraintType, "type", relType, "property", property))
+                .execute()
+                .records();
+        assertThat(records).hasSize(1);
+        assertThat(records.getFirst().get("result").asBoolean()).isTrue();
+    }
+
+    private static void assertRelationshipTypeConstraint(
+            Driver driver, String relType, String property, String propertyType) {
+        var records = driver.executableQuery(
+                        """
+                        SHOW CONSTRAINTS YIELD type, entityType, labelsOrTypes, properties, propertyType \
+                        WHERE type = 'RELATIONSHIP_PROPERTY_TYPE' AND entityType = 'RELATIONSHIP' AND labelsOrTypes = [$type] AND properties = [$property] AND propertyType = $propertyType \
+                        RETURN count(*) = 1 AS result""")
+                .withParameters(Map.of("type", relType, "property", property, "propertyType", propertyType))
+                .execute()
+                .records();
+        assertThat(records).hasSize(1);
+        assertThat(records.getFirst().get("result").asBoolean()).isTrue();
     }
 
     private static void assertNodeCount(Driver driver, String label, long expectedCount) {
