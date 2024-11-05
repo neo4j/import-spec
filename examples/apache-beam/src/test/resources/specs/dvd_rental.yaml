@@ -234,10 +234,12 @@ actions:
       MATCH (inventory:Inventory)
       CALL (inventory) {
         MATCH (inventory)<-[old_rental:HAS_RENTED]-(customer:Customer)
-        MATCH (movie:Movie WHERE movie.id = inventory.movie_id)
-        MERGE (customer)-[new_rental:HAS_RENTED {id: old_rental.id}]->(movie)
-          ON CREATE SET new_rental.date = old_rental.date
+        WITH inventory, old_rental, old_rental.id AS rental_id, old_rental.date AS rental_date, customer
         DELETE old_rental
+        WITH inventory, rental_id, rental_date, customer
+        MATCH (movie:Movie WHERE movie.id = inventory.movie_id)
+        MERGE (customer)-[new_rental:HAS_RENTED {id: rental_id}]->(movie)
+          ON CREATE SET new_rental.date = rental_date
       } IN TRANSACTIONS
       CALL (inventory) {
         DELETE inventory

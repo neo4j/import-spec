@@ -26,8 +26,10 @@ import java.io.OutputStream;
 import java.io.Serializable;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -39,8 +41,11 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
+import org.apache.avro.LogicalTypes;
+import org.apache.avro.Schema;
 import org.apache.avro.Schema.Field;
 import org.apache.avro.Schema.Parser;
+import org.apache.avro.Schema.Type;
 import org.apache.avro.generic.GenericData.Array;
 import org.apache.avro.generic.GenericData.Record;
 import org.apache.avro.generic.GenericRecord;
@@ -65,6 +70,7 @@ import org.apache.beam.sdk.transforms.WithKeys;
 import org.apache.beam.sdk.values.KV;
 import org.apache.beam.sdk.values.PCollection;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.jetbrains.annotations.NotNull;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
@@ -75,10 +81,13 @@ import org.neo4j.cypherdsl.core.Node;
 import org.neo4j.cypherdsl.core.Statement;
 import org.neo4j.cypherdsl.core.StatementBuilder.OngoingReading;
 import org.neo4j.cypherdsl.core.SymbolicName;
+import org.neo4j.cypherdsl.core.internal.SchemaNames;
 import org.neo4j.driver.AuthTokens;
 import org.neo4j.driver.Driver;
 import org.neo4j.driver.GraphDatabase;
+import org.neo4j.driver.Session;
 import org.neo4j.driver.summary.ResultSummary;
+import org.neo4j.driver.summary.SummaryCounters;
 import org.neo4j.importer.v1.ImportSpecification;
 import org.neo4j.importer.v1.ImportSpecificationDeserializer;
 import org.neo4j.importer.v1.actions.Action;
@@ -91,6 +100,7 @@ import org.neo4j.importer.v1.sources.SourceProvider;
 import org.neo4j.importer.v1.targets.EntityTarget;
 import org.neo4j.importer.v1.targets.NodeTarget;
 import org.neo4j.importer.v1.targets.PropertyMapping;
+import org.neo4j.importer.v1.targets.PropertyType;
 import org.neo4j.importer.v1.targets.RelationshipTarget;
 import org.neo4j.importer.v1.targets.Target;
 import org.testcontainers.containers.Neo4jContainer;
@@ -118,9 +128,17 @@ public class BeamExampleIT {
                 var targetOutputs = new HashMap<String, PCollection<WriteCounters>>();
                 var sortedTargets = sortTargets(specification.getTargets().getAll());
                 sortedTargets.forEach(target -> {
+                    assertThat(target).isInstanceOf(EntityTarget.class);
+                    var schemaInitOutput = pipeline.apply(
+                                    "[target %s] Create single input".formatted(target.getName()), Create.of(1))
+                            .setCoder(VarIntCoder.of())
+                            .apply(
+                                    "[target %s] Init schema".formatted(target.getName()),
+                                    TargetSchemaIO.initSchema(
+                                            NEO4J.getBoltUrl(), NEO4J.getAdminPassword(), (EntityTarget) target));
+
                     var source = specification.findSourceByName(target.getSource());
                     assertThat(source).isInstanceOf(ParquetSource.class);
-
                     var sourceRecords = sourceOutputs.computeIfAbsent(source, (src) -> {
                         var parquetSource = (ParquetSource) src;
                         return pipeline.apply(
@@ -130,11 +148,10 @@ public class BeamExampleIT {
                                         .withCoder(GenericRecordCoder.create())
                                         .from(parquetSource.uri()));
                     });
-
                     var targetOutput = sourceRecords
                             .apply(
                                     "[target %s] Wait for implicit dependencies".formatted(target.getName()),
-                                    Wait.on(implicitDependenciesOf(target, targetOutputs)))
+                                    Wait.on(dependenciesOf(target, targetOutputs, schemaInitOutput)))
                             .setCoder(sourceRecords.getCoder())
                             .apply(
                                     "[target %s] Assign keys to records".formatted(target.getName()),
@@ -184,6 +201,17 @@ public class BeamExampleIT {
             assertRelationshipCount(driver, "Movie", "IN_CATEGORY", "Category", 1000L);
             assertRelationshipCount(driver, "Customer", "HAS_RENTED", "Movie", 16044L);
         }
+    }
+
+    private @NotNull List<PCollection<?>> dependenciesOf(
+            Target target,
+            Map<String, PCollection<WriteCounters>> targetOutputs,
+            PCollection<WriteCounters> schemaInitOutput) {
+        List<PCollection<?>> implicitDependencies = implicitDependenciesOf(target, targetOutputs);
+        var dependencies = new ArrayList<PCollection<?>>(1 + implicitDependencies.size());
+        dependencies.add(schemaInitOutput);
+        dependencies.addAll(implicitDependencies);
+        return dependencies;
     }
 
     private static List<Target> sortTargets(List<Target> targets) {
@@ -265,6 +293,239 @@ public class BeamExampleIT {
         @Override
         public String getName() {
             return name;
+        }
+    }
+
+    private static class TargetSchemaIO
+            extends PTransform<@NonNull PCollection<Integer>, @NonNull PCollection<WriteCounters>> {
+
+        private final String url;
+
+        private final String password;
+
+        private final EntityTarget target;
+
+        private TargetSchemaIO(String url, String password, EntityTarget target) {
+            this.url = url;
+            this.password = password;
+            this.target = target;
+        }
+
+        public static PTransform<@NonNull PCollection<Integer>, @NonNull PCollection<WriteCounters>> initSchema(
+                String url, String password, EntityTarget target) {
+            return new TargetSchemaIO(url, password, target);
+        }
+
+        @Override
+        public @NonNull PCollection<WriteCounters> expand(@NonNull PCollection<Integer> input) {
+            return input.apply(ParDo.of(TargetSchemaWriteFn.of(url, password, target)));
+        }
+
+        private static class TargetSchemaWriteFn extends DoFn<Integer, WriteCounters> {
+
+            private final String url;
+
+            private final String password;
+
+            private final EntityTarget target;
+
+            private transient Driver driver;
+
+            public TargetSchemaWriteFn(String url, String password, EntityTarget target) {
+                this.url = url;
+                this.password = password;
+                this.target = target;
+            }
+
+            public static DoFn<Integer, WriteCounters> of(String url, String password, EntityTarget target) {
+                return new TargetSchemaWriteFn(url, password, target);
+            }
+
+            @Setup
+            public void setUp() {
+                driver = GraphDatabase.driver(url, AuthTokens.basic("neo4j", password));
+                driver.verifyConnectivity();
+            }
+
+            @Teardown
+            public void tearDown() {
+                if (driver != null) {
+                    driver.close();
+                }
+            }
+
+            @ProcessElement
+            @SuppressWarnings("unused")
+            public void processElement(ProcessContext context) {
+                var schemaStatements =
+                        switch (target) {
+                            case NodeTarget nodeTarget -> generateNodeSchemaStatements(nodeTarget);
+                            case RelationshipTarget relationshipTarget -> generateRelationshipSchemaStatements(
+                                    relationshipTarget);
+                            default -> throw new RuntimeException(
+                                    "unsupported target type: %s".formatted(target.getClass()));
+                        };
+
+                if (schemaStatements.isEmpty()) {
+                    return;
+                }
+                try (Session session = driver.session()) {
+                    List<ResultSummary> summaries = session.executeWrite(tx -> schemaStatements.stream()
+                            .map(statement -> tx.run(statement).consume())
+                            .toList());
+                    context.output(WriteCounters.ofCombined(summaries));
+                }
+            }
+
+            private List<String> generateNodeSchemaStatements(NodeTarget nodeTarget) {
+                var schema = nodeTarget.getSchema();
+                if (schema == null) {
+                    return Collections.emptyList();
+                }
+                var statements = new ArrayList<String>();
+                statements.addAll(schema.getKeyConstraints().stream()
+                        .map(constraint -> "CREATE CONSTRAINT %s FOR (n:%s) REQUIRE (%s) IS NODE KEY"
+                                .formatted(
+                                        generateName(
+                                                nodeTarget, "key", constraint.getLabel(), constraint.getProperties()),
+                                        sanitize(constraint.getLabel()),
+                                        constraint.getProperties().stream()
+                                                .map(TargetSchemaWriteFn::sanitize)
+                                                .map(prop -> propertyOf("n", prop))
+                                                .collect(Collectors.joining(","))))
+                        .toList());
+                statements.addAll(schema.getUniqueConstraints().stream()
+                        .map(constraint -> "CREATE CONSTRAINT %s FOR (n:%s) REQUIRE (%s) IS UNIQUE"
+                                .formatted(
+                                        generateName(
+                                                nodeTarget,
+                                                "unique",
+                                                constraint.getLabel(),
+                                                constraint.getProperties()),
+                                        sanitize(constraint.getLabel()),
+                                        constraint.getProperties().stream()
+                                                .map(TargetSchemaWriteFn::sanitize)
+                                                .map(prop -> propertyOf("n", prop))
+                                                .collect(Collectors.joining(","))))
+                        .toList());
+                statements.addAll(schema.getTypeConstraints().stream()
+                        .map(constraint -> "CREATE CONSTRAINT %s FOR (n:%s) REQUIRE n.%s IS :: %s"
+                                .formatted(
+                                        generateName(
+                                                nodeTarget,
+                                                "type",
+                                                constraint.getLabel(),
+                                                List.of(constraint.getProperty())),
+                                        sanitize(constraint.getLabel()),
+                                        sanitize(constraint.getProperty()),
+                                        propertyType(findPropertyType(
+                                                nodeTarget.getProperties(), constraint.getProperty()))))
+                        .toList());
+                return statements;
+            }
+
+            private List<String> generateRelationshipSchemaStatements(RelationshipTarget relationshipTarget) {
+                var schema = relationshipTarget.getSchema();
+                if (schema == null) {
+                    return Collections.emptyList();
+                }
+                var statements = new ArrayList<String>();
+                statements.addAll(schema.getKeyConstraints().stream()
+                        .map(constraint -> "CREATE CONSTRAINT %s FOR ()-[r:%s]-() REQUIRE (%s) IS RELATIONSHIP KEY"
+                                .formatted(
+                                        generateName(
+                                                relationshipTarget,
+                                                "key",
+                                                relationshipTarget.getType(),
+                                                constraint.getProperties()),
+                                        sanitize(relationshipTarget.getType()),
+                                        constraint.getProperties().stream()
+                                                .map(TargetSchemaWriteFn::sanitize)
+                                                .map(prop -> propertyOf("r", prop))
+                                                .collect(Collectors.joining(","))))
+                        .toList());
+                statements.addAll(schema.getUniqueConstraints().stream()
+                        .map(constraint -> "CREATE CONSTRAINT %s FOR ()-[r:%s]-() REQUIRE (%s) IS UNIQUE"
+                                .formatted(
+                                        generateName(
+                                                relationshipTarget,
+                                                "unique",
+                                                relationshipTarget.getType(),
+                                                constraint.getProperties()),
+                                        sanitize(relationshipTarget.getType()),
+                                        constraint.getProperties().stream()
+                                                .map(TargetSchemaWriteFn::sanitize)
+                                                .map(prop -> propertyOf("r", prop))
+                                                .collect(Collectors.joining(","))))
+                        .toList());
+                statements.addAll(schema.getTypeConstraints().stream()
+                        .map(constraint -> "CREATE CONSTRAINT %s FOR ()-[r:%s]-() REQUIRE r.%s IS :: %s"
+                                .formatted(
+                                        generateName(
+                                                relationshipTarget,
+                                                "type",
+                                                relationshipTarget.getType(),
+                                                List.of(constraint.getProperty())),
+                                        sanitize(relationshipTarget.getType()),
+                                        sanitize(constraint.getProperty()),
+                                        propertyType(findPropertyType(
+                                                relationshipTarget.getProperties(), constraint.getProperty()))))
+                        .toList());
+                return statements;
+            }
+
+            private static PropertyType findPropertyType(List<PropertyMapping> mappings, String property) {
+                var result = mappings.stream()
+                        .filter(mapping -> mapping.getTargetProperty().equals(property))
+                        .map(PropertyMapping::getTargetPropertyType)
+                        .toList();
+                assertThat(result).hasSize(1);
+                return result.getFirst();
+            }
+
+            private static String generateName(
+                    EntityTarget target, String type, String label, List<String> properties) {
+                return sanitize("%s_%s_%s_%s".formatted(target.getName(), type, label, String.join("-", properties)));
+            }
+
+            private static String propertyOf(String container, String property) {
+                return "%s.%s".formatted(container, property);
+            }
+
+            private static String sanitize(String element) {
+                var result = SchemaNames.sanitize(element);
+                assertThat(result).isPresent();
+                return result.get();
+            }
+
+            private static String propertyType(PropertyType propertyType) {
+                return switch (propertyType) {
+                    case BOOLEAN -> "BOOLEAN";
+                    case BOOLEAN_ARRAY -> "LIST<BOOLEAN NOT NULL>";
+                    case DATE -> "DATE";
+                    case DATE_ARRAY -> "LIST<DATE NOT NULL>";
+                    case DURATION -> "DURATION";
+                    case DURATION_ARRAY -> "LIST<DURATION NOT NULL>";
+                    case FLOAT -> "FLOAT";
+                    case FLOAT_ARRAY -> "LIST<FLOAT NOT NULL>";
+                    case INTEGER -> "INTEGER";
+                    case INTEGER_ARRAY -> "LIST<INTEGER NOT NULL>";
+                    case LOCAL_DATETIME -> "LOCAL DATETIME";
+                    case LOCAL_DATETIME_ARRAY -> "LIST<LOCAL DATETIME NOT NULL>";
+                    case LOCAL_TIME -> "LOCAL TIME";
+                    case LOCAL_TIME_ARRAY -> "LIST<LOCAL TIME NOT NULL>";
+                    case POINT -> "POINT";
+                    case POINT_ARRAY -> "LIST<POINT NOT NULL>";
+                    case STRING -> "STRING";
+                    case STRING_ARRAY -> "LIST<STRING NOT NULL>";
+                    case ZONED_DATETIME -> "ZONED DATETIME";
+                    case ZONED_DATETIME_ARRAY -> "LIST<ZONED DATETIME NOT NULL>";
+                    case ZONED_TIME -> "ZONED TIME";
+                    case ZONED_TIME_ARRAY -> "LIST<ZONED TIME NOT NULL>";
+                    default -> throw new IllegalArgumentException(
+                            String.format("Unsupported property type: %s", propertyType));
+                };
+            }
         }
     }
 
@@ -488,7 +749,7 @@ public class BeamExampleIT {
                             var values = new HashMap<String, Object>(fields.size());
                             for (Field field : fields) {
                                 Object value = record.get(field.name());
-                                convertRecordValue(value)
+                                convertRecordValue(field, value)
                                         .ifPresent(convertedValue -> values.put(field.name(), convertedValue));
                             }
                             return values;
@@ -496,14 +757,20 @@ public class BeamExampleIT {
                         .collect(Collectors.toUnmodifiableList());
             }
 
-            private static Optional<Object> convertRecordValue(Object value) {
+            private static Optional<Object> convertRecordValue(Field field, Object value) {
+                if (field.schema().getTypes().stream()
+                        .filter(type -> !type.equals(Schema.create(Type.NULL)))
+                        .map(Schema::getLogicalType)
+                        .anyMatch(type -> LogicalTypes.date().equals(type))) {
+                    return Optional.of(LocalDate.ofEpochDay(((Number) value).longValue()));
+                }
                 if (value instanceof Utf8 utf8Value) {
                     return Optional.of(utf8Value.toString());
                 }
                 if (value instanceof Array<?> arrayValue) {
                     var values = new ArrayList<>(arrayValue.size());
                     for (Object element : arrayValue) {
-                        convertRecordValue(element).ifPresent(values::add);
+                        convertRecordValue(field, element).ifPresent(values::add);
                     }
                     return Optional.of(values);
                 }
@@ -566,19 +833,88 @@ public class BeamExampleIT {
 
         private final int nodesDeleted;
 
+        private final int relationshipsCreated;
+
+        private final int relationshipsDeleted;
+
         private final int propertiesSet;
+
+        private final int constraintsAdded;
+
+        private final int constraintsRemoved;
+
+        private final int indexesAdded;
+
+        private final int indexesRemoved;
 
         public static WriteCounters of(ResultSummary summary) {
             return new WriteCounters(summary);
         }
 
         public WriteCounters(ResultSummary summary) {
-            var counters = summary.counters();
-            this.labelsAdded = counters.labelsAdded();
-            this.labelsRemoved = counters.labelsRemoved();
-            this.nodesCreated = counters.nodesCreated();
-            this.nodesDeleted = counters.nodesDeleted();
-            this.propertiesSet = counters.propertiesSet();
+            this(asMap(summary.counters()));
+        }
+
+        private WriteCounters(Map<String, Integer> counters) {
+            this.labelsAdded = counters.getOrDefault("labelsAdded", 0);
+            this.labelsRemoved = counters.getOrDefault("labelsRemoved", 0);
+            this.nodesCreated = counters.getOrDefault("nodesCreated", 0);
+            this.nodesDeleted = counters.getOrDefault("nodesDeleted", 0);
+            this.relationshipsCreated = counters.getOrDefault("relationshipsCreated", 0);
+            this.relationshipsDeleted = counters.getOrDefault("relationshipsDeleted", 0);
+            this.propertiesSet = counters.getOrDefault("propertiesSet", 0);
+            this.constraintsAdded = counters.getOrDefault("constraintsAdded", 0);
+            this.constraintsRemoved = counters.getOrDefault("constraintsRemoved", 0);
+            this.indexesAdded = counters.getOrDefault("indexesAdded", 0);
+            this.indexesRemoved = counters.getOrDefault("indexesRemoved", 0);
+        }
+
+        public static WriteCounters ofCombined(List<ResultSummary> summaries) {
+            var combinedCounters = summaries.stream()
+                    .map(summary -> asMap(summary.counters()))
+                    .reduce(new HashMap<>(), WriteCounters::combine);
+            return new WriteCounters(combinedCounters);
+        }
+
+        private static Map<String, Integer> asMap(SummaryCounters counts) {
+            Map<String, Integer> result = new HashMap<>(10);
+            result.put("labelsAdded", counts.labelsAdded());
+            result.put("labelsRemoved", counts.labelsRemoved());
+            result.put("nodesCreated", counts.nodesCreated());
+            result.put("nodesDeleted", counts.nodesDeleted());
+            result.put("relationshipsCreated", counts.relationshipsCreated());
+            result.put("relationshipsDeleted", counts.relationshipsDeleted());
+            result.put("propertiesSet", counts.propertiesSet());
+            result.put("constraintsAdded", counts.constraintsAdded());
+            result.put("constraintsRemoved", counts.constraintsRemoved());
+            result.put("indexesAdded", counts.indexesAdded());
+            result.put("indexesRemoved", counts.indexesRemoved());
+            return result;
+        }
+
+        private static Map<String, Integer> combine(Map<String, Integer> map1, Map<String, Integer> map2) {
+            Map<String, Integer> result = new HashMap<>(10);
+            result.put("labelsAdded", map1.getOrDefault("labelsAdded", 0) + map2.getOrDefault("labelsAdded", 0));
+            result.put("labelsRemoved", map1.getOrDefault("labelsRemoved", 0) + map2.getOrDefault("labelsRemoved", 0));
+            result.put("nodesCreated", map1.getOrDefault("nodesCreated", 0) + map2.getOrDefault("nodesCreated", 0));
+            result.put("nodesDeleted", map1.getOrDefault("nodesDeleted", 0) + map2.getOrDefault("nodesDeleted", 0));
+            result.put(
+                    "relationshipsCreated",
+                    map1.getOrDefault("relationshipsCreated", 0) + map2.getOrDefault("relationshipsCreated", 0));
+            result.put(
+                    "relationshipsDeleted",
+                    map1.getOrDefault("relationshipsDeleted", 0) + map2.getOrDefault("relationshipsDeleted", 0));
+            result.put("propertiesSet", map1.getOrDefault("propertiesSet", 0) + map2.getOrDefault("propertiesSet", 0));
+            result.put(
+                    "constraintsAdded",
+                    map1.getOrDefault("constraintsAdded", 0) + map2.getOrDefault("constraintsAdded", 0));
+            result.put(
+                    "constraintsRemoved",
+                    map1.getOrDefault("constraintsRemoved", 0) + map2.getOrDefault("constraintsRemoved", 0));
+            result.put("indexesAdded", map1.getOrDefault("indexesAdded", 0) + map2.getOrDefault("indexesAdded", 0));
+            result.put(
+                    "indexesRemoved", map1.getOrDefault("indexesRemoved", 0) + map2.getOrDefault("indexesRemoved", 0));
+            return result;
         }
 
         @SuppressWarnings("unused")
@@ -602,8 +938,38 @@ public class BeamExampleIT {
         }
 
         @SuppressWarnings("unused")
+        public int getRelationshipsCreated() {
+            return relationshipsCreated;
+        }
+
+        @SuppressWarnings("unused")
+        public int getRelationshipsDeleted() {
+            return relationshipsDeleted;
+        }
+
+        @SuppressWarnings("unused")
         public int getPropertiesSet() {
             return propertiesSet;
+        }
+
+        @SuppressWarnings("unused")
+        public int getConstraintsAdded() {
+            return constraintsAdded;
+        }
+
+        @SuppressWarnings("unused")
+        public int getConstraintsRemoved() {
+            return constraintsRemoved;
+        }
+
+        @SuppressWarnings("unused")
+        public int getIndexesAdded() {
+            return indexesAdded;
+        }
+
+        @SuppressWarnings("unused")
+        public int getIndexesRemoved() {
+            return indexesRemoved;
         }
 
         @Override
@@ -614,12 +980,29 @@ public class BeamExampleIT {
                     && labelsRemoved == that.labelsRemoved
                     && nodesCreated == that.nodesCreated
                     && nodesDeleted == that.nodesDeleted
-                    && propertiesSet == that.propertiesSet;
+                    && relationshipsCreated == that.relationshipsCreated
+                    && relationshipsDeleted == that.relationshipsDeleted
+                    && propertiesSet == that.propertiesSet
+                    && constraintsAdded == that.constraintsAdded
+                    && constraintsRemoved == that.constraintsRemoved
+                    && indexesAdded == that.indexesAdded
+                    && indexesRemoved == that.indexesRemoved;
         }
 
         @Override
         public int hashCode() {
-            return Objects.hash(labelsAdded, labelsRemoved, nodesCreated, nodesDeleted, propertiesSet);
+            return Objects.hash(
+                    labelsAdded,
+                    labelsRemoved,
+                    nodesCreated,
+                    nodesDeleted,
+                    relationshipsCreated,
+                    relationshipsDeleted,
+                    propertiesSet,
+                    constraintsAdded,
+                    constraintsRemoved,
+                    indexesAdded,
+                    indexesRemoved);
         }
 
         @Override
@@ -628,8 +1011,14 @@ public class BeamExampleIT {
                     + labelsAdded + ", labelsRemoved="
                     + labelsRemoved + ", nodesCreated="
                     + nodesCreated + ", nodesDeleted="
-                    + nodesDeleted + ", propertiesSet="
-                    + propertiesSet + '}';
+                    + nodesDeleted + ", relationshipsCreated="
+                    + relationshipsCreated + ", relationshipsDeleted="
+                    + relationshipsDeleted + ", propertiesSet="
+                    + propertiesSet + ", constraintsAdded="
+                    + constraintsAdded + ", constraintsRemoved="
+                    + constraintsRemoved + ", indexesAdded="
+                    + indexesAdded + ", indexesRemoved="
+                    + indexesRemoved + '}';
         }
     }
 
