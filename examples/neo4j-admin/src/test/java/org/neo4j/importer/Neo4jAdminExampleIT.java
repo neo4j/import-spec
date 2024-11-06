@@ -307,6 +307,10 @@ public class Neo4jAdminExampleIT {
                 }
             }
 
+            // migrate temporal typed properties from INTEGER
+            // This is a temporary post-processing step until we have complete support for Parquet types.
+            migrateTemporalProperties();
+
             // create schema
             for (String statement :
                     generateSchemaStatements(specification.getTargets().getAll())) {
@@ -318,27 +322,26 @@ public class Neo4jAdminExampleIT {
             }
         }
 
-        private static String[] importCommand(ImportSpecification specification, String database) {
-            var command = new StringBuilder();
-            command.append("neo4j-admin database import full --verbose --input-type=parquet ");
-            command.append(database);
+        private void migrateTemporalProperties() {
+            try (var session = driver.session(SessionConfig.forDatabase(targetDatabase))) {
+                session.run(
+                                """
+                    MATCH (customer:Customer)
+                    CALL (customer) {
+                      MATCH (customer)
+                      SET customer.creation_date = date({year: 1970, month: 1, day: 1}) + duration({days: customer.creation_date})
+                    } IN TRANSACTIONS""")
+                        .consume();
 
-            Targets targets = specification.getTargets();
-            for (NodeTarget nodeTarget : targets.getNodes()) {
-                command.append(" --nodes=");
-                command.append(String.join(":", nodeTarget.getLabels()));
-                command.append("=");
-                command.append("/import/%s".formatted(fileName(nodeTarget)));
+                session.run(
+                                """
+                    MATCH ()-[rental:HAS_RENTED]->()
+                    CALL (rental) {
+                      WITH rental
+                      SET rental.date = datetime({epochMillis: rental.date/1000})
+                    } IN TRANSACTIONS""")
+                        .consume();
             }
-
-            for (RelationshipTarget relationshipTarget : targets.getRelationships()) {
-                command.append(" --relationships=");
-                command.append(relationshipTarget.getType());
-                command.append("=");
-                command.append("/import/%s".formatted(fileName(relationshipTarget)));
-            }
-
-            return command.toString().split(" ");
         }
 
         private void copyFile(ImportSpecification specification, NodeTarget nodeTarget) throws Exception {
@@ -392,6 +395,29 @@ public class Neo4jAdminExampleIT {
                 statement.setString(1, source.uri());
                 statement.execute();
             }
+        }
+
+        private static String[] importCommand(ImportSpecification specification, String database) {
+            var command = new StringBuilder();
+            command.append("neo4j-admin database import full --verbose --input-type=parquet ");
+            command.append(database);
+
+            Targets targets = specification.getTargets();
+            for (NodeTarget nodeTarget : targets.getNodes()) {
+                command.append(" --nodes=");
+                command.append(String.join(":", nodeTarget.getLabels()));
+                command.append("=");
+                command.append("/import/%s".formatted(fileName(nodeTarget)));
+            }
+
+            for (RelationshipTarget relationshipTarget : targets.getRelationships()) {
+                command.append(" --relationships=");
+                command.append(relationshipTarget.getType());
+                command.append("=");
+                command.append("/import/%s".formatted(fileName(relationshipTarget)));
+            }
+
+            return command.toString().split(" ");
         }
 
         private static Map<String, String> computeFieldMappings(List<String> fields, NodeTarget nodeTarget) {
@@ -473,7 +499,7 @@ public class Neo4jAdminExampleIT {
             return ":%s(%s-%s)".formatted(id, nodeTarget.getName(), String.join("|", nodeTarget.getLabels()));
         }
 
-        private List<String> generateSchemaStatements(List<? extends Target> targets) {
+        private static List<String> generateSchemaStatements(List<? extends Target> targets) {
             return targets.stream()
                     .flatMap(target -> switch (target) {
                         case NodeTarget nodeTarget -> generateNodeSchemaStatements(nodeTarget);
@@ -484,7 +510,7 @@ public class Neo4jAdminExampleIT {
                     .toList();
         }
 
-        private Stream<String> generateNodeSchemaStatements(NodeTarget nodeTarget) {
+        private static Stream<String> generateNodeSchemaStatements(NodeTarget nodeTarget) {
             var schema = nodeTarget.getSchema();
             if (schema == null) {
                 return Stream.empty();
@@ -541,7 +567,7 @@ public class Neo4jAdminExampleIT {
             return statements.stream();
         }
 
-        private Stream<String> generateRelationshipSchemaStatements(RelationshipTarget relationshipTarget) {
+        private static Stream<String> generateRelationshipSchemaStatements(RelationshipTarget relationshipTarget) {
             var schema = relationshipTarget.getSchema();
             if (schema == null) {
                 return Stream.empty();

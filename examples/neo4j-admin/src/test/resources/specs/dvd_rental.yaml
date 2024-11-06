@@ -226,26 +226,6 @@ targets:
             property: id
 
 actions:
-  - name: convert epoch days into date for customers
-    type: cypher
-    stage: end
-    execution_mode: autocommit
-    query: |
-      MATCH (customer:Customer)
-      CALL (customer) {
-        MATCH (customer)
-        SET customer.creation_date = date({year: 1970, month: 1, day: 1}) + duration({days: customer.creation_date})
-      } IN TRANSACTIONS
-  - name: convert epoch days into date for HAS_RENTED
-    type: cypher
-    stage: end
-    execution_mode: autocommit
-    query: |
-      MATCH ()-[rental:HAS_RENTED]->()
-      CALL (rental) {
-        WITH rental
-        SET rental.date = datetime({epochMillis: rental.date/1000})
-      } IN TRANSACTIONS
   - name: remove inventory indirection
     type: cypher
     stage: end
@@ -254,10 +234,12 @@ actions:
       MATCH (inventory:Inventory)
       CALL (inventory) {
         MATCH (inventory)<-[old_rental:HAS_RENTED]-(customer:Customer)
-        MATCH (movie:Movie WHERE movie.id = inventory.movie_id)
-        MERGE (customer)-[new_rental:HAS_RENTED {id: old_rental.id}]->(movie)
-          ON CREATE SET new_rental.date = old_rental.date
+        WITH inventory, old_rental, old_rental.id AS rental_id, old_rental.date AS rental_date, customer
         DELETE old_rental
+        WITH inventory, rental_id, rental_date, customer
+        MATCH (movie:Movie WHERE movie.id = inventory.movie_id)
+        MERGE (customer)-[new_rental:HAS_RENTED {id: rental_id}]->(movie)
+          ON CREATE SET new_rental.date = rental_date
       } IN TRANSACTIONS
       CALL (inventory) {
         DELETE inventory
