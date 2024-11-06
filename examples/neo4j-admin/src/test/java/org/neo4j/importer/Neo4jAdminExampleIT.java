@@ -49,6 +49,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
 import org.testcontainers.utility.MountableFile;
 
+@SuppressWarnings({"SameParameterValue", "resource"})
 @Testcontainers
 public class Neo4jAdminExampleIT {
 
@@ -256,6 +257,7 @@ public class Neo4jAdminExampleIT {
         }
     }
 
+    @SuppressWarnings("SqlNoDataSourceInspection")
     static class Neo4jAdmin {
 
         private final File sharedFolder;
@@ -268,20 +270,6 @@ public class Neo4jAdminExampleIT {
             this.sharedFolder = sharedFolder;
             this.driver = driver;
             this.targetDatabase = targetDatabase;
-        }
-
-        public void copyFiles(ImportSpecification specification) throws Exception {
-            for (Target target : specification.getTargets().getAll()) {
-                switch (target) {
-                    case NodeTarget nodeTarget -> {
-                        copyFile(specification, nodeTarget);
-                    }
-                    case RelationshipTarget relationshipTarget -> {
-                        copyFile(specification, relationshipTarget);
-                    }
-                    default -> throw new RuntimeException("unsupported target type: %s".formatted(target.getClass()));
-                }
-            }
         }
 
         public void executeImport(ImportSpecification specification, GenericContainer<?> neo4j) throws Exception {
@@ -341,6 +329,16 @@ public class Neo4jAdminExampleIT {
                       SET rental.date = datetime({epochMillis: rental.date/1000})
                     } IN TRANSACTIONS""")
                         .consume();
+            }
+        }
+
+        public void copyFiles(ImportSpecification specification) throws Exception {
+            for (Target target : specification.getTargets().getAll()) {
+                switch (target) {
+                    case NodeTarget nodeTarget -> copyFile(specification, nodeTarget);
+                    case RelationshipTarget relationshipTarget -> copyFile(specification, relationshipTarget);
+                    default -> throw new RuntimeException("unsupported target type: %s".formatted(target.getClass()));
+                }
             }
         }
 
