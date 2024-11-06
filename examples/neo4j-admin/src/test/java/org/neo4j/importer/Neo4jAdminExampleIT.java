@@ -54,9 +54,16 @@ public class Neo4jAdminExampleIT {
 
     private static final String SHARED_FOLDER = "/admin-import/";
 
+    // neo4j-admin database import from Parquet files is an unreleased feature, and we are using a custom docker image
+    // for that reason, until the feature is publicly available. Set this image name using
+    // `NEO4J_PRE_RELEASE_DOCKER_IMAGE` environment variable.
     @Container
-    private static final GenericContainer<?> NEO4J = new Neo4jContainer<>(
-                    DockerImageName.parse(System.getenv("BLEEDING_EDGE_NEO4J")).asCompatibleSubstituteFor("neo4j"))
+    private static final GenericContainer<?> NEO4J = new Neo4jContainer<>(DockerImageName.parse(
+                            Optional.ofNullable(System.getenv("NEO4J_PRE_RELEASE_DOCKER_IMAGE"))
+                                    .orElseThrow(
+                                            () -> new IllegalArgumentException(
+                                                    "Docker image name is not set through NEO4J_PRE_RELEASE_DOCKER_IMAGE environment variable!")))
+                    .asCompatibleSubstituteFor("neo4j"))
             .withEnv("NEO4J_ACCEPT_LICENSE_AGREEMENT", "yes")
             .withAdminPassword("letmein!")
             .withCreateContainerCmdModifier(cmd -> cmd.withUser("neo4j"))
@@ -291,10 +298,12 @@ public class Neo4jAdminExampleIT {
 
             // run post actions
             for (Action action : specification.getActions()) {
-                if (action.getType() == ActionType.CYPHER && action.getStage() == ActionStage.END) {
-                    try (var session = driver.session(SessionConfig.forDatabase(targetDatabase))) {
-                        session.run(((CypherAction) action).getQuery()).consume();
-                    }
+                // we only support CYPHER actions that can only run at stage END
+                assertThat(action.getType()).isEqualTo(ActionType.CYPHER);
+                assertThat(action.getStage()).isEqualTo(ActionStage.END);
+
+                try (var session = driver.session(SessionConfig.forDatabase(targetDatabase))) {
+                    session.run(((CypherAction) action).getQuery()).consume();
                 }
             }
 
@@ -366,17 +375,19 @@ public class Neo4jAdminExampleIT {
             copyParquetSource((ParquetSource) source, parquetFile, fieldMappings);
         }
 
+        // 🐤
         private void copyParquetSource(ParquetSource source, File targetFile, Map<String, String> fieldMappings)
                 throws SQLException {
+            var renamedColumns = String.join(
+                    ", ",
+                    fieldMappings.entrySet().stream()
+                            .map(e -> String.format("%s AS \"%s\"", e.getKey(), e.getValue()))
+                            .toList());
+
             try (var connection = DriverManager.getConnection("jdbc:duckdb:");
                     var statement = connection.prepareStatement(String.format(
-                            "COPY (SELECT %s FROM read_parquet($1)) TO '" + targetFile.getAbsolutePath()
-                                    + "' (FORMAT 'parquet', CODEC 'zstd')",
-                            String.join(
-                                    ", ",
-                                    fieldMappings.entrySet().stream()
-                                            .map(e -> String.format("%s AS \"%s\"", e.getKey(), e.getValue()))
-                                            .toList())))) {
+                            "COPY (SELECT %s FROM read_parquet($1)) TO '%s' (FORMAT 'parquet', CODEC 'zstd')",
+                            renamedColumns, targetFile.getAbsolutePath()))) {
 
                 statement.setString(1, source.uri());
                 statement.execute();
