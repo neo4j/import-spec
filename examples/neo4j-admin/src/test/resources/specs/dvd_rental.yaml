@@ -226,6 +226,26 @@ targets:
             property: id
 
 actions:
+  - name: convert epoch days into date for customers
+    type: cypher
+    stage: end
+    execution_mode: autocommit
+    query: |
+      MATCH (customer:Customer)
+      CALL (customer) {
+        MATCH (customer)
+        SET customer.creation_date = date({year: 1970, month: 1, day: 1}) + duration({days: customer.creation_date})
+      } IN TRANSACTIONS
+  - name: convert epoch days into date for HAS_RENTED
+    type: cypher
+    stage: end
+    execution_mode: autocommit
+    query: |
+      MATCH ()-[rental:HAS_RENTED]->()
+      CALL (rental) {
+        WITH rental
+        SET rental.date = datetime({epochMillis: rental.date/1000})
+      } IN TRANSACTIONS
   - name: remove inventory indirection
     type: cypher
     stage: end
