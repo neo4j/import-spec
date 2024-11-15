@@ -16,6 +16,8 @@
  */
 package org.neo4j.importer.v1;
 
+import static java.util.stream.Collectors.toMap;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.StreamReadFeature;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -32,9 +34,12 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.ServiceLoader;
 import java.util.Set;
+import java.util.Stack;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.neo4j.importer.v1.actions.Action;
 import org.neo4j.importer.v1.actions.ActionDeserializer;
@@ -200,9 +205,12 @@ public class ImportSpecificationDeserializer {
         }
 
         Set<Class<? extends SpecificationValidator>> failedValidations = new HashSet<>(validators.size());
+        Map<Class<? extends SpecificationValidator>, SpecificationValidator> validatorsPerClass =
+                validators.stream().collect(toMap(SpecificationValidator::getClass, Function.identity()));
         var builder = SpecificationValidationResult.builder();
         validators.forEach(validator -> {
-            for (Class<? extends SpecificationValidator> dependent : validator.requires()) {
+            for (Class<? extends SpecificationValidator> dependent :
+                    resolveTransitiveRequires(validator, validatorsPerClass)) {
                 if (failedValidations.contains(dependent)) {
                     return;
                 }
@@ -215,6 +223,22 @@ public class ImportSpecificationDeserializer {
         if (!result.passes()) {
             throw new InvalidSpecificationException(result);
         }
+    }
+
+    private static Set<Class<? extends SpecificationValidator>> resolveTransitiveRequires(
+            SpecificationValidator validator,
+            Map<Class<? extends SpecificationValidator>, SpecificationValidator> dependenciesPerClass) {
+        Set<Class<? extends SpecificationValidator>> dependencyClasses = validator.requires();
+        var result = new HashSet<Class<? extends SpecificationValidator>>();
+        Stack<Class<? extends SpecificationValidator>> stack = new Stack<>();
+        stack.addAll(dependencyClasses);
+        while (!stack.isEmpty()) {
+            var dependencyClass = stack.pop();
+            result.add(dependencyClass);
+            var dependency = dependenciesPerClass.get(dependencyClass);
+            stack.addAll(dependency.requires());
+        }
+        return result;
     }
 
     private static List<SpecificationValidator> loadValidators() {
