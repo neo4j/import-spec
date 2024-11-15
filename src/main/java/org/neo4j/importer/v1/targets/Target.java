@@ -55,6 +55,10 @@ public abstract class Target implements Comparable<Target>, Serializable {
     }
 
     public List<String> getDependencies() {
+        return getExplicitDependencies();
+    }
+
+    public List<String> getExplicitDependencies() {
         return dependencies;
     }
 
@@ -67,10 +71,6 @@ public abstract class Target implements Comparable<Target>, Serializable {
             return 1;
         }
         return this.getName().compareTo(other.getName());
-    }
-
-    protected boolean dependsOn(Target target) {
-        return getDependencies().contains(target.getName());
     }
 
     @Override
@@ -98,5 +98,9 @@ public abstract class Target implements Comparable<Target>, Serializable {
                 + name + '\'' + ", source='"
                 + source + '\'' + ", dependencies="
                 + dependencies + '}';
+    }
+
+    protected boolean dependsOn(Target target) {
+        return getDependencies().contains(target.getName());
     }
 }

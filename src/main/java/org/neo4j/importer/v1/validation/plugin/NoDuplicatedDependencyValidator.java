@@ -29,24 +29,25 @@ import org.neo4j.importer.v1.validation.SpecificationValidator;
 
 public class NoDuplicatedDependencyValidator implements SpecificationValidator {
     private static final String ERROR_CODE = "DUPL-003";
+
     private final Map<String, Duplicate<String>> pathToDuplicates = new LinkedHashMap<>();
 
     @Override
     public void visitNodeTarget(int index, NodeTarget target) {
         String path = String.format("$.targets.nodes[%d].depends_on", index);
-        track(path, target.getDependencies());
+        track(path, target.getExplicitDependencies());
     }
 
     @Override
     public void visitRelationshipTarget(int index, RelationshipTarget target) {
         String path = String.format("$.targets.relationships[%d].depends_on", index);
-        track(path, target.getDependencies());
+        track(path, target.getExplicitDependencies());
     }
 
     @Override
     public void visitCustomQueryTarget(int index, CustomQueryTarget target) {
         String path = String.format("$.targets.queries[%d].depends_on", index);
-        track(path, target.getDependencies());
+        track(path, target.getExplicitDependencies());
     }
 
     @Override

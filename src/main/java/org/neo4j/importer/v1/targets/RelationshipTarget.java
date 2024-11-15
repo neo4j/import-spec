@@ -97,6 +97,16 @@ public class RelationshipTarget extends EntityTarget {
     }
 
     @Override
+    public List<String> getDependencies() {
+        List<String> explicitDependencies = getExplicitDependencies();
+        Set<String> dependencies = new LinkedHashSet<>(2 + explicitDependencies.size());
+        dependencies.add(startNodeReference);
+        dependencies.add(endNodeReference);
+        dependencies.addAll(explicitDependencies);
+        return List.copyOf(dependencies);
+    }
+
+    @Override
     public List<String> getKeyProperties() {
         if (schema == null) {
             return new ArrayList<>(0);

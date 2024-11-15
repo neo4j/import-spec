@@ -298,7 +298,7 @@ public class BeamIT {
             Target target,
             Map<String, PCollection<Row>> processedTargets,
             Map<ActionStage, List<PCollection<?>>> preActions) {
-        var result = allDependenciesOf(target).stream()
+        var result = target.getDependencies().stream()
                 .map(name -> (PCollection<?>) processedTargets.get(name))
                 .collect(Collectors.toCollection((Supplier<ArrayList<PCollection<?>>>) ArrayList::new));
         switch (target) {
@@ -308,22 +308,6 @@ public class BeamIT {
             default -> Assertions.fail("unexpected target type %s", target.getClass());
         }
         return result;
-    }
-
-    private List<String> allDependenciesOf(Target target) {
-        if (!(target instanceof RelationshipTarget relationshipTarget)) {
-            return target.getDependencies();
-        }
-        List<String> dependencies = new ArrayList<>(target.getDependencies());
-        String startReference = relationshipTarget.getStartNodeReference();
-        if (startReference != null) {
-            dependencies.add(startReference);
-        }
-        String endReference = relationshipTarget.getEndNodeReference();
-        if (endReference != null) {
-            dependencies.add(endReference);
-        }
-        return dependencies;
     }
 
     private <T> T read(String classpathResource, ThrowingFunction<Reader, T> fn) throws Exception {
