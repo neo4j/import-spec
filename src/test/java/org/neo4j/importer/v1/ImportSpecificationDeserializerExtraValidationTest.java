@@ -579,7 +579,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                 .hasMessageContainingAll(
                         "1 error(s)",
                         "0 warning(s)",
-                        "$.targets.relationships[0].start_node_reference belongs to an active target but refers to an undefined or inactive node target \"a-node-target\"");
+                        "$.targets.relationships[0].start_node_reference belongs to an active target but refers to an inactive node target \"a-node-target\"");
     }
 
     @Test
@@ -629,7 +629,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                 .hasMessageContainingAll(
                         "1 error(s)",
                         "0 warning(s)",
-                        "$.targets.relationships[0].end_node_reference belongs to an active target but refers to an undefined or inactive node target \"another-node-target\"");
+                        "$.targets.relationships[0].end_node_reference belongs to an active target but refers to an inactive node target \"another-node-target\"");
     }
 
     @Test

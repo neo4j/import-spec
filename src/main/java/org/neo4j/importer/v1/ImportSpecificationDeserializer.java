@@ -16,8 +16,6 @@
  */
 package org.neo4j.importer.v1;
 
-import static java.util.stream.Collectors.toMap;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.StreamReadFeature;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -30,33 +28,27 @@ import com.networknt.schema.JsonSchemaFactory;
 import com.networknt.schema.SpecVersion.VersionFlag;
 import java.io.IOException;
 import java.io.Reader;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.ServiceLoader;
-import java.util.Set;
-import java.util.Stack;
-import java.util.function.Function;
+import java.util.ServiceLoader.Provider;
 import java.util.stream.Collectors;
 import org.neo4j.importer.v1.actions.Action;
 import org.neo4j.importer.v1.actions.ActionDeserializer;
 import org.neo4j.importer.v1.actions.ActionProvider;
 import org.neo4j.importer.v1.distribution.Neo4jDistribution;
-import org.neo4j.importer.v1.graph.Graph;
 import org.neo4j.importer.v1.sources.Source;
 import org.neo4j.importer.v1.sources.SourceDeserializer;
 import org.neo4j.importer.v1.sources.SourceProvider;
 import org.neo4j.importer.v1.validation.ActionError;
 import org.neo4j.importer.v1.validation.InvalidSpecificationException;
-import org.neo4j.importer.v1.validation.Neo4jVersionValidator;
+import org.neo4j.importer.v1.validation.Neo4jDistributionValidator;
 import org.neo4j.importer.v1.validation.SourceError;
 import org.neo4j.importer.v1.validation.SpecificationException;
 import org.neo4j.importer.v1.validation.SpecificationValidationResult;
 import org.neo4j.importer.v1.validation.SpecificationValidationResult.Builder;
 import org.neo4j.importer.v1.validation.SpecificationValidator;
+import org.neo4j.importer.v1.validation.SpecificationValidators;
 import org.neo4j.importer.v1.validation.UndeserializableActionException;
 import org.neo4j.importer.v1.validation.UndeserializableSourceException;
 import org.neo4j.importer.v1.validation.UndeserializableSpecificationException;
@@ -86,30 +78,29 @@ public class ImportSpecificationDeserializer {
 
     public static ImportSpecification deserialize(Reader spec, Neo4jDistribution neo4jDistribution)
             throws SpecificationException {
+
         return deserialize(spec, Optional.of(neo4jDistribution));
     }
 
-    private static ImportSpecification deserialize(Reader spec, Optional<Neo4jDistribution> neo4jDistributionOpt)
-            throws SpecificationException {
+    private static ImportSpecification deserialize(
+            Reader rawSpecification, Optional<Neo4jDistribution> neo4jDistribution) throws SpecificationException {
+
         YAMLMapper mapper = initMapper();
-        JsonNode json = parse(mapper, spec);
-        validate(SCHEMA, json);
-        ImportSpecification result = deserialize(mapper, json);
-        validate(result);
-        if (neo4jDistributionOpt
-                .map((dist) -> dist.isVersionLargerThanOrEqual("4.4"))
-                .orElse(false)) {
-            validate(neo4jDistributionOpt.get(), result);
-        }
-        return result;
+        JsonNode json = parse(mapper, rawSpecification);
+        validateSchema(SCHEMA, json);
+
+        ImportSpecification specification = deserialize(mapper, json);
+        validateStatically(specification);
+        validateRuntime(specification, neo4jDistribution);
+        return specification;
     }
 
     /**
-     * Validates the manually constructed {@link ImportSpecification} instance.
+     * Validates the consistency of the provided {@link ImportSpecification} instance.
      * <br>
-     * This particular API only runs the registered implementations of the {@link SpecificationValidator} SPI.
-     * It does not check whether the equivalent textual representation adheres to the JSON schema, but it assumes
-     * this is the case.
+     * The validation is performed by the registered implementations of the {@link SpecificationValidator} SPI.
+     * This method does not check whether the provided {@link ImportSpecification} instance complies to the constraints defined
+     * in the JSON schema, but assumes it does.
      * <br>
      * This method is deprecated as {@link ImportSpecificationDeserializer#deserialize(Reader)} is the only recommended
      * way to retrieve a fully valid {@link ImportSpecification} instance.
@@ -118,8 +109,8 @@ public class ImportSpecificationDeserializer {
      * @throws SpecificationException if validation fails
      */
     @Deprecated
-    public static void validate(ImportSpecification specification) throws SpecificationException {
-        runExtraValidations(specification);
+    public static void validateStatically(ImportSpecification specification) throws SpecificationException {
+        SpecificationValidators.of(loadValidators()).validate(specification);
     }
 
     private static YAMLMapper initMapper() {
@@ -142,19 +133,6 @@ public class ImportSpecificationDeserializer {
         }
     }
 
-    private static void validate(JsonSchema schema, JsonNode json) throws InvalidSpecificationException {
-        Builder builder = SpecificationValidationResult.builder();
-        schema.validate(json)
-                .forEach(msg -> builder.addError(
-                        msg.getInstanceLocation().toString(),
-                        String.format("SCHM-%s", msg.getCode()),
-                        msg.getMessage()));
-        SpecificationValidationResult result = builder.build();
-        if (!result.passes()) {
-            throw new InvalidSpecificationException(result);
-        }
-    }
-
     private static ImportSpecification deserialize(ObjectMapper mapper, JsonNode json) throws SpecificationException {
         try {
             return mapper.treeToValue(json, ImportSpecification.class);
@@ -174,124 +152,34 @@ public class ImportSpecificationDeserializer {
         }
     }
 
-    private static void runExtraValidations(ImportSpecification spec) throws SpecificationException {
-        var validators = loadValidators();
-        validators.forEach(validator -> validator.visitConfiguration(spec.getConfiguration()));
-        var sources = spec.getSources();
-        for (int i = 0; i < sources.size(); i++) {
-            final int index = i;
-            validators.forEach(validator -> validator.visitSource(index, sources.get(index)));
-        }
-        var targets = spec.getTargets();
-        var nodeTargets = targets.getNodes();
-        for (int i = 0; i < nodeTargets.size(); i++) {
-            final int index = i;
-            validators.forEach(validator -> validator.visitNodeTarget(index, nodeTargets.get(index)));
-        }
-        var relationshipTargets = targets.getRelationships();
-        for (int i = 0; i < relationshipTargets.size(); i++) {
-            final int index = i;
-            validators.forEach(validator -> validator.visitRelationshipTarget(index, relationshipTargets.get(index)));
-        }
-        var queryTargets = targets.getCustomQueries();
-        for (int i = 0; i < queryTargets.size(); i++) {
-            final int index = i;
-            validators.forEach(validator -> validator.visitCustomQueryTarget(index, queryTargets.get(index)));
-        }
-        var actions = spec.getActions() == null ? Collections.<Action>emptyList() : spec.getActions();
-        for (int i = 0; i < actions.size(); i++) {
-            final int index = i;
-            validators.forEach(validator -> validator.visitAction(index, actions.get(index)));
-        }
-
-        Set<Class<? extends SpecificationValidator>> failedValidations = new HashSet<>(validators.size());
-        Map<Class<? extends SpecificationValidator>, SpecificationValidator> validatorsPerClass =
-                validators.stream().collect(toMap(SpecificationValidator::getClass, Function.identity()));
-        var builder = SpecificationValidationResult.builder();
-        validators.forEach(validator -> {
-            for (Class<? extends SpecificationValidator> dependent :
-                    resolveTransitiveRequires(validator, validatorsPerClass)) {
-                if (failedValidations.contains(dependent)) {
-                    return;
-                }
-            }
-            if (validator.report(builder)) {
-                failedValidations.add(validator.getClass());
-            }
-        });
+    private static void validateSchema(JsonSchema schema, JsonNode json) throws InvalidSpecificationException {
+        Builder builder = SpecificationValidationResult.builder();
+        schema.validate(json)
+                .forEach(msg -> builder.addError(
+                        msg.getInstanceLocation().toString(),
+                        String.format("SCHM-%s", msg.getCode()),
+                        msg.getMessage()));
         SpecificationValidationResult result = builder.build();
         if (!result.passes()) {
             throw new InvalidSpecificationException(result);
         }
-    }
-
-    private static Set<Class<? extends SpecificationValidator>> resolveTransitiveRequires(
-            SpecificationValidator validator,
-            Map<Class<? extends SpecificationValidator>, SpecificationValidator> dependenciesPerClass) {
-        Set<Class<? extends SpecificationValidator>> dependencyClasses = validator.requires();
-        var result = new HashSet<Class<? extends SpecificationValidator>>();
-        Stack<Class<? extends SpecificationValidator>> stack = new Stack<>();
-        stack.addAll(dependencyClasses);
-        while (!stack.isEmpty()) {
-            var dependencyClass = stack.pop();
-            result.add(dependencyClass);
-            var dependency = dependenciesPerClass.get(dependencyClass);
-            stack.addAll(dependency.requires());
-        }
-        return result;
     }
 
     private static List<SpecificationValidator> loadValidators() {
-        var validatorCatalog = new HashMap<Class<? extends SpecificationValidator>, SpecificationValidator>();
-        var validatorGraph =
-                new HashMap<Class<? extends SpecificationValidator>, Set<Class<? extends SpecificationValidator>>>();
-        ServiceLoader.load(SpecificationValidator.class).forEach(validator -> {
-            validatorCatalog.put(validator.getClass(), validator);
-            validatorGraph.put(validator.getClass(), validator.requires());
-        });
-        return Graph.runTopologicalSort(validatorGraph).stream()
-                .map(validatorCatalog::get)
+        return ServiceLoader.load(SpecificationValidator.class).stream()
+                .map(Provider::get)
                 .collect(Collectors.toList());
     }
 
-    private static void validate(Neo4jDistribution neo4jDistribution, ImportSpecification spec)
-            throws InvalidSpecificationException {
-        var validator = new Neo4jVersionValidator(neo4jDistribution);
-
-        validator.visitConfiguration(spec.getConfiguration());
-
-        var sources = spec.getSources();
-        for (int i = 0; i < sources.size(); i++) {
-            validator.visitSource(i, sources.get(i));
+    private static void validateRuntime(ImportSpecification spec, Optional<Neo4jDistribution> neo4jDistribution)
+            throws SpecificationException {
+        if (neo4jDistribution
+                .filter(distribution -> distribution.isVersionLargerThanOrEqual("4.4"))
+                .isEmpty()) {
+            return;
         }
-
-        var targets = spec.getTargets();
-        var nodeTargets = targets.getNodes();
-        for (int i = 0; i < nodeTargets.size(); i++) {
-            validator.visitNodeTarget(i, nodeTargets.get(i));
-        }
-
-        var relationshipTargets = targets.getRelationships();
-        for (int i = 0; i < relationshipTargets.size(); i++) {
-            validator.visitRelationshipTarget(i, relationshipTargets.get(i));
-        }
-
-        var queryTargets = targets.getCustomQueries();
-        for (int i = 0; i < queryTargets.size(); i++) {
-            validator.visitCustomQueryTarget(i, queryTargets.get(i));
-        }
-
-        var actions = spec.getActions() == null ? Collections.<Action>emptyList() : spec.getActions();
-        for (int i = 0; i < actions.size(); i++) {
-            validator.visitAction(i, actions.get(i));
-        }
-
-        Builder builder = SpecificationValidationResult.builder();
-        validator.report(builder);
-        SpecificationValidationResult result = builder.build();
-        if (!result.passes()) {
-            throw new InvalidSpecificationException(result);
-        }
+        var runtimeValidator = new Neo4jDistributionValidator(neo4jDistribution.get());
+        SpecificationValidators.of(runtimeValidator).validate(spec);
     }
 
     @SuppressWarnings("unchecked")

@@ -24,13 +24,13 @@ import org.neo4j.importer.v1.distribution.Neo4jDistribution;
 import org.neo4j.importer.v1.targets.NodeTarget;
 import org.neo4j.importer.v1.targets.RelationshipTarget;
 
-public class Neo4jVersionValidator implements SpecificationValidator {
+public class Neo4jDistributionValidator implements SpecificationValidator {
     private static final String ERROR_CODE = "VERS-001";
 
     private final Neo4jDistribution neo4jDistribution;
     private final Map<String, List<String>> unsupportedPaths;
 
-    public Neo4jVersionValidator(Neo4jDistribution neo4jDistribution) {
+    public Neo4jDistributionValidator(Neo4jDistribution neo4jDistribution) {
         this.neo4jDistribution = neo4jDistribution;
         this.unsupportedPaths = new LinkedHashMap<>();
     }

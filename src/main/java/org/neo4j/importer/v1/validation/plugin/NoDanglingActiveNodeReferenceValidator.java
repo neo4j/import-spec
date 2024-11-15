@@ -73,7 +73,7 @@ public class NoDanglingActiveNodeReferenceValidator implements SpecificationVali
                     path,
                     ERROR_CODE,
                     String.format(
-                            "%s belongs to an active target but refers to an undefined or inactive node target \"%s\".",
+                            "%s belongs to an active target but refers to an inactive node target \"%s\".",
                             path, invalidNodeReference));
         });
         return !invalidPathToNodeReferences.isEmpty();

@@ -31,13 +31,13 @@ import org.neo4j.importer.v1.validation.SpecificationValidationResult.Builder;
  * Custom validators have the ability to validate elements of an {@link org.neo4j.importer.v1.ImportSpecification}.
  * The import specification at this stage is guaranteed to comply to the official import specification JSON schema.
  * Every custom validator is instantiated only once (per {@link org.neo4j.importer.v1.ImportSpecificationDeserializer#deserialize(Reader)} call.
- * The validation order is as follows:
- * 1. visitConfiguration
- * 2. visitSource (as many times as there are sources)
- * 3. visitNodeTarget (as many times as there are node targets)
- * 4. visitRelationshipTarget (as many times as there are relationship targets)
- * 5. visitCustomQueryTarget (as many times as there are custom query targets)
- * 6. visitAction (as many times as there are actions)
+ * The validation order is as follows:<br>
+ * 1. visitConfiguration<br>
+ * 2. visitSource (as many times as there are sources)<br>
+ * 3. visitNodeTarget (as many times as there are node targets)<br>
+ * 4. visitRelationshipTarget (as many times as there are relationship targets)<br>
+ * 5. visitCustomQueryTarget (as many times as there are custom query targets)<br>
+ * 6. visitAction (as many times as there are actions)<br>
  * Then {@link SpecificationValidator#report(Builder)} is called with a {@link SpecificationValidationResult.Builder}, where
  * errors are reported via {@link SpecificationValidationResult.Builder#addError(String, String, String)} and warnings
  * via {@link SpecificationValidationResult.Builder#addWarning(String, String, String)}.
@@ -59,8 +59,8 @@ public interface SpecificationValidator {
      * Declares validators whose validation must be successful before
      * this validator can report errors and warnings.
      * In other words, if any of the validation of the returned validators do not pass,
-     * this validator's implementation {@link SpecificationValidator#report(Builder)} will not be called.
-     * It is however possible that this validator visit methods are called regardless.
+     * this validator's implementation of {@link SpecificationValidator#report(Builder)} will not be called.
+     * It is however possible that this validator visitXxx methods are called regardless.
      *
      * @return the set of validator implementations whose validation must pass before this validator reports anything
      */
