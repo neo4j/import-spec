@@ -24,15 +24,6 @@ import org.junit.jupiter.api.Test;
 class EntityTargetTest {
 
     @Test
-    void returns_no_node_properties_when_they_are_not_defined() {
-        List<PropertyMapping> properties = null;
-        var target = new NodeTarget(
-                true, "a-target", "a-source", null, WriteMode.CREATE, null, List.of("Label"), properties, null);
-
-        assertThat(target.getAllProperties()).isEmpty();
-    }
-
-    @Test
     void returns_no_relationship_properties_when_they_are_not_defined() {
         List<PropertyMapping> properties = null;
         var target = new RelationshipTarget(
@@ -49,6 +40,6 @@ class EntityTargetTest {
                 properties,
                 null);
 
-        assertThat(target.getAllProperties()).isEmpty();
+        assertThat(target.getProperties()).isEmpty();
     }
 }

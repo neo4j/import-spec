@@ -29,7 +29,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class Graph {
+public class Graphs {
 
     /**
      * Returns a topologically-sorted list from a given dependency graph
@@ -73,10 +73,9 @@ public class Graph {
 
     /**
      * Detects whether the given dependency graph encoded as a map contains any cycles.
-     * The Map encodes dependent-to-dependencies mappings.
-     * - Map.of("a", Set.of("b", "c")) means item a depends on both item b and c
-     * - Map.of("b", Set.of()) means item b does not have any dependencies
-     *
+     * The Map encodes dependent-to-dependencies mappings.<br>
+     * - Map.of("a", Set.of("b", "c")) means item a depends on both item b and c<br>
+     * - Map.of("b", Set.of()) means item b does not have any dependencies<br>
      * @param graph the dependency graph
      * @param <T>   the element type
      * @return the list of paths with cycles, an empty list means there is no cycle

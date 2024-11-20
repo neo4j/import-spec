@@ -21,7 +21,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-public abstract class Target implements Comparable<Target>, Serializable {
+public abstract class Target implements Serializable {
 
     protected static final String DEFAULT_ACTIVE = "true";
     private final TargetType targetType;
@@ -56,17 +56,6 @@ public abstract class Target implements Comparable<Target>, Serializable {
 
     public List<String> getDependencies() {
         return dependencies;
-    }
-
-    @Override
-    public int compareTo(Target other) {
-        if (other.dependsOn(this)) {
-            return -1;
-        }
-        if (this.dependsOn(other)) {
-            return 1;
-        }
-        return this.getName().compareTo(other.getName());
     }
 
     @Override

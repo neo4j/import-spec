@@ -29,7 +29,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.neo4j.importer.v1.ImportSpecification;
 import org.neo4j.importer.v1.actions.Action;
-import org.neo4j.importer.v1.graph.Graph;
+import org.neo4j.importer.v1.graph.Graphs;
 
 public class SpecificationValidators {
 
@@ -110,7 +110,7 @@ public class SpecificationValidators {
             validatorCatalog.put(validator.getClass(), validator);
             validatorGraph.put(validator.getClass(), validator.requires());
         });
-        return Graph.runTopologicalSort(validatorGraph).stream()
+        return Graphs.runTopologicalSort(validatorGraph).stream()
                 .map(validatorCatalog::get)
                 .collect(Collectors.toList());
     }

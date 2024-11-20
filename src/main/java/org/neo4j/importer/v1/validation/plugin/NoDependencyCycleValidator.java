@@ -26,7 +26,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
-import org.neo4j.importer.v1.graph.Graph;
+import org.neo4j.importer.v1.graph.Graphs;
 import org.neo4j.importer.v1.graph.Pair;
 import org.neo4j.importer.v1.targets.CustomQueryTarget;
 import org.neo4j.importer.v1.targets.NodeTarget;
@@ -50,7 +50,7 @@ public class NoDependencyCycleValidator implements SpecificationValidator {
     @Override
     public Set<Class<? extends SpecificationValidator>> requires() {
         return Set.of(
-                NoDuplicatedTargetActionNameValidator.class,
+                NoDuplicatedNameValidator.class,
                 NoDanglingDependsOnValidator.class,
                 NoDanglingNodeReferenceValidator.class,
                 NoDuplicatedDependencyValidator.class);
@@ -74,7 +74,7 @@ public class NoDependencyCycleValidator implements SpecificationValidator {
     @Override
     public boolean report(Builder builder) {
         AtomicBoolean result = new AtomicBoolean(false);
-        Graph.detectCycles(dependencyGraph()).stream()
+        Graphs.detectCycles(dependencyGraph()).stream()
                 .map(cycle -> {
                     Element cycleStart = cycle.get(0);
                     String cycleDescription = cycle.stream()

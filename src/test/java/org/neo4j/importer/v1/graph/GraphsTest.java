@@ -29,7 +29,7 @@ import java.util.Set;
 import org.assertj.core.api.ThrowingConsumer;
 import org.junit.jupiter.api.Test;
 
-class GraphTest {
+class GraphsTest {
 
     @Test
     void topologically_sorts_dependencyless_dependency_graph() {
@@ -38,7 +38,7 @@ class GraphTest {
         graph.put("b", Set.of());
         graph.put("c", Set.of());
 
-        List<String> result = Graph.runTopologicalSort(graph);
+        List<String> result = Graphs.runTopologicalSort(graph);
 
         assertThat(result).satisfies(topologicalSortOf(graph));
     }
@@ -50,7 +50,7 @@ class GraphTest {
         graph.put("c", linkedHashSet("d", "e", "f"));
         graph.put("e", linkedHashSet("g"));
 
-        List<String> result = Graph.runTopologicalSort(graph);
+        List<String> result = Graphs.runTopologicalSort(graph);
 
         assertThat(result).satisfies(topologicalSortOf(graph));
     }
@@ -61,7 +61,7 @@ class GraphTest {
         graph.put("a", linkedHashSet("b"));
         graph.put("b", linkedHashSet("a"));
 
-        assertThatThrownBy(() -> Graph.runTopologicalSort(graph))
+        assertThatThrownBy(() -> Graphs.runTopologicalSort(graph))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("The provided graph {a=[b], b=[a]} defines cycles");
     }
@@ -77,7 +77,7 @@ class GraphTest {
         graph.put("f", linkedHashSet("g"));
         graph.put("g", linkedHashSet("a"));
 
-        assertThatThrownBy(() -> Graph.runTopologicalSort(graph))
+        assertThatThrownBy(() -> Graphs.runTopologicalSort(graph))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining(
                         "The provided graph {a=[b], b=[c], c=[d], d=[e], e=[f], f=[g], g=[a]} defines cycles");
@@ -85,7 +85,7 @@ class GraphTest {
 
     @Test
     void detects_no_cycles_for_empty_graph_with_complex_graph() {
-        var cycles = Graph.detectCycles(new LinkedHashMap<>());
+        var cycles = Graphs.detectCycles(new LinkedHashMap<>());
 
         assertThat(cycles).isEmpty();
     }
@@ -97,7 +97,7 @@ class GraphTest {
         graph.put("c", linkedHashSet("d", "e", "f"));
         graph.put("e", linkedHashSet("g"));
 
-        var cycles = Graph.detectCycles(graph);
+        var cycles = Graphs.detectCycles(graph);
 
         assertThat(cycles).isEmpty();
     }
@@ -108,7 +108,7 @@ class GraphTest {
         graph.put("a", linkedHashSet("a", "b"));
         graph.put("b", linkedHashSet("b", "c"));
 
-        var cycles = Graph.detectCycles(graph);
+        var cycles = Graphs.detectCycles(graph);
 
         assertThat(cycles).isEqualTo(List.of(List.of("a"), List.of("b")));
     }
@@ -119,7 +119,7 @@ class GraphTest {
         graph.put("a", linkedHashSet("b", "c"));
         graph.put("c", linkedHashSet("a", "d"));
 
-        var cycles = Graph.detectCycles(graph);
+        var cycles = Graphs.detectCycles(graph);
 
         assertThat(cycles).isEqualTo(List.of(List.of("a", "c")));
     }

@@ -14,28 +14,37 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.neo4j.importer.v1.validation.plugin;
+package org.neo4j.importer.v1.pipeline;
 
+import java.util.Objects;
 import org.neo4j.importer.v1.sources.Source;
-import org.neo4j.importer.v1.validation.SpecificationValidationResult.Builder;
-import org.neo4j.importer.v1.validation.SpecificationValidator;
 
-public class NoDuplicatedSourceNameValidator implements SpecificationValidator {
-    private static final String ERROR_CODE = "DUPL-004";
+public class SourceStep implements ImportStep {
 
-    private final NameCounter nameCounter;
+    private final Source source;
 
-    public NoDuplicatedSourceNameValidator() {
-        nameCounter = new NameCounter(ERROR_CODE);
+    public SourceStep(Source source) {
+        this.source = source;
     }
 
     @Override
-    public void visitSource(int index, Source source) {
-        nameCounter.track(source.getName(), String.format("$.sources[%d]", index));
+    public String name() {
+        return source.getName();
+    }
+
+    public Source source() {
+        return source;
     }
 
     @Override
-    public boolean report(Builder builder) {
-        return nameCounter.reportErrorsIfAny(builder);
+    public boolean equals(Object o) {
+        if (!(o instanceof SourceStep)) return false;
+        SourceStep that = (SourceStep) o;
+        return Objects.equals(source, that.source);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(source);
     }
 }

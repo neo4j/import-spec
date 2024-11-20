@@ -68,16 +68,15 @@ class GettingStarted {
 
     public static void main(String... args) {
 
-        try (Reader reader = createReader("spec.json")) {
-            var importSpecification = ImportSpecificationDeserializer.deserialize(reader);
-
-            var config = importSpecification.getConfiguration();
-            var sources = importSpecification.getSources();
-            var actions = importSpecification.getActions();
-            var targets = importSpecification.getTargets();
-            var nodeTargets = targets.getNodes();
-            var relationshipTargets = targets.getRelationships();
-            var customQueryTargets = targets.getCustomQueries();
+        try (var reader = new InputStreamReader(createReaderFor("/import/spec.yaml"))) {
+            var pipeline = ImportPipeline.of(ImportSpecificationDeserializer.deserialize(reader));
+            pipeline.forEach(step -> { 
+                switch (step) {
+                    case SourceStep source -> handleSource(source);
+                    case ActionStep action -> handleAction(action);
+                    case TargetStep target -> handleTarget(target);
+                }
+            });
         }
     }
 }
@@ -86,4 +85,4 @@ class GettingStarted {
 ## Prerequisites
 
 - Maven
-- JDK 21 (21 is used for tests, 11 for production sources)
+- JDK 21 (21 is used for tests, 11 and 17 for production sources)

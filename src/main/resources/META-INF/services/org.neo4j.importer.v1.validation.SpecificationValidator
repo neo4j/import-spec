@@ -27,8 +27,7 @@ org.neo4j.importer.v1.validation.plugin.NoDuplicatedAggregateFieldNameValidator
 org.neo4j.importer.v1.validation.plugin.NoDuplicatedDependencyValidator
 org.neo4j.importer.v1.validation.plugin.NoDuplicatedLabelInFullTextIndexValidator
 org.neo4j.importer.v1.validation.plugin.NoDuplicatedLabelValidator
-org.neo4j.importer.v1.validation.plugin.NoDuplicatedSourceNameValidator
-org.neo4j.importer.v1.validation.plugin.NoDuplicatedTargetActionNameValidator
+org.neo4j.importer.v1.validation.plugin.NoDuplicatedNameValidator
 org.neo4j.importer.v1.validation.plugin.NoDuplicatedTargetPropertyValidator
 org.neo4j.importer.v1.validation.plugin.NoRedundantKeyAndExistenceConstraintsValidator
 org.neo4j.importer.v1.validation.plugin.NoRedundantKeyAndUniqueConstraintsValidator

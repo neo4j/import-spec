@@ -67,21 +67,20 @@ public class ImportSpecificationDeserializerExtraValidationTest {
     }
 
     @Test
-    void does_not_fails_if_source_name_is_duplicated_with_target_name() {
-        assertThatNoException()
-                .isThrownBy(() -> deserialize(new StringReader(
+    void fails_if_source_name_is_duplicated_with_target_name() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
                         """
                                 {
                                     "version": "1",
                                     "sources": [{
                                         "type": "bigquery",
-                                        "name": "not-duplicate",
+                                        "name": "duplicate",
                                         "query": "SELECT id, name FROM my.table"
                                     }],
                                     "targets": {
                                         "nodes": [{
-                                            "name": "not-duplicate",
-                                            "source": "not-duplicate",
+                                            "name": "duplicate",
+                                            "source": "duplicate",
                                             "labels": ["Label1", "Label2"],
                                             "write_mode": "create",
                                             "properties": [
@@ -92,25 +91,29 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                                     }
                                 }
                                 """
-                                .stripIndent())));
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "Name \"duplicate\" is duplicated across the following paths: $.sources[0].name, $.targets.nodes[0].name");
     }
 
     @Test
-    void does_not_fails_if_source_name_is_duplicated_with_action_name() {
-        assertThatNoException()
-                .isThrownBy(() -> deserialize(new StringReader(
+    void fails_if_source_name_is_duplicated_with_action_name() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
                         """
                                 {
                                     "version": "1",
                                     "sources": [{
                                         "type": "bigquery",
-                                        "name": "not-duplicate",
+                                        "name": "duplicate",
                                         "query": "SELECT id, name FROM my.table"
                                     }],
                                     "targets": {
                                         "nodes": [{
                                             "name": "target",
-                                            "source": "not-duplicate",
+                                            "source": "duplicate",
                                             "labels": ["Label1", "Label2"],
                                             "write_mode": "create",
                                             "properties": [
@@ -120,14 +123,19 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                                         }]
                                     },
                                     "actions": [{
-                                        "name": "not-duplicate",
+                                        "name": "duplicate",
                                         "type": "cypher",
                                         "stage": "pre_relationships",
                                         "query": "CREATE (:PreRel)"
                                     }]
                                 }
                                 """
-                                .stripIndent())));
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "Name \"duplicate\" is duplicated across the following paths: $.sources[0].name, $.actions[0].name");
     }
 
     @Test
