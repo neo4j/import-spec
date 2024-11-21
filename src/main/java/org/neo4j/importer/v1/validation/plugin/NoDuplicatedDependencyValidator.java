@@ -35,19 +35,19 @@ public class NoDuplicatedDependencyValidator implements SpecificationValidator {
     @Override
     public void visitNodeTarget(int index, NodeTarget target) {
         String path = String.format("$.targets.nodes[%d].depends_on", index);
-        track(path, target.getExplicitDependencies());
+        track(path, target.getDependencies());
     }
 
     @Override
     public void visitRelationshipTarget(int index, RelationshipTarget target) {
         String path = String.format("$.targets.relationships[%d].depends_on", index);
-        track(path, target.getExplicitDependencies());
+        track(path, target.getDependencies());
     }
 
     @Override
     public void visitCustomQueryTarget(int index, CustomQueryTarget target) {
         String path = String.format("$.targets.queries[%d].depends_on", index);
-        track(path, target.getExplicitDependencies());
+        track(path, target.getDependencies());
     }
 
     @Override

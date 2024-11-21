@@ -77,6 +77,6 @@ public class NoDanglingDependsOnValidator implements SpecificationValidator {
 
     private void track(Target target, String path) {
         names.add(target.getName());
-        pathToDependencies.put(path, target.getExplicitDependencies());
+        pathToDependencies.put(path, target.getDependencies());
     }
 }

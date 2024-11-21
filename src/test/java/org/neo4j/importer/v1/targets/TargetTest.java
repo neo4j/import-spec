@@ -352,9 +352,7 @@ class TargetTest {
         assertThat(target.getName()).isEqualTo("my-relationship-target");
         assertThat(target.isActive()).isFalse();
         assertThat(target.getSource()).isEqualTo("a-source");
-        assertThat(target.getExplicitDependencies()).isEqualTo(List.of("an-action-or-target"));
-        assertThat(target.getDependencies())
-                .isEqualTo(List.of("a-node-target", "another-node-target", "an-action-or-target"));
+        assertThat(target.getDependencies()).isEqualTo(List.of("an-action-or-target"));
         assertThat(target.getWriteMode()).isEqualTo(WriteMode.MERGE);
         assertThat(target.getNodeMatchMode()).isEqualTo(NodeMatchMode.MATCH);
         assertThat(target.getSourceTransformations())

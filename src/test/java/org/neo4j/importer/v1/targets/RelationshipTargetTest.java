@@ -27,64 +27,6 @@ class RelationshipTargetTest {
     private final Random random = new Random();
 
     @Test
-    void returns_start_and_end_node_references_as_dependencies() {
-        var target = new RelationshipTarget(
-                true,
-                "a-target",
-                "a-source",
-                null,
-                "TYPE",
-                WriteMode.CREATE,
-                NodeMatchMode.MERGE,
-                null,
-                "start-node-target",
-                "end-node-target",
-                List.of(mappingTo("prop")),
-                null);
-
-        assertThat(target.getDependencies()).containsExactly("start-node-target", "end-node-target");
-    }
-
-    @Test
-    void returns_single_reference_as_dependency_when_start_and_end_node_are_the_same() {
-        var target = new RelationshipTarget(
-                true,
-                "a-target",
-                "a-source",
-                null,
-                "TYPE",
-                WriteMode.CREATE,
-                NodeMatchMode.MERGE,
-                null,
-                "a-node-target",
-                "a-node-target",
-                List.of(mappingTo("prop")),
-                null);
-
-        assertThat(target.getDependencies()).containsExactly("a-node-target");
-    }
-
-    @Test
-    void returns_node_references_as_dependencies_before_explicit_dependencies() {
-        var target = new RelationshipTarget(
-                true,
-                "a-target",
-                "a-source",
-                List.of("another-node-target"),
-                "TYPE",
-                WriteMode.CREATE,
-                NodeMatchMode.MERGE,
-                null,
-                "start-node-target",
-                "end-node-target",
-                List.of(mappingTo("prop")),
-                null);
-
-        assertThat(target.getDependencies())
-                .containsExactly("start-node-target", "end-node-target", "another-node-target");
-    }
-
-    @Test
     void returns_no_keys_when_schema_is_not_defined() {
         RelationshipSchema schema = null;
         var target = new RelationshipTarget(

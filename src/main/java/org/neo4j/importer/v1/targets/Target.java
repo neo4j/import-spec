@@ -55,10 +55,6 @@ public abstract class Target implements Comparable<Target>, Serializable {
     }
 
     public List<String> getDependencies() {
-        return getExplicitDependencies();
-    }
-
-    public List<String> getExplicitDependencies() {
         return dependencies;
     }
 
