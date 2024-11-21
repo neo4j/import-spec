@@ -352,62 +352,12 @@
     },
     "action": {
       "type": "object",
-      "allOf": [
-        {
-          "properties": {
-            "type": {
-              "type": "string",
-              "enum": [
-                "http",
-                "cypher",
-                "bigquery"
-              ]
-            }
-          },
-          "required": [
-            "type"
-          ]
-        },
-        {
-          "if": {
-            "properties": {
-              "type": {
-                "const": "http"
-              }
-            }
-          },
-          "then": {
-            "$ref": "#/$defs/action.http"
-          }
-        },
-        {
-          "if": {
-            "properties": {
-              "type": {
-                "const": "cypher"
-              }
-            }
-          },
-          "then": {
-            "$ref": "#/$defs/action.cypher"
-          }
-        },
-        {
-          "if": {
-            "properties": {
-              "type": {
-                "const": "bigquery"
-              }
-            }
-          },
-          "then": {
-            "$ref": "#/$defs/action.bigquery"
-          }
-        }
-      ]
-    },
-    "action.base": {
       "properties": {
+        "type": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "\\S+"
+        },
         "active": {
           "type": "boolean"
         },
@@ -431,81 +381,11 @@
           ]
         }
       },
+      "additionalProperties": true,
       "required": [
+        "type",
         "name",
         "stage"
-      ]
-    },
-    "action.http": {
-      "allOf": [
-        {
-          "$ref": "#/$defs/action.base"
-        }
-      ],
-      "properties": {
-        "method": {
-          "type": "string",
-          "enum": [
-            "get",
-            "post"
-          ]
-        },
-        "url": {
-          "type": "string",
-          "minLength": 1,
-          "pattern": "\\S+"
-        },
-        "headers": {
-          "type": "object",
-          "additionalProperties": {
-            "type": "string"
-          }
-        }
-      },
-      "required": [
-        "method",
-        "url"
-      ]
-    },
-    "action.cypher": {
-      "allOf": [
-        {
-          "$ref": "#/$defs/action.base"
-        }
-      ],
-      "properties": {
-        "query": {
-          "type": "string",
-          "minLength": 1,
-          "pattern": "\\S+"
-        },
-        "execution_mode": {
-          "type": "string",
-          "enum": [
-            "transaction",
-            "autocommit"
-          ]
-        }
-      },
-      "required": [
-        "query"
-      ]
-    },
-    "action.bigquery": {
-      "allOf": [
-        {
-          "$ref": "#/$defs/action.base"
-        }
-      ],
-      "properties": {
-        "sql": {
-          "type": "string",
-          "minLength": 1,
-          "pattern": "\\S+"
-        }
-      },
-      "required": [
-        "sql"
       ]
     },
     "target.entity.sourceTransformation": {

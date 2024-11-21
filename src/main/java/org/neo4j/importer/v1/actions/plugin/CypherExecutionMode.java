@@ -14,31 +14,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.neo4j.importer.v1.actions;
+package org.neo4j.importer.v1.actions.plugin;
 
-import java.io.Serializable;
-
-public interface Action extends Serializable {
-
-    boolean DEFAULT_ACTIVE = true;
-
-    String getType();
-
-    /**
-     * Action name.
-     * It must always be provided and must be globally unique.
-     */
-    String getName();
-
-    /**
-     * Whether the action is active or not.
-     * Default value must be true.
-     */
-    boolean isActive();
-
-    /**
-     * Defines the import stage at which the action runs.
-     * It must always be provided.
-     */
-    ActionStage getStage();
+public enum CypherExecutionMode {
+    TRANSACTION,
+    AUTOCOMMIT;
 }

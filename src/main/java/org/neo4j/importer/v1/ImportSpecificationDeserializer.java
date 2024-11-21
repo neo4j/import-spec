@@ -37,11 +37,14 @@ import java.util.ServiceLoader;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.neo4j.importer.v1.actions.Action;
+import org.neo4j.importer.v1.actions.ActionDeserializer;
+import org.neo4j.importer.v1.actions.ActionProvider;
 import org.neo4j.importer.v1.distribution.Neo4jDistribution;
 import org.neo4j.importer.v1.graph.Graph;
 import org.neo4j.importer.v1.sources.Source;
 import org.neo4j.importer.v1.sources.SourceDeserializer;
 import org.neo4j.importer.v1.sources.SourceProvider;
+import org.neo4j.importer.v1.validation.ActionError;
 import org.neo4j.importer.v1.validation.InvalidSpecificationException;
 import org.neo4j.importer.v1.validation.Neo4jVersionValidator;
 import org.neo4j.importer.v1.validation.SourceError;
@@ -49,6 +52,7 @@ import org.neo4j.importer.v1.validation.SpecificationException;
 import org.neo4j.importer.v1.validation.SpecificationValidationResult;
 import org.neo4j.importer.v1.validation.SpecificationValidationResult.Builder;
 import org.neo4j.importer.v1.validation.SpecificationValidator;
+import org.neo4j.importer.v1.validation.UndeserializableActionException;
 import org.neo4j.importer.v1.validation.UndeserializableSourceException;
 import org.neo4j.importer.v1.validation.UndeserializableSpecificationException;
 import org.neo4j.importer.v1.validation.UnparseableSpecificationException;
@@ -115,10 +119,8 @@ public class ImportSpecificationDeserializer {
 
     private static YAMLMapper initMapper() {
         var module = new SimpleModule();
-        List<SourceProvider<? extends Source>> providers = ServiceLoader.load(SourceProvider.class).stream()
-                .map(provider -> (SourceProvider<? extends Source>) provider.get())
-                .collect(Collectors.toList());
-        module.addDeserializer(Source.class, new SourceDeserializer(providers));
+        module.addDeserializer(Source.class, new SourceDeserializer(loadProviders(SourceProvider.class)));
+        module.addDeserializer(Action.class, new ActionDeserializer(loadProviders(ActionProvider.class)));
         return YAMLMapper.builder()
                 .addModule(module)
                 .enable(MapperFeature.ACCEPT_CASE_INSENSITIVE_ENUMS)
@@ -155,6 +157,9 @@ public class ImportSpecificationDeserializer {
             Throwable cause = e.getCause();
             if (cause instanceof SourceError) {
                 throw new UndeserializableSourceException(cause);
+            }
+            if (cause instanceof ActionError) {
+                throw new UndeserializableActionException(cause);
             }
             throw new UndeserializableSpecificationException(
                     "The payload cannot be deserialized, despite a successful schema validation.\n"
@@ -263,5 +268,12 @@ public class ImportSpecificationDeserializer {
         if (!result.passes()) {
             throw new InvalidSpecificationException(result);
         }
+    }
+
+    @SuppressWarnings("unchecked")
+    private static <T> List<T> loadProviders(Class<?> type) {
+        return ServiceLoader.load(type).stream()
+                .map(provider -> (T) provider.get())
+                .collect(Collectors.toList());
     }
 }

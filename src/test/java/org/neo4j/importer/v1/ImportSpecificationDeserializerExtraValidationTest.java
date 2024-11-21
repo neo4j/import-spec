@@ -121,10 +121,9 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                                     },
                                     "actions": [{
                                         "name": "not-duplicate",
-                                        "type": "http",
-                                        "method": "get",
+                                        "type": "cypher",
                                         "stage": "pre_relationships",
-                                        "url": "https://example.com"
+                                        "query": "CREATE (:PreRel)"
                                     }]
                                 }
                                 """
@@ -271,10 +270,9 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                             },
                             "actions": [{
                                 "name": "duplicate",
-                                "type": "http",
-                                "method": "get",
+                                "type": "cypher",
                                 "stage": "pre_relationships",
-                                "url": "https://example.com"
+                                "query": "CREATE (:PreRel)"
                             }]
                         }
                         """

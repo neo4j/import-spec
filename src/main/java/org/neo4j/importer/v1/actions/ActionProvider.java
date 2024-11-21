@@ -16,8 +16,11 @@
  */
 package org.neo4j.importer.v1.actions;
 
-public enum ActionType {
-    CYPHER,
-    HTTP,
-    BIGQUERY
+import com.fasterxml.jackson.databind.node.ObjectNode;
+
+public interface ActionProvider<T extends Action> {
+
+    String supportedType();
+
+    T provide(ObjectNode node);
 }
