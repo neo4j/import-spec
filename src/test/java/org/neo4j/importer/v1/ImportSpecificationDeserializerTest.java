@@ -25,8 +25,8 @@ import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.neo4j.importer.v1.actions.ActionStage;
-import org.neo4j.importer.v1.actions.HttpAction;
-import org.neo4j.importer.v1.actions.HttpMethod;
+import org.neo4j.importer.v1.actions.plugin.CypherAction;
+import org.neo4j.importer.v1.actions.plugin.CypherExecutionMode;
 import org.neo4j.importer.v1.sources.BigQuerySource;
 import org.neo4j.importer.v1.targets.CustomQueryTarget;
 import org.neo4j.importer.v1.targets.Targets;
@@ -101,10 +101,9 @@ class ImportSpecificationDeserializerTest {
                                     }]
                                 },
                                 "actions": [{
-                                    "name": "my-http-get-action",
-                                    "type": "http",
-                                    "method": "get",
-                                    "url": "https://example.com",
+                                    "name": "my-cypher-action",
+                                    "type": "cypher",
+                                    "query": "CREATE (:Started)",
                                     "stage": "start"
                                 }]
                             }
@@ -128,8 +127,12 @@ class ImportSpecificationDeserializerTest {
                                 null,
                                 "UNWIND $rows AS row CREATE (n:ANode) SET n = row"))));
         assertThat(spec.getActions())
-                .isEqualTo(List.of(new HttpAction(
-                        true, "my-http-get-action", ActionStage.START, "https://example.com", HttpMethod.GET, null)));
+                .isEqualTo(List.of(new CypherAction(
+                        true,
+                        "my-cypher-action",
+                        ActionStage.START,
+                        "CREATE (:Started)",
+                        CypherExecutionMode.TRANSACTION)));
     }
 
     @Test

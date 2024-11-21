@@ -8,6 +8,7 @@ In particular, it offers:
 - a user-friendly configuration surface (in JSON or YAML), called import specification, backed by a JSON schema
 - the Java equivalent of the import specification, a.k.a. `org.neo4j.importer.v1.ImportSpecification`
 - source plugins (see [`SourceProvider` Service Provider Interface](https://github.com/neo4j/import-spec/blob/main/src/main/java/org/neo4j/importer/v1/sources/SourceProvider.java))
+- action plugins (see [`ActionProvider` Service Provider Interface](https://github.com/neo4j/import-spec/blob/main/src/main/java/org/neo4j/importer/v1/actions/ActionProvider.java) and [built-in plugins](https://github.com/neo4j/import-spec/tree/main/src/main/java/org/neo4j/importer/v1/actions/plugin))
 - validation plugins (see [`SpecificationValidator` Service Provider Interface](https://github.com/neo4j/import-spec/blob/main/src/main/java/org/neo4j/importer/v1/validation/SpecificationValidator.java) and [built-in plugins](https://github.com/neo4j/import-spec/tree/main/src/main/java/org/neo4j/importer/v1/validation/plugin))
 
 The library does **NOT**:
@@ -46,10 +47,10 @@ Then, save the following import specification into `spec.json`:
   },
   "actions": [
     {
-      "name": "my-http-action",
-      "type": "http",
-      "method": "get",
-      "url": "https://example.com"
+      "name": "my-cypher-action",
+      "type": "cypher",
+      "stage": "start",
+      "query": "CREATE CONSTRAINT a_node_id FOR (n:ANode) REQUIRE n.id IS UNIQUE"
     }
   ]
 }
