@@ -18,13 +18,8 @@ package org.neo4j.importer.v1.targets;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class NodeTarget extends EntityTarget {
     private final List<String> labels;
@@ -56,18 +51,6 @@ public class NodeTarget extends EntityTarget {
     }
 
     @Override
-    public List<String> getKeyProperties() {
-        if (schema == null) {
-            return new ArrayList<>(0);
-        }
-        Set<String> result = schema.getKeyConstraints().stream()
-                .flatMap(NodeTarget::propertyStream)
-                .collect(Collectors.toCollection(LinkedHashSet::new));
-        result.addAll(keyEquivalentProperties());
-        return new ArrayList<>(result);
-    }
-
-    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
@@ -84,31 +67,5 @@ public class NodeTarget extends EntityTarget {
     @Override
     public String toString() {
         return "NodeTarget{" + "labels=" + labels + ", schema=" + schema + "} " + super.toString();
-    }
-
-    private Set<String> keyEquivalentProperties() {
-        var uniqueConstraints = schema.getUniqueConstraints();
-        var existenceConstraints = schema.getExistenceConstraints();
-
-        Set<String> result = new LinkedHashSet<>(Math.min(uniqueConstraints.size(), existenceConstraints.size()));
-        Set<String> uniqueProperties =
-                uniqueConstraints.stream().flatMap(NodeTarget::propertyStream).collect(Collectors.toSet());
-        result.addAll(existenceConstraints.stream()
-                .map(NodeExistenceConstraint::getProperty)
-                .filter(uniqueProperties::contains)
-                .collect(Collectors.toList()));
-        return result;
-    }
-
-    private static Stream<String> propertyStream(NodeKeyConstraint constraint) {
-        return propertyStream(constraint.getProperties());
-    }
-
-    private static Stream<String> propertyStream(NodeUniqueConstraint constraint) {
-        return propertyStream(constraint.getProperties());
-    }
-
-    private static Stream<String> propertyStream(List<String> constraints) {
-        return constraints.stream();
     }
 }

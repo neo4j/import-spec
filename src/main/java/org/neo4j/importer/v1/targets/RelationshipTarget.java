@@ -18,13 +18,9 @@ package org.neo4j.importer.v1.targets;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class RelationshipTarget extends EntityTarget {
     private final String type;
@@ -56,7 +52,7 @@ public class RelationshipTarget extends EntityTarget {
                 dependencies,
                 writeMode,
                 sourceTransformations,
-                properties);
+                properties != null ? properties : Collections.emptyList());
         this.type = type;
         this.nodeMatchMode = nodeMatchMode;
         this.startNodeReference = startNodeReference;
@@ -82,30 +78,6 @@ public class RelationshipTarget extends EntityTarget {
 
     public String getEndNodeReference() {
         return endNodeReference;
-    }
-
-    @Override
-    public boolean dependsOn(Target target) {
-        if (super.dependsOn(target)) {
-            return true;
-        }
-        if (!(target instanceof NodeTarget)) {
-            return false;
-        }
-        String nodeTargetName = target.getName();
-        return nodeTargetName.equals(startNodeReference) || nodeTargetName.equals(endNodeReference);
-    }
-
-    @Override
-    public List<String> getKeyProperties() {
-        if (schema == null) {
-            return new ArrayList<>(0);
-        }
-        Set<String> result = schema.getKeyConstraints().stream()
-                .flatMap(RelationshipTarget::propertyStream)
-                .collect(Collectors.toCollection(LinkedHashSet::new));
-        result.addAll(keyEquivalentProperties());
-        return new ArrayList<>(result);
     }
 
     @Override
@@ -135,32 +107,5 @@ public class RelationshipTarget extends EntityTarget {
                 + endNodeReference + '\'' + ", schema="
                 + schema + "} "
                 + super.toString();
-    }
-
-    private Set<String> keyEquivalentProperties() {
-        var uniqueConstraints = schema.getUniqueConstraints();
-        var existenceConstraints = schema.getExistenceConstraints();
-
-        Set<String> result = new LinkedHashSet<>(Math.min(uniqueConstraints.size(), existenceConstraints.size()));
-        Set<String> uniqueProperties = uniqueConstraints.stream()
-                .flatMap(RelationshipTarget::propertyStream)
-                .collect(Collectors.toSet());
-        result.addAll(existenceConstraints.stream()
-                .map(RelationshipExistenceConstraint::getProperty)
-                .filter(uniqueProperties::contains)
-                .collect(Collectors.toList()));
-        return result;
-    }
-
-    private static Stream<String> propertyStream(RelationshipKeyConstraint constraint) {
-        return propertyStream(constraint.getProperties());
-    }
-
-    private static Stream<String> propertyStream(RelationshipUniqueConstraint constraint) {
-        return propertyStream(constraint.getProperties());
-    }
-
-    private static Stream<String> propertyStream(List<String> constraints) {
-        return constraints.stream();
     }
 }

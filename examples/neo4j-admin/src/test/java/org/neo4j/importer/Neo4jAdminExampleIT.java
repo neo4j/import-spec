@@ -24,6 +24,7 @@ import java.net.URL;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.AfterEach;
@@ -333,17 +334,22 @@ public class Neo4jAdminExampleIT {
         }
 
         public void copyFiles(ImportSpecification specification) throws Exception {
+            Map<String, Source> indexedSources =
+                    specification.getSources().stream().collect(Collectors.toMap(Source::getName, Function.identity()));
+            Map<String, NodeTarget> indexedNodes = specification.getTargets().getNodes().stream()
+                    .collect(Collectors.toMap(Target::getName, Function.identity()));
             for (Target target : specification.getTargets().getAll()) {
                 switch (target) {
-                    case NodeTarget nodeTarget -> copyFile(specification, nodeTarget);
-                    case RelationshipTarget relationshipTarget -> copyFile(specification, relationshipTarget);
+                    case NodeTarget nodeTarget -> copyFile(indexedSources, nodeTarget);
+                    case RelationshipTarget relationshipTarget -> copyFile(
+                            indexedSources, indexedNodes, relationshipTarget);
                     default -> throw new RuntimeException("unsupported target type: %s".formatted(target.getClass()));
                 }
             }
         }
 
-        private void copyFile(ImportSpecification specification, NodeTarget nodeTarget) throws Exception {
-            var source = specification.findSourceByName(nodeTarget.getSource());
+        private void copyFile(Map<String, Source> sources, NodeTarget nodeTarget) throws Exception {
+            var source = sources.get(nodeTarget.getSource());
             assertThat(source).isInstanceOf(ParquetSource.class);
             File parquetFile = new File(sharedFolder, fileName(nodeTarget));
             List<String> fields = readFieldNames(source);
@@ -352,23 +358,16 @@ public class Neo4jAdminExampleIT {
             copyParquetSource((ParquetSource) source, parquetFile, fieldMappings);
         }
 
-        private void copyFile(ImportSpecification specification, RelationshipTarget relationshipTarget)
+        private void copyFile(
+                Map<String, Source> sources, Map<String, NodeTarget> nodes, RelationshipTarget relationshipTarget)
                 throws Exception {
             File parquetFile = new File(sharedFolder, fileName(relationshipTarget));
 
-            var source = specification.findSourceByName(relationshipTarget.getSource());
+            var source = sources.get(relationshipTarget.getSource());
             assertThat(source).isInstanceOf(ParquetSource.class);
 
-            var startNodeTarget = specification.getTargets().getNodes().stream()
-                    .filter(t -> t.getName().equals(relationshipTarget.getStartNodeReference()))
-                    .findFirst()
-                    .orElseThrow();
-
-            var endNodeTarget = specification.getTargets().getNodes().stream()
-                    .filter(t -> t.getName().equals(relationshipTarget.getEndNodeReference()))
-                    .findFirst()
-                    .orElseThrow();
-
+            var startNodeTarget = nodes.get(relationshipTarget.getStartNodeReference());
+            var endNodeTarget = nodes.get(relationshipTarget.getEndNodeReference());
             List<String> fields = readFieldNames(source);
             Map<String, String> fieldMappings =
                     computeFieldMappings(fields, relationshipTarget, startNodeTarget, endNodeTarget);
@@ -420,7 +419,7 @@ public class Neo4jAdminExampleIT {
 
         private static Map<String, String> computeFieldMappings(List<String> fields, NodeTarget nodeTarget) {
             var mappings = indexByField(nodeTarget.getProperties());
-            var keyProperties = new HashSet<>(nodeTarget.getKeyProperties());
+            var keyProperties = new HashSet<>(getKeyProperties(nodeTarget));
 
             for (String field : fields) {
                 var property = mappings.get(field);
@@ -443,17 +442,29 @@ public class Neo4jAdminExampleIT {
                 NodeTarget endNodeTarget) {
             var mappings = indexByField(relationshipTarget.getProperties());
 
+            var startNodeKeys = getKeyProperties(startNodeTarget);
             startNodeTarget.getProperties().stream()
                     .filter(m -> fields.contains(m.getSourceField()))
-                    .filter(m -> startNodeTarget.getKeyProperties().contains(m.getTargetProperty()))
+                    .filter(m -> startNodeKeys.contains(m.getTargetProperty()))
                     .forEach(m -> mappings.put(m.getSourceField(), startIdSpaceFor(startNodeTarget)));
 
+            var endNodeKeys = getKeyProperties(endNodeTarget);
             endNodeTarget.getProperties().stream()
                     .filter(m -> fields.contains(m.getSourceField()))
-                    .filter(m -> endNodeTarget.getKeyProperties().contains(m.getTargetProperty()))
+                    .filter(m -> endNodeKeys.contains(m.getTargetProperty()))
                     .forEach(m -> mappings.put(m.getSourceField(), endIdSpaceFor(endNodeTarget)));
 
             return mappings;
+        }
+
+        private static Set<String> getKeyProperties(NodeTarget nodeTarget) {
+            var schema = nodeTarget.getSchema();
+            if (schema == null) {
+                return Set.of();
+            }
+            return schema.getKeyConstraints().stream()
+                    .flatMap(constraint -> constraint.getProperties().stream())
+                    .collect(Collectors.toSet());
         }
 
         // 🐤

@@ -30,6 +30,7 @@ import org.neo4j.importer.v1.targets.Targets;
 public class ImportSpecification implements Serializable {
 
     private final String version;
+
     private final Configuration configuration;
 
     private final List<Source> sources;
@@ -71,14 +72,6 @@ public class ImportSpecification implements Serializable {
 
     public List<Action> getActions() {
         return actions != null ? actions : Collections.emptyList();
-    }
-
-    public Source findSourceByName(String source) {
-        return sources.stream()
-                .filter((src) -> src.getName().equals(source))
-                .findFirst()
-                .orElseThrow(() ->
-                        new IllegalArgumentException(String.format("Could not find any source named %s", source)));
     }
 
     @Override

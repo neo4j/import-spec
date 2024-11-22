@@ -31,15 +31,15 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import org.apache.avro.LogicalTypes;
 import org.apache.avro.Schema;
@@ -70,7 +70,6 @@ import org.apache.beam.sdk.transforms.WithKeys;
 import org.apache.beam.sdk.values.KV;
 import org.apache.beam.sdk.values.PCollection;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.jetbrains.annotations.NotNull;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
@@ -88,21 +87,20 @@ import org.neo4j.driver.GraphDatabase;
 import org.neo4j.driver.Session;
 import org.neo4j.driver.summary.ResultSummary;
 import org.neo4j.driver.summary.SummaryCounters;
-import org.neo4j.importer.v1.ImportSpecification;
 import org.neo4j.importer.v1.ImportSpecificationDeserializer;
-import org.neo4j.importer.v1.actions.Action;
-import org.neo4j.importer.v1.actions.ActionStage;
 import org.neo4j.importer.v1.actions.plugin.CypherAction;
 import org.neo4j.importer.v1.actions.plugin.CypherExecutionMode;
-import org.neo4j.importer.v1.graph.Graph;
+import org.neo4j.importer.v1.pipeline.ActionStep;
+import org.neo4j.importer.v1.pipeline.EntityTargetStep;
+import org.neo4j.importer.v1.pipeline.ImportPipeline;
+import org.neo4j.importer.v1.pipeline.ImportStep;
+import org.neo4j.importer.v1.pipeline.NodeTargetStep;
+import org.neo4j.importer.v1.pipeline.RelationshipTargetStep;
+import org.neo4j.importer.v1.pipeline.SourceStep;
+import org.neo4j.importer.v1.pipeline.TargetStep;
 import org.neo4j.importer.v1.sources.Source;
 import org.neo4j.importer.v1.sources.SourceProvider;
-import org.neo4j.importer.v1.targets.EntityTarget;
-import org.neo4j.importer.v1.targets.NodeTarget;
-import org.neo4j.importer.v1.targets.PropertyMapping;
 import org.neo4j.importer.v1.targets.PropertyType;
-import org.neo4j.importer.v1.targets.RelationshipTarget;
-import org.neo4j.importer.v1.targets.Target;
 import org.testcontainers.containers.Neo4jContainer;
 import org.testcontainers.utility.DockerImageName;
 
@@ -122,66 +120,14 @@ public class BeamExampleIT {
             assertThat(stream).isNotNull();
 
             try (var reader = new InputStreamReader(stream)) {
-                var specification = ImportSpecificationDeserializer.deserialize(reader);
-                var sourceOutputs = new HashMap<Source, PCollection<GenericRecord>>(
-                        specification.getSources().size());
-                var targetOutputs = new HashMap<String, PCollection<WriteCounters>>();
-                var sortedTargets = sortTargets(specification.getTargets().getAll());
-                sortedTargets.forEach(target -> {
-                    assertThat(target).isInstanceOf(EntityTarget.class);
-                    var schemaInitOutput = pipeline.apply(
-                                    "[target %s] Create single input".formatted(target.getName()), Create.of(1))
-                            .setCoder(VarIntCoder.of())
-                            .apply(
-                                    "[target %s] Init schema".formatted(target.getName()),
-                                    TargetSchemaIO.initSchema(
-                                            NEO4J.getBoltUrl(), NEO4J.getAdminPassword(), (EntityTarget) target));
-
-                    var source = specification.findSourceByName(target.getSource());
-                    assertThat(source).isInstanceOf(ParquetSource.class);
-                    var sourceRecords = sourceOutputs.computeIfAbsent(source, (src) -> {
-                        var parquetSource = (ParquetSource) src;
-                        return pipeline.apply(
-                                "[source %s] Read records".formatted(parquetSource.getName()),
-                                ParquetIO.parseGenericRecords(
-                                                (SerializableFunction<GenericRecord, GenericRecord>) record -> record)
-                                        .withCoder(GenericRecordCoder.create())
-                                        .from(parquetSource.uri()));
-                    });
-                    var targetOutput = sourceRecords
-                            .apply(
-                                    "[target %s] Wait for implicit dependencies".formatted(target.getName()),
-                                    Wait.on(dependenciesOf(target, targetOutputs, schemaInitOutput)))
-                            .setCoder(sourceRecords.getCoder())
-                            .apply(
-                                    "[target %s] Assign keys to records".formatted(target.getName()),
-                                    WithKeys.of((SerializableFunction<GenericRecord, Integer>)
-                                            input -> ThreadLocalRandom.current()
-                                                    .nextInt(
-                                                            Runtime.getRuntime().availableProcessors())))
-                            .setCoder(KvCoder.of(VarIntCoder.of(), sourceRecords.getCoder()))
-                            .apply(
-                                    "[target %s] Group records into batches".formatted(target.getName()),
-                                    GroupIntoBatches.ofSize(50))
-                            .apply(
-                                    "[target %s] Write record batches to Neo4j".formatted(target.getName()),
-                                    TargetIO.writeAll(
-                                            NEO4J.getBoltUrl(), NEO4J.getAdminPassword(), specification, target));
-
-                    targetOutputs.put(target.getName(), targetOutput);
-                });
-
-                specification.getActions().forEach(action -> {
-                    assertThat(action).isInstanceOf(CypherAction.class);
-                    pipeline.apply("[action %s] Create single input".formatted(action.getName()), Create.of(1))
-                            .apply(
-                                    "[action %s] Wait for dependencies inferred from stage".formatted(action.getName()),
-                                    Wait.on(stageDependenciesOf(action, targetOutputs)))
-                            .setCoder(VarIntCoder.of())
-                            .apply(
-                                    "[action %s] Run".formatted(action.getName()),
-                                    CypherActionIO.run(
-                                            (CypherAction) action, NEO4J.getBoltUrl(), NEO4J.getAdminPassword()));
+                var outputs = new HashMap<String, PCollection<?>>();
+                var importPipeline = ImportPipeline.of(ImportSpecificationDeserializer.deserialize(reader));
+                importPipeline.forEach(step -> {
+                    switch (step) {
+                        case SourceStep source -> handleSource(source, outputs);
+                        case ActionStep action -> handleAction(action, outputs);
+                        case TargetStep target -> handleTarget(target, outputs);
+                    }
                 });
             }
         }
@@ -204,47 +150,72 @@ public class BeamExampleIT {
         }
     }
 
-    private @NotNull List<PCollection<?>> dependenciesOf(
-            Target target,
-            Map<String, PCollection<WriteCounters>> targetOutputs,
-            PCollection<WriteCounters> schemaInitOutput) {
-        List<PCollection<?>> implicitDependencies = implicitDependenciesOf(target, targetOutputs);
-        var dependencies = new ArrayList<PCollection<?>>(1 + implicitDependencies.size());
-        dependencies.add(schemaInitOutput);
-        dependencies.addAll(implicitDependencies);
-        return dependencies;
+    private void handleSource(SourceStep step, Map<String, PCollection<?>> outputs) {
+        var name = step.name();
+        var source = step.source();
+        assertThat(source).isInstanceOf(ParquetSource.class);
+        var parquetSource = (ParquetSource) source;
+        var output = pipeline.apply(
+                "[source %s] Read records".formatted(name),
+                ParquetIO.parseGenericRecords((SerializableFunction<GenericRecord, GenericRecord>) record -> record)
+                        .withCoder(GenericRecordCoder.create())
+                        .from(parquetSource.uri()));
+        outputs.put(source.getName(), output);
     }
 
-    private static List<Target> sortTargets(List<Target> targets) {
-        Map<Target, Set<Target>> dependencyGraph = new HashMap<>();
-        targets.forEach(target -> {
-            if (target instanceof RelationshipTarget relationshipTarget) {
-                dependencyGraph.put(
-                        relationshipTarget,
-                        Set.of(
-                                findTargetByName(targets, relationshipTarget.getStartNodeReference()),
-                                findTargetByName(targets, relationshipTarget.getEndNodeReference())));
-            } else {
-                dependencyGraph.put(target, Set.of());
-            }
-        });
-        return Graph.runTopologicalSort(dependencyGraph);
+    private void handleAction(ActionStep step, Map<String, PCollection<?>> outputs) {
+        var actionName = step.name();
+        var action = step.action();
+        assertThat(action).isInstanceOf(CypherAction.class);
+        var cypherAction = (CypherAction) action;
+        PCollection<Integer> output = pipeline.apply(
+                        "[action %s] Create single input".formatted(actionName), Create.of(1))
+                .apply(
+                        "[action %s] Wait for dependencies inferred from stage".formatted(actionName),
+                        Wait.on(stepsToOutputs(step.dependencies(), outputs)))
+                .setCoder(VarIntCoder.of())
+                .apply(
+                        "[action %s] Run".formatted(actionName),
+                        CypherActionIO.run(cypherAction, NEO4J.getBoltUrl(), NEO4J.getAdminPassword()));
+        outputs.put(actionName, output);
     }
 
-    private List<PCollection<?>> implicitDependenciesOf(
-            Target target, Map<String, PCollection<WriteCounters>> targetOutputs) {
-        if (target instanceof RelationshipTarget relationshipTarget) {
-            return List.of(
-                    targetOutputs.get(relationshipTarget.getStartNodeReference()),
-                    targetOutputs.get(relationshipTarget.getEndNodeReference()));
-        }
-        return List.of();
+    @SuppressWarnings("unchecked")
+    private void handleTarget(TargetStep step, Map<String, PCollection<?>> outputs) {
+        var stepName = step.name();
+        assertThat(step).isInstanceOf(EntityTargetStep.class);
+        var entityTargetStep = (EntityTargetStep) step;
+        var schemaInitOutput = pipeline.apply("[target %s] Create single input".formatted(stepName), Create.of(1))
+                .setCoder(VarIntCoder.of())
+                .apply(
+                        "[target %s] Init schema".formatted(stepName),
+                        TargetSchemaIO.initSchema(NEO4J.getBoltUrl(), NEO4J.getAdminPassword(), entityTargetStep));
+        var sourceRecords = (PCollection<GenericRecord>) outputs.get(step.sourceName());
+        var sourceCoder = sourceRecords.getCoder();
+        var output = sourceRecords
+                .apply(
+                        "[target %s] Wait for implicit dependencies".formatted(stepName),
+                        Wait.on(stepsToOutputs(step.dependencies(), outputs, schemaInitOutput)))
+                .setCoder(sourceCoder)
+                .apply(
+                        "[target %s] Assign keys to records".formatted(stepName),
+                        WithKeys.of((SerializableFunction<GenericRecord, Integer>) input -> ThreadLocalRandom.current()
+                                .nextInt(Runtime.getRuntime().availableProcessors())))
+                .setCoder(KvCoder.of(VarIntCoder.of(), sourceCoder))
+                .apply("[target %s] Group records into batches".formatted(stepName), GroupIntoBatches.ofSize(50))
+                .apply(
+                        "[target %s] Write record batches to Neo4j".formatted(stepName),
+                        TargetIO.writeAll(NEO4J.getBoltUrl(), NEO4J.getAdminPassword(), entityTargetStep));
+        outputs.put(stepName, output);
     }
 
-    private List<@NonNull PCollection<?>> stageDependenciesOf(
-            Action action, Map<String, PCollection<WriteCounters>> targetOutputs) {
-        assertThat(action.getStage()).isEqualTo(ActionStage.END);
-        return new ArrayList<>(targetOutputs.values());
+    private static List<PCollection<?>> stepsToOutputs(
+            List<ImportStep> dependencies, Map<String, PCollection<?>> outputs, PCollection<?>... extras) {
+        var result = dependencies.stream()
+                .map(step -> outputs.get(step.name()))
+                .collect(Collectors.toCollection((Supplier<ArrayList<PCollection<?>>>) ArrayList::new));
+        Collections.addAll(result, extras);
+        return result;
     }
 
     private static void assertSchema(Driver driver) {
@@ -385,16 +356,16 @@ public class BeamExampleIT {
 
         private final String password;
 
-        private final EntityTarget target;
+        private final EntityTargetStep target;
 
-        private TargetSchemaIO(String url, String password, EntityTarget target) {
+        private TargetSchemaIO(String url, String password, EntityTargetStep target) {
             this.url = url;
             this.password = password;
             this.target = target;
         }
 
         public static PTransform<@NonNull PCollection<Integer>, @NonNull PCollection<WriteCounters>> initSchema(
-                String url, String password, EntityTarget target) {
+                String url, String password, EntityTargetStep target) {
             return new TargetSchemaIO(url, password, target);
         }
 
@@ -409,17 +380,17 @@ public class BeamExampleIT {
 
             private final String password;
 
-            private final EntityTarget target;
+            private final EntityTargetStep target;
 
             private transient Driver driver;
 
-            public TargetSchemaWriteFn(String url, String password, EntityTarget target) {
+            public TargetSchemaWriteFn(String url, String password, EntityTargetStep target) {
                 this.url = url;
                 this.password = password;
                 this.target = target;
             }
 
-            public static DoFn<Integer, WriteCounters> of(String url, String password, EntityTarget target) {
+            public static DoFn<Integer, WriteCounters> of(String url, String password, EntityTargetStep target) {
                 return new TargetSchemaWriteFn(url, password, target);
             }
 
@@ -441,11 +412,9 @@ public class BeamExampleIT {
             public void processElement(ProcessContext context) {
                 var schemaStatements =
                         switch (target) {
-                            case NodeTarget nodeTarget -> generateNodeSchemaStatements(nodeTarget);
-                            case RelationshipTarget relationshipTarget -> generateRelationshipSchemaStatements(
+                            case NodeTargetStep nodeTarget -> generateNodeSchemaStatements(nodeTarget);
+                            case RelationshipTargetStep relationshipTarget -> generateRelationshipSchemaStatements(
                                     relationshipTarget);
-                            default -> throw new RuntimeException(
-                                    "unsupported target type: %s".formatted(target.getClass()));
                         };
 
                 if (schemaStatements.isEmpty()) {
@@ -459,8 +428,8 @@ public class BeamExampleIT {
                 }
             }
 
-            private List<String> generateNodeSchemaStatements(NodeTarget nodeTarget) {
-                var schema = nodeTarget.getSchema();
+            private List<String> generateNodeSchemaStatements(NodeTargetStep step) {
+                var schema = step.schema();
                 if (schema == null) {
                     return Collections.emptyList();
                 }
@@ -469,7 +438,10 @@ public class BeamExampleIT {
                         .map(constraint -> "CREATE CONSTRAINT %s FOR (n:%s) REQUIRE (%s) IS NODE KEY"
                                 .formatted(
                                         generateName(
-                                                nodeTarget, "key", constraint.getLabel(), constraint.getProperties()),
+                                                step,
+                                                "key",
+                                                constraint.getLabel(),
+                                                constraint.getProperties()),
                                         sanitize(constraint.getLabel()),
                                         constraint.getProperties().stream()
                                                 .map(TargetSchemaWriteFn::sanitize)
@@ -480,7 +452,7 @@ public class BeamExampleIT {
                         .map(constraint -> "CREATE CONSTRAINT %s FOR (n:%s) REQUIRE (%s) IS UNIQUE"
                                 .formatted(
                                         generateName(
-                                                nodeTarget,
+                                                step,
                                                 "unique",
                                                 constraint.getLabel(),
                                                 constraint.getProperties()),
@@ -490,24 +462,24 @@ public class BeamExampleIT {
                                                 .map(prop -> propertyOf("n", prop))
                                                 .collect(Collectors.joining(","))))
                         .toList());
+                Map<String, PropertyType> propertyTypes = step.propertyTypes();
                 statements.addAll(schema.getTypeConstraints().stream()
                         .map(constraint -> "CREATE CONSTRAINT %s FOR (n:%s) REQUIRE n.%s IS :: %s"
                                 .formatted(
                                         generateName(
-                                                nodeTarget,
+                                                step,
                                                 "type",
                                                 constraint.getLabel(),
                                                 List.of(constraint.getProperty())),
                                         sanitize(constraint.getLabel()),
                                         sanitize(constraint.getProperty()),
-                                        propertyType(findPropertyType(
-                                                nodeTarget.getProperties(), constraint.getProperty()))))
+                                        propertyType(propertyTypes.get(constraint.getProperty()))))
                         .toList());
                 return statements;
             }
 
-            private List<String> generateRelationshipSchemaStatements(RelationshipTarget relationshipTarget) {
-                var schema = relationshipTarget.getSchema();
+            private List<String> generateRelationshipSchemaStatements(RelationshipTargetStep step) {
+                var schema = step.schema();
                 if (schema == null) {
                     return Collections.emptyList();
                 }
@@ -516,11 +488,11 @@ public class BeamExampleIT {
                         .map(constraint -> "CREATE CONSTRAINT %s FOR ()-[r:%s]-() REQUIRE (%s) IS RELATIONSHIP KEY"
                                 .formatted(
                                         generateName(
-                                                relationshipTarget,
+                                                step,
                                                 "key",
-                                                relationshipTarget.getType(),
+                                                step.type(),
                                                 constraint.getProperties()),
-                                        sanitize(relationshipTarget.getType()),
+                                        sanitize(step.type()),
                                         constraint.getProperties().stream()
                                                 .map(TargetSchemaWriteFn::sanitize)
                                                 .map(prop -> propertyOf("r", prop))
@@ -530,44 +502,35 @@ public class BeamExampleIT {
                         .map(constraint -> "CREATE CONSTRAINT %s FOR ()-[r:%s]-() REQUIRE (%s) IS UNIQUE"
                                 .formatted(
                                         generateName(
-                                                relationshipTarget,
+                                                step,
                                                 "unique",
-                                                relationshipTarget.getType(),
+                                                step.type(),
                                                 constraint.getProperties()),
-                                        sanitize(relationshipTarget.getType()),
+                                        sanitize(step.type()),
                                         constraint.getProperties().stream()
                                                 .map(TargetSchemaWriteFn::sanitize)
                                                 .map(prop -> propertyOf("r", prop))
                                                 .collect(Collectors.joining(","))))
                         .toList());
+                Map<String, PropertyType> propertyTypes = step.propertyTypes();
                 statements.addAll(schema.getTypeConstraints().stream()
                         .map(constraint -> "CREATE CONSTRAINT %s FOR ()-[r:%s]-() REQUIRE r.%s IS :: %s"
                                 .formatted(
                                         generateName(
-                                                relationshipTarget,
+                                                step,
                                                 "type",
-                                                relationshipTarget.getType(),
+                                                step.type(),
                                                 List.of(constraint.getProperty())),
-                                        sanitize(relationshipTarget.getType()),
+                                        sanitize(step.type()),
                                         sanitize(constraint.getProperty()),
-                                        propertyType(findPropertyType(
-                                                relationshipTarget.getProperties(), constraint.getProperty()))))
+                                        propertyType(propertyTypes.get(constraint.getProperty()))))
                         .toList());
                 return statements;
             }
 
-            private static PropertyType findPropertyType(List<PropertyMapping> mappings, String property) {
-                var result = mappings.stream()
-                        .filter(mapping -> mapping.getTargetProperty().equals(property))
-                        .map(PropertyMapping::getTargetPropertyType)
-                        .toList();
-                assertThat(result).hasSize(1);
-                return result.getFirst();
-            }
-
             private static String generateName(
-                    EntityTarget target, String type, String label, List<String> properties) {
-                return sanitize("%s_%s_%s_%s".formatted(target.getName(), type, label, String.join("-", properties)));
+                    EntityTargetStep target, String type, String label, List<String> properties) {
+                return sanitize("%s_%s_%s_%s".formatted(target.name(), type, label, String.join("-", properties)));
             }
 
             private static String propertyOf(String container, String property) {
@@ -619,26 +582,23 @@ public class BeamExampleIT {
 
         private final String password;
 
-        private final ImportSpecification spec;
+        private final EntityTargetStep target;
 
-        private final Target target;
-
-        private TargetIO(String url, String password, ImportSpecification spec, Target target) {
+        private TargetIO(String url, String password, EntityTargetStep target) {
             this.url = url;
             this.password = password;
-            this.spec = spec;
             this.target = target;
         }
 
         public static PTransform<
                         @NonNull PCollection<KV<Integer, Iterable<GenericRecord>>>, @NonNull PCollection<WriteCounters>>
-                writeAll(String boltUrl, String adminPassword, ImportSpecification spec, Target target) {
-            return new TargetIO(boltUrl, adminPassword, spec, target);
+                writeAll(String boltUrl, String adminPassword, EntityTargetStep target) {
+            return new TargetIO(boltUrl, adminPassword, target);
         }
 
         @Override
         public @NonNull PCollection<WriteCounters> expand(PCollection<KV<Integer, Iterable<GenericRecord>>> input) {
-            return input.apply(ParDo.of(TargetWriteFn.of(url, password, spec, target)));
+            return input.apply(ParDo.of(TargetWriteFn.of(url, password, target)));
         }
 
         private static class TargetWriteFn extends DoFn<KV<Integer, Iterable<GenericRecord>>, WriteCounters> {
@@ -647,22 +607,19 @@ public class BeamExampleIT {
 
             private final String password;
 
-            private final ImportSpecification spec;
-
-            private final Target target;
+            private final EntityTargetStep target;
 
             private transient Driver driver;
 
-            public TargetWriteFn(String url, String password, ImportSpecification spec, Target target) {
+            public TargetWriteFn(String url, String password, EntityTargetStep target) {
                 this.url = url;
                 this.password = password;
-                this.spec = spec;
                 this.target = target;
             }
 
             public static DoFn<KV<Integer, Iterable<GenericRecord>>, WriteCounters> of(
-                    String url, String password, ImportSpecification spec, Target target) {
-                return new TargetWriteFn(url, password, spec, target);
+                    String url, String password, EntityTargetStep target) {
+                return new TargetWriteFn(url, password, target);
             }
 
             @Setup
@@ -691,17 +648,9 @@ public class BeamExampleIT {
                 assertThat(records).isNotNull();
                 var statement =
                         switch (target) {
-                            case NodeTarget nodeTarget -> buildNodeImportQuery(nodeTarget, unwindRows, row);
-                            case RelationshipTarget relationshipTarget -> {
-                                var startNodeTarget = findTargetByName(
-                                        spec.getTargets().getNodes(), relationshipTarget.getStartNodeReference());
-                                var endNodeTarget = findTargetByName(
-                                        spec.getTargets().getNodes(), relationshipTarget.getEndNodeReference());
-                                yield buildRelationshipImportQuery(
-                                        relationshipTarget, startNodeTarget, endNodeTarget, unwindRows, row);
-                            }
-                            default -> throw new RuntimeException(
-                                    "unsupported target type: %s".formatted(target.getClass()));
+                            case NodeTargetStep nodeTarget -> buildNodeImportQuery(nodeTarget, unwindRows, row);
+                            case RelationshipTargetStep relationshipTarget -> buildRelationshipImportQuery(
+                                    relationshipTarget, unwindRows, row);
                         };
 
                 var summary = WriteCounters.of(driver.executableQuery(statement.getCypher())
@@ -712,11 +661,11 @@ public class BeamExampleIT {
             }
 
             private static Statement buildNodeImportQuery(
-                    NodeTarget nodeTarget, OngoingReading unwindRows, SymbolicName row) {
+                    NodeTargetStep nodeTarget, OngoingReading unwindRows, SymbolicName row) {
                 var node = cypherNode(nodeTarget, row);
                 var nonKeyProps = nonKeyPropertiesOf(nodeTarget, node.getRequiredSymbolicName(), row);
                 var query =
-                        switch (nodeTarget.getWriteMode()) {
+                        switch (nodeTarget.writeMode()) {
                             case CREATE -> {
                                 var create = unwindRows.create(node);
                                 if (nonKeyProps.isEmpty()) {
@@ -736,26 +685,22 @@ public class BeamExampleIT {
             }
 
             private Statement buildRelationshipImportQuery(
-                    RelationshipTarget relationshipTarget,
-                    NodeTarget startNodeTarget,
-                    NodeTarget endNodeTarget,
-                    OngoingReading unwindRows,
-                    SymbolicName row) {
-                var startNode = cypherNode(startNodeTarget, row, "start");
-                var endNode = cypherNode(endNodeTarget, row, "end");
+                    RelationshipTargetStep relationshipTarget, OngoingReading unwindRows, SymbolicName row) {
+                var startNode = cypherNode(relationshipTarget.startNode(), row, "start");
+                var endNode = cypherNode(relationshipTarget.endNode(), row, "end");
                 var relationship = startNode
-                        .relationshipTo(endNode, relationshipTarget.getType())
+                        .relationshipTo(endNode, relationshipTarget.type())
                         .named("r")
                         .withProperties(keyPropertiesOf(relationshipTarget, row));
                 var nonKeyProps = nonKeyPropertiesOf(relationshipTarget, relationship.getRequiredSymbolicName(), row);
 
                 var queryStart =
-                        switch (relationshipTarget.getNodeMatchMode()) {
+                        switch (relationshipTarget.nodeMatchMode()) {
                             case MATCH -> unwindRows.match(startNode).match(endNode);
                             case MERGE -> unwindRows.merge(startNode).merge(endNode);
                         };
                 var query =
-                        switch (relationshipTarget.getWriteMode()) {
+                        switch (relationshipTarget.writeMode()) {
                             case CREATE -> {
                                 var create = queryStart.create(relationship);
                                 if (nonKeyProps.isEmpty()) {
@@ -774,54 +719,32 @@ public class BeamExampleIT {
                 return query.build();
             }
 
-            private static Node cypherNode(NodeTarget nodeTarget, SymbolicName row) {
+            private static Node cypherNode(NodeTargetStep nodeTarget, SymbolicName row) {
                 return cypherNode(nodeTarget, row, "n");
             }
 
-            private static Node cypherNode(NodeTarget nodeTarget, SymbolicName row, String variableName) {
-                List<String> labels = nodeTarget.getLabels();
+            private static Node cypherNode(NodeTargetStep nodeTarget, SymbolicName row, String variableName) {
+                List<String> labels = nodeTarget.labels();
                 return Cypher.node(labels.getFirst(), labels.subList(1, labels.size()))
                         .named(variableName)
                         .withProperties(keyPropertiesOf(nodeTarget, row));
             }
 
-            private static MapExpression keyPropertiesOf(EntityTarget nodeTarget, SymbolicName rowVariable) {
-                var keyProperties = nodeTarget.getKeyProperties();
-                var expressions = new ArrayList<>(keyProperties.size() * 2);
-                keyProperties.forEach(property -> {
-                    expressions.add(property);
-                    expressions.add(Cypher.property(rowVariable, sourceFieldFor(nodeTarget, property)));
-                });
-                return Cypher.mapOf(expressions.toArray());
+            private static MapExpression keyPropertiesOf(EntityTargetStep target, SymbolicName rowVariable) {
+                return Cypher.mapOf(target.keyProperties().stream()
+                        .flatMap(mapping -> Stream.of(
+                                mapping.getTargetProperty(), Cypher.property(rowVariable, mapping.getSourceField())))
+                        .toArray());
             }
 
             private static Collection<? extends Expression> nonKeyPropertiesOf(
-                    EntityTarget target, SymbolicName entityVariable, SymbolicName rowVariable) {
+                    EntityTargetStep target, SymbolicName entityVariable, SymbolicName rowVariable) {
 
-                Set<String> nonKeyProperties = getNonKeyProperties(target);
-                List<Expression> expressions = new ArrayList<>(nonKeyProperties.size() * 2);
-                nonKeyProperties.forEach(property -> {
-                    expressions.add(Cypher.property(entityVariable, property));
-                    expressions.add(Cypher.property(rowVariable, sourceFieldFor(target, property)));
-                });
-                return expressions;
-            }
-
-            private static Set<String> getNonKeyProperties(EntityTarget nodeTarget) {
-                Set<String> properties =
-                        new HashSet<>(nodeTarget.getAllProperties().size());
-                properties.addAll(nodeTarget.getAllProperties());
-                properties.removeAll(new HashSet<>(nodeTarget.getKeyProperties()));
-                return properties;
-            }
-
-            private static String sourceFieldFor(EntityTarget target, String property) {
-                var sourceField = target.getProperties().stream()
-                        .filter(mapping -> mapping.getTargetProperty().equals(property))
-                        .map(PropertyMapping::getSourceField)
-                        .findFirst();
-                assertThat(sourceField).isPresent();
-                return sourceField.get();
+                return target.nonKeyProperties().stream()
+                        .flatMap(mapping -> Stream.of(
+                                Cypher.property(entityVariable, mapping.getTargetProperty()),
+                                Cypher.property(rowVariable, mapping.getSourceField())))
+                        .toList();
             }
 
             private List<Map<String, Object>> parameters(Iterable<GenericRecord> records) {
@@ -1102,12 +1025,6 @@ public class BeamExampleIT {
                     + indexesAdded + ", indexesRemoved="
                     + indexesRemoved + '}';
         }
-    }
-
-    private static <T extends Target> T findTargetByName(List<T> targets, String name) {
-        var results = targets.stream().filter(t -> t.getName().equals(name)).toList();
-        assertThat(results).hasSize(1);
-        return results.getFirst();
     }
 
     private static class CypherActionIO
