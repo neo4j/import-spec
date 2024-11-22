@@ -29,6 +29,7 @@ import org.neo4j.importer.v1.validation.SpecificationValidator;
 
 public class NoDuplicatedDependencyValidator implements SpecificationValidator {
     private static final String ERROR_CODE = "DUPL-003";
+
     private final Map<String, Duplicate<String>> pathToDuplicates = new LinkedHashMap<>();
 
     @Override

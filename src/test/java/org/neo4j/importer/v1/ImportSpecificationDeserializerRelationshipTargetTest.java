@@ -8057,4 +8057,221 @@ public class ImportSpecificationDeserializerRelationshipTargetTest {
                         "$.targets.relationships[0].schema.unique_constraints[0].properties[0] \"not-a-prop\" is not part of the property mappings",
                         "$.targets.relationships[0].schema.range_indexes[0].properties[0] \"not-a-prop\" is not part of the property mappings");
     }
+
+    @Test
+    public void reports_redundancy_for_start_node_reference_also_declared_as_explicit_dependency() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+        {
+            "version": "1",
+            "sources": [{
+                "name": "a-source",
+                "type": "jdbc",
+                "data_source": "a-data-source",
+                "sql": "SELECT id, name FROM my.table"
+            }],
+            "targets": {
+                "nodes": [{
+                  "name": "a-node-target",
+                  "source": "a-source",
+                  "labels": ["Label"],
+                  "properties": [
+                    {"source_field": "id", "target_property": "id"}
+                  ]
+                }, {
+                  "name": "another-node-target",
+                  "source": "a-source",
+                  "labels": ["Label2"],
+                  "properties": [
+                    {"source_field": "id", "target_property": "id"}
+                  ]
+                }],
+                "relationships": [{
+                    "name": "a-relationship-target",
+                    "source": "a-source",
+                    "type": "TYPE",
+                    "start_node_reference": "a-node-target",
+                    "end_node_reference": "another-node-target",
+                    "dependencies": ["a-node-target"]
+                }]
+            }
+        }
+        """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "$.targets.relationships[0].dependencies \"a-node-target\" is defined as an explicit dependency *and* as a start node reference, remove it from dependencies");
+    }
+
+    @Test
+    public void reports_redundancy_for_end_node_reference_also_declared_as_explicit_dependency() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+        {
+            "version": "1",
+            "sources": [{
+                "name": "a-source",
+                "type": "jdbc",
+                "data_source": "a-data-source",
+                "sql": "SELECT id, name FROM my.table"
+            }],
+            "targets": {
+                "nodes": [{
+                  "name": "a-node-target",
+                  "source": "a-source",
+                  "labels": ["Label"],
+                  "properties": [
+                    {"source_field": "id", "target_property": "id"}
+                  ]
+                }, {
+                  "name": "another-node-target",
+                  "source": "a-source",
+                  "labels": ["Label2"],
+                  "properties": [
+                    {"source_field": "id", "target_property": "id"}
+                  ]
+                }],
+                "relationships": [{
+                    "name": "a-relationship-target",
+                    "source": "a-source",
+                    "type": "TYPE",
+                    "start_node_reference": "a-node-target",
+                    "end_node_reference": "another-node-target",
+                    "dependencies": ["another-node-target"]
+                }]
+            }
+        }
+        """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "$.targets.relationships[0].dependencies \"another-node-target\" is defined as an explicit dependency *and* as an end node reference, remove it from dependencies");
+    }
+
+    @Test
+    public void
+            does_not_report_redundancy_for_node_reference_also_declared_as_explicit_dependency_if_a_node_reference_is_dangling() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+        {
+            "version": "1",
+            "sources": [{
+                "name": "a-source",
+                "type": "jdbc",
+                "data_source": "a-data-source",
+                "sql": "SELECT id, name FROM my.table"
+            }],
+            "targets": {
+                "nodes": [{
+                  "name": "a-node-target",
+                  "source": "a-source",
+                  "labels": ["Label"],
+                  "properties": [
+                    {"source_field": "id", "target_property": "id"}
+                  ]
+                }],
+                "relationships": [{
+                    "name": "a-relationship-target",
+                    "source": "a-source",
+                    "type": "TYPE",
+                    "start_node_reference": "a-node-target",
+                    "end_node_reference": "not-a-node-target",
+                    "dependencies": ["a-node-target"]
+                }]
+            }
+        }
+        """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "[$.targets.relationships[0].end_node_reference] $.targets.relationships[0].end_node_reference refers to a non-existing node target \"not-a-node-target\"");
+    }
+
+    @Test
+    public void
+            does_not_report_redundancy_for_node_reference_also_declared_as_explicit_dependency_if_a_dependency_is_dangling() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+        {
+            "version": "1",
+            "sources": [{
+                "name": "a-source",
+                "type": "jdbc",
+                "data_source": "a-data-source",
+                "sql": "SELECT id, name FROM my.table"
+            }],
+            "targets": {
+                "nodes": [{
+                  "name": "a-node-target",
+                  "source": "a-source",
+                  "labels": ["Label"],
+                  "properties": [
+                    {"source_field": "id", "target_property": "id"}
+                  ]
+                }],
+                "relationships": [{
+                    "name": "a-relationship-target",
+                    "source": "a-source",
+                    "type": "TYPE",
+                    "start_node_reference": "a-node-target",
+                    "end_node_reference": "a-node-target",
+                    "dependencies": ["a-node-target", "another-node-target"]
+                }]
+            }
+        }
+        """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "[$.targets.relationships[0]] $.targets.relationships[0] depends on a non-existing target \"another-node-target\"");
+    }
+
+    @Test
+    public void
+            does_not_report_redundancy_for_node_reference_also_declared_as_explicit_dependency_if_a_dependency_is_duplicated() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+        {
+            "version": "1",
+            "sources": [{
+                "name": "a-source",
+                "type": "jdbc",
+                "data_source": "a-data-source",
+                "sql": "SELECT id, name FROM my.table"
+            }],
+            "targets": {
+                "nodes": [{
+                  "name": "a-node-target",
+                  "source": "a-source",
+                  "labels": ["Label"],
+                  "properties": [
+                    {"source_field": "id", "target_property": "id"}
+                  ]
+                }],
+                "relationships": [{
+                    "name": "a-relationship-target",
+                    "source": "a-source",
+                    "type": "TYPE",
+                    "start_node_reference": "a-node-target",
+                    "end_node_reference": "a-node-target",
+                    "dependencies": ["a-node-target", "a-node-target"]
+                }]
+            }
+        }
+        """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "[$.targets.relationships[0].depends_on] $.targets.relationships[0].depends_on defines dependency \"a-node-target\" 2 times, it must be defined at most once");
+    }
 }
