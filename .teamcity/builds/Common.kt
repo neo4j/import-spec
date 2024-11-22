@@ -13,7 +13,7 @@ const val GITHUB_OWNER = "neo4j"
 const val GITHUB_REPOSITORY = "import-spec"
 const val MAVEN_DEFAULT_ARGS = "--no-transfer-progress --batch-mode --show-version"
 
-const val DEFAULT_JAVA_VERSION = "11"
+const val DEFAULT_JAVA_VERSION = "17"
 const val LTS_JAVA_VERSION = "21"
 
 enum class LinuxSize(val value: String) {
