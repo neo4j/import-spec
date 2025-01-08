@@ -37,11 +37,16 @@ import org.neo4j.importer.v1.ImportSpecification;
 import org.neo4j.importer.v1.ImportSpecificationDeserializer;
 import org.neo4j.importer.v1.actions.Action;
 import org.neo4j.importer.v1.actions.ActionStage;
-import org.neo4j.importer.v1.actions.ActionType;
-import org.neo4j.importer.v1.actions.CypherAction;
+import org.neo4j.importer.v1.actions.plugin.CypherAction;
 import org.neo4j.importer.v1.sources.Source;
 import org.neo4j.importer.v1.sources.SourceProvider;
-import org.neo4j.importer.v1.targets.*;
+import org.neo4j.importer.v1.targets.EntityTarget;
+import org.neo4j.importer.v1.targets.NodeTarget;
+import org.neo4j.importer.v1.targets.PropertyMapping;
+import org.neo4j.importer.v1.targets.PropertyType;
+import org.neo4j.importer.v1.targets.RelationshipTarget;
+import org.neo4j.importer.v1.targets.Target;
+import org.neo4j.importer.v1.targets.Targets;
 import org.testcontainers.containers.BindMode;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Neo4jContainer;
@@ -288,7 +293,7 @@ public class Neo4jAdminExampleIT {
             // run post actions
             for (Action action : specification.getActions()) {
                 // we only support CYPHER actions that can only run at stage END
-                assertThat(action.getType()).isEqualTo(ActionType.CYPHER);
+                assertThat(action.getType()).isEqualTo("cypher");
                 assertThat(action.getStage()).isEqualTo(ActionStage.END);
 
                 try (var session = driver.session(SessionConfig.forDatabase(targetDatabase))) {

@@ -437,11 +437,7 @@ public class BeamExampleIT {
                 statements.addAll(schema.getKeyConstraints().stream()
                         .map(constraint -> "CREATE CONSTRAINT %s FOR (n:%s) REQUIRE (%s) IS NODE KEY"
                                 .formatted(
-                                        generateName(
-                                                step,
-                                                "key",
-                                                constraint.getLabel(),
-                                                constraint.getProperties()),
+                                        generateName(step, "key", constraint.getLabel(), constraint.getProperties()),
                                         sanitize(constraint.getLabel()),
                                         constraint.getProperties().stream()
                                                 .map(TargetSchemaWriteFn::sanitize)
@@ -451,11 +447,7 @@ public class BeamExampleIT {
                 statements.addAll(schema.getUniqueConstraints().stream()
                         .map(constraint -> "CREATE CONSTRAINT %s FOR (n:%s) REQUIRE (%s) IS UNIQUE"
                                 .formatted(
-                                        generateName(
-                                                step,
-                                                "unique",
-                                                constraint.getLabel(),
-                                                constraint.getProperties()),
+                                        generateName(step, "unique", constraint.getLabel(), constraint.getProperties()),
                                         sanitize(constraint.getLabel()),
                                         constraint.getProperties().stream()
                                                 .map(TargetSchemaWriteFn::sanitize)
@@ -467,10 +459,7 @@ public class BeamExampleIT {
                         .map(constraint -> "CREATE CONSTRAINT %s FOR (n:%s) REQUIRE n.%s IS :: %s"
                                 .formatted(
                                         generateName(
-                                                step,
-                                                "type",
-                                                constraint.getLabel(),
-                                                List.of(constraint.getProperty())),
+                                                step, "type", constraint.getLabel(), List.of(constraint.getProperty())),
                                         sanitize(constraint.getLabel()),
                                         sanitize(constraint.getProperty()),
                                         propertyType(propertyTypes.get(constraint.getProperty()))))
@@ -487,11 +476,7 @@ public class BeamExampleIT {
                 statements.addAll(schema.getKeyConstraints().stream()
                         .map(constraint -> "CREATE CONSTRAINT %s FOR ()-[r:%s]-() REQUIRE (%s) IS RELATIONSHIP KEY"
                                 .formatted(
-                                        generateName(
-                                                step,
-                                                "key",
-                                                step.type(),
-                                                constraint.getProperties()),
+                                        generateName(step, "key", step.type(), constraint.getProperties()),
                                         sanitize(step.type()),
                                         constraint.getProperties().stream()
                                                 .map(TargetSchemaWriteFn::sanitize)
@@ -501,11 +486,7 @@ public class BeamExampleIT {
                 statements.addAll(schema.getUniqueConstraints().stream()
                         .map(constraint -> "CREATE CONSTRAINT %s FOR ()-[r:%s]-() REQUIRE (%s) IS UNIQUE"
                                 .formatted(
-                                        generateName(
-                                                step,
-                                                "unique",
-                                                step.type(),
-                                                constraint.getProperties()),
+                                        generateName(step, "unique", step.type(), constraint.getProperties()),
                                         sanitize(step.type()),
                                         constraint.getProperties().stream()
                                                 .map(TargetSchemaWriteFn::sanitize)
@@ -516,11 +497,7 @@ public class BeamExampleIT {
                 statements.addAll(schema.getTypeConstraints().stream()
                         .map(constraint -> "CREATE CONSTRAINT %s FOR ()-[r:%s]-() REQUIRE r.%s IS :: %s"
                                 .formatted(
-                                        generateName(
-                                                step,
-                                                "type",
-                                                step.type(),
-                                                List.of(constraint.getProperty())),
+                                        generateName(step, "type", step.type(), List.of(constraint.getProperty())),
                                         sanitize(step.type()),
                                         sanitize(constraint.getProperty()),
                                         propertyType(propertyTypes.get(constraint.getProperty()))))
