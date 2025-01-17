@@ -25,8 +25,8 @@ import java.util.Objects;
 public class RelationshipTarget extends EntityTarget {
     private final String type;
     private final NodeMatchMode nodeMatchMode;
-    private final String startNodeReference;
-    private final String endNodeReference;
+    private final org.neo4j.importer.v1.targets.NodeReference startNodeReference;
+    private final org.neo4j.importer.v1.targets.NodeReference endNodeReference;
     private final RelationshipSchema schema;
 
     @JsonCreator
@@ -39,8 +39,8 @@ public class RelationshipTarget extends EntityTarget {
             @JsonProperty("write_mode") WriteMode writeMode,
             @JsonProperty("node_match_mode") NodeMatchMode nodeMatchMode,
             @JsonProperty("source_transformations") SourceTransformations sourceTransformations,
-            @JsonProperty("start_node_reference") String startNodeReference,
-            @JsonProperty("end_node_reference") String endNodeReference,
+            @JsonProperty("start_node_reference") org.neo4j.importer.v1.targets.NodeReference startNodeReference,
+            @JsonProperty("end_node_reference") org.neo4j.importer.v1.targets.NodeReference endNodeReference,
             @JsonProperty("properties") List<PropertyMapping> properties,
             @JsonProperty("schema") RelationshipSchema schema) {
 
@@ -72,11 +72,11 @@ public class RelationshipTarget extends EntityTarget {
         return schema;
     }
 
-    public String getStartNodeReference() {
+    public org.neo4j.importer.v1.targets.NodeReference getStartNodeReference() {
         return startNodeReference;
     }
 
-    public String getEndNodeReference() {
+    public org.neo4j.importer.v1.targets.NodeReference getEndNodeReference() {
         return endNodeReference;
     }
 

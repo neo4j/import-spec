@@ -222,8 +222,8 @@ public class AdminImportIT {
             try (var writer = new BufferedWriter(new FileWriter(headerFile))) {
                 // note: this does not support standalone start/end node spec yet
                 var startNodeRef = relationshipTarget.getStartNodeReference();
-                assertThat(startNodeRef).isNotEmpty();
-                writer.write(":START_ID(%s),".formatted(idSpaceFor(findNodeKey(nodeTargets, startNodeRef))));
+                assertThat(startNodeRef.getName()).isNotEmpty();
+                writer.write(":START_ID(%s),".formatted(idSpaceFor(findNodeKey(nodeTargets, startNodeRef.getName()))));
                 var properties = sortedProperties(relationshipTarget.getProperties());
                 for (int i = 0; i < properties.size(); i++) {
                     String property = properties.get(i);
@@ -235,8 +235,8 @@ public class AdminImportIT {
                     }
                 }
                 var endNodeRef = relationshipTarget.getEndNodeReference();
-                assertThat(endNodeRef).isNotEmpty();
-                writer.write(":END_ID(%s)".formatted(idSpaceFor(findNodeKey(nodeTargets, endNodeRef))));
+                assertThat(endNodeRef.getName()).isNotEmpty();
+                writer.write(":END_ID(%s)".formatted(idSpaceFor(findNodeKey(nodeTargets, endNodeRef.getName()))));
             }
         }
 
@@ -249,7 +249,8 @@ public class AdminImportIT {
             var dataFile = new File(csvFolder, dataFileName(relationshipTarget));
             try (var writer = new BufferedWriter(new FileWriter(dataFile))) {
                 // start node keys
-                var startNode = findTargetByName(nodeTargets, relationshipTarget.getStartNodeReference());
+                var startNode = findTargetByName(
+                        nodeTargets, relationshipTarget.getStartNodeReference().getName());
                 var startNodeProperties = singleNodeKey(startNode).getProperties().stream()
                         .sorted()
                         .toList();
@@ -260,7 +261,8 @@ public class AdminImportIT {
                         .collect(toMap(PropertyMapping::getTargetProperty, PropertyMapping::getSourceField));
                 var properties = sortedProperties(relationshipTarget.getProperties());
                 // end node keys
-                var endNode = findTargetByName(nodeTargets, relationshipTarget.getEndNodeReference());
+                var endNode = findTargetByName(
+                        nodeTargets, relationshipTarget.getEndNodeReference().getName());
                 var endNodeProperties =
                         singleNodeKey(endNode).getProperties().stream().sorted().toList();
                 var endNodePropertiesToFields = endNodeProperties.stream()

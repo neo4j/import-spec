@@ -133,8 +133,10 @@ public class ImportPipeline implements Iterable<ImportStep>, Serializable {
             } else if (target instanceof RelationshipTarget) {
                 dependencies.addAll(preRelationshipActions);
                 var relationshipTarget = (RelationshipTarget) target;
-                dependencies.add(QualifiedName.ofNodeTarget(relationshipTarget.getStartNodeReference()));
-                dependencies.add(QualifiedName.ofNodeTarget(relationshipTarget.getEndNodeReference()));
+                dependencies.add(QualifiedName.ofNodeTarget(
+                        relationshipTarget.getStartNodeReference().getName()));
+                dependencies.add(QualifiedName.ofNodeTarget(
+                        relationshipTarget.getEndNodeReference().getName()));
                 var qualifiedName = QualifiedName.ofRelationshipTarget(targetName);
                 dependencyGraph.put(qualifiedName, dependencies);
                 relationshipTargets.add(qualifiedName);
@@ -222,8 +224,12 @@ public class ImportPipeline implements Iterable<ImportStep>, Serializable {
                             var relationshipTarget = indexedRelationshipTargets.get(name);
                             var relationshipTask = new RelationshipTargetStep(
                                     relationshipTarget,
-                                    processedNodeTasks.get(relationshipTarget.getStartNodeReference()),
-                                    processedNodeTasks.get(relationshipTarget.getEndNodeReference()),
+                                    processedNodeTasks.get(relationshipTarget
+                                            .getStartNodeReference()
+                                            .getName()),
+                                    processedNodeTasks.get(relationshipTarget
+                                            .getEndNodeReference()
+                                            .getName()),
                                     dependencyTasks);
                             processedTasks.put(qualifiedName, relationshipTask);
                             return relationshipTask;

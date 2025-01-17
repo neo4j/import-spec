@@ -263,7 +263,15 @@ class TargetTest {
             "source": "a-source",
             "type": "TYPE",
             "start_node_reference": "a-node-target",
-            "end_node_reference": "another-node-target"
+            "end_node_reference": {
+                "name": "another-node-target",
+                "key_mappings": [
+                    {
+                        "source_field": "source_id",
+                        "target_property": "target_id"
+                    }
+                ]
+            }
         }
         """
                         .stripIndent();
@@ -271,8 +279,12 @@ class TargetTest {
         var target = mapper.readValue(json, RelationshipTarget.class);
 
         assertThat(target.getTargetType()).isEqualTo(TargetType.RELATIONSHIP);
-        assertThat(target.getStartNodeReference()).isEqualTo("a-node-target");
-        assertThat(target.getEndNodeReference()).isEqualTo("another-node-target");
+        assertThat(target.getStartNodeReference().getName()).isEqualTo("a-node-target");
+        assertThat(target.getStartNodeReference().getKeyMappings()).isNull();
+        assertThat(target.getEndNodeReference().getName()).isEqualTo("another-node-target");
+        assertThat(target.getEndNodeReference().getKeyMappings()).hasSize(1);
+        assertThat(target.getEndNodeReference().getKeyMappings().getFirst().getSourceField()).isEqualTo("source_id");
+        assertThat(target.getEndNodeReference().getKeyMappings().getFirst().getTargetProperty()).isEqualTo("target_id");
     }
 
     @Test
@@ -302,7 +314,15 @@ class TargetTest {
             },
             "type": "TYPE",
             "start_node_reference": "a-node-target",
-            "end_node_reference": "another-node-target",
+            "end_node_reference": {
+                "name": "another-node-target",
+                "key_mappings": [
+                    {
+                        "source_field": "source_id",
+                        "target_property": "target_id"
+                    }
+                ]
+            },
             "properties": [
                 {"source_field": "field_1", "target_property": "property1", "target_property_type": "LOCAL_TIME_ARRAY"},
                 {"source_field": "field_2", "target_property": "property2", "target_property_type": "STRING_ARRAY"},
@@ -368,8 +388,11 @@ class TargetTest {
                                 new OrderBy("column_3", Order.DESC)),
                         42));
         assertThat(target.getType()).isEqualTo("TYPE");
-        assertThat(target.getStartNodeReference()).isEqualTo("a-node-target");
-        assertThat(target.getEndNodeReference()).isEqualTo("another-node-target");
+        assertThat(target.getStartNodeReference().getName()).isEqualTo("a-node-target");
+        assertThat(target.getEndNodeReference().getName()).isEqualTo("another-node-target");
+        assertThat(target.getEndNodeReference().getKeyMappings()).hasSize(1);
+        assertThat(target.getEndNodeReference().getKeyMappings().getFirst().getSourceField()).isEqualTo("source_id");
+        assertThat(target.getEndNodeReference().getKeyMappings().getFirst().getTargetProperty()).isEqualTo("target_id");
         assertThat(target.getProperties())
                 .isEqualTo(List.of(
                         new PropertyMapping("field_1", "property1", PropertyType.LOCAL_TIME_ARRAY),

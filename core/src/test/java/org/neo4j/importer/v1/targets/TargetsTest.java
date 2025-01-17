@@ -112,8 +112,8 @@ class TargetsTest {
                         WriteMode.CREATE,
                         NodeMatchMode.MATCH,
                         null,
-                        "my-minimal-node-target",
-                        "my-minimal-node-target",
+                        new NodeReference("my-minimal-node-target"),
+                        new NodeReference("my-minimal-node-target"),
                         List.of(
                                 new PropertyMapping("field_1", "property1", null),
                                 new PropertyMapping("field_2", "property2", null)),
