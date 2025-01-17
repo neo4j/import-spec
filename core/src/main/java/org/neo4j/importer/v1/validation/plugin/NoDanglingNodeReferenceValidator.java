@@ -43,15 +43,21 @@ public class NoDanglingNodeReferenceValidator implements SpecificationValidator 
 
     @Override
     public void visitRelationshipTarget(int index, RelationshipTarget target) {
-        String startNodeRef = target.getStartNodeReference();
-        if (!names.contains(startNodeRef)) {
-            invalidPathToNodeReferences.put(
-                    String.format("$.targets.relationships[%d].start_node_reference", index), startNodeRef);
+        var startNodeRef = target.getStartNodeReference();
+        if (!names.contains(startNodeRef.getName())) {
+            var path = String.format("$.targets.relationships[%d].start_node_reference", index);
+            if (!startNodeRef.getKeyMappings().isEmpty()) {
+                path = String.format("%s.name", path);
+            }
+            invalidPathToNodeReferences.put(path, startNodeRef.getName());
         }
-        String endNodeRef = target.getEndNodeReference();
-        if (!names.contains(endNodeRef)) {
-            invalidPathToNodeReferences.put(
-                    String.format("$.targets.relationships[%d].end_node_reference", index), endNodeRef);
+        var endNodeRef = target.getEndNodeReference();
+        if (!names.contains(endNodeRef.getName())) {
+            var path = String.format("$.targets.relationships[%d].end_node_reference", index);
+            if (!endNodeRef.getKeyMappings().isEmpty()) {
+                path = String.format("%s.name", path);
+            }
+            invalidPathToNodeReferences.put(path, endNodeRef.getName());
         }
     }
 

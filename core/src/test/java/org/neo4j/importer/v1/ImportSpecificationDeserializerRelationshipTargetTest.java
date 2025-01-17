@@ -16,6 +16,7 @@
  */
 package org.neo4j.importer.v1;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.neo4j.importer.v1.ImportSpecificationDeserializer.deserialize;
@@ -23,8 +24,114 @@ import static org.neo4j.importer.v1.ImportSpecificationDeserializer.deserialize;
 import java.io.StringReader;
 import org.junit.Test;
 import org.neo4j.importer.v1.validation.InvalidSpecificationException;
+import org.neo4j.importer.v1.validation.SpecificationException;
 
 public class ImportSpecificationDeserializerRelationshipTargetTest {
+
+    @Test
+    public void deserializes_full_start_and_end_node_references() throws SpecificationException {
+        var specification = deserialize(
+                new StringReader(
+                        """
+                                {
+                                    "version": "1",
+                                    "sources": [
+                                         {
+                                             "name": "movies-source",
+                                             "type": "jdbc",
+                                             "data_source": "db",
+                                             "sql": "SELECT id, title FROM db.movies"
+                                         },
+                                         {
+                                             "name": "categories-source",
+                                             "type": "jdbc",
+                                             "data_source": "db",
+                                             "sql": "SELECT id, name FROM db.categories"
+                                         },
+                                         {
+                                             "name": "movies-in-categories-source",
+                                             "type": "jdbc",
+                                             "data_source": "db",
+                                             "sql": "SELECT movie_id, category_id FROM db.movies_in_categories"
+                                         },
+                                    ],
+                                    "targets": {
+                                        "nodes": [
+                                             {
+                                                 "name": "movie",
+                                                 "source": "movies-source",
+                                                 "labels": ["Movie"],
+                                                 "properties": [
+                                                     {"source_field": "id", "target_property": "identifier"},
+                                                     {"source_field": "title", "target_property": "title"},
+                                                 ],
+                                                 "schema": {
+                                                   "key_constraints": [
+                                                       {"name": "movie-id-key-constraint", "label": "Movie", "properties": ["identifier"]},
+                                                   ]
+                                                 }
+                                             },
+                                             {
+                                                 "name": "category",
+                                                 "source": "categories-source",
+                                                 "labels": ["Category"],
+                                                 "properties": [
+                                                     {"source_field": "id", "target_property": "identifier"},
+                                                     {"source_field": "name", "target_property": "name"}
+                                                 ],
+                                                 "schema": {
+                                                   "key_constraints": [
+                                                       {"name": "category-id-key-constraint", "label": "Category", "properties": ["identifier"]}
+                                                   ]
+                                                 }
+                                             }
+                                        ],
+                                        "relationships": [
+                                             {
+                                                 "name": "in-category",
+                                                 "source": "movies-in-categories-source",
+                                                 "type": "IN_CATEGORY",
+                                                 "start_node_reference": {
+                                                      "name": "movie",
+                                                      "key_mappings": [
+                                                         {
+                                                             "source_field": "movie_id",
+                                                             "node_property": "identifier"
+                                                         }
+                                                      ]
+                                                 },
+                                                 "end_node_reference": {
+                                                      "name": "category",
+                                                      "key_mappings": [
+                                                         {
+                                                             "source_field": "category_id",
+                                                             "node_property": "identifier"
+                                                         }
+                                                      ]
+                                                 }
+                                             }
+                                        ]
+                                    }
+                                }
+                                """));
+
+        var relationships = specification.getTargets().getRelationships();
+        assertThat(relationships).hasSize(1);
+        var relationship = relationships.getFirst();
+        var startNode = relationship.getStartNodeReference();
+        assertThat(startNode.getName()).isEqualTo("movie");
+        var startKeyMappings = startNode.getKeyMappings();
+        assertThat(startKeyMappings).hasSize(1);
+        var startKeyMapping = startKeyMappings.getFirst();
+        assertThat(startKeyMapping.getSourceField()).isEqualTo("movie_id");
+        assertThat(startKeyMapping.getNodeProperty()).isEqualTo("identifier");
+        var endNode = relationship.getEndNodeReference();
+        assertThat(endNode.getName()).isEqualTo("category");
+        assertThat(endNode.getKeyMappings()).hasSize(1);
+        var endKeyMapping = endNode.getKeyMappings().getFirst();
+        assertThat(endKeyMapping.getSourceField()).isEqualTo("category_id");
+        assertThat(endKeyMapping.getNodeProperty()).isEqualTo("identifier");
+    }
 
     @Test
     public void fails_if_relationship_target_active_attribute_has_wrong_type() {
@@ -444,6 +551,747 @@ public class ImportSpecificationDeserializerRelationshipTargetTest {
     }
 
     @Test
+    public void fails_if_relationship_start_node_reference_name_is_missing() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+        {
+            "version": "1",
+            "sources": [{
+                "name": "a-source",
+                "type": "jdbc",
+                "data_source": "a-data-source",
+                "sql": "SELECT id, name FROM my.table"
+            }],
+            "targets": {
+                "nodes": [{
+                    "name": "a-node-target",
+                    "source": "a-source",
+                    "labels": ["Label"],
+                    "properties": [
+                        {"source_field": "id", "target_property": "id"}
+                    ]
+                }],
+                "relationships": [{
+                    "name": "a-relationship-target",
+                    "source": "a-source",
+                    "type": "TYPE",
+                    "write_mode": "create",
+                    "start_node_reference": {
+                        "key_mappings": [
+                            {
+                                "source_field": "source_id",
+                                "node_property": "target_id"
+                            }
+                        ]
+                    },
+                    "end_node_reference": "a-node-target"
+                }]
+            }
+        }
+        """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "$.targets.relationships[0].start_node_reference: required property 'name' not found");
+    }
+
+    @Test
+    public void fails_if_relationship_start_node_reference_name_has_wrong_type() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+                {
+                    "version": "1",
+                    "sources": [{
+                        "name": "a-source",
+                        "type": "jdbc",
+                        "data_source": "a-data-source",
+                        "sql": "SELECT id, name FROM my.table"
+                    }],
+                    "targets": {
+                        "nodes": [{
+                            "name": "a-node-target",
+                            "source": "a-source",
+                            "labels": ["Label"],
+                            "properties": [
+                                {"source_field": "id", "target_property": "id"}
+                            ]
+                        }],
+                        "relationships": [{
+                            "name": "a-relationship-target",
+                            "source": "a-source",
+                            "type": "TYPE",
+                            "write_mode": "create",
+                            "start_node_reference": {
+                                "name": 42,
+                                "key_mappings": [
+                                    {
+                                        "source_field": "source_id",
+                                        "node_property": "target_id"
+                                    }
+                                ]
+                            },
+                            "end_node_reference": "a-node-target"
+                        }]
+                    }
+                }
+                """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "$.targets.relationships[0].start_node_reference.name: integer found, string expected");
+    }
+
+    @Test
+    public void fails_if_relationship_start_node_reference_name_is_empty() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+        {
+            "version": "1",
+            "sources": [{
+                "name": "a-source",
+                "type": "jdbc",
+                "data_source": "a-data-source",
+                "sql": "SELECT id, name FROM my.table"
+            }],
+            "targets": {
+                "nodes": [{
+                    "name": "a-node-target",
+                    "source": "a-source",
+                    "labels": ["Label"],
+                    "properties": [
+                        {"source_field": "id", "target_property": "id"}
+                    ]
+                }],
+                "relationships": [{
+                    "name": "a-relationship-target",
+                    "source": "a-source",
+                    "type": "TYPE",
+                    "write_mode": "create",
+                    "start_node_reference": {
+                        "name": "",
+                        "key_mappings": [
+                            {
+                                "source_field": "source_id",
+                                "node_property": "target_id"
+                            }
+                        ]
+                    },
+                    "end_node_reference": "a-node-target"
+                }]
+            }
+        }
+        """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "0 warning(s)",
+                        "$.targets.relationships[0].start_node_reference.name: must be at least 1 characters long");
+    }
+
+    @Test
+    public void fails_if_relationship_start_node_reference_name_is_blank() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+        {
+            "version": "1",
+            "sources": [{
+                "name": "a-source",
+                "type": "jdbc",
+                "data_source": "a-data-source",
+                "sql": "SELECT id, name FROM my.table"
+            }],
+            "targets": {
+                "nodes": [{
+                    "name": "a-node-target",
+                    "source": "a-source",
+                    "labels": ["Label"],
+                    "properties": [
+                        {"source_field": "id", "target_property": "id"}
+                    ]
+                }],
+                "relationships": [{
+                    "name": "a-relationship-target",
+                    "source": "a-source",
+                    "type": "TYPE",
+                    "write_mode": "create",
+                    "start_node_reference": {
+                        "name": "    ",
+                        "key_mappings": [
+                            {
+                                "source_field": "source_id",
+                                "node_property": "target_id"
+                            }
+                        ]
+                    },
+                    "end_node_reference": "a-node-target"
+                }]
+            }
+        }
+        """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "$.targets.relationships[0].start_node_reference.name: does not match the regex pattern \\S+");
+    }
+
+    @Test
+    public void fails_if_relationship_start_node_reference_key_mappings_is_missing() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+        {
+            "version": "1",
+            "sources": [{
+                "name": "a-source",
+                "type": "jdbc",
+                "data_source": "a-data-source",
+                "sql": "SELECT id, name FROM my.table"
+            }],
+            "targets": {
+                "nodes": [{
+                    "name": "a-node-target",
+                    "source": "a-source",
+                    "labels": ["Label"],
+                    "properties": [
+                        {"source_field": "id", "target_property": "id"}
+                    ]
+                }],
+                "relationships": [{
+                    "name": "a-relationship-target",
+                    "source": "a-source",
+                    "type": "TYPE",
+                    "write_mode": "create",
+                    "start_node_reference": {
+                        "name": "a-node-target"
+                    },
+                    "end_node_reference": "a-node-target"
+                }]
+            }
+        }
+        """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "$.targets.relationships[0].start_node_reference: required property 'key_mappings' not found");
+    }
+
+    @Test
+    public void fails_if_relationship_start_node_reference_key_mappings_has_wrong_type() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+        {
+            "version": "1",
+            "sources": [{
+                "name": "a-source",
+                "type": "jdbc",
+                "data_source": "a-data-source",
+                "sql": "SELECT id, name FROM my.table"
+            }],
+            "targets": {
+                "nodes": [{
+                    "name": "a-node-target",
+                    "source": "a-source",
+                    "labels": ["Label"],
+                    "properties": [
+                        {"source_field": "id", "target_property": "id"}
+                    ]
+                }],
+                "relationships": [{
+                    "name": "a-relationship-target",
+                    "source": "a-source",
+                    "type": "TYPE",
+                    "write_mode": "create",
+                    "start_node_reference": {
+                        "name": "a-node-target",
+                        "key_mappings": 42
+                    },
+                    "end_node_reference": "a-node-target"
+                }]
+            }
+        }
+        """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "$.targets.relationships[0].start_node_reference.key_mappings: integer found, array expected");
+    }
+
+    @Test
+    public void fails_if_relationship_start_node_reference_key_mappings_is_empty() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+        {
+            "version": "1",
+            "sources": [{
+                "name": "a-source",
+                "type": "jdbc",
+                "data_source": "a-data-source",
+                "sql": "SELECT id, name FROM my.table"
+            }],
+            "targets": {
+                "nodes": [{
+                    "name": "a-node-target",
+                    "source": "a-source",
+                    "labels": ["Label"],
+                    "properties": [
+                        {"source_field": "id", "target_property": "id"}
+                    ]
+                }],
+                "relationships": [{
+                    "name": "a-relationship-target",
+                    "source": "a-source",
+                    "type": "TYPE",
+                    "write_mode": "create",
+                    "start_node_reference": {
+                        "name": "a-node-target",
+                        "key_mappings": []
+                    },
+                    "end_node_reference": "a-node-target"
+                }]
+            }
+        }
+        """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "$.targets.relationships[0].start_node_reference.key_mappings: must have at least 1 items but found 0");
+    }
+
+    @Test
+    public void fails_if_relationship_start_node_reference_key_mappings_element_is_wrongly_typed() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+                {
+                    "version": "1",
+                    "sources": [{
+                        "name": "a-source",
+                        "type": "jdbc",
+                        "data_source": "a-data-source",
+                        "sql": "SELECT id, name FROM my.table"
+                    }],
+                    "targets": {
+                        "nodes": [{
+                            "name": "a-node-target",
+                            "source": "a-source",
+                            "labels": ["Label"],
+                            "properties": [
+                                {"source_field": "id", "target_property": "id"}
+                            ]
+                        }],
+                        "relationships": [{
+                            "name": "a-relationship-target",
+                            "source": "a-source",
+                            "type": "TYPE",
+                            "write_mode": "create",
+                            "start_node_reference": {
+                                "name": "a-node-target",
+                                "key_mappings": [42]
+                            },
+                            "end_node_reference": "a-node-target"
+                        }]
+                    }
+                }
+                """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "$.targets.relationships[0].start_node_reference.key_mappings[0]: integer found, object expected");
+    }
+
+    @Test
+    public void fails_if_relationship_start_node_reference_key_mappings_source_field_is_missing() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+                {
+                    "version": "1",
+                    "sources": [{
+                        "name": "a-source",
+                        "type": "jdbc",
+                        "data_source": "a-data-source",
+                        "sql": "SELECT id, name FROM my.table"
+                    }],
+                    "targets": {
+                        "nodes": [{
+                            "name": "a-node-target",
+                            "source": "a-source",
+                            "labels": ["Label"],
+                            "properties": [
+                                {"source_field": "id", "target_property": "id"}
+                            ]
+                        }],
+                        "relationships": [{
+                            "name": "a-relationship-target",
+                            "source": "a-source",
+                            "type": "TYPE",
+                            "write_mode": "create",
+                            "start_node_reference": {
+                                "name": "a-node-target",
+                                "key_mappings": [
+                                    {
+                                        "node_property": "target_id"
+                                    }
+                                ]
+                            },
+                            "end_node_reference": "a-node-target"
+                        }]
+                    }
+                }
+                """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "$.targets.relationships[0].start_node_reference.key_mappings[0]: required property 'source_field' not found");
+    }
+
+    @Test
+    public void fails_if_relationship_start_node_reference_key_mappings_source_field_is_wrongly_typed() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+                {
+                    "version": "1",
+                    "sources": [{
+                        "name": "a-source",
+                        "type": "jdbc",
+                        "data_source": "a-data-source",
+                        "sql": "SELECT id, name FROM my.table"
+                    }],
+                    "targets": {
+                        "nodes": [{
+                            "name": "a-node-target",
+                            "source": "a-source",
+                            "labels": ["Label"],
+                            "properties": [
+                                {"source_field": "id", "target_property": "id"}
+                            ]
+                        }],
+                        "relationships": [{
+                            "name": "a-relationship-target",
+                            "source": "a-source",
+                            "type": "TYPE",
+                            "write_mode": "create",
+                            "start_node_reference": {
+                                "name": "a-node-target",
+                                "key_mappings": [
+                                    {
+                                        "source_field": 30,
+                                        "node_property": "target_id"
+                                    }
+                                ]
+                            },
+                            "end_node_reference": "a-node-target"
+                        }]
+                    }
+                }
+                """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "$.targets.relationships[0].start_node_reference.key_mappings[0].source_field: integer found, string expected");
+    }
+
+    @Test
+    public void fails_if_relationship_start_node_reference_key_mappings_source_field_is_empty() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+                {
+                    "version": "1",
+                    "sources": [{
+                        "name": "a-source",
+                        "type": "jdbc",
+                        "data_source": "a-data-source",
+                        "sql": "SELECT id, name FROM my.table"
+                    }],
+                    "targets": {
+                        "nodes": [{
+                            "name": "a-node-target",
+                            "source": "a-source",
+                            "labels": ["Label"],
+                            "properties": [
+                                {"source_field": "id", "target_property": "id"}
+                            ]
+                        }],
+                        "relationships": [{
+                            "name": "a-relationship-target",
+                            "source": "a-source",
+                            "type": "TYPE",
+                            "write_mode": "create",
+                            "start_node_reference": {
+                                "name": "a-node-target",
+                                "key_mappings": [
+                                    {
+                                        "source_field": "",
+                                        "node_property": "target_id"
+                                    }
+                                ]
+                            },
+                            "end_node_reference": "a-node-target"
+                        }]
+                    }
+                }
+                """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "0 warning(s)",
+                        "$.targets.relationships[0].start_node_reference.key_mappings[0].source_field: must be at least 1 characters long");
+    }
+
+    @Test
+    public void fails_if_relationship_start_node_reference_key_mappings_source_field_is_blank() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+                {
+                    "version": "1",
+                    "sources": [{
+                        "name": "a-source",
+                        "type": "jdbc",
+                        "data_source": "a-data-source",
+                        "sql": "SELECT id, name FROM my.table"
+                    }],
+                    "targets": {
+                        "nodes": [{
+                            "name": "a-node-target",
+                            "source": "a-source",
+                            "labels": ["Label"],
+                            "properties": [
+                                {"source_field": "id", "target_property": "id"}
+                            ]
+                        }],
+                        "relationships": [{
+                            "name": "a-relationship-target",
+                            "source": "a-source",
+                            "type": "TYPE",
+                            "write_mode": "create",
+                            "start_node_reference": {
+                                "name": "a-node-target",
+                                "key_mappings": [
+                                    {
+                                        "source_field": "   ",
+                                        "node_property": "target_id"
+                                    }
+                                ]
+                            },
+                            "end_node_reference": "a-node-target"
+                        }]
+                    }
+                }
+                """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "$.targets.relationships[0].start_node_reference.key_mappings[0].source_field: does not match the regex pattern \\S+");
+    }
+
+    @Test
+    public void fails_if_relationship_start_node_reference_key_mappings_node_property_is_missing() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+                {
+                    "version": "1",
+                    "sources": [{
+                        "name": "a-source",
+                        "type": "jdbc",
+                        "data_source": "a-data-source",
+                        "sql": "SELECT id, name FROM my.table"
+                    }],
+                    "targets": {
+                        "nodes": [{
+                            "name": "a-node-target",
+                            "source": "a-source",
+                            "labels": ["Label"],
+                            "properties": [
+                                {"source_field": "id", "target_property": "id"}
+                            ]
+                        }],
+                        "relationships": [{
+                            "name": "a-relationship-target",
+                            "source": "a-source",
+                            "type": "TYPE",
+                            "write_mode": "create",
+                            "start_node_reference": {
+                                "name": "a-node-target",
+                                "key_mappings": [
+                                    {
+                                        "source_field": "source_id",
+                                    }
+                                ]
+                            },
+                            "end_node_reference": "a-node-target"
+                        }]
+                    }
+                }
+                """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "$.targets.relationships[0].start_node_reference.key_mappings[0]: required property 'node_property' not found");
+    }
+
+    @Test
+    public void fails_if_relationship_start_node_reference_key_mappings_node_property_is_wrongly_typed() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+                {
+                    "version": "1",
+                    "sources": [{
+                        "name": "a-source",
+                        "type": "jdbc",
+                        "data_source": "a-data-source",
+                        "sql": "SELECT id, name FROM my.table"
+                    }],
+                    "targets": {
+                        "nodes": [{
+                            "name": "a-node-target",
+                            "source": "a-source",
+                            "labels": ["Label"],
+                            "properties": [
+                                {"source_field": "id", "target_property": "id"}
+                            ]
+                        }],
+                        "relationships": [{
+                            "name": "a-relationship-target",
+                            "source": "a-source",
+                            "type": "TYPE",
+                            "write_mode": "create",
+                            "start_node_reference": {
+                                "name": "a-node-target",
+                                "key_mappings": [
+                                    {
+                                        "source_field": "source_id",
+                                        "node_property": 30,
+                                    }
+                                ]
+                            },
+                            "end_node_reference": "a-node-target"
+                        }]
+                    }
+                }
+                """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "$.targets.relationships[0].start_node_reference.key_mappings[0].node_property: integer found, string expected");
+    }
+
+    @Test
+    public void fails_if_relationship_start_node_reference_key_mappings_node_property_is_empty() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+                {
+                    "version": "1",
+                    "sources": [{
+                        "name": "a-source",
+                        "type": "jdbc",
+                        "data_source": "a-data-source",
+                        "sql": "SELECT id, name FROM my.table"
+                    }],
+                    "targets": {
+                        "nodes": [{
+                            "name": "a-node-target",
+                            "source": "a-source",
+                            "labels": ["Label"],
+                            "properties": [
+                                {"source_field": "id", "target_property": "id"}
+                            ]
+                        }],
+                        "relationships": [{
+                            "name": "a-relationship-target",
+                            "source": "a-source",
+                            "type": "TYPE",
+                            "write_mode": "create",
+                            "start_node_reference": {
+                                "name": "a-node-target",
+                                "key_mappings": [
+                                    {
+                                        "source_field": "source_id",
+                                        "node_property": ""
+                                    }
+                                ]
+                            },
+                            "end_node_reference": "a-node-target"
+                        }]
+                    }
+                }
+                """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "0 warning(s)",
+                        "$.targets.relationships[0].start_node_reference.key_mappings[0].node_property: must be at least 1 characters long");
+    }
+
+    @Test
+    public void fails_if_relationship_start_node_reference_key_mappings_node_property_is_blank() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+        {
+            "version": "1",
+            "sources": [{
+                "name": "a-source",
+                "type": "jdbc",
+                "data_source": "a-data-source",
+                "sql": "SELECT id, name FROM my.table"
+            }],
+            "targets": {
+                "nodes": [{
+                    "name": "a-node-target",
+                    "source": "a-source",
+                    "labels": ["Label"],
+                    "properties": [
+                        {"source_field": "id", "target_property": "id"}
+                    ]
+                }],
+                "relationships": [{
+                    "name": "a-relationship-target",
+                    "source": "a-source",
+                    "type": "TYPE",
+                    "write_mode": "create",
+                    "start_node_reference": {
+                        "name": "a-node-target",
+                        "key_mappings": [
+                            {
+                                "source_field": "source_id",
+                                "node_property": "   "
+                            }
+                        ]
+                    },
+                    "end_node_reference": "a-node-target"
+                }]
+            }
+        }
+        """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "$.targets.relationships[0].start_node_reference.key_mappings[0].node_property: does not match the regex pattern \\S+");
+    }
+
+    @Test
     public void fails_if_relationship_end_node_reference_has_wrong_type() {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
@@ -478,8 +1326,750 @@ public class ImportSpecificationDeserializerRelationshipTargetTest {
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
+                        "1 error(s)",
                         "0 warning(s)",
                         "$.targets.relationships[0].end_node_reference: integer found, string expected");
+    }
+
+    @Test
+    public void fails_if_relationship_end_node_reference_name_is_missing() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+        {
+            "version": "1",
+            "sources": [{
+                "name": "a-source",
+                "type": "jdbc",
+                "data_source": "a-data-source",
+                "sql": "SELECT id, name FROM my.table"
+            }],
+            "targets": {
+                "nodes": [{
+                    "name": "a-node-target",
+                    "source": "a-source",
+                    "labels": ["Label"],
+                    "properties": [
+                        {"source_field": "id", "target_property": "id"}
+                    ]
+                }],
+                "relationships": [{
+                    "name": "a-relationship-target",
+                    "source": "a-source",
+                    "type": "TYPE",
+                    "write_mode": "create",
+                    "start_node_reference": "a-node-target",
+                    "end_node_reference": {
+                        "key_mappings": [
+                            {
+                                "source_field": "source_id",
+                                "node_property": "target_id"
+                            }
+                        ]
+                    }
+                }]
+            }
+        }
+        """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "$.targets.relationships[0].end_node_reference: required property 'name' not found");
+    }
+
+    @Test
+    public void fails_if_relationship_end_node_reference_name_has_wrong_type() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+        {
+            "version": "1",
+            "sources": [{
+                "name": "a-source",
+                "type": "jdbc",
+                "data_source": "a-data-source",
+                "sql": "SELECT id, name FROM my.table"
+            }],
+            "targets": {
+                "nodes": [{
+                    "name": "a-node-target",
+                    "source": "a-source",
+                    "labels": ["Label"],
+                    "properties": [
+                        {"source_field": "id", "target_property": "id"}
+                    ]
+                }],
+                "relationships": [{
+                    "name": "a-relationship-target",
+                    "source": "a-source",
+                    "type": "TYPE",
+                    "write_mode": "create",
+                    "start_node_reference": "a-node-target",
+                    "end_node_reference": {
+                        "name": 42,
+                        "key_mappings": [
+                            {
+                                "source_field": "source_id",
+                                "node_property": "target_id"
+                            }
+                        ]
+                    }
+                }]
+            }
+        }
+        """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "$.targets.relationships[0].end_node_reference.name: integer found, string expected");
+    }
+
+    @Test
+    public void fails_if_relationship_end_node_reference_name_is_empty() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+        {
+            "version": "1",
+            "sources": [{
+                "name": "a-source",
+                "type": "jdbc",
+                "data_source": "a-data-source",
+                "sql": "SELECT id, name FROM my.table"
+            }],
+            "targets": {
+                "nodes": [{
+                    "name": "a-node-target",
+                    "source": "a-source",
+                    "labels": ["Label"],
+                    "properties": [
+                        {"source_field": "id", "target_property": "id"}
+                    ]
+                }],
+                "relationships": [{
+                    "name": "a-relationship-target",
+                    "source": "a-source",
+                    "type": "TYPE",
+                    "write_mode": "create",
+                    "start_node_reference": "a-node-target",
+                    "end_node_reference": {
+                        "name": "",
+                        "key_mappings": [
+                            {
+                                "source_field": "source_id",
+                                "node_property": "target_id"
+                            }
+                        ]
+                    }
+                }]
+            }
+        }
+        """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "0 warning(s)",
+                        "$.targets.relationships[0].end_node_reference.name: must be at least 1 characters long");
+    }
+
+    @Test
+    public void fails_if_relationship_end_node_reference_name_is_blank() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+                {
+                    "version": "1",
+                    "sources": [{
+                        "name": "a-source",
+                        "type": "jdbc",
+                        "data_source": "a-data-source",
+                        "sql": "SELECT id, name FROM my.table"
+                    }],
+                    "targets": {
+                        "nodes": [{
+                            "name": "a-node-target",
+                            "source": "a-source",
+                            "labels": ["Label"],
+                            "properties": [
+                                {"source_field": "id", "target_property": "id"}
+                            ]
+                        }],
+                        "relationships": [{
+                            "name": "a-relationship-target",
+                            "source": "a-source",
+                            "type": "TYPE",
+                            "write_mode": "create",
+                            "start_node_reference": "a-node-target",
+                            "end_node_reference": {
+                                "name": "    ",
+                                "key_mappings": [
+                                    {
+                                        "source_field": "source_id",
+                                        "node_property": "target_id"
+                                    }
+                                ]
+                            }
+                        }]
+                    }
+                }
+                """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "$.targets.relationships[0].end_node_reference.name: does not match the regex pattern \\S+");
+    }
+
+    @Test
+    public void fails_if_relationship_end_node_reference_key_mappings_is_missing() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+        {
+            "version": "1",
+            "sources": [{
+                "name": "a-source",
+                "type": "jdbc",
+                "data_source": "a-data-source",
+                "sql": "SELECT id, name FROM my.table"
+            }],
+            "targets": {
+                "nodes": [{
+                    "name": "a-node-target",
+                    "source": "a-source",
+                    "labels": ["Label"],
+                    "properties": [
+                        {"source_field": "id", "target_property": "id"}
+                    ]
+                }],
+                "relationships": [{
+                    "name": "a-relationship-target",
+                    "source": "a-source",
+                    "type": "TYPE",
+                    "write_mode": "create",
+                    "start_node_reference": "a-node-target",
+                    "end_node_reference": {
+                        "name": "a-node-target"
+                    }
+                }]
+            }
+        }
+        """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "$.targets.relationships[0].end_node_reference: required property 'key_mappings' not found");
+    }
+
+    @Test
+    public void fails_if_relationship_end_node_reference_key_mappings_has_wrong_type() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+        {
+            "version": "1",
+            "sources": [{
+                "name": "a-source",
+                "type": "jdbc",
+                "data_source": "a-data-source",
+                "sql": "SELECT id, name FROM my.table"
+            }],
+            "targets": {
+                "nodes": [{
+                    "name": "a-node-target",
+                    "source": "a-source",
+                    "labels": ["Label"],
+                    "properties": [
+                        {"source_field": "id", "target_property": "id"}
+                    ]
+                }],
+                "relationships": [{
+                    "name": "a-relationship-target",
+                    "source": "a-source",
+                    "type": "TYPE",
+                    "write_mode": "create",
+                    "start_node_reference": "a-node-target",
+                    "end_node_reference": {
+                        "name": "a-node-target",
+                        "key_mappings": 42
+                    }
+                }]
+            }
+        }
+        """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "$.targets.relationships[0].end_node_reference.key_mappings: integer found, array expected");
+    }
+
+    @Test
+    public void fails_if_relationship_end_node_reference_key_mappings_is_empty() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+        {
+            "version": "1",
+            "sources": [{
+                "name": "a-source",
+                "type": "jdbc",
+                "data_source": "a-data-source",
+                "sql": "SELECT id, name FROM my.table"
+            }],
+            "targets": {
+                "nodes": [{
+                    "name": "a-node-target",
+                    "source": "a-source",
+                    "labels": ["Label"],
+                    "properties": [
+                        {"source_field": "id", "target_property": "id"}
+                    ]
+                }],
+                "relationships": [{
+                    "name": "a-relationship-target",
+                    "source": "a-source",
+                    "type": "TYPE",
+                    "write_mode": "create",
+                    "start_node_reference": "a-node-target",
+                    "end_node_reference": {
+                        "name": "a-node-target",
+                        "key_mappings": []
+                    }
+                }]
+            }
+        }
+        """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "$.targets.relationships[0].end_node_reference.key_mappings: must have at least 1 items but found 0");
+    }
+
+    @Test
+    public void fails_if_relationship_end_node_reference_key_mappings_element_is_wrongly_typed() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+                {
+                    "version": "1",
+                    "sources": [{
+                        "name": "a-source",
+                        "type": "jdbc",
+                        "data_source": "a-data-source",
+                        "sql": "SELECT id, name FROM my.table"
+                    }],
+                    "targets": {
+                        "nodes": [{
+                            "name": "a-node-target",
+                            "source": "a-source",
+                            "labels": ["Label"],
+                            "properties": [
+                                {"source_field": "id", "target_property": "id"}
+                            ]
+                        }],
+                        "relationships": [{
+                            "name": "a-relationship-target",
+                            "source": "a-source",
+                            "type": "TYPE",
+                            "write_mode": "create",
+                            "start_node_reference": "a-node-target",
+                            "end_node_reference": {
+                                "name": "a-node-target",
+                                "key_mappings": [42]
+                            }
+                        }]
+                    }
+                }
+                """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "$.targets.relationships[0].end_node_reference.key_mappings[0]: integer found, object expected");
+    }
+
+    @Test
+    public void fails_if_relationship_end_node_reference_key_mappings_source_field_is_missing() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+                {
+                    "version": "1",
+                    "sources": [{
+                        "name": "a-source",
+                        "type": "jdbc",
+                        "data_source": "a-data-source",
+                        "sql": "SELECT id, name FROM my.table"
+                    }],
+                    "targets": {
+                        "nodes": [{
+                            "name": "a-node-target",
+                            "source": "a-source",
+                            "labels": ["Label"],
+                            "properties": [
+                                {"source_field": "id", "target_property": "id"}
+                            ]
+                        }],
+                        "relationships": [{
+                            "name": "a-relationship-target",
+                            "source": "a-source",
+                            "type": "TYPE",
+                            "write_mode": "create",
+                            "start_node_reference": "a-node-target",
+                            "end_node_reference": {
+                                "name": "a-node-target",
+                                "key_mappings": [
+                                    {
+                                        "node_property": "target_id"
+                                    }
+                                ]
+                            }
+                        }]
+                    }
+                }
+                """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "$.targets.relationships[0].end_node_reference.key_mappings[0]: required property 'source_field' not found");
+    }
+
+    @Test
+    public void fails_if_relationship_end_node_reference_key_mappings_source_field_is_wrongly_typed() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+                {
+                    "version": "1",
+                    "sources": [{
+                        "name": "a-source",
+                        "type": "jdbc",
+                        "data_source": "a-data-source",
+                        "sql": "SELECT id, name FROM my.table"
+                    }],
+                    "targets": {
+                        "nodes": [{
+                            "name": "a-node-target",
+                            "source": "a-source",
+                            "labels": ["Label"],
+                            "properties": [
+                                {"source_field": "id", "target_property": "id"}
+                            ]
+                        }],
+                        "relationships": [{
+                            "name": "a-relationship-target",
+                            "source": "a-source",
+                            "type": "TYPE",
+                            "write_mode": "create",
+                            "start_node_reference": "a-node-target",
+                            "end_node_reference": {
+                                "name": "a-node-target",
+                                "key_mappings": [
+                                    {
+                                        "source_field": 30,
+                                        "node_property": "target_id"
+                                    }
+                                ]
+                            }
+                        }]
+                    }
+                }
+                """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "$.targets.relationships[0].end_node_reference.key_mappings[0].source_field: integer found, string expected");
+    }
+
+    @Test
+    public void fails_if_relationship_end_node_reference_key_mappings_source_field_is_empty() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+                {
+                    "version": "1",
+                    "sources": [{
+                        "name": "a-source",
+                        "type": "jdbc",
+                        "data_source": "a-data-source",
+                        "sql": "SELECT id, name FROM my.table"
+                    }],
+                    "targets": {
+                        "nodes": [{
+                            "name": "a-node-target",
+                            "source": "a-source",
+                            "labels": ["Label"],
+                            "properties": [
+                                {"source_field": "id", "target_property": "id"}
+                            ]
+                        }],
+                        "relationships": [{
+                            "name": "a-relationship-target",
+                            "source": "a-source",
+                            "type": "TYPE",
+                            "write_mode": "create",
+                            "start_node_reference": "a-node-target",
+                            "end_node_reference": {
+                                "name": "a-node-target",
+                                "key_mappings": [
+                                    {
+                                        "source_field": "",
+                                        "node_property": "target_id"
+                                    }
+                                ]
+                            }
+                        }]
+                    }
+                }
+                """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "0 warning(s)",
+                        "$.targets.relationships[0].end_node_reference.key_mappings[0].source_field: must be at least 1 characters long");
+    }
+
+    @Test
+    public void fails_if_relationship_end_node_reference_key_mappings_source_field_is_blank() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+        {
+            "version": "1",
+            "sources": [{
+                "name": "a-source",
+                "type": "jdbc",
+                "data_source": "a-data-source",
+                "sql": "SELECT id, name FROM my.table"
+            }],
+            "targets": {
+                "nodes": [{
+                    "name": "a-node-target",
+                    "source": "a-source",
+                    "labels": ["Label"],
+                    "properties": [
+                        {"source_field": "id", "target_property": "id"}
+                    ]
+                }],
+                "relationships": [{
+                    "name": "a-relationship-target",
+                    "source": "a-source",
+                    "type": "TYPE",
+                    "write_mode": "create",
+                    "start_node_reference": "a-node-target",
+                    "end_node_reference": {
+                        "name": "a-node-target",
+                        "key_mappings": [
+                            {
+                                "source_field": "   ",
+                                "node_property": "target_id"
+                            }
+                        ]
+                    }
+                }]
+            }
+        }
+        """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "$.targets.relationships[0].end_node_reference.key_mappings[0].source_field: does not match the regex pattern \\S+");
+    }
+
+    @Test
+    public void fails_if_relationship_end_node_reference_key_mappings_target_property_is_missing() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+                {
+                    "version": "1",
+                    "sources": [{
+                        "name": "a-source",
+                        "type": "jdbc",
+                        "data_source": "a-data-source",
+                        "sql": "SELECT id, name FROM my.table"
+                    }],
+                    "targets": {
+                        "nodes": [{
+                            "name": "a-node-target",
+                            "source": "a-source",
+                            "labels": ["Label"],
+                            "properties": [
+                                {"source_field": "id", "target_property": "id"}
+                            ]
+                        }],
+                        "relationships": [{
+                            "name": "a-relationship-target",
+                            "source": "a-source",
+                            "type": "TYPE",
+                            "write_mode": "create",
+                            "start_node_reference": "a-node-target",
+                            "end_node_reference": {
+                                "name": "a-node-target",
+                                "key_mappings": [
+                                    {
+                                        "source_field": "source_id",
+                                    }
+                                ]
+                            }
+                        }]
+                    }
+                }
+                """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "$.targets.relationships[0].end_node_reference.key_mappings[0]: required property 'node_property' not found");
+    }
+
+    @Test
+    public void fails_if_relationship_end_node_reference_key_mappings_node_property_is_wrongly_typed() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+                {
+                    "version": "1",
+                    "sources": [{
+                        "name": "a-source",
+                        "type": "jdbc",
+                        "data_source": "a-data-source",
+                        "sql": "SELECT id, name FROM my.table"
+                    }],
+                    "targets": {
+                        "nodes": [{
+                            "name": "a-node-target",
+                            "source": "a-source",
+                            "labels": ["Label"],
+                            "properties": [
+                                {"source_field": "id", "target_property": "id"}
+                            ]
+                        }],
+                        "relationships": [{
+                            "name": "a-relationship-target",
+                            "source": "a-source",
+                            "type": "TYPE",
+                            "write_mode": "create",
+                            "start_node_reference": "a-node-target",
+                            "end_node_reference": {
+                                "name": "a-node-target",
+                                "key_mappings": [
+                                    {
+                                        "source_field": "source_id",
+                                        "node_property": 30,
+                                    }
+                                ]
+                            }
+                        }]
+                    }
+                }
+                """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "$.targets.relationships[0].end_node_reference.key_mappings[0].node_property: integer found, string expected");
+    }
+
+    @Test
+    public void fails_if_relationship_end_node_reference_key_mappings_node_property_is_empty() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+                {
+                    "version": "1",
+                    "sources": [{
+                        "name": "a-source",
+                        "type": "jdbc",
+                        "data_source": "a-data-source",
+                        "sql": "SELECT id, name FROM my.table"
+                    }],
+                    "targets": {
+                        "nodes": [{
+                            "name": "a-node-target",
+                            "source": "a-source",
+                            "labels": ["Label"],
+                            "properties": [
+                                {"source_field": "id", "target_property": "id"}
+                            ]
+                        }],
+                        "relationships": [{
+                            "name": "a-relationship-target",
+                            "source": "a-source",
+                            "type": "TYPE",
+                            "write_mode": "create",
+                            "start_node_reference": "a-node-target",
+                            "end_node_reference": {
+                                "name": "a-node-target",
+                                "key_mappings": [
+                                    {
+                                        "source_field": "source_id",
+                                        "node_property": ""
+                                    }
+                                ]
+                            }
+                        }]
+                    }
+                }
+                """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "0 warning(s)",
+                        "$.targets.relationships[0].end_node_reference.key_mappings[0].node_property: must be at least 1 characters long");
+    }
+
+    @Test
+    public void fails_if_relationship_end_node_reference_key_mappings_node_property_is_blank() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+        {
+            "version": "1",
+            "sources": [{
+                "name": "a-source",
+                "type": "jdbc",
+                "data_source": "a-data-source",
+                "sql": "SELECT id, name FROM my.table"
+            }],
+            "targets": {
+                "nodes": [{
+                    "name": "a-node-target",
+                    "source": "a-source",
+                    "labels": ["Label"],
+                    "properties": [
+                        {"source_field": "id", "target_property": "id"}
+                    ]
+                }],
+                "relationships": [{
+                    "name": "a-relationship-target",
+                    "source": "a-source",
+                    "type": "TYPE",
+                    "write_mode": "create",
+                    "start_node_reference": "a-node-target",
+                    "end_node_reference": {
+                        "name": "a-node-target",
+                        "key_mappings": [
+                            {
+                                "source_field": "source_id",
+                                "node_property": "   "
+                            }
+                        ]
+                    }
+                }]
+            }
+        }
+        """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "$.targets.relationships[0].end_node_reference.key_mappings[0].node_property: does not match the regex pattern \\S+");
     }
 
     @Test
@@ -5946,7 +7536,14 @@ public class ImportSpecificationDeserializerRelationshipTargetTest {
                                   "labels": ["Label"],
                                   "properties": [
                                     {"source_field": "id", "target_property": "id"}
-                                  ]
+                                  ],
+                                  "schema": {
+                                      "key_constraints": [{
+                                         "name": "a-key-constraint",
+                                         "label": "Label",
+                                         "properties": ["id"]
+                                      }]
+                                  }
                                 }],
                                 "relationships": [{
                                     "name": "a-relationship-target",
@@ -5996,7 +7593,14 @@ public class ImportSpecificationDeserializerRelationshipTargetTest {
                                   "labels": ["Label"],
                                   "properties": [
                                     {"source_field": "id", "target_property": "id"}
-                                  ]
+                                  ],
+                                  "schema": {
+                                      "key_constraints": [{
+                                         "name": "a-key-constraint",
+                                         "label": "Label",
+                                         "properties": ["id"]
+                                      }]
+                                  }
                                 }],
                                 "relationships": [{
                                     "name": "a-relationship-target",
@@ -6047,7 +7651,14 @@ public class ImportSpecificationDeserializerRelationshipTargetTest {
                                   "labels": ["Label"],
                                   "properties": [
                                     {"source_field": "id", "target_property": "id"}
-                                  ]
+                                  ],
+                                  "schema": {
+                                      "key_constraints": [{
+                                         "name": "a-key-constraint",
+                                         "label": "Label",
+                                         "properties": ["id"]
+                                      }]
+                                  }
                                 }],
                                 "relationships": [{
                                     "name": "a-relationship-target",
@@ -6146,7 +7757,14 @@ public class ImportSpecificationDeserializerRelationshipTargetTest {
                   "labels": ["Label"],
                   "properties": [
                     {"source_field": "id", "target_property": "id"}
-                  ]
+                  ],
+                  "schema": {
+                      "key_constraints": [{
+                         "name": "a-key-constraint",
+                         "label": "Label",
+                         "properties": ["id"]
+                      }]
+                  }
                 }],
                 "relationships": [{
                     "name": "a-relationship-target",
@@ -6198,7 +7816,14 @@ public class ImportSpecificationDeserializerRelationshipTargetTest {
                   "labels": ["Label"],
                   "properties": [
                     {"source_field": "id", "target_property": "id"}
-                  ]
+                  ],
+                  "schema": {
+                      "key_constraints": [{
+                         "name": "a-key-constraint",
+                         "label": "Label",
+                         "properties": ["id"]
+                      }]
+                  }
                 }],
                 "relationships": [{
                     "name": "a-relationship-target",
@@ -6245,7 +7870,14 @@ public class ImportSpecificationDeserializerRelationshipTargetTest {
                   "labels": ["Label"],
                   "properties": [
                     {"source_field": "id", "target_property": "id"}
-                  ]
+                  ],
+                  "schema": {
+                      "key_constraints": [{
+                         "name": "a-key-constraint",
+                         "label": "Label",
+                         "properties": ["id"]
+                      }]
+                  }
                 }],
                 "relationships": [{
                     "name": "a-relationship-target",
@@ -6292,7 +7924,14 @@ public class ImportSpecificationDeserializerRelationshipTargetTest {
                   "labels": ["Label"],
                   "properties": [
                     {"source_field": "id", "target_property": "id"}
-                  ]
+                  ],
+                  "schema": {
+                      "key_constraints": [{
+                         "name": "a-key-constraint",
+                         "label": "Label",
+                         "properties": ["id"]
+                      }]
+                  }
                 }],
                 "relationships": [{
                     "name": "a-relationship-target",
@@ -6391,7 +8030,14 @@ public class ImportSpecificationDeserializerRelationshipTargetTest {
                   "labels": ["Label"],
                   "properties": [
                     {"source_field": "id", "target_property": "id"}
-                  ]
+                  ],
+                  "schema": {
+                      "key_constraints": [{
+                         "name": "a-key-constraint",
+                         "label": "Label",
+                         "properties": ["id"]
+                      }]
+                  }
                 }],
                 "relationships": [{
                     "name": "a-relationship-target",
@@ -6443,7 +8089,14 @@ public class ImportSpecificationDeserializerRelationshipTargetTest {
                   "labels": ["Label"],
                   "properties": [
                     {"source_field": "id", "target_property": "id"}
-                  ]
+                  ],
+                  "schema": {
+                      "key_constraints": [{
+                         "name": "a-key-constraint",
+                         "label": "Label",
+                         "properties": ["id"]
+                      }]
+                  }
                 }],
                 "relationships": [{
                     "name": "a-relationship-target",
@@ -6490,7 +8143,14 @@ public class ImportSpecificationDeserializerRelationshipTargetTest {
                   "labels": ["Label"],
                   "properties": [
                     {"source_field": "id", "target_property": "id"}
-                  ]
+                  ],
+                  "schema": {
+                      "key_constraints": [{
+                         "name": "a-key-constraint",
+                         "label": "Label",
+                         "properties": ["id"]
+                      }]
+                  }
                 }],
                 "relationships": [{
                     "name": "a-relationship-target",
@@ -6537,7 +8197,14 @@ public class ImportSpecificationDeserializerRelationshipTargetTest {
                   "labels": ["Label"],
                   "properties": [
                     {"source_field": "id", "target_property": "id"}
-                  ]
+                  ],
+                  "schema": {
+                      "key_constraints": [{
+                         "name": "a-key-constraint",
+                         "label": "Label",
+                         "properties": ["id"]
+                      }]
+                  }
                 }],
                 "relationships": [{
                     "name": "a-relationship-target",
@@ -6636,7 +8303,14 @@ public class ImportSpecificationDeserializerRelationshipTargetTest {
                   "labels": ["Label"],
                   "properties": [
                     {"source_field": "id", "target_property": "id"}
-                  ]
+                  ],
+                  "schema": {
+                      "key_constraints": [{
+                         "name": "a-key-constraint",
+                         "label": "Label",
+                         "properties": ["id"]
+                      }]
+                  }
                 }],
                 "relationships": [{
                     "name": "a-relationship-target",
@@ -6688,7 +8362,14 @@ public class ImportSpecificationDeserializerRelationshipTargetTest {
                   "labels": ["Label"],
                   "properties": [
                     {"source_field": "id", "target_property": "id"}
-                  ]
+                  ],
+                  "schema": {
+                      "key_constraints": [{
+                         "name": "a-key-constraint",
+                         "label": "Label",
+                         "properties": ["id"]
+                      }]
+                  }
                 }],
                 "relationships": [{
                     "name": "a-relationship-target",
@@ -6735,7 +8416,14 @@ public class ImportSpecificationDeserializerRelationshipTargetTest {
                   "labels": ["Label"],
                   "properties": [
                     {"source_field": "id", "target_property": "id"}
-                  ]
+                  ],
+                  "schema": {
+                      "key_constraints": [{
+                         "name": "a-key-constraint",
+                         "label": "Label",
+                         "properties": ["id"]
+                      }]
+                  }
                 }],
                 "relationships": [{
                     "name": "a-relationship-target",
@@ -6782,7 +8470,14 @@ public class ImportSpecificationDeserializerRelationshipTargetTest {
                   "labels": ["Label"],
                   "properties": [
                     {"source_field": "id", "target_property": "id"}
-                  ]
+                  ],
+                  "schema": {
+                      "key_constraints": [{
+                         "name": "a-key-constraint",
+                         "label": "Label",
+                         "properties": ["id"]
+                      }]
+                  }
                 }],
                 "relationships": [{
                     "name": "a-relationship-target",
@@ -6881,14 +8576,28 @@ public class ImportSpecificationDeserializerRelationshipTargetTest {
                   "labels": ["Label"],
                   "properties": [
                     {"source_field": "id", "target_property": "id"}
-                  ]
+                  ],
+                  "schema": {
+                      "key_constraints": [{
+                         "name": "a-key-constraint",
+                         "label": "Label",
+                         "properties": ["id"]
+                      }]
+                  }
                 }, {
                   "name": "another-node-target",
                   "source": "a-source",
                   "labels": ["Label2"],
                   "properties": [
                     {"source_field": "id", "target_property": "id"}
-                  ]
+                  ],
+                  "schema": {
+                      "key_constraints": [{
+                         "name": "a-key-constraint",
+                         "label": "Label2",
+                         "properties": ["id"]
+                      }]
+                  }
                 }],
                 "relationships": [{
                     "name": "a-relationship-target",
@@ -6928,14 +8637,28 @@ public class ImportSpecificationDeserializerRelationshipTargetTest {
                   "labels": ["Label"],
                   "properties": [
                     {"source_field": "id", "target_property": "id"}
-                  ]
+                  ],
+                  "schema": {
+                      "key_constraints": [{
+                         "name": "a-key-constraint",
+                         "label": "Label",
+                         "properties": ["id"]
+                      }]
+                  }
                 }, {
                   "name": "another-node-target",
                   "source": "a-source",
                   "labels": ["Label2"],
                   "properties": [
                     {"source_field": "id", "target_property": "id"}
-                  ]
+                  ],
+                  "schema": {
+                      "key_constraints": [{
+                         "name": "a-key-constraint",
+                         "label": "Label2",
+                         "properties": ["id"]
+                      }]
+                  }
                 }],
                 "relationships": [{
                     "name": "a-relationship-target",
@@ -7017,7 +8740,14 @@ public class ImportSpecificationDeserializerRelationshipTargetTest {
                   "labels": ["Label"],
                   "properties": [
                     {"source_field": "id", "target_property": "id"}
-                  ]
+                  ],
+                  "schema": {
+                      "key_constraints": [{
+                         "name": "a-key-constraint",
+                         "label": "Label",
+                         "properties": ["id"]
+                      }]
+                  }
                 }],
                 "relationships": [{
                     "name": "a-relationship-target",
@@ -7058,7 +8788,14 @@ public class ImportSpecificationDeserializerRelationshipTargetTest {
                   "labels": ["Label"],
                   "properties": [
                     {"source_field": "id", "target_property": "id"}
-                  ]
+                  ],
+                  "schema": {
+                      "key_constraints": [{
+                         "name": "a-key-constraint",
+                         "label": "Label",
+                         "properties": ["id"]
+                      }]
+                  }
                 }],
                 "relationships": [{
                     "name": "a-relationship-target",

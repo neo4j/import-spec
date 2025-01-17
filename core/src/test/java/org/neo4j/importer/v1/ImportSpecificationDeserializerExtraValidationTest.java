@@ -16,6 +16,7 @@
  */
 package org.neo4j.importer.v1;
 
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatNoException;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.neo4j.importer.v1.ImportSpecificationDeserializer.deserialize;
@@ -70,27 +71,27 @@ public class ImportSpecificationDeserializerExtraValidationTest {
     void fails_if_source_name_is_duplicated_with_target_name() {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
-                                {
-                                    "version": "1",
-                                    "sources": [{
-                                        "type": "bigquery",
-                                        "name": "duplicate",
-                                        "query": "SELECT id, name FROM my.table"
-                                    }],
-                                    "targets": {
-                                        "nodes": [{
-                                            "name": "duplicate",
-                                            "source": "duplicate",
-                                            "labels": ["Label1", "Label2"],
-                                            "write_mode": "create",
-                                            "properties": [
-                                                {"source_field": "field_1", "target_property": "property1"},
-                                                {"source_field": "field_2", "target_property": "property2"}
-                                            ]
-                                        }]
-                                    }
-                                }
-                                """
+                        {
+                            "version": "1",
+                            "sources": [{
+                                "type": "bigquery",
+                                "name": "duplicate",
+                                "query": "SELECT id, name FROM my.table"
+                            }],
+                            "targets": {
+                                "nodes": [{
+                                    "name": "duplicate",
+                                    "source": "duplicate",
+                                    "labels": ["Label1", "Label2"],
+                                    "write_mode": "create",
+                                    "properties": [
+                                        {"source_field": "field_1", "target_property": "property1"},
+                                        {"source_field": "field_2", "target_property": "property2"}
+                                    ]
+                                }]
+                            }
+                        }
+                        """
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
@@ -103,33 +104,33 @@ public class ImportSpecificationDeserializerExtraValidationTest {
     void fails_if_source_name_is_duplicated_with_action_name() {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
-                                {
-                                    "version": "1",
-                                    "sources": [{
-                                        "type": "bigquery",
-                                        "name": "duplicate",
-                                        "query": "SELECT id, name FROM my.table"
-                                    }],
-                                    "targets": {
-                                        "nodes": [{
-                                            "name": "target",
-                                            "source": "duplicate",
-                                            "labels": ["Label1", "Label2"],
-                                            "write_mode": "create",
-                                            "properties": [
-                                                {"source_field": "field_1", "target_property": "property1"},
-                                                {"source_field": "field_2", "target_property": "property2"}
-                                            ]
-                                        }]
-                                    },
-                                    "actions": [{
-                                        "name": "duplicate",
-                                        "type": "cypher",
-                                        "stage": "pre_relationships",
-                                        "query": "CREATE (:PreRel)"
-                                    }]
-                                }
-                                """
+                        {
+                            "version": "1",
+                            "sources": [{
+                                "type": "bigquery",
+                                "name": "duplicate",
+                                "query": "SELECT id, name FROM my.table"
+                            }],
+                            "targets": {
+                                "nodes": [{
+                                    "name": "target",
+                                    "source": "duplicate",
+                                    "labels": ["Label1", "Label2"],
+                                    "write_mode": "create",
+                                    "properties": [
+                                        {"source_field": "field_1", "target_property": "property1"},
+                                        {"source_field": "field_2", "target_property": "property2"}
+                                    ]
+                                }]
+                            },
+                            "actions": [{
+                                "name": "duplicate",
+                                "type": "cypher",
+                                "stage": "pre_relationships",
+                                "query": "CREATE (:PreRel)"
+                            }]
+                        }
+                        """
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
@@ -346,7 +347,14 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                                     "properties": [
                                         {"source_field": "field_1", "target_property": "property1"},
                                         {"source_field": "field_2", "target_property": "property2"}
-                                    ]
+                                    ],
+                                    "schema": {
+                                        "key_constraints": [{
+                                           "name": "a-key-constraint",
+                                           "label": "Label1",
+                                           "properties": ["property1"]
+                                        }]
+                                    }
                                 }],
                                 "relationships": [{
                                     "name": "a-target",
@@ -450,7 +458,14 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                                     "properties": [
                                         {"source_field": "field_1", "target_property": "property1"},
                                         {"source_field": "field_2", "target_property": "property2"}
-                                    ]
+                                    ],
+                                    "schema": {
+                                        "key_constraints": [{
+                                            "name": "a-key-constraint",
+                                            "label": "Label1",
+                                            "properties": ["property1"]
+                                        }]
+                                    }
                                 }],
                                 "relationships": [{
                                     "name": "a-target",
@@ -610,7 +625,14 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                                     "properties": [
                                         {"source_field": "field_1", "target_property": "property1"},
                                         {"source_field": "field_2", "target_property": "property2"}
-                                    ]
+                                    ],
+                                    "schema": {
+                                        "key_constraints": [{
+                                            "name": "a-key-constraint",
+                                            "label": "Label1",
+                                            "properties": ["property1"]
+                                        }]
+                                    }
                                 },{
                                     "active": false,
                                     "source": "a-source",
@@ -620,7 +642,14 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                                     "properties": [
                                         {"source_field": "field_1", "target_property": "property1"},
                                         {"source_field": "field_2", "target_property": "property2"}
-                                    ]
+                                    ],
+                                    "schema": {
+                                        "key_constraints": [{
+                                            "name": "a-key-constraint",
+                                            "label": "Label3",
+                                            "properties": ["property1"]
+                                        }]
+                                    }
                                 }],
                                 "relationships": [{
                                     "name": "a-target",
@@ -662,7 +691,14 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                                             "properties": [
                                                 {"source_field": "field_1", "target_property": "property1"},
                                                 {"source_field": "field_2", "target_property": "property2"}
-                                            ]
+                                            ],
+                                            "schema": {
+                                                "key_constraints": [{
+                                                   "name": "a-key-constraint",
+                                                   "label": "Label1",
+                                                   "properties": ["property1"]
+                                                }]
+                                            }
                                         },{
                                             "source": "a-source",
                                             "name": "another-node-target",
@@ -671,7 +707,14 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                                             "properties": [
                                                 {"source_field": "field_1", "target_property": "property1"},
                                                 {"source_field": "field_2", "target_property": "property2"}
-                                            ]
+                                            ],
+                                            "schema": {
+                                                "key_constraints": [{
+                                                   "name": "a-key-constraint",
+                                                   "label": "Label3",
+                                                   "properties": ["property1"]
+                                                }]
+                                            }
                                         }],
                                         "relationships": [{
                                             "active": false,
@@ -708,7 +751,14 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                                             "properties": [
                                                 {"source_field": "field_1", "target_property": "property1"},
                                                 {"source_field": "field_2", "target_property": "property2"}
-                                            ]
+                                            ],
+                                            "schema": {
+                                                "key_constraints": [{
+                                                   "name": "a-key-constraint1",
+                                                   "label": "Label1",
+                                                   "properties": ["property1"]
+                                                }]
+                                            }
                                         },{
                                             "active": false,
                                             "source": "a-source",
@@ -718,7 +768,14 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                                             "properties": [
                                                 {"source_field": "field_1", "target_property": "property1"},
                                                 {"source_field": "field_2", "target_property": "property2"}
-                                            ]
+                                            ],
+                                            "schema": {
+                                                "key_constraints": [{
+                                                   "name": "a-key-constraint2",
+                                                   "label": "Label3",
+                                                   "properties": ["property1"]
+                                                }]
+                                            }
                                         }],
                                         "relationships": [{
                                             "active": false,
@@ -835,7 +892,14 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                                     "properties": [
                                         {"source_field": "field_1", "target_property": "property1"},
                                         {"source_field": "field_2", "target_property": "property2"}
-                                    ]
+                                    ],
+                                    "schema": {
+                                        "key_constraints": [{
+                                           "name": "a-key-constraint",
+                                           "label": "Label1",
+                                           "properties": ["property1"]
+                                        }]
+                                    }
                                 }],
                                 "relationships": [{
                                     "name": "a-target",
@@ -874,7 +938,14 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                                     "properties": [
                                         {"source_field": "field_1", "target_property": "property1"},
                                         {"source_field": "field_2", "target_property": "property2"}
-                                    ]
+                                    ],
+                                  "schema": {
+                                      "key_constraints": [{
+                                         "name": "a-key-constraint",
+                                         "label": "Label1",
+                                         "properties": ["property1"]
+                                      }]
+                                  }
                                 }],
                                 "relationships": [{
                                     "name": "a-relationship-target",
@@ -930,7 +1001,14 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                                     "properties": [
                                         {"source_field": "id", "target_property": "property1"},
                                         {"source_field": "name", "target_property": "property2"}
-                                    ]
+                                    ],
+                                    "schema": {
+                                        "key_constraints": [{
+                                           "name": "a-key-constraint",
+                                           "label": "Label1",
+                                           "properties": ["property1"]
+                                        }]
+                                    }
                                 },
                                 {
                                     "name": "another-node-target",
@@ -940,7 +1018,14 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                                     "properties": [
                                         {"source_field": "id", "target_property": "property1"},
                                         {"source_field": "name", "target_property": "property2"}
-                                    ]
+                                    ],
+                                    "schema": {
+                                        "key_constraints": [{
+                                           "name": "a-key-constraint",
+                                           "label": "Label2",
+                                           "properties": ["property1"]
+                                        }]
+                                    }
                                 }],
                                 "relationships": [{
                                     "name": "a-relationship-target",
@@ -981,7 +1066,14 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                                     "properties": [
                                         {"source_field": "id", "target_property": "property1"},
                                         {"source_field": "name", "target_property": "property2"}
-                                    ]
+                                    ],
+                                    "schema": {
+                                        "key_constraints": [{
+                                           "name": "a-key-constraint",
+                                           "label": "Label1",
+                                           "properties": ["property1"]
+                                        }]
+                                    }
                                 },{
                                     "name": "another-node-target",
                                     "source": "a-source",
@@ -1077,7 +1169,14 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                                     "properties": [
                                         {"source_field": "field_1", "target_property": "property1"},
                                         {"source_field": "field_2", "target_property": "property2"}
-                                    ]
+                                    ],
+                                    "schema": {
+                                        "key_constraints": [{
+                                            "name": "a-key-constraint",
+                                            "label": "Label1",
+                                            "properties": ["property1"]
+                                        }]
+                                    }
                                 }],
                                 "relationships": [{
                                     "name": "a-relationship-target",
@@ -1272,7 +1371,14 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                                     "properties": [
                                         {"source_field": "column1", "target_property": "property1"},
                                         {"source_field": "column2", "target_property": "property2"}
-                                    ]
+                                    ],
+                                    "schema": {
+                                        "key_constraints": [{
+                                           "name": "a-key-constraint",
+                                           "label": "Label1",
+                                           "properties": ["property1"]
+                                        }]
+                                    }
                                 }],
                                 "relationships": [{
                                     "name": "a-relationship-target",
@@ -1334,7 +1440,14 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                                    "properties": [
                                        {"source_field": "column1", "target_property": "property1"},
                                        {"source_field": "column2", "target_property": "property2"}
-                                   ]
+                                   ],
+                                   "schema": {
+                                       "key_constraints": [{
+                                          "name": "a-key-constraint",
+                                          "label": "Label1",
+                                          "properties": ["property1"]
+                                       }]
+                                   },
                                }],
                                 "relationships": [{
                                     "name": "a-relationship-target",
@@ -1390,7 +1503,14 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                                    "properties": [
                                        {"source_field": "column1", "target_property": "property1"},
                                        {"source_field": "column2", "target_property": "property2"}
-                                   ]
+                                   ],
+                                   "schema": {
+                                       "key_constraints": [{
+                                          "name": "a-key-constraint",
+                                          "label": "Label1",
+                                          "properties": ["property1"]
+                                       }]
+                                   }
                                }],
                                 "relationships": [{
                                     "name": "a-relationship-target",
@@ -1497,7 +1617,14 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                               "labels": ["Label"],
                               "properties": [
                                 {"source_field": "id", "target_property": "id"}
-                              ]
+                              ],
+                              "schema": {
+                                  "key_constraints": [{
+                                     "name": "a-key-constraint",
+                                     "label": "Label",
+                                     "properties": ["id"]
+                                  }]
+                              }
                             }],
                             "relationships": [{
                               "name": "a-relationship-target",
@@ -1784,31 +1911,31 @@ public class ImportSpecificationDeserializerExtraValidationTest {
     public void fails_if_node_target_existence_constraint_refers_to_non_existent_label() {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
-                {
-                  "version": "1",
-                  "sources": [{
-                    "name": "a-source",
-                    "type": "jdbc",
-                    "data_source": "a-data-source",
-                    "sql": "SELECT id, name FROM my.table"
-                  }],
-                  "targets": {
-                    "nodes": [{
-                      "name": "a-node-target",
-                      "source": "a-source",
-                      "labels": ["Label"],
-                      "properties": [
-                        {"source_field": "id", "target_property": "id"}
-                      ],
-                      "schema": {
-                        "existence_constraints": [
-                            {"name": "an existence constraint", "label": "Invalid", "property": "id"}
-                        ]
-                      }
-                    }]
-                  }
-                }
-                """
+                        {
+                          "version": "1",
+                          "sources": [{
+                            "name": "a-source",
+                            "type": "jdbc",
+                            "data_source": "a-data-source",
+                            "sql": "SELECT id, name FROM my.table"
+                          }],
+                          "targets": {
+                            "nodes": [{
+                              "name": "a-node-target",
+                              "source": "a-source",
+                              "labels": ["Label"],
+                              "properties": [
+                                {"source_field": "id", "target_property": "id"}
+                              ],
+                              "schema": {
+                                "existence_constraints": [
+                                    {"name": "an existence constraint", "label": "Invalid", "property": "id"}
+                                ]
+                              }
+                            }]
+                          }
+                        }
+                        """
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
@@ -1821,31 +1948,31 @@ public class ImportSpecificationDeserializerExtraValidationTest {
     public void fails_if_node_target_existence_constraint_property_refers_to_non_existent_property() {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
-                {
-                  "version": "1",
-                  "sources": [{
-                    "name": "a-source",
-                    "type": "jdbc",
-                    "data_source": "a-data-source",
-                    "sql": "SELECT id, name FROM my.table"
-                  }],
-                  "targets": {
-                    "nodes": [{
-                      "name": "a-node-target",
-                      "source": "a-source",
-                      "labels": ["Label"],
-                      "properties": [
-                        {"source_field": "id", "target_property": "id"}
-                      ],
-                      "schema": {
-                        "existence_constraints": [
-                            {"name": "an existence constraint", "label": "Label", "property": "invalid"}
-                        ]
-                      }
-                    }]
-                  }
-                }
-                """
+                        {
+                          "version": "1",
+                          "sources": [{
+                            "name": "a-source",
+                            "type": "jdbc",
+                            "data_source": "a-data-source",
+                            "sql": "SELECT id, name FROM my.table"
+                          }],
+                          "targets": {
+                            "nodes": [{
+                              "name": "a-node-target",
+                              "source": "a-source",
+                              "labels": ["Label"],
+                              "properties": [
+                                {"source_field": "id", "target_property": "id"}
+                              ],
+                              "schema": {
+                                "existence_constraints": [
+                                    {"name": "an existence constraint", "label": "Label", "property": "invalid"}
+                                ]
+                              }
+                            }]
+                          }
+                        }
+                        """
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
@@ -1858,31 +1985,31 @@ public class ImportSpecificationDeserializerExtraValidationTest {
     public void fails_if_node_target_range_index_refers_to_non_existent_label() {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
-                {
-                  "version": "1",
-                  "sources": [{
-                    "name": "a-source",
-                    "type": "jdbc",
-                    "data_source": "a-data-source",
-                    "sql": "SELECT id, name FROM my.table"
-                  }],
-                  "targets": {
-                    "nodes": [{
-                      "name": "a-node-target",
-                      "source": "a-source",
-                      "labels": ["Label"],
-                      "properties": [
-                        {"source_field": "id", "target_property": "id"}
-                      ],
-                      "schema": {
-                        "range_indexes": [
-                            {"name": "a range index", "label": "Invalid", "properties": ["id"]}
-                        ]
-                      }
-                    }]
-                  }
-                }
-                """
+                        {
+                          "version": "1",
+                          "sources": [{
+                            "name": "a-source",
+                            "type": "jdbc",
+                            "data_source": "a-data-source",
+                            "sql": "SELECT id, name FROM my.table"
+                          }],
+                          "targets": {
+                            "nodes": [{
+                              "name": "a-node-target",
+                              "source": "a-source",
+                              "labels": ["Label"],
+                              "properties": [
+                                {"source_field": "id", "target_property": "id"}
+                              ],
+                              "schema": {
+                                "range_indexes": [
+                                    {"name": "a range index", "label": "Invalid", "properties": ["id"]}
+                                ]
+                              }
+                            }]
+                          }
+                        }
+                        """
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
@@ -1895,31 +2022,31 @@ public class ImportSpecificationDeserializerExtraValidationTest {
     public void fails_if_node_target_range_index_property_refers_to_non_existent_property() {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
-                {
-                  "version": "1",
-                  "sources": [{
-                    "name": "a-source",
-                    "type": "jdbc",
-                    "data_source": "a-data-source",
-                    "sql": "SELECT id, name FROM my.table"
-                  }],
-                  "targets": {
-                    "nodes": [{
-                      "name": "a-node-target",
-                      "source": "a-source",
-                      "labels": ["Label"],
-                      "properties": [
-                        {"source_field": "id", "target_property": "id"}
-                      ],
-                      "schema": {
-                        "range_indexes": [
-                            {"name": "a range index", "label": "Label", "properties": ["invalid"]}
-                        ]
-                      }
-                    }]
-                  }
-                }
-                """
+                        {
+                          "version": "1",
+                          "sources": [{
+                            "name": "a-source",
+                            "type": "jdbc",
+                            "data_source": "a-data-source",
+                            "sql": "SELECT id, name FROM my.table"
+                          }],
+                          "targets": {
+                            "nodes": [{
+                              "name": "a-node-target",
+                              "source": "a-source",
+                              "labels": ["Label"],
+                              "properties": [
+                                {"source_field": "id", "target_property": "id"}
+                              ],
+                              "schema": {
+                                "range_indexes": [
+                                    {"name": "a range index", "label": "Label", "properties": ["invalid"]}
+                                ]
+                              }
+                            }]
+                          }
+                        }
+                        """
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
@@ -1932,31 +2059,31 @@ public class ImportSpecificationDeserializerExtraValidationTest {
     public void fails_if_node_target_text_index_refers_to_non_existent_label() {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
-                {
-                  "version": "1",
-                  "sources": [{
-                    "name": "a-source",
-                    "type": "jdbc",
-                    "data_source": "a-data-source",
-                    "sql": "SELECT id, name FROM my.table"
-                  }],
-                  "targets": {
-                    "nodes": [{
-                      "name": "a-node-target",
-                      "source": "a-source",
-                      "labels": ["Label"],
-                      "properties": [
-                        {"source_field": "id", "target_property": "id"}
-                      ],
-                      "schema": {
-                        "text_indexes": [
-                            {"name": "a text index", "label": "Invalid", "property": "id"}
-                        ]
-                      }
-                    }]
-                  }
-                }
-                """
+                        {
+                          "version": "1",
+                          "sources": [{
+                            "name": "a-source",
+                            "type": "jdbc",
+                            "data_source": "a-data-source",
+                            "sql": "SELECT id, name FROM my.table"
+                          }],
+                          "targets": {
+                            "nodes": [{
+                              "name": "a-node-target",
+                              "source": "a-source",
+                              "labels": ["Label"],
+                              "properties": [
+                                {"source_field": "id", "target_property": "id"}
+                              ],
+                              "schema": {
+                                "text_indexes": [
+                                    {"name": "a text index", "label": "Invalid", "property": "id"}
+                                ]
+                              }
+                            }]
+                          }
+                        }
+                        """
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
@@ -1969,31 +2096,31 @@ public class ImportSpecificationDeserializerExtraValidationTest {
     public void fails_if_node_target_text_index_property_refers_to_non_existent_property() {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
-                {
-                  "version": "1",
-                  "sources": [{
-                    "name": "a-source",
-                    "type": "jdbc",
-                    "data_source": "a-data-source",
-                    "sql": "SELECT id, name FROM my.table"
-                  }],
-                  "targets": {
-                    "nodes": [{
-                      "name": "a-node-target",
-                      "source": "a-source",
-                      "labels": ["Label"],
-                      "properties": [
-                        {"source_field": "id", "target_property": "id"}
-                      ],
-                      "schema": {
-                        "text_indexes": [
-                            {"name": "a text index", "label": "Label", "property": "invalid"}
-                        ]
-                      }
-                    }]
-                  }
-                }
-                """
+                        {
+                          "version": "1",
+                          "sources": [{
+                            "name": "a-source",
+                            "type": "jdbc",
+                            "data_source": "a-data-source",
+                            "sql": "SELECT id, name FROM my.table"
+                          }],
+                          "targets": {
+                            "nodes": [{
+                              "name": "a-node-target",
+                              "source": "a-source",
+                              "labels": ["Label"],
+                              "properties": [
+                                {"source_field": "id", "target_property": "id"}
+                              ],
+                              "schema": {
+                                "text_indexes": [
+                                    {"name": "a text index", "label": "Label", "property": "invalid"}
+                                ]
+                              }
+                            }]
+                          }
+                        }
+                        """
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
@@ -2006,31 +2133,31 @@ public class ImportSpecificationDeserializerExtraValidationTest {
     public void fails_if_node_target_point_index_refers_to_non_existent_label() {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
-        {
-          "version": "1",
-          "sources": [{
-            "name": "a-source",
-            "type": "jdbc",
-            "data_source": "a-data-source",
-            "sql": "SELECT id, name FROM my.table"
-          }],
-          "targets": {
-            "nodes": [{
-              "name": "a-node-target",
-              "source": "a-source",
-              "labels": ["Label"],
-              "properties": [
-                {"source_field": "id", "target_property": "id"}
-              ],
-              "schema": {
-                "point_indexes": [
-                    {"name": "a point index", "label": "Invalid", "property": "id"}
-                ]
-              }
-            }]
-          }
-        }
-        """
+                        {
+                          "version": "1",
+                          "sources": [{
+                            "name": "a-source",
+                            "type": "jdbc",
+                            "data_source": "a-data-source",
+                            "sql": "SELECT id, name FROM my.table"
+                          }],
+                          "targets": {
+                            "nodes": [{
+                              "name": "a-node-target",
+                              "source": "a-source",
+                              "labels": ["Label"],
+                              "properties": [
+                                {"source_field": "id", "target_property": "id"}
+                              ],
+                              "schema": {
+                                "point_indexes": [
+                                    {"name": "a point index", "label": "Invalid", "property": "id"}
+                                ]
+                              }
+                            }]
+                          }
+                        }
+                        """
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
@@ -2043,31 +2170,31 @@ public class ImportSpecificationDeserializerExtraValidationTest {
     public void fails_if_node_target_point_index_property_refers_to_non_existent_property() {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
-        {
-          "version": "1",
-          "sources": [{
-            "name": "a-source",
-            "type": "jdbc",
-            "data_source": "a-data-source",
-            "sql": "SELECT id, name FROM my.table"
-          }],
-          "targets": {
-            "nodes": [{
-              "name": "a-node-target",
-              "source": "a-source",
-              "labels": ["Label"],
-              "properties": [
-                {"source_field": "id", "target_property": "id"}
-              ],
-              "schema": {
-                "point_indexes": [
-                    {"name": "a point index", "label": "Label", "property": "invalid"}
-                ]
-              }
-            }]
-          }
-        }
-        """
+                        {
+                          "version": "1",
+                          "sources": [{
+                            "name": "a-source",
+                            "type": "jdbc",
+                            "data_source": "a-data-source",
+                            "sql": "SELECT id, name FROM my.table"
+                          }],
+                          "targets": {
+                            "nodes": [{
+                              "name": "a-node-target",
+                              "source": "a-source",
+                              "labels": ["Label"],
+                              "properties": [
+                                {"source_field": "id", "target_property": "id"}
+                              ],
+                              "schema": {
+                                "point_indexes": [
+                                    {"name": "a point index", "label": "Label", "property": "invalid"}
+                                ]
+                              }
+                            }]
+                          }
+                        }
+                        """
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
@@ -2243,7 +2370,14 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                                   "labels": ["Label"],
                                   "properties": [
                                     {"source_field": "id", "target_property": "id"}
-                                  ]
+                                  ],
+                                  "schema": {
+                                      "key_constraints": [{
+                                         "name": "a-key-constraint",
+                                         "label": "Label",
+                                         "properties": ["id"]
+                                      }]
+                                  }
                                 }],
                                 "relationships": [{
                                   "name": "a-relationship-target",
@@ -2384,7 +2518,14 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                                   "labels": ["Label"],
                                   "properties": [
                                     {"source_field": "id", "target_property": "id"}
-                                  ]
+                                  ],
+                                  "schema": {
+                                     "key_constraints": [{
+                                         "name": "a-key-constraint",
+                                         "label": "Label",
+                                         "properties": ["id"]
+                                     }]
+                                  }
                                 }],
                                 "relationships": [{
                                   "name": "a-relationship-target",
@@ -2431,7 +2572,14 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                                   "labels": ["Label"],
                                   "properties": [
                                     {"source_field": "id", "target_property": "id"}
-                                  ]
+                                  ],
+                                  "schema": {
+                                      "key_constraints": [{
+                                         "name": "a-key-constraint",
+                                         "label": "Label",
+                                         "properties": ["id"]
+                                      }]
+                                  }
                                 }],
                                 "relationships": [{
                                   "name": "a-relationship-target",
@@ -2478,7 +2626,14 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                                   "labels": ["Label"],
                                   "properties": [
                                     {"source_field": "id", "target_property": "id"}
-                                  ]
+                                  ],
+                                  "schema": {
+                                      "key_constraints": [{
+                                         "name": "a-key-constraint",
+                                         "label": "Label",
+                                         "properties": ["id"]
+                                      }]
+                                  }
                                 }],
                                 "relationships": [{
                                   "name": "a-relationship-target",
@@ -2525,7 +2680,14 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                                   "labels": ["Label"],
                                   "properties": [
                                     {"source_field": "id", "target_property": "id"}
-                                  ]
+                                  ],
+                                  "schema": {
+                                      "key_constraints": [{
+                                         "name": "a-key-constraint",
+                                         "label": "Label",
+                                         "properties": ["id"]
+                                      }]
+                                  }
                                 }],
                                 "relationships": [{
                                   "name": "a-relationship-target",
@@ -2572,7 +2734,14 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                                   "labels": ["Label"],
                                   "properties": [
                                     {"source_field": "id", "target_property": "id"}
-                                  ]
+                                  ],
+                                  "schema": {
+                                      "key_constraints": [{
+                                         "name": "a-key-constraint",
+                                         "label": "Label",
+                                         "properties": ["id"]
+                                      }]
+                                  }
                                 }],
                                 "relationships": [{
                                   "name": "a-relationship-target",
@@ -2619,7 +2788,14 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                                   "labels": ["Label"],
                                   "properties": [
                                     {"source_field": "id", "target_property": "id"}
-                                  ]
+                                  ],
+                                "schema": {
+                                    "key_constraints": [{
+                                       "name": "a-key-constraint",
+                                       "label": "Label",
+                                       "properties": ["id"]
+                                    }]
+                                }
                                 }],
                                 "relationships": [{
                                   "name": "a-relationship-target",
@@ -2645,5 +2821,512 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                         "1 error(s)",
                         "0 warning(s)",
                         "$.targets.relationships[0].schema.vector_indexes[0].property \"invalid\" is not part of the property mappings");
+    }
+
+    @Test
+    public void fails_if_relationship_start_node_reference_refers_to_non_existent_property() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+                        {
+                            "version": "1",
+                            "sources": [{
+                                "name": "a-source",
+                                "type": "jdbc",
+                                "data_source": "a-data-source",
+                                "sql": "SELECT id, name FROM my.table"
+                            }],
+                            "targets": {
+                                "nodes": [{
+                                    "name": "a-node-target",
+                                    "source": "a-source",
+                                    "labels": ["Label"],
+                                    "properties": [
+                                        {"source_field": "id", "target_property": "id"}
+                                    ]
+                                }],
+                                "relationships": [{
+                                    "name": "a-relationship-target",
+                                    "source": "a-source",
+                                    "type": "TYPE",
+                                    "write_mode": "create",
+                                    "start_node_reference": {
+                                        "name": "a-node-target",
+                                        "key_mappings": [
+                                            {
+                                                "source_field": "source_id",
+                                                "node_property": "not-a-valid-property"
+                                            }
+                                        ]
+                                    },
+                                    "end_node_reference": "a-node-target"
+                                }]
+                            }
+                        }
+                        """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "$.targets.relationships[0].start_node_reference.key_mappings[0].node_property refers to a non-existing node property \"not-a-valid-property\"");
+    }
+
+    @Test
+    public void fails_if_relationship_end_node_reference_refers_to_non_existent_property() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+                        {
+                            "version": "1",
+                            "sources": [{
+                                "name": "a-source",
+                                "type": "jdbc",
+                                "data_source": "a-data-source",
+                                "sql": "SELECT id, name FROM my.table"
+                            }],
+                            "targets": {
+                                "nodes": [{
+                                    "name": "a-node-target",
+                                    "source": "a-source",
+                                    "labels": ["Label"],
+                                    "properties": [
+                                        {"source_field": "id", "target_property": "id"}
+                                    ],
+                                    "schema": {
+                                        "key_constraints": [{
+                                            "name": "a-key-constraint",
+                                            "label": "Label",
+                                            "properties": ["id"]
+                                        }]
+                                    }
+                                }],
+                                "relationships": [{
+                                    "name": "a-relationship-target",
+                                    "source": "a-source",
+                                    "type": "TYPE",
+                                    "write_mode": "create",
+                                    "start_node_reference": "a-node-target",
+                                    "end_node_reference": {
+                                        "name": "a-node-target",
+                                        "key_mappings": [
+                                            {
+                                                "source_field": "source_id",
+                                                "node_property": "not-a-valid-property"
+                                            }
+                                        ]
+                                    }
+                                }]
+                            }
+                        }
+                        """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "$.targets.relationships[0].end_node_reference.key_mappings[0].node_property refers to a non-existing node property \"not-a-valid-property\"");
+    }
+
+    @Test
+    public void fails_if_relationship_start_node_reference_refers_to_non_key_and_non_unique_property() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+                {
+                    "version": "1",
+                    "sources": [{
+                        "name": "a-source",
+                        "type": "jdbc",
+                        "data_source": "a-data-source",
+                        "sql": "SELECT id, name FROM my.table"
+                    }],
+                    "targets": {
+                        "nodes": [{
+                            "name": "a-node-target",
+                            "source": "a-source",
+                            "labels": ["Label"],
+                            "properties": [
+                                {"source_field": "id", "target_property": "id"},
+                                {"source_field": "field", "target_property": "prop"}
+                            ],
+                            "schema": {
+                                "key_constraints": [{
+                                    "name": "a-key-constraint",
+                                    "label": "Label",
+                                    "properties": ["id"]
+                                }]
+                            }
+                        }],
+                        "relationships": [{
+                            "name": "a-relationship-target",
+                            "source": "a-source",
+                            "type": "TYPE",
+                            "write_mode": "create",
+                            "start_node_reference": {
+                                "name": "a-node-target",
+                                "key_mappings": [
+                                    {
+                                        "source_field": "source_id",
+                                        "node_property": "prop"
+                                    }
+                                ]
+                            },
+                            "end_node_reference": "a-node-target"
+                        }]
+                    }
+                }
+                """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "[$.relationships[0].start_node_reference.key_mappings[0].node_property] Property 'prop' is not part of start node target's a-node-target key and unique properties");
+    }
+
+    @Test
+    public void fails_if_relationship_end_node_reference_refers_to_non_key_and_non_unique_property() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+                {
+                    "version": "1",
+                    "sources": [{
+                        "name": "a-source",
+                        "type": "jdbc",
+                        "data_source": "a-data-source",
+                        "sql": "SELECT id, name FROM my.table"
+                    }],
+                    "targets": {
+                        "nodes": [{
+                            "name": "a-node-target",
+                            "source": "a-source",
+                            "labels": ["Label"],
+                            "properties": [
+                                {"source_field": "id", "target_property": "id"},
+                                {"source_field": "field", "target_property": "prop"}
+                            ],
+                            "schema": {
+                                "key_constraints": [{
+                                    "name": "a-key-constraint",
+                                    "label": "Label",
+                                    "properties": ["id"]
+                                }]
+                            }
+                        }],
+                        "relationships": [{
+                            "name": "a-relationship-target",
+                            "source": "a-source",
+                            "type": "TYPE",
+                            "write_mode": "create",
+                            "start_node_reference": "a-node-target",
+                            "end_node_reference": {
+                                "name": "a-node-target",
+                                "key_mappings": [
+                                    {
+                                        "source_field": "source_id",
+                                        "node_property": "prop"
+                                    }
+                                ]
+                            }
+                        }]
+                    }
+                }
+                """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "[$.relationships[0].end_node_reference.key_mappings[0].node_property] Property 'prop' is not part of end node target's a-node-target key and unique properties");
+    }
+
+    @Test
+    public void does_not_fail_if_relationship_start_node_reference_refers_to_node_key_property() {
+        assertThatCode(() -> deserialize(new StringReader(
+                        """
+                        {
+                            "version": "1",
+                            "sources": [{
+                                "name": "a-source",
+                                "type": "jdbc",
+                                "data_source": "a-data-source",
+                                "sql": "SELECT id, name FROM my.table"
+                            }],
+                            "targets": {
+                                "nodes": [{
+                                    "name": "a-node-target",
+                                    "source": "a-source",
+                                    "labels": ["Label"],
+                                    "properties": [
+                                        {"source_field": "id", "target_property": "id"}
+                                    ],
+                                    "schema": {
+                                        "key_constraints": [
+                                            {"name": "unique-id", "label": "Label", "properties": ["id"]}
+                                        ]
+                                    }
+                                }],
+                                "relationships": [{
+                                    "name": "a-relationship-target",
+                                    "source": "a-source",
+                                    "type": "TYPE",
+                                    "write_mode": "create",
+                                    "start_node_reference": {
+                                        "name": "a-node-target",
+                                        "key_mappings": [
+                                            {
+                                                "source_field": "source_id",
+                                                "node_property": "id"
+                                            }
+                                        ]
+                                    },
+                                    "end_node_reference": "a-node-target"
+                                }]
+                            }
+                        }
+                        """
+                                .stripIndent())))
+                .doesNotThrowAnyException();
+    }
+
+    @Test
+    public void does_not_fail_if_relationship_end_node_reference_refers_to_node_key_property() {
+        assertThatCode(() -> deserialize(new StringReader(
+                        """
+                        {
+                            "version": "1",
+                            "sources": [{
+                                "name": "a-source",
+                                "type": "jdbc",
+                                "data_source": "a-data-source",
+                                "sql": "SELECT id, name FROM my.table"
+                            }],
+                            "targets": {
+                                "nodes": [{
+                                    "name": "a-node-target",
+                                    "source": "a-source",
+                                    "labels": ["Label"],
+                                    "properties": [
+                                        {"source_field": "id", "target_property": "id"}
+                                    ],
+                                    "schema": {
+                                        "unique_constraints": [
+                                            {"name": "unique-id", "label": "Label", "properties": ["id"]}
+                                        ]
+                                    }
+                                }],
+                                "relationships": [{
+                                    "name": "a-relationship-target",
+                                    "source": "a-source",
+                                    "type": "TYPE",
+                                    "write_mode": "create",
+                                    "start_node_reference": "a-node-target",
+                                    "end_node_reference": {
+                                        "name": "a-node-target",
+                                        "key_mappings": [
+                                            {
+                                                "source_field": "source_id",
+                                                "node_property": "id"
+                                            }
+                                        ]
+                                    }
+                                }]
+                            }
+                        }
+                        """
+                                .stripIndent())))
+                .doesNotThrowAnyException();
+    }
+
+    @Test
+    public void does_not_fail_if_relationship_start_node_reference_refers_to_node_unique_property() {
+        assertThatCode(() -> deserialize(new StringReader(
+                        """
+                        {
+                            "version": "1",
+                            "sources": [{
+                                "name": "a-source",
+                                "type": "jdbc",
+                                "data_source": "a-data-source",
+                                "sql": "SELECT id, name FROM my.table"
+                            }],
+                            "targets": {
+                                "nodes": [{
+                                    "name": "a-node-target",
+                                    "source": "a-source",
+                                    "labels": ["Label"],
+                                    "properties": [
+                                        {"source_field": "id", "target_property": "id"}
+                                    ],
+                                    "schema": {
+                                        "unique_constraints": [
+                                            {"name": "unique-id", "label": "Label", "properties": ["id"]}
+                                        ]
+                                    }
+                                }],
+                                "relationships": [{
+                                    "name": "a-relationship-target",
+                                    "source": "a-source",
+                                    "type": "TYPE",
+                                    "write_mode": "create",
+                                    "start_node_reference": {
+                                        "name": "a-node-target",
+                                        "key_mappings": [
+                                            {
+                                                "source_field": "source_id",
+                                                "node_property": "id"
+                                            }
+                                        ]
+                                    },
+                                    "end_node_reference": "a-node-target"
+                                }]
+                            }
+                        }
+                        """
+                                .stripIndent())))
+                .doesNotThrowAnyException();
+    }
+
+    @Test
+    public void does_not_fail_if_relationship_end_node_reference_refers_to_node_unique_property() {
+        assertThatCode(() -> deserialize(new StringReader(
+                        """
+                        {
+                            "version": "1",
+                            "sources": [{
+                                "name": "a-source",
+                                "type": "jdbc",
+                                "data_source": "a-data-source",
+                                "sql": "SELECT id, name FROM my.table"
+                            }],
+                            "targets": {
+                                "nodes": [{
+                                    "name": "a-node-target",
+                                    "source": "a-source",
+                                    "labels": ["Label"],
+                                    "properties": [
+                                        {"source_field": "id", "target_property": "id"}
+                                    ],
+                                    "schema": {
+                                        "key_constraints": [
+                                            {"name": "unique-id", "label": "Label", "properties": ["id"]}
+                                        ]
+                                    }
+                                }],
+                                "relationships": [{
+                                    "name": "a-relationship-target",
+                                    "source": "a-source",
+                                    "type": "TYPE",
+                                    "write_mode": "create",
+                                    "start_node_reference": "a-node-target",
+                                    "end_node_reference": {
+                                        "name": "a-node-target",
+                                        "key_mappings": [
+                                            {
+                                                "source_field": "source_id",
+                                                "node_property": "id"
+                                            }
+                                        ]
+                                    }
+                                }]
+                            }
+                        }
+                        """
+                                .stripIndent())))
+                .doesNotThrowAnyException();
+    }
+
+    @Test
+    public void fails_if_relationship_start_node_reference_does_not_refer_to_node_key_or_unique_property() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+                        {
+                            "version": "1",
+                            "sources": [{
+                                "name": "a-source",
+                                "type": "jdbc",
+                                "data_source": "a-data-source",
+                                "sql": "SELECT id, name FROM my.table"
+                            }],
+                            "targets": {
+                                "nodes": [{
+                                    "name": "a-node-target",
+                                    "source": "a-source",
+                                    "labels": ["Label"],
+                                    "properties": [
+                                        {"source_field": "id", "target_property": "id"}
+                                    ]
+                                }],
+                                "relationships": [{
+                                    "name": "a-relationship-target",
+                                    "source": "a-source",
+                                    "type": "TYPE",
+                                    "write_mode": "create",
+                                    "start_node_reference": {
+                                        "name": "a-node-target",
+                                        "key_mappings": [
+                                            {
+                                                "source_field": "source_id",
+                                                "node_property": "id"
+                                            }
+                                        ]
+                                    },
+                                    "end_node_reference": "a-node-target"
+                                }]
+                            }
+                        }
+                        """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "0 warning(s)",
+                        "[$.targets.relationships[0].start_node_reference] Node a-node-target must define a key or unique constraint for property id, none found");
+    }
+
+    @Test
+    public void fails_if_relationship_end_node_reference_refers_to_node_without_keys_nor_unique_properties() {
+        assertThatCode(() -> deserialize(new StringReader(
+                        """
+                        {
+                            "version": "1",
+                            "sources": [{
+                                "name": "a-source",
+                                "type": "jdbc",
+                                "data_source": "a-data-source",
+                                "sql": "SELECT id, name FROM my.table"
+                            }],
+                            "targets": {
+                                "nodes": [{
+                                    "name": "a-node-target",
+                                    "source": "a-source",
+                                    "labels": ["Label"],
+                                    "properties": [
+                                        {"source_field": "id", "target_property": "id"}
+                                    ]
+                                }],
+                                "relationships": [{
+                                    "name": "a-relationship-target",
+                                    "source": "a-source",
+                                    "type": "TYPE",
+                                    "write_mode": "create",
+                                    "start_node_reference": "a-node-target",
+                                    "end_node_reference": {
+                                        "name": "a-node-target",
+                                        "key_mappings": [
+                                            {
+                                                "source_field": "source_id",
+                                                "node_property": "id"
+                                            }
+                                        ]
+                                    }
+                                }]
+                            }
+                        }
+                        """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "2 error(s)",
+                        "0 warning(s)",
+                        "[$.targets.relationships[0].start_node_reference] Node a-node-target must define a key or unique constraint for property id, none found",
+                        "[$.targets.relationships[0].end_node_reference] Node a-node-target must define a key or unique constraint for property id, none found");
     }
 }

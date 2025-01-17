@@ -40,18 +40,10 @@ public class NoDuplicatedLabelInFullTextIndexValidator implements SpecificationV
 
     @Override
     public void visitNodeTarget(int index, NodeTarget target) {
-        var schema = target.getSchema();
-
-        if (schema == null) {
-            return;
-        }
-
-        var fTIndexes = schema.getFullTextIndexes();
-
         var basePath = String.format("$.targets.nodes[%d].schema.fulltext_indexes", index);
-
-        for (int i = 0; i < fTIndexes.size(); i++) {
-            NodeFullTextIndex textIndex = fTIndexes.get(i);
+        var fullTextIndexes = target.getSchema().getFullTextIndexes();
+        for (int i = 0; i < fullTextIndexes.size(); i++) {
+            NodeFullTextIndex textIndex = fullTextIndexes.get(i);
 
             int arrayIndex = i;
             Duplicate.findDuplicates(textIndex.getLabels()).forEach(duplicate -> {

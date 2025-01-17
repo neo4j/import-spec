@@ -38,7 +38,7 @@ public abstract class TargetStep implements ImportStep {
     }
 
     public List<ImportStep> dependencies() {
-        return dependencies;
+        return dependencies != null ? dependencies : List.of();
     }
 
     protected abstract Target target();

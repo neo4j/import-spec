@@ -26,8 +26,8 @@ import java.util.Objects;
 public class RelationshipTarget extends EntityTarget {
     private final String type;
     private final NodeMatchMode nodeMatchMode;
-    private final String startNodeReference;
-    private final String endNodeReference;
+    private final NodeReference startNodeReference;
+    private final NodeReference endNodeReference;
     private final RelationshipSchema schema;
 
     @JsonCreator
@@ -40,8 +40,8 @@ public class RelationshipTarget extends EntityTarget {
             @JsonProperty("write_mode") WriteMode writeMode,
             @JsonProperty("node_match_mode") NodeMatchMode nodeMatchMode,
             @JsonAnySetter ObjectNode rawExtensionData,
-            @JsonProperty("start_node_reference") String startNodeReference,
-            @JsonProperty("end_node_reference") String endNodeReference,
+            @JsonProperty("start_node_reference") NodeReference startNodeReference,
+            @JsonProperty("end_node_reference") NodeReference endNodeReference,
             @JsonProperty("properties") List<PropertyMapping> properties,
             @JsonProperty("schema") RelationshipSchema schema) {
 
@@ -73,11 +73,11 @@ public class RelationshipTarget extends EntityTarget {
         return schema;
     }
 
-    public String getStartNodeReference() {
+    public NodeReference getStartNodeReference() {
         return startNodeReference;
     }
 
-    public String getEndNodeReference() {
+    public NodeReference getEndNodeReference() {
         return endNodeReference;
     }
 

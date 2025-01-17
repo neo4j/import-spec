@@ -18,6 +18,9 @@ package org.neo4j.importer.v1.pipeline;
 
 import java.io.Reader;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -34,7 +37,9 @@ import org.neo4j.importer.v1.actions.ActionStage;
 import org.neo4j.importer.v1.graph.Graphs;
 import org.neo4j.importer.v1.sources.Source;
 import org.neo4j.importer.v1.targets.CustomQueryTarget;
+import org.neo4j.importer.v1.targets.KeyMapping;
 import org.neo4j.importer.v1.targets.NodeTarget;
+import org.neo4j.importer.v1.targets.PropertyMapping;
 import org.neo4j.importer.v1.targets.RelationshipTarget;
 import org.neo4j.importer.v1.targets.Target;
 import org.neo4j.importer.v1.targets.Targets;
@@ -62,7 +67,7 @@ import org.neo4j.importer.v1.targets.Targets;
  * <br><br>
  * Since an {@link ImportStep} may have dependencies, which are either:<br><br>
  * - implicit like a {@link TargetStep} depending on a {@link SourceStep},
- *   a {@link RelationshipTargetStep} depending on start/end {@link NodeTargetStep}s<br>
+ * a {@link RelationshipTargetStep} depending on start/end {@link NodeTargetStep}s<br>
  * - and/or explicit (via {@link ImportStep#dependencies()}<br><br>
  * ... the pipeline guarantees that dependencies are *always* returned after their dependents.<br>
  * In particular, the dependencies of each {@link ActionStep} are resolved at pipeline construction, based on the
@@ -133,8 +138,10 @@ public class ImportPipeline implements Iterable<ImportStep>, Serializable {
             } else if (target instanceof RelationshipTarget) {
                 dependencies.addAll(preRelationshipActions);
                 var relationshipTarget = (RelationshipTarget) target;
-                dependencies.add(QualifiedName.ofNodeTarget(relationshipTarget.getStartNodeReference()));
-                dependencies.add(QualifiedName.ofNodeTarget(relationshipTarget.getEndNodeReference()));
+                dependencies.add(QualifiedName.ofNodeTarget(
+                        relationshipTarget.getStartNodeReference().getName()));
+                dependencies.add(QualifiedName.ofNodeTarget(
+                        relationshipTarget.getEndNodeReference().getName()));
                 var qualifiedName = QualifiedName.ofRelationshipTarget(targetName);
                 dependencyGraph.put(qualifiedName, dependencies);
                 relationshipTargets.add(qualifiedName);
@@ -220,10 +227,14 @@ public class ImportPipeline implements Iterable<ImportStep>, Serializable {
                             return nodeTask;
                         case RELATIONSHIP_TARGET:
                             var relationshipTarget = indexedRelationshipTargets.get(name);
+                            var startNode = relationshipTarget.getStartNodeReference();
+                            var endNode = relationshipTarget.getEndNodeReference();
                             var relationshipTask = new RelationshipTargetStep(
                                     relationshipTarget,
-                                    processedNodeTasks.get(relationshipTarget.getStartNodeReference()),
-                                    processedNodeTasks.get(relationshipTarget.getEndNodeReference()),
+                                    redefineRelationshipNode(
+                                            processedNodeTasks.get(startNode.getName()), startNode.getKeyMappings()),
+                                    redefineRelationshipNode(
+                                            processedNodeTasks.get(endNode.getName()), endNode.getKeyMappings()),
                                     dependencyTasks);
                             processedTasks.put(qualifiedName, relationshipTask);
                             return relationshipTask;
@@ -244,13 +255,33 @@ public class ImportPipeline implements Iterable<ImportStep>, Serializable {
                 .collect(Collectors.toList());
     }
 
+    // this redefines the mapping for key properties.
+    // start/end node targets are defined against their specific source.
+    // relationship targets are likely defined against another source, so the source field names for the key properties
+    // of start/end nodes are likely to be different from the names of the source fields defined in the original targets
+    private static NodeTargetStep redefineRelationshipNode(NodeTargetStep nodeTarget, List<KeyMapping> keyMappings) {
+        if (keyMappings.isEmpty()) {
+            return nodeTarget;
+        }
+        var target = nodeTarget.target();
+        List<PropertyMapping> mappings = overwriteKeyProperties(target.getProperties(), keyMappings);
+        return new NodeTargetStep(
+                new NodeTarget(
+                        target.isActive(),
+                        target.getName(),
+                        target.getSource(),
+                        target.getDependencies(),
+                        target.getWriteMode(),
+                        target.getExtensions(),
+                        target.getLabels(),
+                        mappings,
+                        target.getSchema()),
+                nodeTarget.dependencies());
+    }
+
     @SafeVarargs
     private static <T> Set<T> concat(Set<T>... sets) {
-        var result = new LinkedHashSet<T>();
-        for (Set<T> set : sets) {
-            result.addAll(set);
-        }
-        return result;
+        return Arrays.stream(sets).flatMap(Collection::stream).collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
     private static class QualifiedName {
@@ -305,6 +336,26 @@ public class ImportPipeline implements Iterable<ImportStep>, Serializable {
         public int hashCode() {
             return Objects.hash(type, value);
         }
+    }
+
+    private static List<PropertyMapping> overwriteKeyProperties(
+            List<PropertyMapping> properties, List<KeyMapping> keyMappings) {
+        if (keyMappings.isEmpty()) {
+            return properties;
+        }
+        Map<String, String> keys =
+                keyMappings.stream().collect(Collectors.toMap(KeyMapping::getNodeProperty, KeyMapping::getSourceField));
+        List<PropertyMapping> result = new ArrayList<>(properties.size());
+        for (PropertyMapping mapping : properties) {
+            String targetProperty = mapping.getTargetProperty();
+            String sourceFieldForKey = keys.get(targetProperty);
+            if (sourceFieldForKey != null) {
+                result.add(new PropertyMapping(sourceFieldForKey, targetProperty, mapping.getTargetPropertyType()));
+            } else {
+                result.add(mapping);
+            }
+        }
+        return result;
     }
 
     private enum ContainerType {

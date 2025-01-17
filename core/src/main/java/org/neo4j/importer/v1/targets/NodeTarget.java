@@ -24,7 +24,9 @@ import java.util.List;
 import java.util.Objects;
 
 public class NodeTarget extends EntityTarget {
+
     private final List<String> labels;
+
     private final NodeSchema schema;
 
     @JsonCreator
@@ -38,16 +40,30 @@ public class NodeTarget extends EntityTarget {
             @JsonProperty(value = "labels", required = true) List<String> labels,
             @JsonProperty(value = "properties", required = true) List<PropertyMapping> properties,
             @JsonProperty("schema") NodeSchema schema) {
-
-        super(
-                TargetType.NODE,
+        this(
                 active,
                 name,
                 source,
                 dependencies,
                 writeMode,
                 mapExtensions(rawExtensionData),
-                properties);
+                labels,
+                properties,
+                schema);
+    }
+
+    public NodeTarget(
+            Boolean active,
+            String name,
+            String source,
+            List<String> dependencies,
+            WriteMode writeMode,
+            List<EntityTargetExtension> extensions,
+            List<String> labels,
+            List<PropertyMapping> properties,
+            NodeSchema schema) {
+
+        super(TargetType.NODE, active, name, source, dependencies, writeMode, extensions, properties);
         this.labels = labels;
         this.schema = schema;
     }
@@ -57,7 +73,7 @@ public class NodeTarget extends EntityTarget {
     }
 
     public NodeSchema getSchema() {
-        return schema;
+        return schema == null ? NodeSchema.EMPTY : schema;
     }
 
     @Override

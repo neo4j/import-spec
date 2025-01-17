@@ -18,10 +18,12 @@ package org.neo4j.importer.v1.pipeline;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.util.List;
 import java.util.Random;
 import org.junit.jupiter.api.Test;
 import org.neo4j.importer.v1.targets.NodeMatchMode;
+import org.neo4j.importer.v1.targets.NodeReference;
 import org.neo4j.importer.v1.targets.NodeTarget;
 import org.neo4j.importer.v1.targets.PropertyMapping;
 import org.neo4j.importer.v1.targets.RelationshipExistenceConstraint;
@@ -31,7 +33,7 @@ import org.neo4j.importer.v1.targets.RelationshipTarget;
 import org.neo4j.importer.v1.targets.RelationshipUniqueConstraint;
 import org.neo4j.importer.v1.targets.WriteMode;
 
-class RelationshipTargetTaskTest {
+class RelationshipTargetStepTest {
 
     private final Random random = new Random();
 
@@ -55,8 +57,8 @@ class RelationshipTargetTaskTest {
                         WriteMode.CREATE,
                         NodeMatchMode.MERGE,
                         null,
-                        "a-node-target",
-                        "a-node-target",
+                        new NodeReference("a-node-target"),
+                        new NodeReference("a-node-target"),
                         properties,
                         schema),
                 nodeTarget("a-node-target"),
@@ -81,8 +83,8 @@ class RelationshipTargetTaskTest {
                         WriteMode.CREATE,
                         NodeMatchMode.MATCH,
                         null,
-                        "start-node-target",
-                        "end-node-target",
+                        new NodeReference("start-node-target"),
+                        new NodeReference("end-node-target"),
                         properties,
                         schema),
                 nodeTarget("start-node-target"),
@@ -109,8 +111,8 @@ class RelationshipTargetTaskTest {
                         WriteMode.CREATE,
                         NodeMatchMode.MATCH,
                         null,
-                        "start-node-target",
-                        "end-node-target",
+                        new NodeReference("start-node-target"),
+                        new NodeReference("end-node-target"),
                         properties,
                         schema),
                 nodeTarget("start-node-target"),
@@ -138,8 +140,8 @@ class RelationshipTargetTaskTest {
                         WriteMode.CREATE,
                         NodeMatchMode.MATCH,
                         null,
-                        "start-node-target",
-                        "end-node-target",
+                        new NodeReference("start-node-target"),
+                        new NodeReference("end-node-target"),
                         properties,
                         schema),
                 nodeTarget("start-node-target"),
@@ -190,7 +192,7 @@ class RelationshipTargetTaskTest {
                         "a-source",
                         null,
                         WriteMode.CREATE,
-                        null,
+                        (ObjectNode) null,
                         List.of("Label"),
                         List.of(new PropertyMapping("a-field", "a-property", null)),
                         null),

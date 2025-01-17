@@ -67,7 +67,6 @@ import org.neo4j.importer.v1.pipeline.TargetStep;
 import org.neo4j.importer.v1.sources.JdbcSource;
 import org.neo4j.importer.v1.sources.Source;
 import org.neo4j.importer.v1.targets.PropertyMapping;
-import org.neo4j.importer.v1.targets.RelationshipTarget;
 import org.testcontainers.containers.Neo4jContainer;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.utility.DockerImageName;
@@ -478,14 +477,6 @@ class TargetWriteRowFn extends DoFn<Row, Row> {
 
     private static Object propertyValue(PropertyMapping mapping, Row row) {
         return row.getValue(mapping.getSourceField());
-    }
-
-    private static String writeMode(RelationshipTarget target) {
-        return target.getWriteMode().name();
-    }
-
-    private static String nodeMatchMode(RelationshipTarget target) {
-        return target.getNodeMatchMode().name();
     }
 
     @Teardown

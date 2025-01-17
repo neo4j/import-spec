@@ -47,13 +47,13 @@ public class NoRedundantRelationshipDependencyValidator implements Specification
         var path = String.format("$.targets.relationships[%d].dependencies", index);
         Set<String> explicitDependencies = new HashSet<>(target.getDependencies());
         var startNodeRef = target.getStartNodeReference();
-        if (explicitDependencies.contains(startNodeRef)) {
-            var redundantDependency = new RedundantDependency(startNodeRef, NodeReferenceType.START);
+        if (explicitDependencies.contains(startNodeRef.getName())) {
+            var redundantDependency = new RedundantDependency(startNodeRef.getName(), NodeReferenceType.START);
             redundantDependencies.computeIfAbsent(path, k -> new ArrayList<>()).add(redundantDependency);
         }
         var endNodeRef = target.getEndNodeReference();
-        if (explicitDependencies.contains(endNodeRef)) {
-            var redundantDependency = new RedundantDependency(endNodeRef, NodeReferenceType.END);
+        if (explicitDependencies.contains(endNodeRef.getName())) {
+            var redundantDependency = new RedundantDependency(endNodeRef.getName(), NodeReferenceType.END);
             redundantDependencies.computeIfAbsent(path, k -> new ArrayList<>()).add(redundantDependency);
         }
         SpecificationValidator.super.visitRelationshipTarget(index, target);

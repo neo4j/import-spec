@@ -38,9 +38,6 @@ public class Neo4jDistributionValidator implements SpecificationValidator {
     @Override
     public void visitNodeTarget(int index, NodeTarget nodeTarget) {
         var schema = nodeTarget.getSchema();
-        if (schema == null) {
-            return;
-        }
         var unsupportedFeatures = new ArrayList<String>();
         if (!schema.getTypeConstraints().isEmpty() && !neo4jDistribution.hasNodeTypeConstraints()) {
             unsupportedFeatures.add("type_constraints");

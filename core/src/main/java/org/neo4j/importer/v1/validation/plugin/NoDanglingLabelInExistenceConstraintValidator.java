@@ -34,13 +34,9 @@ public class NoDanglingLabelInExistenceConstraintValidator implements Specificat
 
     @Override
     public void visitNodeTarget(int index, NodeTarget target) {
-        var schema = target.getSchema();
-        if (schema == null) {
-            return;
-        }
         var basePath = String.format("$.targets.nodes[%d].schema.existence_constraints", index);
         var labels = target.getLabels();
-        var existenceConstraints = schema.getExistenceConstraints();
+        var existenceConstraints = target.getSchema().getExistenceConstraints();
         for (int i = 0; i < existenceConstraints.size(); i++) {
             var label = existenceConstraints.get(i).getLabel();
             if (!labels.contains(label)) {

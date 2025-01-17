@@ -44,9 +44,6 @@ public class NoUntypedPropertyInTypeConstraintValidator implements Specification
     @Override
     public void visitNodeTarget(int index, NodeTarget target) {
         var schema = target.getSchema();
-        if (schema == null) {
-            return;
-        }
         var basePath = String.format("$.targets.nodes[%d].schema.type_constraints", index);
         var properties = typedPropertiesOf(target);
         var typeConstraints = schema.getTypeConstraints();

@@ -37,13 +37,9 @@ public class NoDanglingPropertyInFullTextIndexValidator implements Specification
 
     @Override
     public void visitNodeTarget(int index, NodeTarget target) {
-        var schema = target.getSchema();
-        if (schema == null) {
-            return;
-        }
         var basePath = String.format("$.targets.nodes[%d].schema.fulltext_indexes", index);
         var properties = propertiesOf(target);
-        var fullTextIndexes = schema.getFullTextIndexes();
+        var fullTextIndexes = target.getSchema().getFullTextIndexes();
         for (int i = 0; i < fullTextIndexes.size(); i++) {
             var indexProperties = fullTextIndexes.get(i).getProperties();
             for (int j = 0; j < indexProperties.size(); j++) {
