@@ -18,7 +18,6 @@ package org.neo4j.importer.v1.validation;
 
 import static java.util.stream.Collectors.toMap;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -28,7 +27,6 @@ import java.util.Stack;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.neo4j.importer.v1.ImportSpecification;
-import org.neo4j.importer.v1.actions.Action;
 import org.neo4j.importer.v1.graph.Graphs;
 
 public class SpecificationValidators {
@@ -70,7 +68,7 @@ public class SpecificationValidators {
             final int index = i;
             validators.forEach(validator -> validator.visitCustomQueryTarget(index, queryTargets.get(index)));
         }
-        var actions = spec.getActions() == null ? Collections.<Action>emptyList() : spec.getActions();
+        var actions = spec.getActions();
         for (int i = 0; i < actions.size(); i++) {
             final int index = i;
             validators.forEach(validator -> validator.visitAction(index, actions.get(index)));

@@ -37,13 +37,9 @@ public class NoDanglingPropertyInVectorIndexValidator implements SpecificationVa
 
     @Override
     public void visitNodeTarget(int index, NodeTarget target) {
-        var schema = target.getSchema();
-        if (schema == null) {
-            return;
-        }
         var basePath = String.format("$.targets.nodes[%d].schema.vector_indexes", index);
         var properties = propertiesOf(target);
-        var vectorIndexes = schema.getVectorIndexes();
+        var vectorIndexes = target.getSchema().getVectorIndexes();
         for (int i = 0; i < vectorIndexes.size(); i++) {
             var vectorIndex = vectorIndexes.get(i);
             var property = vectorIndex.getProperty();

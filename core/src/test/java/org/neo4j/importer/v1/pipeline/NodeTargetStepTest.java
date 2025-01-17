@@ -18,6 +18,7 @@ package org.neo4j.importer.v1.pipeline;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.util.List;
 import java.util.Random;
 import org.junit.jupiter.api.Test;
@@ -29,7 +30,7 @@ import org.neo4j.importer.v1.targets.NodeUniqueConstraint;
 import org.neo4j.importer.v1.targets.PropertyMapping;
 import org.neo4j.importer.v1.targets.WriteMode;
 
-class NodeTargetTaskTest {
+class NodeTargetStepTest {
 
     private final Random random = new Random();
 
@@ -50,7 +51,7 @@ class NodeTargetTaskTest {
                         "a-source",
                         null,
                         WriteMode.CREATE,
-                        null,
+                        (ObjectNode) null,
                         List.of("Label"),
                         properties,
                         schema),
@@ -72,7 +73,7 @@ class NodeTargetTaskTest {
                         "a-source",
                         null,
                         WriteMode.CREATE,
-                        null,
+                        (ObjectNode) null,
                         List.of("Label"),
                         properties,
                         schema),
@@ -95,7 +96,7 @@ class NodeTargetTaskTest {
                         "a-source",
                         null,
                         WriteMode.CREATE,
-                        null,
+                        (ObjectNode) null,
                         List.of("Label"),
                         properties,
                         schema),
@@ -119,7 +120,7 @@ class NodeTargetTaskTest {
                         "a-source",
                         null,
                         WriteMode.CREATE,
-                        null,
+                        (ObjectNode) null,
                         List.of("Label"),
                         properties,
                         schema),

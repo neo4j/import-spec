@@ -24,6 +24,9 @@ import java.util.Objects;
 
 public class NodeSchema implements Serializable {
 
+    static final NodeSchema EMPTY = new NodeSchema(
+            List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of());
+
     private final List<NodeTypeConstraint> typeConstraints;
     private final List<NodeKeyConstraint> keyConstraints;
     private final List<NodeUniqueConstraint> uniqueConstraints;

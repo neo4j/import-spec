@@ -20,6 +20,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.json.JsonMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 
@@ -96,7 +97,7 @@ class TargetsTest {
                         "a-source",
                         null,
                         WriteMode.CREATE,
-                        null,
+                        (ObjectNode) null,
                         List.of("Label1", "Label2"),
                         List.of(
                                 new PropertyMapping("field_1", "property1", null),
@@ -112,8 +113,8 @@ class TargetsTest {
                         WriteMode.CREATE,
                         NodeMatchMode.MATCH,
                         null,
-                        "my-minimal-node-target",
-                        "my-minimal-node-target",
+                        new NodeReference("my-minimal-node-target"),
+                        new NodeReference("my-minimal-node-target"),
                         List.of(
                                 new PropertyMapping("field_1", "property1", null),
                                 new PropertyMapping("field_2", "property2", null)),

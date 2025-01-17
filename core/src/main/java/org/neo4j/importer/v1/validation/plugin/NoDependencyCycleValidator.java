@@ -29,6 +29,7 @@ import java.util.stream.Collectors;
 import org.neo4j.importer.v1.graph.Graphs;
 import org.neo4j.importer.v1.graph.Pair;
 import org.neo4j.importer.v1.targets.CustomQueryTarget;
+import org.neo4j.importer.v1.targets.NodeReference;
 import org.neo4j.importer.v1.targets.NodeTarget;
 import org.neo4j.importer.v1.targets.RelationshipTarget;
 import org.neo4j.importer.v1.targets.Target;
@@ -96,13 +97,13 @@ public class NoDependencyCycleValidator implements SpecificationValidator {
 
     private void trackDependency(RelationshipTarget target, String path) {
         trackDependency((Target) target, path);
-        String startNodeRef = target.getStartNodeReference();
+        NodeReference startNodeRef = target.getStartNodeReference();
         if (startNodeRef != null) {
-            addDependencies(new Element(target.getName(), path), List.of(startNodeRef));
+            addDependencies(new Element(target.getName(), path), List.of(startNodeRef.getName()));
         }
-        String endNodeRef = target.getEndNodeReference();
+        NodeReference endNodeRef = target.getEndNodeReference();
         if (endNodeRef != null) {
-            addDependencies(new Element(target.getName(), path), List.of(endNodeRef));
+            addDependencies(new Element(target.getName(), path), List.of(endNodeRef.getName()));
         }
     }
 

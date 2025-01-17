@@ -54,9 +54,6 @@ public class NoRedundantKeyAndUniqueConstraintsValidator implements Specificatio
     @Override
     public void visitNodeTarget(int index, NodeTarget target) {
         var schema = target.getSchema();
-        if (schema == null) {
-            return;
-        }
         var paths = new LinkedHashMap<SchemaNodePattern, List<String>>();
         var uniqueBasePath = String.format("$.targets.nodes[%d].schema.unique_constraints", index);
         var uniqueConstraints = schema.getUniqueConstraints();

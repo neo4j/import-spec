@@ -37,13 +37,9 @@ public class NoDanglingPropertyInPointIndexValidator implements SpecificationVal
 
     @Override
     public void visitNodeTarget(int index, NodeTarget target) {
-        var schema = target.getSchema();
-        if (schema == null) {
-            return;
-        }
         var basePath = String.format("$.targets.nodes[%d].schema.point_indexes", index);
         var properties = propertiesOf(target);
-        var pointIndexes = schema.getPointIndexes();
+        var pointIndexes = target.getSchema().getPointIndexes();
         for (int i = 0; i < pointIndexes.size(); i++) {
             var property = pointIndexes.get(i).getProperty();
             if (!properties.contains(property)) {

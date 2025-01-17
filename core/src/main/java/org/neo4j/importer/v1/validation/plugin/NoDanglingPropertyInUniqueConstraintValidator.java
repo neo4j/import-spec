@@ -35,13 +35,9 @@ public class NoDanglingPropertyInUniqueConstraintValidator implements Specificat
 
     @Override
     public void visitNodeTarget(int index, NodeTarget target) {
-        var schema = target.getSchema();
-        if (schema == null) {
-            return;
-        }
         var basePath = String.format("$.targets.nodes[%d].schema.unique_constraints", index);
         var properties = EntityTargets.propertiesOf(target);
-        var uniqueConstraints = schema.getUniqueConstraints();
+        var uniqueConstraints = target.getSchema().getUniqueConstraints();
         for (int i = 0; i < uniqueConstraints.size(); i++) {
             var constraintProperties = uniqueConstraints.get(i).getProperties();
             for (int j = 0; j < constraintProperties.size(); j++) {

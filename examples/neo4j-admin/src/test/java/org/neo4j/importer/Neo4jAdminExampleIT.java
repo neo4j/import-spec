@@ -464,11 +464,7 @@ public class Neo4jAdminExampleIT {
         }
 
         private static Set<String> getKeyProperties(NodeTarget nodeTarget) {
-            var schema = nodeTarget.getSchema();
-            if (schema == null) {
-                return Set.of();
-            }
-            return schema.getKeyConstraints().stream()
+            return nodeTarget.getSchema().getKeyConstraints().stream()
                     .flatMap(constraint -> constraint.getProperties().stream())
                     .collect(Collectors.toSet());
         }
@@ -526,12 +522,8 @@ public class Neo4jAdminExampleIT {
         }
 
         private static Stream<String> generateNodeSchemaStatements(NodeTarget nodeTarget) {
-            var schema = nodeTarget.getSchema();
-            if (schema == null) {
-                return Stream.empty();
-            }
             var statements = new ArrayList<String>();
-            statements.addAll(schema.getKeyConstraints().stream()
+            statements.addAll(nodeTarget.getSchema().getKeyConstraints().stream()
                     .map(constraint -> Map.entry("n", constraint))
                     .map(entry -> "CREATE CONSTRAINT %s FOR (%s:%s) REQUIRE (%s) IS NODE KEY"
                             .formatted(
@@ -547,7 +539,7 @@ public class Neo4jAdminExampleIT {
                                             .map(prop -> propertyOf(entry.getKey(), prop))
                                             .collect(Collectors.joining(","))))
                     .toList());
-            statements.addAll(schema.getUniqueConstraints().stream()
+            statements.addAll(nodeTarget.getSchema().getUniqueConstraints().stream()
                     .map(constraint -> Map.entry("n", constraint))
                     .map(entry -> "CREATE CONSTRAINT %s FOR (%s:%s) REQUIRE (%s) IS UNIQUE"
                             .formatted(
@@ -563,7 +555,7 @@ public class Neo4jAdminExampleIT {
                                             .map(prop -> propertyOf(entry.getKey(), prop))
                                             .collect(Collectors.joining(","))))
                     .toList());
-            statements.addAll(schema.getTypeConstraints().stream()
+            statements.addAll(nodeTarget.getSchema().getTypeConstraints().stream()
                     .map(constraint -> Map.entry("n", constraint))
                     .map(entry -> "CREATE CONSTRAINT %s FOR (%s:%s) REQUIRE %s IS :: %s"
                             .formatted(

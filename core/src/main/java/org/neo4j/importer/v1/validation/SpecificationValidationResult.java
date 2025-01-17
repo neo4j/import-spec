@@ -60,6 +60,11 @@ public class SpecificationValidationResult {
         return Objects.hash(errors, warnings);
     }
 
+    @Override
+    public String toString() {
+        return "SpecificationValidationResult{" + "errors=" + errors + ", warnings=" + warnings + '}';
+    }
+
     public static final class Builder {
 
         private final Set<SpecificationError> errors = new LinkedHashSet<>();

@@ -175,7 +175,14 @@ public class ImportSpecificationDeserializerNeo4jVersionValidationTest {
                             "labels": ["Label1"],
                             "properties": [
                                 {"source_field": "field_1", "target_property": "property1", "target_property_type": "integer"}
-                            ]
+                            ],
+                            "schema": {
+                               "key_constraints": [{
+                                  "name": "a-key-constraint",
+                                  "label": "Label1",
+                                  "properties": ["property1"]
+                               }]
+                            }
                         },
                         {
                             "name": "another-node-target",
@@ -183,7 +190,14 @@ public class ImportSpecificationDeserializerNeo4jVersionValidationTest {
                             "labels": ["Label2"],
                             "properties": [
                                 {"source_field": "field_2", "target_property": "property2", "target_property_type": "integer"}
-                            ]
+                            ],
+                            "schema": {
+                               "key_constraints": [{
+                                  "name": "a-key-constraint",
+                                  "label": "Label2",
+                                  "properties": ["property2"]
+                               }]
+                            }
                         }
                     ],
                     "relationships": [
@@ -237,9 +251,13 @@ public class ImportSpecificationDeserializerNeo4jVersionValidationTest {
                             "source": "a-source",
                             "labels": ["Label1"],
                             "properties": [
-                                {"source_field": "field_1", "target_property": "property1", "target_property_type": "integer"}
+                                {"source_field": "field_1", "target_property": "property1", "target_property_type": "integer"},
+                                {"source_field": "field_2", "target_property": "property2", "target_property_type": "string"}
                             ],
                             "schema": {
+                                "key_constraints": [
+                                    {"name": "key_constraint_1", "label": "Label1", "properties": ["property2"]}
+                                ],
                                 "type_constraints": [
                                     {"name": "type_constraint_1", "label": "Label1", "property": "property1"}
                                 ],
@@ -256,6 +274,9 @@ public class ImportSpecificationDeserializerNeo4jVersionValidationTest {
                                 {"source_field": "field_2", "target_property": "property2", "target_property_type": "integer"}
                             ],
                             "schema": {
+                                "key_constraints": [
+                                    {"name": "key_constraint_2", "label": "Label2", "properties": ["property2"]}
+                                ],
                                 "vector_indexes": [
                                     {"name": "vector_index_1", "label": "Label2", "property": "property2", "options": {"vector.dimensions": 1536, "vector.similarity_function": "cosine"}}
                                 ]
@@ -303,8 +324,8 @@ public class ImportSpecificationDeserializerNeo4jVersionValidationTest {
                 .hasMessageContainingAll(
                         "4 error(s)",
                         "0 warning(s)",
-                        "[VERS-001][$.targets.nodes[0].schema] type_constraints, existence_constraints are not supported by Neo4j 5.0 COMMUNITY.",
-                        "[VERS-001][$.targets.nodes[1].schema] vector_indexes are not supported by Neo4j 5.0 COMMUNITY.",
+                        "[VERS-001][$.targets.nodes[0].schema] type_constraints, key_constraints, existence_constraints are not supported by Neo4j 5.0 COMMUNITY.",
+                        "[VERS-001][$.targets.nodes[1].schema] key_constraints, vector_indexes are not supported by Neo4j 5.0 COMMUNITY.",
                         "[VERS-001][$.targets.relationships[0].schema] type_constraints are not supported by Neo4j 5.0 COMMUNITY.",
                         "[VERS-001][$.targets.relationships[1].schema] vector_indexes are not supported by Neo4j 5.0 COMMUNITY.");
     }
@@ -330,9 +351,13 @@ public class ImportSpecificationDeserializerNeo4jVersionValidationTest {
                                     "source": "a-source",
                                     "labels": ["Label1"],
                                     "properties": [
-                                        {"source_field": "field_1", "target_property": "property1", "target_property_type": "integer"}
+                                        {"source_field": "field_1", "target_property": "property1", "target_property_type": "integer"},
+                                        {"source_field": "field_2", "target_property": "property2", "target_property_type": "integer"}
                                     ],
                                     "schema": {
+                                        "key_constraints": [
+                                           {"name": "key_constraint_1", "label": "Label1", "properties": ["property2"]}
+                                        ],
                                         "type_constraints": [
                                             {"name": "type_constraint_1", "label": "Label1", "property": "property1"}
                                         ],
@@ -349,6 +374,9 @@ public class ImportSpecificationDeserializerNeo4jVersionValidationTest {
                                         {"source_field": "field_2", "target_property": "property2", "target_property_type": "integer"}
                                     ],
                                     "schema": {
+                                        "key_constraints": [
+                                           {"name": "key_constraint_2", "label": "Label2", "properties": ["property2"]}
+                                        ],
                                         "vector_indexes": [
                                             {"name": "vector_index_1", "label": "Label2", "property": "property2", "options": {"vector.dimensions": 1536, "vector.similarity_function": "cosine"}}
                                         ]
