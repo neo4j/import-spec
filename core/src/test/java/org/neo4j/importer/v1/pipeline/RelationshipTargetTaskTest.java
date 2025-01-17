@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Random;
 import org.junit.jupiter.api.Test;
 import org.neo4j.importer.v1.targets.NodeMatchMode;
+import org.neo4j.importer.v1.targets.NodeReference;
 import org.neo4j.importer.v1.targets.NodeTarget;
 import org.neo4j.importer.v1.targets.PropertyMapping;
 import org.neo4j.importer.v1.targets.RelationshipExistenceConstraint;
@@ -55,8 +56,8 @@ class RelationshipTargetTaskTest {
                         WriteMode.CREATE,
                         NodeMatchMode.MERGE,
                         null,
-                        "a-node-target",
-                        "a-node-target",
+                        new NodeReference("a-node-target"),
+                        new NodeReference("a-node-target"),
                         properties,
                         schema),
                 nodeTarget("a-node-target"),
@@ -81,8 +82,8 @@ class RelationshipTargetTaskTest {
                         WriteMode.CREATE,
                         NodeMatchMode.MATCH,
                         null,
-                        "start-node-target",
-                        "end-node-target",
+                        new NodeReference("start-node-target"),
+                        new NodeReference("end-node-target"),
                         properties,
                         schema),
                 nodeTarget("start-node-target"),
@@ -109,8 +110,8 @@ class RelationshipTargetTaskTest {
                         WriteMode.CREATE,
                         NodeMatchMode.MATCH,
                         null,
-                        "start-node-target",
-                        "end-node-target",
+                        new NodeReference("start-node-target"),
+                        new NodeReference("end-node-target"),
                         properties,
                         schema),
                 nodeTarget("start-node-target"),
@@ -138,8 +139,8 @@ class RelationshipTargetTaskTest {
                         WriteMode.CREATE,
                         NodeMatchMode.MATCH,
                         null,
-                        "start-node-target",
-                        "end-node-target",
+                        new NodeReference("start-node-target"),
+                        new NodeReference("end-node-target"),
                         properties,
                         schema),
                 nodeTarget("start-node-target"),

@@ -35,8 +35,8 @@ class EntityTargetTest {
                 WriteMode.CREATE,
                 NodeMatchMode.MERGE,
                 null,
-                "a-node-target",
-                "a-node-target",
+                new NodeReference("a-node-target"),
+                new NodeReference("a-node-target"),
                 properties,
                 null);
 

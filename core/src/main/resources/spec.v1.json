@@ -260,12 +260,28 @@
           "pattern": "\\S+"
         },
         "start_node_reference": {
-          "type": "string",
-          "minLength": 1
+          "oneOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "pattern": "\\S+"
+            },
+            {
+              "$ref": "#/$defs/target.relationship.node.reference"
+            }
+          ]
         },
         "end_node_reference": {
-          "type": "string",
-          "minLength": 1
+          "oneOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "pattern": "\\S+"
+            },
+            {
+              "$ref": "#/$defs/target.relationship.node.reference"
+            }
+          ]
         },
         "schema": {
           "type": "object",
@@ -774,6 +790,37 @@
         "options"
       ],
       "additionalProperties": false
+    },
+    "target.relationship.node.reference": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "\\S+"
+        },
+        "key_mappings": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "source_field": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "\\S+"
+              },
+              "target_property": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "\\S+"
+              }
+            },
+            "required": ["source_field", "target_property"]
+          },
+          "minItems": 1
+        }
+      },
+      "required": ["name", "key_mappings"]
     },
     "target.relationship.schema.constraints.type": {
       "type": "object",
