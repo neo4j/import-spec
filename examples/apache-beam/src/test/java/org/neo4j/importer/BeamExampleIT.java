@@ -413,8 +413,8 @@ public class BeamExampleIT {
                 var schemaStatements =
                         switch (target) {
                             case NodeTargetStep nodeTarget -> generateNodeSchemaStatements(nodeTarget);
-                            case RelationshipTargetStep relationshipTarget -> generateRelationshipSchemaStatements(
-                                    relationshipTarget);
+                            case RelationshipTargetStep relationshipTarget ->
+                                generateRelationshipSchemaStatements(relationshipTarget);
                         };
 
                 if (schemaStatements.isEmpty()) {
@@ -544,8 +544,9 @@ public class BeamExampleIT {
                     case ZONED_DATETIME_ARRAY -> "LIST<ZONED DATETIME NOT NULL>";
                     case ZONED_TIME -> "ZONED TIME";
                     case ZONED_TIME_ARRAY -> "LIST<ZONED TIME NOT NULL>";
-                    default -> throw new IllegalArgumentException(
-                            String.format("Unsupported property type: %s", propertyType));
+                    default ->
+                        throw new IllegalArgumentException(
+                                String.format("Unsupported property type: %s", propertyType));
                 };
             }
         }
@@ -626,8 +627,8 @@ public class BeamExampleIT {
                 var statement =
                         switch (target) {
                             case NodeTargetStep nodeTarget -> buildNodeImportQuery(nodeTarget, unwindRows, row);
-                            case RelationshipTargetStep relationshipTarget -> buildRelationshipImportQuery(
-                                    relationshipTarget, unwindRows, row);
+                            case RelationshipTargetStep relationshipTarget ->
+                                buildRelationshipImportQuery(relationshipTarget, unwindRows, row);
                         };
 
                 var summary = WriteCounters.of(driver.executableQuery(statement.getCypher())
