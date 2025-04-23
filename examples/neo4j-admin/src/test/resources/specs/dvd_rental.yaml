@@ -2,28 +2,28 @@ version: "1"
 sources:
   - name: actor
     type: parquet
-    uri: gs://connectors-dev/dvdrental/actor.parquet
+    uri: gs://connectors-public/dvdrental/actor.parquet
   - name: category
     type: parquet
-    uri: gs://connectors-dev/dvdrental/category.parquet
+    uri: gs://connectors-public/dvdrental/category.parquet
   - name: customer
     type: parquet
-    uri: gs://connectors-dev/dvdrental/customer.parquet
+    uri: gs://connectors-public/dvdrental/customer.parquet
   - name: film_actor
     type: parquet
-    uri: gs://connectors-dev/dvdrental/film_actor.parquet
+    uri: gs://connectors-public/dvdrental/film_actor.parquet
   - name: film_category
     type: parquet
-    uri: gs://connectors-dev/dvdrental/film_category.parquet
+    uri: gs://connectors-public/dvdrental/film_category.parquet
   - name: film
     type: parquet
-    uri: gs://connectors-dev/dvdrental/film.parquet
+    uri: gs://connectors-public/dvdrental/film.parquet
   - name: inventory
     type: parquet
-    uri: gs://connectors-dev/dvdrental/inventory.parquet
+    uri: gs://connectors-public/dvdrental/inventory.parquet
   - name: rental
     type: parquet
-    uri: gs://connectors-dev/dvdrental/rental.parquet
+    uri: gs://connectors-public/dvdrental/rental.parquet
 targets:
   nodes:
     - source: actor
