@@ -1,27 +1,45 @@
+/*
+ * Copyright (c) "Neo4j"
+ * Neo4j Sweden AB [https://neo4j.com]
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.neo4j.importer.v1.validation.plugin;
-
-import org.neo4j.importer.v1.targets.KeyMapping;
-import org.neo4j.importer.v1.targets.NodeReference;
-import org.neo4j.importer.v1.targets.NodeTarget;
-import org.neo4j.importer.v1.targets.PropertyMapping;
-import org.neo4j.importer.v1.targets.RelationshipTarget;
-import org.neo4j.importer.v1.validation.SpecificationValidator;
-import org.neo4j.importer.v1.validation.SpecificationValidationResult.Builder;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+import org.neo4j.importer.v1.targets.NodeTarget;
+import org.neo4j.importer.v1.targets.PropertyMapping;
+import org.neo4j.importer.v1.targets.RelationshipTarget;
+import org.neo4j.importer.v1.validation.SpecificationValidationResult.Builder;
+import org.neo4j.importer.v1.validation.SpecificationValidator;
 
-public class NoDanglingNodeReferenceKeyMappingTargetPropertyValidator implements SpecificationValidator {
-    private static final String ERROR_CODE = "DANG-333"; //todo: find the correct error code
+public class NoDanglingNodeReferencePropertyValidator implements SpecificationValidator {
+    private static final String ERROR_CODE = "DANG-023";
 
     private final Map<String, Set<String>> nodeTargets;
     private final Map<String, String> invalidPathToKeyMappings;
 
-    public NoDanglingNodeReferenceKeyMappingTargetPropertyValidator() {
+    public NoDanglingNodeReferencePropertyValidator() {
         this.nodeTargets = new LinkedHashMap<>();
         this.invalidPathToKeyMappings = new LinkedHashMap<>();
+    }
+
+    @Override
+    public Set<Class<? extends SpecificationValidator>> requires() {
+        return Set.of(NoDanglingActiveNodeReferenceValidator.class);
     }
 
     @Override
@@ -35,11 +53,11 @@ public class NoDanglingNodeReferenceKeyMappingTargetPropertyValidator implements
 
     @Override
     public void visitRelationshipTarget(int index, RelationshipTarget relationshipTarget) {
-        NodeReference startNodeRef = relationshipTarget.getStartNodeReference();
+        var startNodeRef = relationshipTarget.getStartNodeReference();
         if (startNodeRef.getKeyMappings() != null) {
-            Set<String> targetProperties = nodeTargets.get(startNodeRef.getName());
+            var targetProperties = nodeTargets.get(startNodeRef.getName());
             for (int i = 0; i < startNodeRef.getKeyMappings().size(); i++) {
-                KeyMapping keyMapping = startNodeRef.getKeyMappings().get(i);
+                var keyMapping = startNodeRef.getKeyMappings().get(i);
                 if (!targetProperties.contains(keyMapping.getTargetProperty())) {
                     invalidPathToKeyMappings.put(
                             String.format(
@@ -49,11 +67,11 @@ public class NoDanglingNodeReferenceKeyMappingTargetPropertyValidator implements
                 }
             }
         }
-        NodeReference endNodeRef = relationshipTarget.getStartNodeReference();
+        var endNodeRef = relationshipTarget.getStartNodeReference();
         if (endNodeRef.getKeyMappings() != null) {
-            Set<String> targetProperties = nodeTargets.get(endNodeRef.getName());
+            var targetProperties = nodeTargets.get(endNodeRef.getName());
             for (int i = 0; i < endNodeRef.getKeyMappings().size(); i++) {
-                KeyMapping keyMapping = endNodeRef.getKeyMappings().get(i);
+                var keyMapping = endNodeRef.getKeyMappings().get(i);
                 if (!targetProperties.contains(keyMapping.getTargetProperty())) {
                     invalidPathToKeyMappings.put(
                             String.format(

@@ -282,9 +282,11 @@ class TargetTest {
         assertThat(target.getStartNodeReference().getName()).isEqualTo("a-node-target");
         assertThat(target.getStartNodeReference().getKeyMappings()).isNull();
         assertThat(target.getEndNodeReference().getName()).isEqualTo("another-node-target");
-        assertThat(target.getEndNodeReference().getKeyMappings()).hasSize(1);
-        assertThat(target.getEndNodeReference().getKeyMappings().getFirst().getSourceField()).isEqualTo("source_id");
-        assertThat(target.getEndNodeReference().getKeyMappings().getFirst().getTargetProperty()).isEqualTo("target_id");
+        var keyMappings = target.getEndNodeReference().getKeyMappings();
+        assertThat(keyMappings).hasSize(1);
+        var keyMapping = keyMappings.getFirst();
+        assertThat(keyMapping.getSourceField()).isEqualTo("source_id");
+        assertThat(keyMapping.getTargetProperty()).isEqualTo("target_id");
     }
 
     @Test
@@ -391,8 +393,10 @@ class TargetTest {
         assertThat(target.getStartNodeReference().getName()).isEqualTo("a-node-target");
         assertThat(target.getEndNodeReference().getName()).isEqualTo("another-node-target");
         assertThat(target.getEndNodeReference().getKeyMappings()).hasSize(1);
-        assertThat(target.getEndNodeReference().getKeyMappings().getFirst().getSourceField()).isEqualTo("source_id");
-        assertThat(target.getEndNodeReference().getKeyMappings().getFirst().getTargetProperty()).isEqualTo("target_id");
+        assertThat(target.getEndNodeReference().getKeyMappings().getFirst().getSourceField())
+                .isEqualTo("source_id");
+        assertThat(target.getEndNodeReference().getKeyMappings().getFirst().getTargetProperty())
+                .isEqualTo("target_id");
         assertThat(target.getProperties())
                 .isEqualTo(List.of(
                         new PropertyMapping("field_1", "property1", PropertyType.LOCAL_TIME_ARRAY),

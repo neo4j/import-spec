@@ -47,7 +47,7 @@ public class NodeTarget extends EntityTarget {
     }
 
     public NodeSchema getSchema() {
-        return schema;
+        return schema == null ? NodeSchema.EMPTY : schema;
     }
 
     @Override

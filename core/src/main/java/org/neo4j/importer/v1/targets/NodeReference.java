@@ -18,10 +18,11 @@ package org.neo4j.importer.v1.targets;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
 
-public class NodeReference {
+public class NodeReference implements Serializable {
     private final String name;
     private final List<KeyMapping> keyMappings;
 
@@ -32,8 +33,7 @@ public class NodeReference {
 
     @JsonCreator
     public NodeReference(
-            @JsonProperty("name") String name,
-            @JsonProperty("key_mappings") List<KeyMapping> keyMappings) {
+            @JsonProperty("name") String name, @JsonProperty("key_mappings") List<KeyMapping> keyMappings) {
         this.name = name;
         this.keyMappings = keyMappings;
     }
@@ -60,9 +60,6 @@ public class NodeReference {
 
     @Override
     public String toString() {
-        return "NodeReference{" +
-                "name='" + name + '\'' +
-                ", keyMappings=" + keyMappings +
-                '}';
+        return "NodeReference{" + "name='" + name + '\'' + ", keyMappings=" + keyMappings + '}';
     }
 }

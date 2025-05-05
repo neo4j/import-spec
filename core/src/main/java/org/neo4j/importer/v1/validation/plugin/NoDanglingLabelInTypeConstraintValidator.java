@@ -34,13 +34,9 @@ public class NoDanglingLabelInTypeConstraintValidator implements SpecificationVa
 
     @Override
     public void visitNodeTarget(int index, NodeTarget target) {
-        var schema = target.getSchema();
-        if (schema == null) {
-            return;
-        }
         var basePath = String.format("$.targets.nodes[%d].schema.type_constraints", index);
         var labels = target.getLabels();
-        var typeConstraints = schema.getTypeConstraints();
+        var typeConstraints = target.getSchema().getTypeConstraints();
         for (int i = 0; i < typeConstraints.size(); i++) {
             var label = typeConstraints.get(i).getLabel();
             if (!labels.contains(label)) {

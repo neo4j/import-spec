@@ -12,8 +12,8 @@ org.neo4j.importer.v1.validation.plugin.NoDanglingLabelInTypeConstraintValidator
 org.neo4j.importer.v1.validation.plugin.NoDanglingLabelInUniqueConstraintValidator
 org.neo4j.importer.v1.validation.plugin.NoDanglingLabelInVectorIndexValidator
 org.neo4j.importer.v1.validation.plugin.NoDanglingNodeReferenceValidator
-org.neo4j.importer.v1.validation.plugin.NoDanglingNodeReferenceKeyMappingTargetPropertyValidator
-org.neo4j.importer.v1.validation.plugin.NoDanglingNodeReferenceKeyMappingTargetPropertyValidator
+org.neo4j.importer.v1.validation.plugin.NoDanglingNodeReferencePropertyValidator
+org.neo4j.importer.v1.validation.plugin.NoDanglingNodeReferenceKeyValidator
 org.neo4j.importer.v1.validation.plugin.NoDanglingPropertyInExistenceConstraintValidator
 org.neo4j.importer.v1.validation.plugin.NoDanglingPropertyInFullTextIndexValidator
 org.neo4j.importer.v1.validation.plugin.NoDanglingPropertyInKeyConstraintValidator

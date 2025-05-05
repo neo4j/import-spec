@@ -34,13 +34,9 @@ public class NoDanglingLabelInRangeIndexValidator implements SpecificationValida
 
     @Override
     public void visitNodeTarget(int index, NodeTarget target) {
-        var schema = target.getSchema();
-        if (schema == null) {
-            return;
-        }
         var basePath = String.format("$.targets.nodes[%d].schema.range_indexes", index);
         var labels = target.getLabels();
-        var rangeIndexes = schema.getRangeIndexes();
+        var rangeIndexes = target.getSchema().getRangeIndexes();
         for (int i = 0; i < rangeIndexes.size(); i++) {
             var label = rangeIndexes.get(i).getLabel();
             if (!labels.contains(label)) {

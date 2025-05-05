@@ -34,13 +34,9 @@ public class NoDanglingLabelInPointIndexValidator implements SpecificationValida
 
     @Override
     public void visitNodeTarget(int index, NodeTarget target) {
-        var schema = target.getSchema();
-        if (schema == null) {
-            return;
-        }
         var basePath = String.format("$.targets.nodes[%d].schema.point_indexes", index);
         var labels = target.getLabels();
-        var pointIndexes = schema.getPointIndexes();
+        var pointIndexes = target.getSchema().getPointIndexes();
         for (int i = 0; i < pointIndexes.size(); i++) {
             var label = pointIndexes.get(i).getLabel();
             if (!labels.contains(label)) {

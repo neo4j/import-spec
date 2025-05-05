@@ -34,13 +34,9 @@ public class NoDanglingLabelInKeyConstraintValidator implements SpecificationVal
 
     @Override
     public void visitNodeTarget(int index, NodeTarget target) {
-        var schema = target.getSchema();
-        if (schema == null) {
-            return;
-        }
         var basePath = String.format("$.targets.nodes[%d].schema.key_constraints", index);
         var labels = target.getLabels();
-        var keyConstraints = schema.getKeyConstraints();
+        var keyConstraints = target.getSchema().getKeyConstraints();
         for (int i = 0; i < keyConstraints.size(); i++) {
             var label = keyConstraints.get(i).getLabel();
             if (!labels.contains(label)) {

@@ -34,13 +34,9 @@ public class NoDanglingLabelInFullTextIndexValidator implements SpecificationVal
 
     @Override
     public void visitNodeTarget(int index, NodeTarget target) {
-        var schema = target.getSchema();
-        if (schema == null) {
-            return;
-        }
         var basePath = String.format("$.targets.nodes[%d].schema.fulltext_indexes", index);
         var labels = target.getLabels();
-        var fullTextIndexes = schema.getFullTextIndexes();
+        var fullTextIndexes = target.getSchema().getFullTextIndexes();
         for (int i = 0; i < fullTextIndexes.size(); i++) {
             var indexLabels = fullTextIndexes.get(i).getLabels();
             for (int j = 0; j < indexLabels.size(); j++) {

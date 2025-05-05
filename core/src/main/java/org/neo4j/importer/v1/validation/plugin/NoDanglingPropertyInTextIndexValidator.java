@@ -37,13 +37,9 @@ public class NoDanglingPropertyInTextIndexValidator implements SpecificationVali
 
     @Override
     public void visitNodeTarget(int index, NodeTarget target) {
-        var schema = target.getSchema();
-        if (schema == null) {
-            return;
-        }
         var basePath = String.format("$.targets.nodes[%d].schema.text_indexes", index);
         var properties = propertiesOf(target);
-        var textIndexes = schema.getTextIndexes();
+        var textIndexes = target.getSchema().getTextIndexes();
         for (int i = 0; i < textIndexes.size(); i++) {
             var property = textIndexes.get(i).getProperty();
             if (!properties.contains(property)) {

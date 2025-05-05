@@ -25,7 +25,8 @@ public class KeyMapping {
     private final String targetProperty;
 
     @JsonCreator
-    public KeyMapping(@JsonProperty("source_field") String sourceField, @JsonProperty("target_property") String targetProperty) {
+    public KeyMapping(
+            @JsonProperty("source_field") String sourceField, @JsonProperty("target_property") String targetProperty) {
         this.sourceField = sourceField;
         this.targetProperty = targetProperty;
     }
@@ -52,9 +53,8 @@ public class KeyMapping {
 
     @Override
     public String toString() {
-        return "KeyMapping{" +
-                "sourceField='" + sourceField + '\'' +
-                ", targetProperty='" + targetProperty + '\'' +
-                '}';
+        return "KeyMapping{" + "sourceField='"
+                + sourceField + '\'' + ", targetProperty='"
+                + targetProperty + '\'' + '}';
     }
 }

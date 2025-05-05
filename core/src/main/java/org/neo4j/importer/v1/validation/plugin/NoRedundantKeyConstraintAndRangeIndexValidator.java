@@ -49,9 +49,6 @@ public class NoRedundantKeyConstraintAndRangeIndexValidator implements Specifica
     @Override
     public void visitNodeTarget(int index, NodeTarget target) {
         var schema = target.getSchema();
-        if (schema == null) {
-            return;
-        }
         var paths = new LinkedHashMap<SchemaNodePattern, List<String>>();
         var rangeIndexBasePath = String.format("$.targets.nodes[%d].schema.range_indexes", index);
         var rangeIndexes = schema.getRangeIndexes();

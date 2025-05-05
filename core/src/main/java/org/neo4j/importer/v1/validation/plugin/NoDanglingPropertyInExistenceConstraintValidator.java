@@ -37,13 +37,9 @@ public class NoDanglingPropertyInExistenceConstraintValidator implements Specifi
 
     @Override
     public void visitNodeTarget(int index, NodeTarget target) {
-        var schema = target.getSchema();
-        if (schema == null) {
-            return;
-        }
         var basePath = String.format("$.targets.nodes[%d].schema.existence_constraints", index);
         var properties = propertiesOf(target);
-        var existenceConstraints = schema.getExistenceConstraints();
+        var existenceConstraints = target.getSchema().getExistenceConstraints();
         for (int i = 0; i < existenceConstraints.size(); i++) {
             var property = existenceConstraints.get(i).getProperty();
             if (!properties.contains(property)) {

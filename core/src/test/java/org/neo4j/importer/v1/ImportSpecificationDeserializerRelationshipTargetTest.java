@@ -28,7 +28,7 @@ import org.neo4j.importer.v1.validation.SpecificationException;
 public class ImportSpecificationDeserializerRelationshipTargetTest {
 
     @Test
-    public void test_start_and_end_node_reference() throws SpecificationException {
+    public void deserializes_full_start_and_end_node_references() throws SpecificationException {
         deserialize(
                 new StringReader(
                         """
@@ -539,7 +539,7 @@ public class ImportSpecificationDeserializerRelationshipTargetTest {
     @Test
     public void fails_if_relationship_start_node_reference_name_is_missing() {
         assertThatThrownBy(() -> deserialize(new StringReader(
-                """
+                        """
         {
             "version": "1",
             "sources": [{
@@ -575,13 +575,12 @@ public class ImportSpecificationDeserializerRelationshipTargetTest {
             }
         }
         """
-                        .stripIndent())))
+                                .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
                         "0 warning(s)",
                         "$.targets.relationships[0].start_node_reference: required property 'name' not found");
     }
-
 
     @Test
     public void fails_if_relationship_start_node_reference_name_has_wrong_type() {
@@ -633,7 +632,7 @@ public class ImportSpecificationDeserializerRelationshipTargetTest {
     @Test
     public void fails_if_relationship_start_node_reference_name_is_empty() {
         assertThatThrownBy(() -> deserialize(new StringReader(
-                """
+                        """
         {
             "version": "1",
             "sources": [{
@@ -670,7 +669,7 @@ public class ImportSpecificationDeserializerRelationshipTargetTest {
             }
         }
         """
-                        .stripIndent())))
+                                .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
                         "0 warning(s)",
@@ -727,7 +726,7 @@ public class ImportSpecificationDeserializerRelationshipTargetTest {
     @Test
     public void fails_if_relationship_start_node_reference_key_mappings_is_missing() {
         assertThatThrownBy(() -> deserialize(new StringReader(
-                """
+                        """
         {
             "version": "1",
             "sources": [{
@@ -758,18 +757,17 @@ public class ImportSpecificationDeserializerRelationshipTargetTest {
             }
         }
         """
-                        .stripIndent())))
+                                .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
                         "0 warning(s)",
                         "$.targets.relationships[0].start_node_reference: required property 'key_mappings' not found");
     }
 
-
     @Test
     public void fails_if_relationship_start_node_reference_key_mappings_has_wrong_type() {
         assertThatThrownBy(() -> deserialize(new StringReader(
-                """
+                        """
         {
             "version": "1",
             "sources": [{
@@ -801,7 +799,7 @@ public class ImportSpecificationDeserializerRelationshipTargetTest {
             }
         }
         """
-                        .stripIndent())))
+                                .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
                         "0 warning(s)",
@@ -811,7 +809,7 @@ public class ImportSpecificationDeserializerRelationshipTargetTest {
     @Test
     public void fails_if_relationship_start_node_reference_key_mappings_is_empty() {
         assertThatThrownBy(() -> deserialize(new StringReader(
-                """
+                        """
         {
             "version": "1",
             "sources": [{
@@ -843,7 +841,7 @@ public class ImportSpecificationDeserializerRelationshipTargetTest {
             }
         }
         """
-                        .stripIndent())))
+                                .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
                         "0 warning(s)",
@@ -853,7 +851,7 @@ public class ImportSpecificationDeserializerRelationshipTargetTest {
     @Test
     public void fails_if_relationship_start_node_reference_key_mappings_element_is_wrongly_typed() {
         assertThatThrownBy(() -> deserialize(new StringReader(
-                """
+                        """
                 {
                     "version": "1",
                     "sources": [{
@@ -885,7 +883,7 @@ public class ImportSpecificationDeserializerRelationshipTargetTest {
                     }
                 }
                 """
-                        .stripIndent())))
+                                .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
                         "0 warning(s)",
@@ -895,7 +893,7 @@ public class ImportSpecificationDeserializerRelationshipTargetTest {
     @Test
     public void fails_if_relationship_start_node_reference_key_mappings_source_field_is_missing() {
         assertThatThrownBy(() -> deserialize(new StringReader(
-                """
+                        """
                 {
                     "version": "1",
                     "sources": [{
@@ -931,7 +929,7 @@ public class ImportSpecificationDeserializerRelationshipTargetTest {
                     }
                 }
                 """
-                        .stripIndent())))
+                                .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
                         "0 warning(s)",
@@ -941,7 +939,7 @@ public class ImportSpecificationDeserializerRelationshipTargetTest {
     @Test
     public void fails_if_relationship_start_node_reference_key_mappings_source_field_is_wrongly_typed() {
         assertThatThrownBy(() -> deserialize(new StringReader(
-                """
+                        """
                 {
                     "version": "1",
                     "sources": [{
@@ -978,7 +976,7 @@ public class ImportSpecificationDeserializerRelationshipTargetTest {
                     }
                 }
                 """
-                        .stripIndent())))
+                                .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
                         "0 warning(s)",
@@ -988,7 +986,7 @@ public class ImportSpecificationDeserializerRelationshipTargetTest {
     @Test
     public void fails_if_relationship_start_node_reference_key_mappings_source_field_is_empty() {
         assertThatThrownBy(() -> deserialize(new StringReader(
-                """
+                        """
                 {
                     "version": "1",
                     "sources": [{
@@ -1025,7 +1023,7 @@ public class ImportSpecificationDeserializerRelationshipTargetTest {
                     }
                 }
                 """
-                        .stripIndent())))
+                                .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
                         "0 warning(s)",
@@ -1082,7 +1080,7 @@ public class ImportSpecificationDeserializerRelationshipTargetTest {
     @Test
     public void fails_if_relationship_start_node_reference_key_mappings_target_property_is_missing() {
         assertThatThrownBy(() -> deserialize(new StringReader(
-                """
+                        """
                 {
                     "version": "1",
                     "sources": [{
@@ -1118,7 +1116,7 @@ public class ImportSpecificationDeserializerRelationshipTargetTest {
                     }
                 }
                 """
-                        .stripIndent())))
+                                .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
                         "0 warning(s)",
@@ -1128,7 +1126,7 @@ public class ImportSpecificationDeserializerRelationshipTargetTest {
     @Test
     public void fails_if_relationship_start_node_reference_key_mappings_target_property_is_wrongly_typed() {
         assertThatThrownBy(() -> deserialize(new StringReader(
-                """
+                        """
                 {
                     "version": "1",
                     "sources": [{
@@ -1165,7 +1163,7 @@ public class ImportSpecificationDeserializerRelationshipTargetTest {
                     }
                 }
                 """
-                        .stripIndent())))
+                                .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
                         "0 warning(s)",
@@ -1175,7 +1173,7 @@ public class ImportSpecificationDeserializerRelationshipTargetTest {
     @Test
     public void fails_if_relationship_start_node_reference_key_mappings_target_property_is_empty() {
         assertThatThrownBy(() -> deserialize(new StringReader(
-                """
+                        """
                 {
                     "version": "1",
                     "sources": [{
@@ -1212,7 +1210,7 @@ public class ImportSpecificationDeserializerRelationshipTargetTest {
                     }
                 }
                 """
-                        .stripIndent())))
+                                .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
                         "0 warning(s)",
@@ -1222,7 +1220,7 @@ public class ImportSpecificationDeserializerRelationshipTargetTest {
     @Test
     public void fails_if_relationship_start_node_reference_key_mappings_target_field_is_blank() {
         assertThatThrownBy(() -> deserialize(new StringReader(
-                """
+                        """
         {
             "version": "1",
             "sources": [{
@@ -1259,7 +1257,7 @@ public class ImportSpecificationDeserializerRelationshipTargetTest {
             }
         }
         """
-                        .stripIndent())))
+                                .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
                         "0 warning(s)",
@@ -1308,7 +1306,7 @@ public class ImportSpecificationDeserializerRelationshipTargetTest {
     @Test
     public void fails_if_relationship_end_node_reference_name_is_missing() {
         assertThatThrownBy(() -> deserialize(new StringReader(
-                """
+                        """
         {
             "version": "1",
             "sources": [{
@@ -1344,18 +1342,17 @@ public class ImportSpecificationDeserializerRelationshipTargetTest {
             }
         }
         """
-                        .stripIndent())))
+                                .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
                         "0 warning(s)",
                         "$.targets.relationships[0].end_node_reference: required property 'name' not found");
     }
 
-
     @Test
     public void fails_if_relationship_end_node_reference_name_has_wrong_type() {
         assertThatThrownBy(() -> deserialize(new StringReader(
-                """
+                        """
         {
             "version": "1",
             "sources": [{
@@ -1392,7 +1389,7 @@ public class ImportSpecificationDeserializerRelationshipTargetTest {
             }
         }
         """
-                        .stripIndent())))
+                                .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
                         "0 warning(s)",
@@ -1402,7 +1399,7 @@ public class ImportSpecificationDeserializerRelationshipTargetTest {
     @Test
     public void fails_if_relationship_end_node_reference_name_is_empty() {
         assertThatThrownBy(() -> deserialize(new StringReader(
-                """
+                        """
         {
             "version": "1",
             "sources": [{
@@ -1439,7 +1436,7 @@ public class ImportSpecificationDeserializerRelationshipTargetTest {
             }
         }
         """
-                        .stripIndent())))
+                                .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
                         "0 warning(s)",
@@ -1449,7 +1446,7 @@ public class ImportSpecificationDeserializerRelationshipTargetTest {
     @Test
     public void fails_if_relationship_end_node_reference_name_is_blank() {
         assertThatThrownBy(() -> deserialize(new StringReader(
-                """
+                        """
                 {
                     "version": "1",
                     "sources": [{
@@ -1486,7 +1483,7 @@ public class ImportSpecificationDeserializerRelationshipTargetTest {
                     }
                 }
                 """
-                        .stripIndent())))
+                                .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
                         "0 warning(s)",
@@ -1496,7 +1493,7 @@ public class ImportSpecificationDeserializerRelationshipTargetTest {
     @Test
     public void fails_if_relationship_end_node_reference_key_mappings_is_missing() {
         assertThatThrownBy(() -> deserialize(new StringReader(
-                """
+                        """
         {
             "version": "1",
             "sources": [{
@@ -1527,18 +1524,17 @@ public class ImportSpecificationDeserializerRelationshipTargetTest {
             }
         }
         """
-                        .stripIndent())))
+                                .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
                         "0 warning(s)",
                         "$.targets.relationships[0].end_node_reference: required property 'key_mappings' not found");
     }
 
-
     @Test
     public void fails_if_relationship_end_node_reference_key_mappings_has_wrong_type() {
         assertThatThrownBy(() -> deserialize(new StringReader(
-                """
+                        """
         {
             "version": "1",
             "sources": [{
@@ -1570,7 +1566,7 @@ public class ImportSpecificationDeserializerRelationshipTargetTest {
             }
         }
         """
-                        .stripIndent())))
+                                .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
                         "0 warning(s)",
@@ -1580,7 +1576,7 @@ public class ImportSpecificationDeserializerRelationshipTargetTest {
     @Test
     public void fails_if_relationship_end_node_reference_key_mappings_is_empty() {
         assertThatThrownBy(() -> deserialize(new StringReader(
-                """
+                        """
         {
             "version": "1",
             "sources": [{
@@ -1612,7 +1608,7 @@ public class ImportSpecificationDeserializerRelationshipTargetTest {
             }
         }
         """
-                        .stripIndent())))
+                                .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
                         "0 warning(s)",
@@ -1622,7 +1618,7 @@ public class ImportSpecificationDeserializerRelationshipTargetTest {
     @Test
     public void fails_if_relationship_end_node_reference_key_mappings_element_is_wrongly_typed() {
         assertThatThrownBy(() -> deserialize(new StringReader(
-                """
+                        """
                 {
                     "version": "1",
                     "sources": [{
@@ -1654,7 +1650,7 @@ public class ImportSpecificationDeserializerRelationshipTargetTest {
                     }
                 }
                 """
-                        .stripIndent())))
+                                .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
                         "0 warning(s)",
@@ -1664,7 +1660,7 @@ public class ImportSpecificationDeserializerRelationshipTargetTest {
     @Test
     public void fails_if_relationship_end_node_reference_key_mappings_source_field_is_missing() {
         assertThatThrownBy(() -> deserialize(new StringReader(
-                """
+                        """
                 {
                     "version": "1",
                     "sources": [{
@@ -1700,7 +1696,7 @@ public class ImportSpecificationDeserializerRelationshipTargetTest {
                     }
                 }
                 """
-                        .stripIndent())))
+                                .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
                         "0 warning(s)",
@@ -1710,7 +1706,7 @@ public class ImportSpecificationDeserializerRelationshipTargetTest {
     @Test
     public void fails_if_relationship_end_node_reference_key_mappings_source_field_is_wrongly_typed() {
         assertThatThrownBy(() -> deserialize(new StringReader(
-                """
+                        """
                 {
                     "version": "1",
                     "sources": [{
@@ -1747,7 +1743,7 @@ public class ImportSpecificationDeserializerRelationshipTargetTest {
                     }
                 }
                 """
-                        .stripIndent())))
+                                .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
                         "0 warning(s)",
@@ -1757,7 +1753,7 @@ public class ImportSpecificationDeserializerRelationshipTargetTest {
     @Test
     public void fails_if_relationship_end_node_reference_key_mappings_source_field_is_empty() {
         assertThatThrownBy(() -> deserialize(new StringReader(
-                """
+                        """
                 {
                     "version": "1",
                     "sources": [{
@@ -1794,7 +1790,7 @@ public class ImportSpecificationDeserializerRelationshipTargetTest {
                     }
                 }
                 """
-                        .stripIndent())))
+                                .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
                         "0 warning(s)",
@@ -1804,7 +1800,7 @@ public class ImportSpecificationDeserializerRelationshipTargetTest {
     @Test
     public void fails_if_relationship_end_node_reference_key_mappings_source_field_is_blank() {
         assertThatThrownBy(() -> deserialize(new StringReader(
-                """
+                        """
         {
             "version": "1",
             "sources": [{
@@ -1841,7 +1837,7 @@ public class ImportSpecificationDeserializerRelationshipTargetTest {
             }
         }
         """
-                        .stripIndent())))
+                                .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
                         "0 warning(s)",
@@ -1851,7 +1847,7 @@ public class ImportSpecificationDeserializerRelationshipTargetTest {
     @Test
     public void fails_if_relationship_end_node_reference_key_mappings_target_property_is_missing() {
         assertThatThrownBy(() -> deserialize(new StringReader(
-                """
+                        """
                 {
                     "version": "1",
                     "sources": [{
@@ -1887,7 +1883,7 @@ public class ImportSpecificationDeserializerRelationshipTargetTest {
                     }
                 }
                 """
-                        .stripIndent())))
+                                .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
                         "0 warning(s)",
@@ -1897,7 +1893,7 @@ public class ImportSpecificationDeserializerRelationshipTargetTest {
     @Test
     public void fails_if_relationship_end_node_reference_key_mappings_target_property_is_wrongly_typed() {
         assertThatThrownBy(() -> deserialize(new StringReader(
-                """
+                        """
                 {
                     "version": "1",
                     "sources": [{
@@ -1934,7 +1930,7 @@ public class ImportSpecificationDeserializerRelationshipTargetTest {
                     }
                 }
                 """
-                        .stripIndent())))
+                                .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
                         "0 warning(s)",
@@ -1944,7 +1940,7 @@ public class ImportSpecificationDeserializerRelationshipTargetTest {
     @Test
     public void fails_if_relationship_end_node_reference_key_mappings_target_property_is_empty() {
         assertThatThrownBy(() -> deserialize(new StringReader(
-                """
+                        """
                 {
                     "version": "1",
                     "sources": [{
@@ -1981,7 +1977,7 @@ public class ImportSpecificationDeserializerRelationshipTargetTest {
                     }
                 }
                 """
-                        .stripIndent())))
+                                .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
                         "0 warning(s)",
@@ -1991,7 +1987,7 @@ public class ImportSpecificationDeserializerRelationshipTargetTest {
     @Test
     public void fails_if_relationship_end_node_reference_key_mappings_target_field_is_blank() {
         assertThatThrownBy(() -> deserialize(new StringReader(
-                """
+                        """
         {
             "version": "1",
             "sources": [{
@@ -2028,7 +2024,7 @@ public class ImportSpecificationDeserializerRelationshipTargetTest {
             }
         }
         """
-                        .stripIndent())))
+                                .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
                         "0 warning(s)",
