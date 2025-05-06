@@ -260,28 +260,30 @@
           "pattern": "\\S+"
         },
         "start_node_reference": {
-          "oneOf": [
-            {
-              "type": "string",
-              "minLength": 1,
-              "pattern": "\\S+"
-            },
-            {
-              "$ref": "#/$defs/target.relationship.node.reference"
-            }
-          ]
+          "if": {
+            "type": "object"
+          },
+          "then": {
+            "$ref": "#/$defs/target.relationship.node.reference"
+          },
+          "else": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S+"
+          }
         },
         "end_node_reference": {
-          "oneOf": [
-            {
-              "type": "string",
-              "minLength": 1,
-              "pattern": "\\S+"
-            },
-            {
-              "$ref": "#/$defs/target.relationship.node.reference"
-            }
-          ]
+          "if": {
+            "type": "object"
+          },
+          "then": {
+            "$ref": "#/$defs/target.relationship.node.reference"
+          },
+          "else": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S+"
+          }
         },
         "schema": {
           "type": "object",

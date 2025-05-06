@@ -16,6 +16,7 @@
  */
 package org.neo4j.importer.v1;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.neo4j.importer.v1.ImportSpecificationDeserializer.deserialize;
@@ -29,95 +30,108 @@ public class ImportSpecificationDeserializerRelationshipTargetTest {
 
     @Test
     public void deserializes_full_start_and_end_node_references() throws SpecificationException {
-        deserialize(
+        var specification = deserialize(
                 new StringReader(
                         """
-                           {
-                               "version": "1",
-                               "sources": [
-                                    {
-                                        "name": "movies-source",
-                                        "type": "jdbc",
-                                        "data_source": "db",
-                                        "sql": "SELECT id, title FROM db.movies"
-                                    },
-                                    {
-                                        "name": "categories-source",
-                                        "type": "jdbc",
-                                        "data_source": "db",
-                                        "sql": "SELECT id, name FROM db.categories"
-                                    },
-                                    {
-                                        "name": "movies-in-categories-source",
-                                        "type": "jdbc",
-                                        "data_source": "db",
-                                        "sql": "SELECT movie_id, category_id FROM db.movies_in_categories"
-                                    },
-                               ],
-                               "targets": {
-                                   "nodes": [
-                                        {
-                                            "name": "movie",
-                                            "source": "movies-source",
-                                            "labels": ["Movie"],
-                                            "properties": [
-                                                {"source_field": "id", "target_property": "identifier"},
-                                                {"source_field": "title", "target_property": "title"},
-                                            ],
-                                            "schema": {
-                                              "key_constraints": [
-                                                  {"name": "movie-id-key-constraint", "label": "Movie", "properties": ["identifier"]},
-                                              ]
-                                            }
-                                        },
-                                        {
-                                            "name": "category",
-                                            "source": "categories-source",
-                                            "labels": ["Category"],
-                                            "properties": [
-                                                {"source_field": "id", "target_property": "identifier"},
-                                                {"source_field": "name", "target_property": "name"}
-                                            ],
-                                            "schema": {
-                                              "key_constraints": [
-                                                  {"name": "category-id-key-constraint", "label": "Category", "properties": ["identifier"]}
-                                              ]
-                                            }
-                                        }
-                                   ],
-                                   "relationships": [
-                                        {
-                                            "name": "in-category",
-                                            "source": "movies-in-categories-source",
-                                            "type": "IN_CATEGORY",
-                                            "start_node_reference": {
+                                {
+                                    "version": "1",
+                                    "sources": [
+                                         {
+                                             "name": "movies-source",
+                                             "type": "jdbc",
+                                             "data_source": "db",
+                                             "sql": "SELECT id, title FROM db.movies"
+                                         },
+                                         {
+                                             "name": "categories-source",
+                                             "type": "jdbc",
+                                             "data_source": "db",
+                                             "sql": "SELECT id, name FROM db.categories"
+                                         },
+                                         {
+                                             "name": "movies-in-categories-source",
+                                             "type": "jdbc",
+                                             "data_source": "db",
+                                             "sql": "SELECT movie_id, category_id FROM db.movies_in_categories"
+                                         },
+                                    ],
+                                    "targets": {
+                                        "nodes": [
+                                             {
                                                  "name": "movie",
-                                                 "key_mappings": [
-                                                    {
-                                                        "source_field": "movie_id",
-                                                        "target_property": "identifier"
-                                                    }
-                                                 ]
-                                            },
-                                            "end_node_reference": {
+                                                 "source": "movies-source",
+                                                 "labels": ["Movie"],
+                                                 "properties": [
+                                                     {"source_field": "id", "target_property": "identifier"},
+                                                     {"source_field": "title", "target_property": "title"},
+                                                 ],
+                                                 "schema": {
+                                                   "key_constraints": [
+                                                       {"name": "movie-id-key-constraint", "label": "Movie", "properties": ["identifier"]},
+                                                   ]
+                                                 }
+                                             },
+                                             {
                                                  "name": "category",
-                                                 "key_mappings": [
-                                                    {
-                                                        "source_field": "category_id",
-                                                        "target_property": "identifier"
-                                                    }
-                                                 ]
-                                            }
-                                        }
-                                   ]
-                               }
-                           }
-                           """));
-    }
+                                                 "source": "categories-source",
+                                                 "labels": ["Category"],
+                                                 "properties": [
+                                                     {"source_field": "id", "target_property": "identifier"},
+                                                     {"source_field": "name", "target_property": "name"}
+                                                 ],
+                                                 "schema": {
+                                                   "key_constraints": [
+                                                       {"name": "category-id-key-constraint", "label": "Category", "properties": ["identifier"]}
+                                                   ]
+                                                 }
+                                             }
+                                        ],
+                                        "relationships": [
+                                             {
+                                                 "name": "in-category",
+                                                 "source": "movies-in-categories-source",
+                                                 "type": "IN_CATEGORY",
+                                                 "start_node_reference": {
+                                                      "name": "movie",
+                                                      "key_mappings": [
+                                                         {
+                                                             "source_field": "movie_id",
+                                                             "target_property": "identifier"
+                                                         }
+                                                      ]
+                                                 },
+                                                 "end_node_reference": {
+                                                      "name": "category",
+                                                      "key_mappings": [
+                                                         {
+                                                             "source_field": "category_id",
+                                                             "target_property": "identifier"
+                                                         }
+                                                      ]
+                                                 }
+                                             }
+                                        ]
+                                    }
+                                }
+                                """));
 
-    // MATCH (m:Movie {identifier: data.id})
-    // MATCH (c:Category {identifier: data.id})
-    // MERGE (m)-[:IN_CATEGORY]->(c)
+        var relationships = specification.getTargets().getRelationships();
+        assertThat(relationships).hasSize(1);
+        var relationship = relationships.getFirst();
+        var startNode = relationship.getStartNodeReference();
+        assertThat(startNode.getName()).isEqualTo("movie");
+        var startKeyMappings = startNode.getKeyMappings();
+        assertThat(startKeyMappings).hasSize(1);
+        var startKeyMapping = startKeyMappings.getFirst();
+        assertThat(startKeyMapping.getSourceField()).isEqualTo("movie_id");
+        assertThat(startKeyMapping.getTargetProperty()).isEqualTo("identifier");
+        var endNode = relationship.getEndNodeReference();
+        assertThat(endNode.getName()).isEqualTo("category");
+        assertThat(endNode.getKeyMappings()).hasSize(1);
+        var endKeyMapping = endNode.getKeyMappings().getFirst();
+        assertThat(endKeyMapping.getSourceField()).isEqualTo("category_id");
+        assertThat(endKeyMapping.getTargetProperty()).isEqualTo("identifier");
+    }
 
     @Test
     public void fails_if_relationship_target_active_attribute_has_wrong_type() {
@@ -578,6 +592,7 @@ public class ImportSpecificationDeserializerRelationshipTargetTest {
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
+                        "1 error(s)",
                         "0 warning(s)",
                         "$.targets.relationships[0].start_node_reference: required property 'name' not found");
     }
@@ -625,6 +640,7 @@ public class ImportSpecificationDeserializerRelationshipTargetTest {
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
+                        "1 error(s)",
                         "0 warning(s)",
                         "$.targets.relationships[0].start_node_reference.name: integer found, string expected");
     }
@@ -719,6 +735,7 @@ public class ImportSpecificationDeserializerRelationshipTargetTest {
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
+                        "1 error(s)",
                         "0 warning(s)",
                         "$.targets.relationships[0].start_node_reference.name: does not match the regex pattern \\S+");
     }
@@ -760,6 +777,7 @@ public class ImportSpecificationDeserializerRelationshipTargetTest {
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
+                        "1 error(s)",
                         "0 warning(s)",
                         "$.targets.relationships[0].start_node_reference: required property 'key_mappings' not found");
     }
@@ -802,6 +820,7 @@ public class ImportSpecificationDeserializerRelationshipTargetTest {
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
+                        "1 error(s)",
                         "0 warning(s)",
                         "$.targets.relationships[0].start_node_reference.key_mappings: integer found, array expected");
     }
@@ -844,6 +863,7 @@ public class ImportSpecificationDeserializerRelationshipTargetTest {
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
+                        "1 error(s)",
                         "0 warning(s)",
                         "$.targets.relationships[0].start_node_reference.key_mappings: must have at least 1 items but found 0");
     }
@@ -886,6 +906,7 @@ public class ImportSpecificationDeserializerRelationshipTargetTest {
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
+                        "1 error(s)",
                         "0 warning(s)",
                         "$.targets.relationships[0].start_node_reference.key_mappings[0]: integer found, object expected");
     }
@@ -932,6 +953,7 @@ public class ImportSpecificationDeserializerRelationshipTargetTest {
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
+                        "1 error(s)",
                         "0 warning(s)",
                         "$.targets.relationships[0].start_node_reference.key_mappings[0]: required property 'source_field' not found");
     }
@@ -979,6 +1001,7 @@ public class ImportSpecificationDeserializerRelationshipTargetTest {
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
+                        "1 error(s)",
                         "0 warning(s)",
                         "$.targets.relationships[0].start_node_reference.key_mappings[0].source_field: integer found, string expected");
     }
@@ -1073,6 +1096,7 @@ public class ImportSpecificationDeserializerRelationshipTargetTest {
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
+                        "1 error(s)",
                         "0 warning(s)",
                         "$.targets.relationships[0].start_node_reference.key_mappings[0].source_field: does not match the regex pattern \\S+");
     }
@@ -1119,6 +1143,7 @@ public class ImportSpecificationDeserializerRelationshipTargetTest {
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
+                        "1 error(s)",
                         "0 warning(s)",
                         "$.targets.relationships[0].start_node_reference.key_mappings[0]: required property 'target_property' not found");
     }
@@ -1166,6 +1191,7 @@ public class ImportSpecificationDeserializerRelationshipTargetTest {
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
+                        "1 error(s)",
                         "0 warning(s)",
                         "$.targets.relationships[0].start_node_reference.key_mappings[0].target_property: integer found, string expected");
     }
@@ -1260,6 +1286,7 @@ public class ImportSpecificationDeserializerRelationshipTargetTest {
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
+                        "1 error(s)",
                         "0 warning(s)",
                         "$.targets.relationships[0].start_node_reference.key_mappings[0].target_property: does not match the regex pattern \\S+");
     }
@@ -1299,6 +1326,7 @@ public class ImportSpecificationDeserializerRelationshipTargetTest {
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
+                        "1 error(s)",
                         "0 warning(s)",
                         "$.targets.relationships[0].end_node_reference: integer found, string expected");
     }
@@ -1345,6 +1373,7 @@ public class ImportSpecificationDeserializerRelationshipTargetTest {
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
+                        "1 error(s)",
                         "0 warning(s)",
                         "$.targets.relationships[0].end_node_reference: required property 'name' not found");
     }
@@ -1392,6 +1421,7 @@ public class ImportSpecificationDeserializerRelationshipTargetTest {
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
+                        "1 error(s)",
                         "0 warning(s)",
                         "$.targets.relationships[0].end_node_reference.name: integer found, string expected");
     }
@@ -1486,6 +1516,7 @@ public class ImportSpecificationDeserializerRelationshipTargetTest {
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
+                        "1 error(s)",
                         "0 warning(s)",
                         "$.targets.relationships[0].end_node_reference.name: does not match the regex pattern \\S+");
     }
@@ -1527,6 +1558,7 @@ public class ImportSpecificationDeserializerRelationshipTargetTest {
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
+                        "1 error(s)",
                         "0 warning(s)",
                         "$.targets.relationships[0].end_node_reference: required property 'key_mappings' not found");
     }
@@ -1569,6 +1601,7 @@ public class ImportSpecificationDeserializerRelationshipTargetTest {
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
+                        "1 error(s)",
                         "0 warning(s)",
                         "$.targets.relationships[0].end_node_reference.key_mappings: integer found, array expected");
     }
@@ -1611,6 +1644,7 @@ public class ImportSpecificationDeserializerRelationshipTargetTest {
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
+                        "1 error(s)",
                         "0 warning(s)",
                         "$.targets.relationships[0].end_node_reference.key_mappings: must have at least 1 items but found 0");
     }
@@ -1653,6 +1687,7 @@ public class ImportSpecificationDeserializerRelationshipTargetTest {
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
+                        "1 error(s)",
                         "0 warning(s)",
                         "$.targets.relationships[0].end_node_reference.key_mappings[0]: integer found, object expected");
     }
@@ -1699,6 +1734,7 @@ public class ImportSpecificationDeserializerRelationshipTargetTest {
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
+                        "1 error(s)",
                         "0 warning(s)",
                         "$.targets.relationships[0].end_node_reference.key_mappings[0]: required property 'source_field' not found");
     }
@@ -1746,6 +1782,7 @@ public class ImportSpecificationDeserializerRelationshipTargetTest {
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
+                        "1 error(s)",
                         "0 warning(s)",
                         "$.targets.relationships[0].end_node_reference.key_mappings[0].source_field: integer found, string expected");
     }
@@ -1840,6 +1877,7 @@ public class ImportSpecificationDeserializerRelationshipTargetTest {
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
+                        "1 error(s)",
                         "0 warning(s)",
                         "$.targets.relationships[0].end_node_reference.key_mappings[0].source_field: does not match the regex pattern \\S+");
     }
@@ -1886,6 +1924,7 @@ public class ImportSpecificationDeserializerRelationshipTargetTest {
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
+                        "1 error(s)",
                         "0 warning(s)",
                         "$.targets.relationships[0].end_node_reference.key_mappings[0]: required property 'target_property' not found");
     }
@@ -1933,6 +1972,7 @@ public class ImportSpecificationDeserializerRelationshipTargetTest {
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
+                        "1 error(s)",
                         "0 warning(s)",
                         "$.targets.relationships[0].end_node_reference.key_mappings[0].target_property: integer found, string expected");
     }
@@ -2027,6 +2067,7 @@ public class ImportSpecificationDeserializerRelationshipTargetTest {
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
+                        "1 error(s)",
                         "0 warning(s)",
                         "$.targets.relationships[0].end_node_reference.key_mappings[0].target_property: does not match the regex pattern \\S+");
     }
