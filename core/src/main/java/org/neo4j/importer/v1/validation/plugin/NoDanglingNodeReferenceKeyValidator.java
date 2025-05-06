@@ -72,7 +72,7 @@ public class NoDanglingNodeReferenceKeyValidator implements SpecificationValidat
 
     private void visitKeyMappings(String path, NodeReference nodeReference) {
         var keyMappings = nodeReference.getKeyMappings();
-        if (keyMappings == null) {
+        if (keyMappings.isEmpty()) {
             return;
         }
 

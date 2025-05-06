@@ -43,7 +43,7 @@ public class NodeReference implements Serializable {
     }
 
     public List<KeyMapping> getKeyMappings() {
-        return keyMappings;
+        return keyMappings != null ? keyMappings : List.of();
     }
 
     @Override

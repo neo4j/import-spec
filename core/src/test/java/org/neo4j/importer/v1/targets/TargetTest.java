@@ -280,7 +280,7 @@ class TargetTest {
 
         assertThat(target.getTargetType()).isEqualTo(TargetType.RELATIONSHIP);
         assertThat(target.getStartNodeReference().getName()).isEqualTo("a-node-target");
-        assertThat(target.getStartNodeReference().getKeyMappings()).isNull();
+        assertThat(target.getStartNodeReference().getKeyMappings()).isEmpty();
         assertThat(target.getEndNodeReference().getName()).isEqualTo("another-node-target");
         var keyMappings = target.getEndNodeReference().getKeyMappings();
         assertThat(keyMappings).hasSize(1);

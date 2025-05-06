@@ -20,6 +20,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+import org.neo4j.importer.v1.targets.NodeReference;
 import org.neo4j.importer.v1.targets.NodeTarget;
 import org.neo4j.importer.v1.targets.PropertyMapping;
 import org.neo4j.importer.v1.targets.RelationshipTarget;
@@ -53,32 +54,27 @@ public class NoDanglingNodeReferencePropertyValidator implements SpecificationVa
 
     @Override
     public void visitRelationshipTarget(int index, RelationshipTarget relationshipTarget) {
-        var startNodeRef = relationshipTarget.getStartNodeReference();
-        if (startNodeRef.getKeyMappings() != null) {
-            var targetProperties = nodeTargets.get(startNodeRef.getName());
-            for (int i = 0; i < startNodeRef.getKeyMappings().size(); i++) {
-                var keyMapping = startNodeRef.getKeyMappings().get(i);
-                if (!targetProperties.contains(keyMapping.getTargetProperty())) {
-                    invalidPathToKeyMappings.put(
-                            String.format(
-                                    "$.targets.relationships[%d].start_node_reference.key_mappings[%d].target_property",
-                                    index, i),
-                            keyMapping.getTargetProperty());
-                }
-            }
+        validateNodeReference(
+                index,
+                relationshipTarget.getStartNodeReference(),
+                "$.targets.relationships[%d].start_node_reference.key_mappings[%d].target_property");
+        validateNodeReference(
+                index,
+                relationshipTarget.getEndNodeReference(),
+                "$.targets.relationships[%d].end_node_reference.key_mappings[%d].target_property");
+    }
+
+    private void validateNodeReference(int relationshipIndex, NodeReference nodeReference, String path) {
+        var nodeKeyMappings = nodeReference.getKeyMappings();
+        if (nodeKeyMappings.isEmpty()) {
+            return;
         }
-        var endNodeRef = relationshipTarget.getStartNodeReference();
-        if (endNodeRef.getKeyMappings() != null) {
-            var targetProperties = nodeTargets.get(endNodeRef.getName());
-            for (int i = 0; i < endNodeRef.getKeyMappings().size(); i++) {
-                var keyMapping = endNodeRef.getKeyMappings().get(i);
-                if (!targetProperties.contains(keyMapping.getTargetProperty())) {
-                    invalidPathToKeyMappings.put(
-                            String.format(
-                                    "$.targets.relationships[%d].end_node_reference.key_mappings[%d].target_property",
-                                    index, i),
-                            keyMapping.getTargetProperty());
-                }
+        var targetProperties = nodeTargets.get(nodeReference.getName());
+        for (int mappingIndex = 0; mappingIndex < nodeKeyMappings.size(); mappingIndex++) {
+            var keyMapping = nodeKeyMappings.get(mappingIndex);
+            if (!targetProperties.contains(keyMapping.getTargetProperty())) {
+                invalidPathToKeyMappings.put(
+                        String.format(path, relationshipIndex, mappingIndex), keyMapping.getTargetProperty());
             }
         }
     }

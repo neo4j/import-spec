@@ -58,7 +58,7 @@ public class NoDanglingActiveNodeReferenceValidator implements SpecificationVali
         NodeReference startNodeRef = target.getStartNodeReference();
         if (!names.contains(startNodeRef.getName())) {
             var path = String.format("$.targets.relationships[%d].start_node_reference", index);
-            if (startNodeRef.getKeyMappings() != null) {
+            if (!startNodeRef.getKeyMappings().isEmpty()) {
                 path = String.format("%s.name", path);
             }
             invalidPathToNodeReferences.put(path, startNodeRef.getName());
@@ -66,7 +66,7 @@ public class NoDanglingActiveNodeReferenceValidator implements SpecificationVali
         NodeReference endNodeRef = target.getEndNodeReference();
         if (!names.contains(endNodeRef.getName())) {
             var path = String.format("$.targets.relationships[%d].end_node_reference", index);
-            if (endNodeRef.getKeyMappings() != null) {
+            if (!endNodeRef.getKeyMappings().isEmpty()) {
                 path = String.format("%s.name", path);
             }
             invalidPathToNodeReferences.put(path, endNodeRef.getName());

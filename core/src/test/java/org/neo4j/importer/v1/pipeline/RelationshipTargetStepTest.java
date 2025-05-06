@@ -32,7 +32,7 @@ import org.neo4j.importer.v1.targets.RelationshipTarget;
 import org.neo4j.importer.v1.targets.RelationshipUniqueConstraint;
 import org.neo4j.importer.v1.targets.WriteMode;
 
-class RelationshipTargetTaskTest {
+class RelationshipTargetStepTest {
 
     private final Random random = new Random();
 
