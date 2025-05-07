@@ -40,15 +40,15 @@ public class ActionDeserializer extends StdDeserializer<Action> {
     public Action deserialize(JsonParser p, DeserializationContext deserializationContext) throws IOException {
         ObjectNode node = p.getCodec().readTree(p);
         var type = node.get("type").textValue();
-        var provider = findSourceProviderByType(type);
+        var provider = findActionProviderByType(type);
         try {
-            return provider.provide(node.deepCopy());
+            return provider.apply(node.deepCopy());
         } catch (Exception e) {
             throw new UndeserializableActionIOException(node, provider, e);
         }
     }
 
-    private ActionProvider<? extends Action> findSourceProviderByType(String type) {
+    private ActionProvider<? extends Action> findActionProviderByType(String type) {
         var providers = this.providers.stream()
                 .filter(provider ->
                         provider.supportedType().toLowerCase(Locale.ROOT).equals(type.toLowerCase(Locale.ROOT)))

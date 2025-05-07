@@ -329,6 +329,7 @@ public class BeamExampleIT {
             return "parquet";
         }
 
+        @SuppressWarnings({"removal"})
         @Override
         public ParquetSource provide(ObjectNode objectNode) {
             return new ParquetSource(

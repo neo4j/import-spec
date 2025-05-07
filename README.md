@@ -8,7 +8,11 @@ In particular, it offers:
 - a user-friendly configuration surface (in JSON or YAML), called import specification, backed by a JSON schema
 - the Java equivalent of the import specification, a.k.a. `org.neo4j.importer.v1.ImportSpecification`
 - a user-friendly Java API built on top, a.k.a. `org.neo4j.importer.v1.pipeline.ImportPipeline`
+
+The import specification also offers various extension points, such as:
+
 - source plugins (see [`SourceProvider` Service Provider Interface](https://github.com/neo4j/import-spec/blob/main/src/main/java/org/neo4j/importer/v1/sources/SourceProvider.java))
+- entity (node/relationship) target extensions (see [`EntityTargetExtensionProvider` Service Provider Interface](https://github.com/neo4j/import-spec/blob/main/src/main/java/org/neo4j/importer/v1/targets/EntityTargetExtensionProvider.java))
 - action plugins (see [`ActionProvider` Service Provider Interface](https://github.com/neo4j/import-spec/blob/main/src/main/java/org/neo4j/importer/v1/actions/ActionProvider.java) and [built-in plugins](https://github.com/neo4j/import-spec/tree/main/src/main/java/org/neo4j/importer/v1/actions/plugin))
 - validation plugins (see [`SpecificationValidator` Service Provider Interface](https://github.com/neo4j/import-spec/blob/main/src/main/java/org/neo4j/importer/v1/validation/SpecificationValidator.java) and [built-in plugins](https://github.com/neo4j/import-spec/tree/main/src/main/java/org/neo4j/importer/v1/validation/plugin))
 

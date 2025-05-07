@@ -16,12 +16,23 @@
  */
 package org.neo4j.importer.v1.targets;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.ServiceLoader;
+import java.util.stream.Collectors;
 
 public abstract class EntityTarget extends Target {
+
+    @SuppressWarnings("unchecked")
+    private static final List<EntityTargetExtensionProvider<? extends EntityTargetExtension>> EXTENSION_PROVIDERS =
+            ServiceLoader.load(EntityTargetExtensionProvider.class).stream()
+                    .map(provider -> (EntityTargetExtensionProvider<? extends EntityTarget>) provider.get())
+                    .collect(Collectors.toList());
+
     private final WriteMode writeMode;
-    private final SourceTransformations sourceTransformations;
+    private final List<EntityTargetExtension> extensions;
     private final List<PropertyMapping> properties;
 
     public EntityTarget(
@@ -31,11 +42,11 @@ public abstract class EntityTarget extends Target {
             String source,
             List<String> dependencies,
             WriteMode writeMode,
-            SourceTransformations sourceTransformations,
+            List<EntityTargetExtension> extensions,
             List<PropertyMapping> properties) {
         super(targetType, active, name, source, dependencies);
         this.writeMode = writeMode;
-        this.sourceTransformations = sourceTransformations;
+        this.extensions = extensions;
         this.properties = properties;
     }
 
@@ -43,36 +54,52 @@ public abstract class EntityTarget extends Target {
         return writeMode;
     }
 
-    public SourceTransformations getSourceTransformations() {
-        return sourceTransformations;
+    public List<PropertyMapping> getProperties() {
+        return properties != null ? properties : List.of();
     }
 
-    public List<PropertyMapping> getProperties() {
-        return properties;
+    public List<EntityTargetExtension> getExtensions() {
+        return extensions;
+    }
+
+    public <T extends EntityTargetExtension> Optional<T> getExtension(Class<T> type) {
+        return extensions.stream()
+                .filter(ext -> type.isAssignableFrom(ext.getClass()))
+                .map(type::cast)
+                .findFirst();
     }
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
         if (!(o instanceof EntityTarget)) return false;
         if (!super.equals(o)) return false;
         EntityTarget that = (EntityTarget) o;
         return writeMode == that.writeMode
-                && Objects.equals(sourceTransformations, that.sourceTransformations)
+                && Objects.equals(extensions, that.extensions)
                 && Objects.equals(properties, that.properties);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), writeMode, sourceTransformations, properties);
+        return Objects.hash(super.hashCode(), writeMode, extensions, properties);
     }
 
     @Override
     public String toString() {
         return "EntityTarget{" + "writeMode="
-                + writeMode + ", sourceTransformations="
-                + sourceTransformations + ", properties="
+                + writeMode + ", extensions="
+                + extensions + ", properties="
                 + properties + "} "
                 + super.toString();
+    }
+
+    protected static List<EntityTargetExtension> mapExtensions(ObjectNode rawData) {
+        if (rawData == null) {
+            return List.of();
+        }
+        return EXTENSION_PROVIDERS.stream()
+                .map(provider -> provider.apply(rawData.deepCopy()))
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
     }
 }

@@ -16,9 +16,10 @@
  */
 package org.neo4j.importer.v1.targets;
 
+import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import java.util.Collections;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.util.List;
 import java.util.Objects;
 
@@ -38,7 +39,7 @@ public class RelationshipTarget extends EntityTarget {
             @JsonProperty(value = "type", required = true) String type,
             @JsonProperty("write_mode") WriteMode writeMode,
             @JsonProperty("node_match_mode") NodeMatchMode nodeMatchMode,
-            @JsonProperty("source_transformations") SourceTransformations sourceTransformations,
+            @JsonAnySetter ObjectNode rawExtensionData,
             @JsonProperty("start_node_reference") String startNodeReference,
             @JsonProperty("end_node_reference") String endNodeReference,
             @JsonProperty("properties") List<PropertyMapping> properties,
@@ -51,8 +52,8 @@ public class RelationshipTarget extends EntityTarget {
                 source,
                 dependencies,
                 writeMode,
-                sourceTransformations,
-                properties != null ? properties : Collections.emptyList());
+                mapExtensions(rawExtensionData),
+                properties);
         this.type = type;
         this.nodeMatchMode = nodeMatchMode;
         this.startNodeReference = startNodeReference;

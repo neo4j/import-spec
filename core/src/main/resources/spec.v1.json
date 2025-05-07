@@ -145,9 +145,6 @@
             "merge"
           ]
         },
-        "source_transformations": {
-          "$ref": "#/$defs/target.entity.sourceTransformation"
-        },
         "properties": {
           "type": "array",
           "items": {
@@ -387,73 +384,6 @@
         "name",
         "stage"
       ]
-    },
-    "target.entity.sourceTransformation": {
-      "type": "object",
-      "properties": {
-        "enable_grouping": {
-          "type": "boolean"
-        },
-        "aggregations": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "properties": {
-              "expression": {
-                "type": "string",
-                "minLength": 1,
-                "pattern": "\\S+"
-              },
-              "field_name": {
-                "type": "string",
-                "minLength": 1,
-                "pattern": "\\S+"
-              }
-            },
-            "required": [
-              "expression",
-              "field_name"
-            ],
-            "additionalProperties": false
-          },
-          "minItems": 1
-        },
-        "where": {
-          "type": "string",
-          "minLength": 1,
-          "pattern": "\\S+"
-        },
-        "order_by": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "properties": {
-              "expression": {
-                "type": "string",
-                "minLength": 1,
-                "pattern": "\\S+"
-              },
-              "order": {
-                "type": "string",
-                "enum": [
-                  "ASC",
-                  "DESC"
-                ]
-              }
-            },
-            "required": [
-              "expression"
-            ],
-            "additionalProperties": false
-          },
-          "minItems": 1
-        },
-        "limit": {
-          "type": "integer",
-          "minimum": 1
-        }
-      },
-      "additionalProperties": false
     },
     "target.entity.propertyMapping": {
       "type": "object",
