@@ -182,7 +182,9 @@ class TargetTest {
         assertThat(target.getSource()).isEqualTo("a-source");
         assertThat(target.getDependencies()).isEqualTo(List.of("an-action-or-target"));
         assertThat(target.getWriteMode()).isEqualTo(WriteMode.MERGE);
-        assertThat(target.getSourceTransformations())
+        var sourceTransformations = target.getExtension(SourceTransformations.class);
+        assertThat(sourceTransformations).isPresent();
+        assertThat(sourceTransformations.get())
                 .isEqualTo(new SourceTransformations(
                         true,
                         List.of(
@@ -355,7 +357,9 @@ class TargetTest {
         assertThat(target.getDependencies()).isEqualTo(List.of("an-action-or-target"));
         assertThat(target.getWriteMode()).isEqualTo(WriteMode.MERGE);
         assertThat(target.getNodeMatchMode()).isEqualTo(NodeMatchMode.MATCH);
-        assertThat(target.getSourceTransformations())
+        var sourceTransformations = target.getExtension(SourceTransformations.class);
+        assertThat(sourceTransformations).isPresent();
+        assertThat(sourceTransformations.get())
                 .isEqualTo(new SourceTransformations(
                         true,
                         List.of(

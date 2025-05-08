@@ -16,8 +16,10 @@
  */
 package org.neo4j.importer.v1.targets;
 
+import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.util.List;
 import java.util.Objects;
 
@@ -32,12 +34,20 @@ public class NodeTarget extends EntityTarget {
             @JsonProperty(value = "source", required = true) String source,
             @JsonProperty("depends_on") List<String> dependencies,
             @JsonProperty("write_mode") WriteMode writeMode,
-            @JsonProperty("source_transformations") SourceTransformations sourceTransformations,
+            @JsonAnySetter ObjectNode rawExtensionData,
             @JsonProperty(value = "labels", required = true) List<String> labels,
             @JsonProperty(value = "properties", required = true) List<PropertyMapping> properties,
             @JsonProperty("schema") NodeSchema schema) {
 
-        super(TargetType.NODE, active, name, source, dependencies, writeMode, sourceTransformations, properties);
+        super(
+                TargetType.NODE,
+                active,
+                name,
+                source,
+                dependencies,
+                writeMode,
+                mapExtensions(rawExtensionData),
+                properties);
         this.labels = labels;
         this.schema = schema;
     }

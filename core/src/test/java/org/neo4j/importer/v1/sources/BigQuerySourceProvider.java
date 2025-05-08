@@ -25,6 +25,7 @@ public class BigQuerySourceProvider implements SourceProvider<BigQuerySource> {
         return "bigquery";
     }
 
+    @SuppressWarnings({"removal"})
     @Override
     public BigQuerySource provide(ObjectNode node) {
         return new BigQuerySource(
