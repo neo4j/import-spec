@@ -42,7 +42,7 @@ public class SourceDeserializer extends StdDeserializer<Source> {
         var type = node.get("type").textValue();
         var provider = findSourceProviderByType(type);
         try {
-            return provider.provide(node.deepCopy());
+            return provider.apply(node.deepCopy());
         } catch (Exception e) {
             throw new UndeserializableSourceIOException(node, provider, e);
         }

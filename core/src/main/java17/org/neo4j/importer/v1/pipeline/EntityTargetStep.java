@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import org.neo4j.importer.v1.targets.EntityTarget;
+import org.neo4j.importer.v1.targets.EntityTargetExtension;
 import org.neo4j.importer.v1.targets.PropertyMapping;
 import org.neo4j.importer.v1.targets.PropertyType;
 
@@ -33,6 +34,10 @@ public abstract sealed class EntityTargetStep extends TargetStep permits NodeTar
         return target().getProperties().stream()
                 .filter(mapping -> mapping.getTargetPropertyType() != null)
                 .collect(Collectors.toMap(PropertyMapping::getTargetProperty, PropertyMapping::getTargetPropertyType));
+    }
+
+    public List<EntityTargetExtension> getExtensions() {
+        return target().getExtensions();
     }
 
     public abstract List<PropertyMapping> keyProperties();

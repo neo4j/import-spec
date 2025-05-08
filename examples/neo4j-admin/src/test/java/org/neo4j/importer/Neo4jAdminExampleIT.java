@@ -243,6 +243,7 @@ public class Neo4jAdminExampleIT {
             return "parquet";
         }
 
+        @SuppressWarnings({"removal"})
         @Override
         public ParquetSource provide(ObjectNode objectNode) {
             return new ParquetSource(

@@ -30,6 +30,7 @@ public class CypherActionProvider implements ActionProvider<CypherAction> {
         return "cypher";
     }
 
+    @SuppressWarnings({"removal"})
     @Override
     public CypherAction provide(ObjectNode node) {
         JsonNode active = node.get("active");

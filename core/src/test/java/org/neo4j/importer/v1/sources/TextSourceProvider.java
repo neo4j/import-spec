@@ -40,6 +40,7 @@ public class TextSourceProvider implements SourceProvider<TextSource> {
         return "text";
     }
 
+    @SuppressWarnings({"removal"})
     @Override
     public TextSource provide(ObjectNode node) {
         List<String> header = mapper.convertValue(node.get("header"), new TypeReference<>() {});

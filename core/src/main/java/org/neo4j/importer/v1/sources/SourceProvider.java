@@ -17,10 +17,20 @@
 package org.neo4j.importer.v1.sources;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import java.util.function.Function;
 
-public interface SourceProvider<T extends Source> {
+public interface SourceProvider<T extends Source> extends Function<ObjectNode, T> {
 
     String supportedType();
 
+    @Override
+    default T apply(ObjectNode node) {
+        return provide(node);
+    }
+
+    /**
+     * @deprecated call {@code apply} instead
+     */
+    @Deprecated(forRemoval = true)
     T provide(ObjectNode node);
 }

@@ -14,23 +14,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.neo4j.importer.v1.sources;
+package org.neo4j.importer.v1.targets;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import java.io.Serializable;
 
-public class JdbcSourceProvider implements SourceProvider<JdbcSource> {
-
-    @Override
-    public String supportedType() {
-        return "jdbc";
-    }
-
-    @SuppressWarnings({"removal"})
-    @Override
-    public JdbcSource provide(ObjectNode node) {
-        return new JdbcSource(
-                node.get("name").textValue(),
-                node.get("data_source").textValue(),
-                node.get("sql").textValue());
-    }
-}
+public interface EntityTargetExtension extends Serializable {}
