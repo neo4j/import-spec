@@ -34,13 +34,9 @@ public class NoDanglingLabelInUniqueConstraintValidator implements Specification
 
     @Override
     public void visitNodeTarget(int index, NodeTarget target) {
-        var schema = target.getSchema();
-        if (schema == null) {
-            return;
-        }
         var basePath = String.format("$.targets.nodes[%d].schema.unique_constraints", index);
         var labels = target.getLabels();
-        var uniqueConstraints = schema.getUniqueConstraints();
+        var uniqueConstraints = target.getSchema().getUniqueConstraints();
         for (int i = 0; i < uniqueConstraints.size(); i++) {
             var label = uniqueConstraints.get(i).getLabel();
             if (!labels.contains(label)) {

@@ -37,13 +37,9 @@ public class NoDanglingPropertyInTypeConstraintValidator implements Specificatio
 
     @Override
     public void visitNodeTarget(int index, NodeTarget target) {
-        var schema = target.getSchema();
-        if (schema == null) {
-            return;
-        }
         var basePath = String.format("$.targets.nodes[%d].schema.type_constraints", index);
         var properties = propertiesOf(target);
-        var typeConstraints = schema.getTypeConstraints();
+        var typeConstraints = target.getSchema().getTypeConstraints();
         for (int i = 0; i < typeConstraints.size(); i++) {
             var property = typeConstraints.get(i).getProperty();
             if (!properties.contains(property)) {

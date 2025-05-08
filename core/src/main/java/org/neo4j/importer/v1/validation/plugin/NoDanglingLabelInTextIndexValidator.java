@@ -34,13 +34,9 @@ public class NoDanglingLabelInTextIndexValidator implements SpecificationValidat
 
     @Override
     public void visitNodeTarget(int index, NodeTarget target) {
-        var schema = target.getSchema();
-        if (schema == null) {
-            return;
-        }
         var basePath = String.format("$.targets.nodes[%d].schema.text_indexes", index);
         var labels = target.getLabels();
-        var textIndexes = schema.getTextIndexes();
+        var textIndexes = target.getSchema().getTextIndexes();
         for (int i = 0; i < textIndexes.size(); i++) {
             var label = textIndexes.get(i).getLabel();
             if (!labels.contains(label)) {

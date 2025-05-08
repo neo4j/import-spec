@@ -37,13 +37,9 @@ public class NoDanglingPropertyInKeyConstraintValidator implements Specification
 
     @Override
     public void visitNodeTarget(int index, NodeTarget target) {
-        var schema = target.getSchema();
-        if (schema == null) {
-            return;
-        }
         var basePath = String.format("$.targets.nodes[%d].schema.key_constraints", index);
         var properties = propertiesOf(target);
-        var keyConstraints = schema.getKeyConstraints();
+        var keyConstraints = target.getSchema().getKeyConstraints();
         for (int i = 0; i < keyConstraints.size(); i++) {
             var actualProperties = keyConstraints.get(i).getProperties();
             for (int j = 0; j < actualProperties.size(); j++) {

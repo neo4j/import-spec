@@ -20,6 +20,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
+import org.neo4j.importer.v1.targets.NodeReference;
 import org.neo4j.importer.v1.targets.NodeTarget;
 import org.neo4j.importer.v1.targets.RelationshipTarget;
 import org.neo4j.importer.v1.validation.SpecificationValidationResult.Builder;
@@ -43,15 +44,21 @@ public class NoDanglingNodeReferenceValidator implements SpecificationValidator 
 
     @Override
     public void visitRelationshipTarget(int index, RelationshipTarget target) {
-        String startNodeRef = target.getStartNodeReference();
-        if (!names.contains(startNodeRef)) {
-            invalidPathToNodeReferences.put(
-                    String.format("$.targets.relationships[%d].start_node_reference", index), startNodeRef);
+        NodeReference startNodeRef = target.getStartNodeReference();
+        if (!names.contains(startNodeRef.getName())) {
+            var path = String.format("$.targets.relationships[%d].start_node_reference", index);
+            if (!startNodeRef.getKeyMappings().isEmpty()) {
+                path = String.format("%s.name", path);
+            }
+            invalidPathToNodeReferences.put(path, startNodeRef.getName());
         }
-        String endNodeRef = target.getEndNodeReference();
-        if (!names.contains(endNodeRef)) {
-            invalidPathToNodeReferences.put(
-                    String.format("$.targets.relationships[%d].end_node_reference", index), endNodeRef);
+        NodeReference endNodeRef = target.getEndNodeReference();
+        if (!names.contains(endNodeRef.getName())) {
+            var path = String.format("$.targets.relationships[%d].end_node_reference", index);
+            if (!endNodeRef.getKeyMappings().isEmpty()) {
+                path = String.format("%s.name", path);
+            }
+            invalidPathToNodeReferences.put(path, endNodeRef.getName());
         }
     }
 

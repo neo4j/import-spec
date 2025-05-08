@@ -37,13 +37,9 @@ public class NoDanglingPropertyInRangeIndexValidator implements SpecificationVal
 
     @Override
     public void visitNodeTarget(int index, NodeTarget target) {
-        var schema = target.getSchema();
-        if (schema == null) {
-            return;
-        }
         var basePath = String.format("$.targets.nodes[%d].schema.range_indexes", index);
         var properties = propertiesOf(target);
-        var rangeIndexes = schema.getRangeIndexes();
+        var rangeIndexes = target.getSchema().getRangeIndexes();
         for (int i = 0; i < rangeIndexes.size(); i++) {
             var actualProperties = rangeIndexes.get(i).getProperties();
             for (int j = 0; j < actualProperties.size(); j++) {

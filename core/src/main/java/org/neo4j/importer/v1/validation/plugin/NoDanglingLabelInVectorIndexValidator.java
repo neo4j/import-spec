@@ -34,13 +34,9 @@ public class NoDanglingLabelInVectorIndexValidator implements SpecificationValid
 
     @Override
     public void visitNodeTarget(int index, NodeTarget target) {
-        var schema = target.getSchema();
-        if (schema == null) {
-            return;
-        }
         var basePath = String.format("$.targets.nodes[%d].schema.vector_indexes", index);
         var labels = target.getLabels();
-        var vectorIndexes = schema.getVectorIndexes();
+        var vectorIndexes = target.getSchema().getVectorIndexes();
         for (int i = 0; i < vectorIndexes.size(); i++) {
             var label = vectorIndexes.get(i).getLabel();
             if (!labels.contains(label)) {

@@ -29,7 +29,7 @@ import org.neo4j.importer.v1.targets.NodeUniqueConstraint;
 import org.neo4j.importer.v1.targets.PropertyMapping;
 import org.neo4j.importer.v1.targets.WriteMode;
 
-class NodeTargetTaskTest {
+class NodeTargetStepTest {
 
     private final Random random = new Random();
 
