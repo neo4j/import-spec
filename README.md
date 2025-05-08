@@ -11,20 +11,20 @@ In particular, it offers:
 
 The import specification also offers various extension points, such as:
 
-- source plugins (see [`SourceProvider` Service Provider Interface](https://github.com/neo4j/import-spec/blob/main/src/main/java/org/neo4j/importer/v1/sources/SourceProvider.java))
-- entity (node/relationship) target extensions (see [`EntityTargetExtensionProvider` Service Provider Interface](https://github.com/neo4j/import-spec/blob/main/src/main/java/org/neo4j/importer/v1/targets/EntityTargetExtensionProvider.java))
-- action plugins (see [`ActionProvider` Service Provider Interface](https://github.com/neo4j/import-spec/blob/main/src/main/java/org/neo4j/importer/v1/actions/ActionProvider.java) and [built-in plugins](https://github.com/neo4j/import-spec/tree/main/src/main/java/org/neo4j/importer/v1/actions/plugin))
-- validation plugins (see [`SpecificationValidator` Service Provider Interface](https://github.com/neo4j/import-spec/blob/main/src/main/java/org/neo4j/importer/v1/validation/SpecificationValidator.java) and [built-in plugins](https://github.com/neo4j/import-spec/tree/main/src/main/java/org/neo4j/importer/v1/validation/plugin))
+- source plugins (see [`SourceProvider` Service Provider Interface](https://github.com/neo4j/import-spec/blob/main/core/src/main/java/org/neo4j/importer/v1/sources/SourceProvider.java))
+- entity (node/relationship) target extensions (see [`EntityTargetExtensionProvider` Service Provider Interface](https://github.com/neo4j/import-spec/blob/main/core/src/main/java/org/neo4j/importer/v1/targets/EntityTargetExtensionProvider.java))
+- action plugins (see [`ActionProvider` Service Provider Interface](https://github.com/neo4j/import-spec/blob/main/core/src/main/java/org/neo4j/importer/v1/actions/ActionProvider.java) and [built-in plugins](https://github.com/neo4j/import-spec/tree/main/src/main/java/org/neo4j/importer/v1/actions/plugin))
+- validation plugins (see [`SpecificationValidator` Service Provider Interface](https://github.com/neo4j/import-spec/blob/main/core/src/main/java/org/neo4j/importer/v1/validation/SpecificationValidator.java) and [built-in plugins](https://github.com/neo4j/import-spec/tree/main/src/main/java/org/neo4j/importer/v1/validation/plugin))
 
 The library does **NOT**:
 
-- define any sources, you need to define and register at least one (see [examples](https://github.com/neo4j/import-spec/tree/main/src/test/java/org/neo4j/importer/v1/sources/))
+- define any sources, you need to define and register at least one (see [examples](https://github.com/neo4j/import-spec/tree/main/core/src/test/java/org/neo4j/importer/v1/sources/))
 - implement any actual import to Neo4j (although some end-to-end tests just do that)
 - expose any configuration to locate a Neo4j instance to import data to
 
 ## Getting Started
 
-First, [implement](https://github.com/neo4j/import-spec/blob/main/src/test/java/org/neo4j/importer/v1/sources/BigQuerySourceProvider.java) and [register](https://github.com/neo4j/import-spec/blob/main/src/test/resources/META-INF/services/org.neo4j.importer.v1.sources.SourceProvider#L1) a source provider for BigQuery.
+First, [implement](https://github.com/neo4j/import-spec/blob/main/core/src/test/java/org/neo4j/importer/v1/sources/BigQuerySourceProvider.java) and [register](https://github.com/neo4j/import-spec/blob/main/core/src/test/resources/META-INF/services/org.neo4j.importer.v1.sources.SourceProvider#L1) a source provider for BigQuery.
 
 Then, save the following import specification into `spec.json`:
 
