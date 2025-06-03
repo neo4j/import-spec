@@ -1,0 +1,79 @@
+# Generated with JReleaser 1.17.0 at 2025-04-28T13:27:24.943485+01:00
+project:
+  name: neo4j-import-spec
+  description: Uniform Import Specification Library for Neo4j
+  authors:
+    - Connectors Team
+  license: Apache-2.0
+  copyright: Neo4j, Inc.
+  links:
+    homepage: https://github.com/neo4j/import-spec
+  languages:
+    java:
+      groupId: org.neo4j.importer
+
+release:
+  github:
+    owner: neo4j
+    name: import-spec
+    tagName: "{{projectVersion}}"
+    update:
+      enabled: true
+      sections:
+        - TITLE
+        - BODY
+        - ASSETS
+    artifacts: false
+    files: true
+    changelog:
+      formatted: ALWAYS
+      preset: conventional-commits
+      skipMergeCommits: true
+      format: "- {{commitShortHash}} {{conventionalCommitDescription}}"
+      links: true
+      labelers:
+        - title: ci
+          label: ci
+      excludeLabels:
+        - ci
+      hide:
+        contributors:
+          - '[bot]'
+          - GitHub
+
+assemble:
+  active: ALWAYS
+
+hooks:
+  script:
+    before:
+      - filter:
+          includes: [ "assemble" ]
+        continueOnError: false
+        verbose: true
+        shell: BASH
+        run: |
+          ./mvnw --quiet --batch-mode clean deploy -DskipTests -DaltDeploymentRepository=default::file://{{basedir}}/target/maven-artifacts
+
+signing:
+  active: ALWAYS
+  mode: COMMAND
+  command:
+    homeDir: '~/.gnupg'
+
+deploy:
+  maven:
+    active: ALWAYS
+    mavenCentral:
+      artifacts:
+        active: ALWAYS
+        url: https://central.sonatype.com/api/v1/publisher
+        applyMavenCentralRules: true
+        namespace: org.neo4j
+        verifyPom: false
+        stagingRepositories:
+          - ./target/maven-artifacts
+
+announce:
+  slack:
+    channel: '#release'
