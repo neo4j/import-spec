@@ -16,7 +16,7 @@ release:
   github:
     owner: neo4j
     name: import-spec
-    tagName: "{{projectVersion}}"
+    tagName: "v{{projectVersion}}"
     update:
       enabled: true
       sections:
