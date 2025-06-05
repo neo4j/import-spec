@@ -16,7 +16,25 @@
  */
 package org.neo4j.importer;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.nio.file.Files;
+import java.sql.DriverManager;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -49,24 +67,6 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
 import org.testcontainers.utility.MountableFile;
 
-import java.io.File;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.URL;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import static org.assertj.core.api.Assertions.assertThat;
-
 @SuppressWarnings({"SameParameterValue", "resource"})
 @Testcontainers
 public class Neo4jAdminExampleIT {
@@ -75,7 +75,7 @@ public class Neo4jAdminExampleIT {
 
     @Container
     private static final GenericContainer<?> NEO4J = new Neo4jContainer<>(
-            DockerImageName.parse("neo4j:2025.04-enterprise"))
+                    DockerImageName.parse("neo4j:2025.05-enterprise")) // minimum is 2025.05
             .withEnv("NEO4J_ACCEPT_LICENSE_AGREEMENT", "yes")
             .withNeo4jConfig("dbms.integrations.cloud_storage.gs.project_id", "connectors-public")
             .withNeo4jConfig("server.config.strict_validation.enabled", "false")
@@ -356,7 +356,7 @@ public class Neo4jAdminExampleIT {
                 switch (target) {
                     case NodeTarget nodeTarget -> createHeaderFile(indexedSources, nodeTarget);
                     case RelationshipTarget relationshipTarget ->
-                            createHeaderFile(indexedSources, indexedNodes, relationshipTarget);
+                        createHeaderFile(indexedSources, indexedNodes, relationshipTarget);
                     default -> throw new RuntimeException("unsupported target type: %s".formatted(target.getClass()));
                 }
             }
@@ -380,8 +380,10 @@ public class Neo4jAdminExampleIT {
             var source = sources.get(relationshipTarget.getSource());
             assertThat(source).isInstanceOf(ParquetSource.class);
 
-            var startNodeTarget = nodes.get(relationshipTarget.getStartNodeReference());
-            var endNodeTarget = nodes.get(relationshipTarget.getEndNodeReference());
+            var startNodeTarget =
+                    nodes.get(relationshipTarget.getStartNodeReference().getName());
+            var endNodeTarget =
+                    nodes.get(relationshipTarget.getEndNodeReference().getName());
             List<String> fields = readFieldNames(source);
             Map<String, String> fieldMappings =
                     computeFieldMappings(fields, relationshipTarget, startNodeTarget, endNodeTarget);
@@ -389,28 +391,12 @@ public class Neo4jAdminExampleIT {
             generateHeaderFile(parquetFile, fieldMappings);
         }
 
-        // 🐤
-        private void generateHeaderFile(File targetFile, Map<String, String> fieldMappings) throws SQLException {
-            var keys = fieldMappings.keySet().stream().sorted().toList();
-            var values = keys.stream().map(fieldMappings::get).toList();
-            var sql = String.format(
-                    "COPY (PIVOT (\n" +
-                    "      SELECT     i,\n" +
-                    "              unnest(l) AS x,\n" +
-                    "              generate_subscripts(l, 1) AS index\n" +
-                    "      FROM     (\n" +
-                    "                  VALUES (1, ['%s']), (2, ['%s'])\n" +
-                    "              ) tbl(i,l)\n" +
-                    ") on 'test_' || index using first(x)) TO '%s' (FORMAT 'parquet', CODEC 'zstd')",
-                    String.join("','", keys),
-                    String.join("','", values),
-                    targetFile.getAbsolutePath());
-            try (var connection = DriverManager.getConnection("jdbc:duckdb:");
-                 // courtesy of https://github.com/duckdb/duckdb/discussions/17047
-                 // pivot statements cannot be parameterized hence the ugly interpolation
-                 var statement = connection.createStatement()) {
-                statement.execute(sql);
-            }
+        private void generateHeaderFile(File targetFile, Map<String, String> fieldMappings) throws IOException {
+            var originalFields = fieldMappings.keySet().stream().sorted().toList();
+            var mappedNames = originalFields.stream().map(fieldMappings::get).toList();
+            Files.writeString(
+                    targetFile.toPath(),
+                    "%s%n%s".formatted(String.join(",", mappedNames), String.join(",", originalFields)));
         }
 
         private static String[] importCommand(ImportSpecification specification, String database) {
@@ -487,7 +473,7 @@ public class Neo4jAdminExampleIT {
         // 🐤
         private static List<String> readFieldNames(Source source) throws Exception {
             try (var connection = DriverManager.getConnection("jdbc:duckdb:");
-                 var statement = connection.prepareStatement("DESCRIBE (SELECT * FROM read_parquet($1))")) {
+                    var statement = connection.prepareStatement("DESCRIBE (SELECT * FROM read_parquet($1))")) {
                 statement.setString(1, ((ParquetSource) source).uri());
                 var fields = new ArrayList<String>();
                 try (var results = statement.executeQuery()) {
@@ -506,7 +492,7 @@ public class Neo4jAdminExampleIT {
         }
 
         private static String headerFileName(Target target) {
-            return "%s_header.parquet".formatted(target.getName());
+            return "%s_header.csv".formatted(target.getName());
         }
 
         private static String sourceUri(ImportSpecification specification, Target target) {
@@ -541,7 +527,7 @@ public class Neo4jAdminExampleIT {
                     .flatMap(target -> switch (target) {
                         case NodeTarget nodeTarget -> generateNodeSchemaStatements(nodeTarget);
                         case RelationshipTarget relationshipTarget ->
-                                generateRelationshipSchemaStatements(relationshipTarget);
+                            generateRelationshipSchemaStatements(relationshipTarget);
                         default -> Stream.empty();
                     })
                     .toList();
@@ -705,7 +691,7 @@ public class Neo4jAdminExampleIT {
                 case ZONED_TIME -> "ZONED TIME";
                 case ZONED_TIME_ARRAY -> "LIST<ZONED TIME NOT NULL>";
                 default ->
-                        throw new IllegalArgumentException(String.format("Unsupported property type: %s", propertyType));
+                    throw new IllegalArgumentException(String.format("Unsupported property type: %s", propertyType));
             };
         }
     }
