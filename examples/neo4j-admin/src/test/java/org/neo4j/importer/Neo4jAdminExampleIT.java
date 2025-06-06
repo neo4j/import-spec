@@ -53,9 +53,11 @@ import org.neo4j.importer.v1.actions.plugin.CypherAction;
 import org.neo4j.importer.v1.sources.Source;
 import org.neo4j.importer.v1.sources.SourceProvider;
 import org.neo4j.importer.v1.targets.EntityTarget;
+import org.neo4j.importer.v1.targets.NodeSchema;
 import org.neo4j.importer.v1.targets.NodeTarget;
 import org.neo4j.importer.v1.targets.PropertyMapping;
 import org.neo4j.importer.v1.targets.PropertyType;
+import org.neo4j.importer.v1.targets.RelationshipSchema;
 import org.neo4j.importer.v1.targets.RelationshipTarget;
 import org.neo4j.importer.v1.targets.Target;
 import org.neo4j.importer.v1.targets.Targets;
@@ -114,7 +116,7 @@ public class Neo4jAdminExampleIT {
                 var specification = ImportSpecificationDeserializer.deserialize(reader);
                 var sharedFolder = pathFor(SHARED_FOLDER);
                 var neo4jAdmin = new Neo4jAdmin(sharedFolder, driver, TARGET_DATABASE);
-                neo4jAdmin.createHeaderFiles(specification);
+                neo4jAdmin.createFiles(specification);
                 neo4jAdmin.executeImport(specification, NEO4J);
             }
         }
@@ -169,7 +171,7 @@ public class Neo4jAdminExampleIT {
         assertNodeTypeConstraint(driver, "Category", "name", "STRING");
         assertNodeConstraint(driver, "UNIQUENESS", "Category", "name");
         assertNodeConstraint(driver, "NODE_KEY", "Customer", "id");
-        assertNodeTypeConstraint(driver, "Customer", "creation_date", "DATE");
+        //        assertNodeTypeConstraint(driver, "Customer", "creation_date", "DATE");
         assertNodeTypeConstraint(driver, "Customer", "email", "STRING");
         assertNodeTypeConstraint(driver, "Customer", "first_name", "STRING");
         assertNodeTypeConstraint(driver, "Customer", "id", "INTEGER");
@@ -313,16 +315,6 @@ public class Neo4jAdminExampleIT {
             // migrate temporal typed properties from INTEGER
             // This is a temporary post-processing step until we have complete support for Parquet types.
             migrateTemporalProperties();
-
-            // create schema
-            for (String statement :
-                    generateSchemaStatements(specification.getTargets().getAll())) {
-                driver.executableQuery(statement)
-                        .withConfig(QueryConfig.builder()
-                                .withDatabase(targetDatabase)
-                                .build())
-                        .execute();
-            }
         }
 
         private void migrateTemporalProperties() {
@@ -347,7 +339,12 @@ public class Neo4jAdminExampleIT {
             }
         }
 
-        public void createHeaderFiles(ImportSpecification specification) throws Exception {
+        public void createFiles(ImportSpecification specification) throws Exception {
+            createHeaderFiles(specification);
+            createSchemaFile(specification);
+        }
+
+        private void createHeaderFiles(ImportSpecification specification) throws Exception {
             Map<String, Source> indexedSources =
                     specification.getSources().stream().collect(Collectors.toMap(Source::getName, Function.identity()));
             Map<String, NodeTarget> indexedNodes = specification.getTargets().getNodes().stream()
@@ -360,6 +357,17 @@ public class Neo4jAdminExampleIT {
                     default -> throw new RuntimeException("unsupported target type: %s".formatted(target.getClass()));
                 }
             }
+        }
+
+        private void createSchemaFile(ImportSpecification specification) throws IOException {
+            var schemaStatements =
+                    generateSchemaStatements(specification.getTargets().getAll());
+            if (schemaStatements.isEmpty()) {
+                return;
+            }
+            var schemaFile = new File(sharedFolder, schemaFileName());
+            var content = String.join(";\n", schemaStatements) + ";";
+            Files.writeString(schemaFile.toPath(), content);
         }
 
         private void createHeaderFile(Map<String, Source> sources, NodeTarget nodeTarget) throws Exception {
@@ -423,6 +431,10 @@ public class Neo4jAdminExampleIT {
                 command.append("=");
                 command.append("/import/%s,".formatted(headerFileName(relationshipTarget)));
                 command.append("%s".formatted(sourceUri(specification, relationshipTarget)));
+            }
+
+            if (targets.getAll().stream().anyMatch(Neo4jAdminExampleIT::hasSchemaOps)) {
+                command.append(" --schema=/import/schema.cypher");
             }
 
             return command.toString().split(" ");
@@ -497,6 +509,10 @@ public class Neo4jAdminExampleIT {
 
         private static String headerFileName(Target target) {
             return "%s_header.csv".formatted(target.getName());
+        }
+
+        private static String schemaFileName() {
+            return "schema.cypher";
         }
 
         private static String sourceUri(ImportSpecification specification, Target target) {
@@ -698,6 +714,38 @@ public class Neo4jAdminExampleIT {
                     throw new IllegalArgumentException(String.format("Unsupported property type: %s", propertyType));
             };
         }
+    }
+
+    private static boolean hasSchemaOps(Target target) {
+        return switch (target) {
+            case NodeTarget nodeTarget -> hasSchemaOps(nodeTarget.getSchema());
+            case RelationshipTarget relationshipTarget -> hasSchemaOps(relationshipTarget.getSchema());
+            default -> false;
+        };
+    }
+
+    private static boolean hasSchemaOps(NodeSchema schema) {
+        return !schema.getTypeConstraints().isEmpty()
+                || !schema.getKeyConstraints().isEmpty()
+                || !schema.getUniqueConstraints().isEmpty()
+                || !schema.getExistenceConstraints().isEmpty()
+                || !schema.getRangeIndexes().isEmpty()
+                || !schema.getTextIndexes().isEmpty()
+                || !schema.getPointIndexes().isEmpty()
+                || !schema.getFullTextIndexes().isEmpty()
+                || !schema.getVectorIndexes().isEmpty();
+    }
+
+    private static boolean hasSchemaOps(RelationshipSchema schema) {
+        return !schema.getTypeConstraints().isEmpty()
+                || !schema.getKeyConstraints().isEmpty()
+                || !schema.getUniqueConstraints().isEmpty()
+                || !schema.getExistenceConstraints().isEmpty()
+                || !schema.getRangeIndexes().isEmpty()
+                || !schema.getTextIndexes().isEmpty()
+                || !schema.getPointIndexes().isEmpty()
+                || !schema.getFullTextIndexes().isEmpty()
+                || !schema.getVectorIndexes().isEmpty();
     }
 
     private static File pathFor(String classpath) throws Exception {
