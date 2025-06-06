@@ -126,9 +126,10 @@ targets:
           - name: customer_email_type
             label: Customer
             property: email
-          - name: customer_creation_date_type
-            label: Customer
-            property: creation_date
+            # date not supported yet, converted to integer atm
+    #          - name: customer_creation_date_type
+    #            label: Customer
+    #            property: creation_date
 
     - source: film
       name: movie_nodes
