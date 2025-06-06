@@ -363,6 +363,10 @@ public class Neo4jAdminExampleIT {
         }
 
         private void createHeaderFile(Map<String, Source> sources, NodeTarget nodeTarget) throws Exception {
+            // this assertion would be implemented as a custom validation rule
+            assertThat(nodeTarget.getSchema().getKeyConstraints())
+                    .overridingErrorMessage("At most one group ID can be defined")
+                    .hasSizeLessThanOrEqualTo(1);
             var source = sources.get(nodeTarget.getSource());
             assertThat(source).isInstanceOf(ParquetSource.class);
             File parquetFile = new File(sharedFolder, headerFileName(nodeTarget));
