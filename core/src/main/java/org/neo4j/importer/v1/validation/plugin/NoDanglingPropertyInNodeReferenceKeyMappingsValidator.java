@@ -28,7 +28,7 @@ import org.neo4j.importer.v1.validation.SpecificationValidationResult.Builder;
 import org.neo4j.importer.v1.validation.SpecificationValidator;
 
 public class NoDanglingPropertyInNodeReferenceKeyMappingsValidator implements SpecificationValidator {
-    private static final String ERROR_CODE = "DANG-023";
+    private static final String ERROR_CODE = "DANG-024";
 
     private final Map<String, Set<String>> nodeTargets;
     private final Map<String, String> invalidPathToKeyMappings;
