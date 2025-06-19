@@ -1760,6 +1760,59 @@ public class ImportSpecificationDeserializerExtraValidationTest {
     }
 
     @Test
+    public void fails_if_relationship_target_type_constraint_property_refers_to_an_untyped_property() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+                        
+                                {
+                          "version": "1",
+                          "sources": [{
+                            "name": "a-source",
+                            "type": "jdbc",
+                            "data_source": "a-data-source",
+                            "sql": "SELECT id, name FROM my.table"
+                          }],
+                          "targets": {
+                            "nodes": [{
+                              "name": "a-node-target",
+                              "source": "a-source",
+                              "labels": ["Label"],
+                              "properties": [
+                                {"source_field": "id", "target_property": "id"}
+                              ],
+                              "schema": {
+                                "unique_constraints": [
+                                  {"name": "a unique constraint", "label": "Label", "properties": ["id"]}
+                                ]
+                              }
+                            }],
+                            "relationships": [{
+                              "name": "a-relationship-target",
+                              "source": "a-source",
+                              "type": "SELF_LINKS_TO",
+                              "start_node_reference": "a-node-target",
+                              "end_node_reference": "a-node-target",
+                              "properties": [
+                                {"source_field": "id", "target_property": "untyped"}
+                              ],
+                              "schema": {
+                                "type_constraints": [
+                                  {"name": "a type constraint", "property": "untyped"}
+                                ]
+                              }
+                            }]
+                          }
+                        }
+                        """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "$.targets.relationships[0].schema.type_constraints[0].property \"untyped\" refers to an untyped property");
+    }
+
+    @Test
     public void fails_if_node_target_unique_constraint_refers_to_non_existent_property() {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
