@@ -44,10 +44,9 @@ public class NoUntypedPropertyInTypeConstraintValidator implements Specification
 
     @Override
     public void visitNodeTarget(int index, NodeTarget target) {
-        var schema = target.getSchema();
         var basePath = String.format("$.targets.nodes[%d].schema.type_constraints", index);
         var properties = typedPropertiesOf(target);
-        var typeConstraints = schema.getTypeConstraints();
+        var typeConstraints = target.getSchema().getTypeConstraints();
         for (int i = 0; i < typeConstraints.size(); i++) {
             var property = typeConstraints.get(i).getProperty();
             if (!properties.contains(property)) {
@@ -59,10 +58,9 @@ public class NoUntypedPropertyInTypeConstraintValidator implements Specification
 
     @Override
     public void visitRelationshipTarget(int index, RelationshipTarget target) {
-        var schema = target.getSchema();
         var basePath = String.format("$.targets.relationships[%d].schema.type_constraints", index);
         var properties = typedPropertiesOf(target);
-        var typeConstraints = schema.getTypeConstraints();
+        var typeConstraints = target.getSchema().getTypeConstraints();
         for (int i = 0; i < typeConstraints.size(); i++) {
             var property = typeConstraints.get(i).getProperty();
             if (!properties.contains(property)) {

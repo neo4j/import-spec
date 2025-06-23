@@ -76,7 +76,7 @@ public class NoRedundantKeyConstraintAndRangeIndexValidator implements Specifica
     @Override
     public void visitRelationshipTarget(int index, RelationshipTarget target) {
         var schema = target.getSchema();
-        if (schema == null) {
+        if (schema.isEmpty()) {
             return;
         }
         var paths = new LinkedHashMap<List<String>, List<String>>();

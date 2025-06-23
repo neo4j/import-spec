@@ -52,7 +52,7 @@ public class NoDanglingPropertyInExistenceConstraintValidator implements Specifi
     @Override
     public void visitRelationshipTarget(int index, RelationshipTarget target) {
         var schema = target.getSchema();
-        if (schema == null) {
+        if (schema.isEmpty()) {
             return;
         }
         var basePath = String.format("$.targets.relationships[%d].schema.existence_constraints", index);

@@ -75,7 +75,7 @@ public class Neo4jDistributionValidator implements SpecificationValidator {
     @Override
     public void visitRelationshipTarget(int index, RelationshipTarget relationshipTarget) {
         var schema = relationshipTarget.getSchema();
-        if (schema == null) {
+        if (schema.isEmpty()) {
             return;
         }
 

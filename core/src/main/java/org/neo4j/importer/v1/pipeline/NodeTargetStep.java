@@ -49,18 +49,14 @@ public class NodeTargetStep extends EntityTargetStep {
 
     @Override
     public List<PropertyMapping> keyProperties() {
-        var schema = schema();
-        if (schema == null) {
-            return List.of();
-        }
-        return List.copyOf(distinctKeyProperties(target.getProperties(), schema));
+        return List.copyOf(distinctKeyProperties(target.getProperties(), schema()));
     }
 
     @Override
     public List<PropertyMapping> nonKeyProperties() {
         var schema = schema();
         var mappings = target.getProperties();
-        if (schema == null) {
+        if (schema.isEmpty()) {
             return mappings;
         }
         var keyProperties = distinctKeyProperties(mappings, schema);

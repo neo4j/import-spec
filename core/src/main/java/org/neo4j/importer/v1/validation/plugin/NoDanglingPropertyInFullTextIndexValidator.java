@@ -55,7 +55,7 @@ public class NoDanglingPropertyInFullTextIndexValidator implements Specification
     @Override
     public void visitRelationshipTarget(int index, RelationshipTarget target) {
         var schema = target.getSchema();
-        if (schema == null) {
+        if (schema.isEmpty()) {
             return;
         }
         var basePath = String.format("$.targets.relationships[%d].schema.fulltext_indexes", index);
