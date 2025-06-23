@@ -1763,7 +1763,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
     public void fails_if_relationship_target_type_constraint_property_refers_to_an_untyped_property() {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
-                        
+
                                 {
                           "version": "1",
                           "sources": [{
