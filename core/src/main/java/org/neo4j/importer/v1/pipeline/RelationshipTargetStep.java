@@ -62,18 +62,14 @@ public class RelationshipTargetStep extends EntityTargetStep {
 
     @Override
     public List<PropertyMapping> keyProperties() {
-        var schema = target.getSchema();
-        if (schema == null) {
-            return List.of();
-        }
-        return List.copyOf(distinctKeyProperties(target.getProperties(), schema));
+        return List.copyOf(distinctKeyProperties(target.getProperties(), target.getSchema()));
     }
 
     @Override
     public List<PropertyMapping> nonKeyProperties() {
         var schema = target.getSchema();
         var mappings = target.getProperties();
-        if (schema == null) {
+        if (schema.isEmpty()) {
             return mappings;
         }
         var keyProperties = distinctKeyProperties(mappings, schema);

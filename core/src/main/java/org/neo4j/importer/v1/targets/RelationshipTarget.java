@@ -70,7 +70,7 @@ public class RelationshipTarget extends EntityTarget {
     }
 
     public RelationshipSchema getSchema() {
-        return schema;
+        return schema == null ? RelationshipSchema.EMPTY : schema;
     }
 
     public NodeReference getStartNodeReference() {

@@ -81,7 +81,7 @@ public class NoRedundantKeyAndExistenceConstraintsValidator implements Specifica
     @Override
     public void visitRelationshipTarget(int index, RelationshipTarget target) {
         var schema = target.getSchema();
-        if (schema == null) {
+        if (schema.isEmpty()) {
             return;
         }
         var paths = new LinkedHashMap<String, List<String>>();

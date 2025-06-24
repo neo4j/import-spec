@@ -60,6 +60,18 @@ public class NodeSchema implements Serializable {
         this.vectorIndexes = vectorIndexes;
     }
 
+    public boolean isEmpty() {
+        return getTypeConstraints().isEmpty()
+                && getKeyConstraints().isEmpty()
+                && getUniqueConstraints().isEmpty()
+                && getExistenceConstraints().isEmpty()
+                && getRangeIndexes().isEmpty()
+                && getTextIndexes().isEmpty()
+                && getPointIndexes().isEmpty()
+                && getFullTextIndexes().isEmpty()
+                && getVectorIndexes().isEmpty();
+    }
+
     public List<NodeTypeConstraint> getTypeConstraints() {
         return typeConstraints != null ? typeConstraints : List.of();
     }

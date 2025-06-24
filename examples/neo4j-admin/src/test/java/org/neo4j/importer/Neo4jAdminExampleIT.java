@@ -576,7 +576,7 @@ public class Neo4jAdminExampleIT {
 
         private static Stream<String> generateRelationshipSchemaStatements(RelationshipTarget relationshipTarget) {
             var schema = relationshipTarget.getSchema();
-            if (schema == null) {
+            if (schema.isEmpty()) {
                 return Stream.empty();
             }
             var statements = new ArrayList<String>();

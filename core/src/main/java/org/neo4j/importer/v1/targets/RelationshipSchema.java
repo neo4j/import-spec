@@ -24,6 +24,9 @@ import java.util.Objects;
 
 public class RelationshipSchema implements Serializable {
 
+    static final RelationshipSchema EMPTY = new RelationshipSchema(
+            List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of());
+
     private final List<RelationshipTypeConstraint> typeConstraints;
     private final List<RelationshipKeyConstraint> keyConstraints;
     private final List<RelationshipUniqueConstraint> uniqueConstraints;
@@ -56,6 +59,18 @@ public class RelationshipSchema implements Serializable {
         this.pointIndexes = pointIndexes;
         this.fullTextIndexes = fullTextIndexes;
         this.vectorIndexes = vectorIndexes;
+    }
+
+    public boolean isEmpty() {
+        return getTypeConstraints().isEmpty()
+                && getKeyConstraints().isEmpty()
+                && getUniqueConstraints().isEmpty()
+                && getExistenceConstraints().isEmpty()
+                && getRangeIndexes().isEmpty()
+                && getTextIndexes().isEmpty()
+                && getPointIndexes().isEmpty()
+                && getFullTextIndexes().isEmpty()
+                && getVectorIndexes().isEmpty();
     }
 
     public List<RelationshipTypeConstraint> getTypeConstraints() {

@@ -53,7 +53,7 @@ public class NoDanglingPropertyInUniqueConstraintValidator implements Specificat
     @Override
     public void visitRelationshipTarget(int index, RelationshipTarget target) {
         var schema = target.getSchema();
-        if (schema == null) {
+        if (schema.isEmpty()) {
             return;
         }
         var basePath = String.format("$.targets.relationships[%d].schema.unique_constraints", index);
