@@ -127,6 +127,7 @@ public class BeamExampleIT {
                         case SourceStep source -> handleSource(source, outputs);
                         case ActionStep action -> handleAction(action, outputs);
                         case TargetStep target -> handleTarget(target, outputs);
+                        default -> throw new IllegalStateException("Unexpected value: " + step);
                     }
                 });
             }
@@ -416,6 +417,7 @@ public class BeamExampleIT {
                             case NodeTargetStep nodeTarget -> generateNodeSchemaStatements(nodeTarget);
                             case RelationshipTargetStep relationshipTarget ->
                                 generateRelationshipSchemaStatements(relationshipTarget);
+                            default -> throw new IllegalStateException("Unexpected value: " + target);
                         };
 
                 if (schemaStatements.isEmpty()) {
@@ -630,6 +632,7 @@ public class BeamExampleIT {
                             case NodeTargetStep nodeTarget -> buildNodeImportQuery(nodeTarget, unwindRows, row);
                             case RelationshipTargetStep relationshipTarget ->
                                 buildRelationshipImportQuery(relationshipTarget, unwindRows, row);
+                            default -> throw new IllegalStateException("Unexpected value: " + target);
                         };
 
                 var summary = WriteCounters.of(driver.executableQuery(statement.getCypher())
