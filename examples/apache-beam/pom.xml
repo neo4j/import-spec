@@ -31,6 +31,13 @@
         <dependency>
             <!-- required by Beam's ParquetIO -->
             <groupId>org.apache.hadoop</groupId>
+            <artifactId>hadoop-client-runtime</artifactId>
+            <version>${hadoop.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <!-- required by Beam's ParquetIO -->
+            <groupId>org.apache.hadoop</groupId>
             <artifactId>hadoop-common</artifactId>
             <version>${hadoop.version}</version>
             <scope>test</scope>
