@@ -22,9 +22,17 @@ import static org.neo4j.importer.v1.ImportSpecificationDeserializer.deserialize;
 
 import java.io.StringReader;
 import org.junit.Test;
+import org.neo4j.importer.v1.targets.PropertyType;
+import org.neo4j.importer.v1.targets.WriteMode;
 import org.neo4j.importer.v1.validation.InvalidSpecificationException;
 
 public class ImportSpecificationDeserializerNodeTargetTest {
+
+    private static final String ENUM_ARRAY_PROPERTY_TYPE =
+            ImportSpecificationDeserializerEnumUtil.enumToJsonString(PropertyType.class);
+
+    private static final String ENUM_ARRAY_WRITE_MODE =
+            ImportSpecificationDeserializerEnumUtil.enumToJsonString(WriteMode.class);
 
     @Test
     public void fails_if_node_target_active_attribute_has_wrong_type() {
@@ -242,7 +250,8 @@ public class ImportSpecificationDeserializerNodeTargetTest {
                 .hasMessageContainingAll(
                         "1 error(s)",
                         "0 warning(s)",
-                        "$.targets.nodes[0].write_mode: does not have a value in the enumeration [create, merge]");
+                        "$.targets.nodes[0].write_mode: does not have a value in the enumeration",
+                        ENUM_ARRAY_WRITE_MODE);
     }
 
     @Test
@@ -846,7 +855,8 @@ public class ImportSpecificationDeserializerNodeTargetTest {
                 .hasMessageContainingAll(
                         "1 error(s)",
                         "0 warning(s)",
-                        "$.targets.nodes[0].properties[0].target_property_type: does not have a value in the enumeration [boolean, boolean_array, byte_array, date, date_array, duration, duration_array, float, float_array, integer, integer_array, local_datetime, local_datetime_array, local_time, local_time_array, point, point_array, string, string_array, zoned_datetime, zoned_datetime_array, zoned_time, zoned_time_array]");
+                        "$.targets.nodes[0].properties[0].target_property_type: does not have a value in the enumeration",
+                        ENUM_ARRAY_PROPERTY_TYPE);
     }
 
     @Test
