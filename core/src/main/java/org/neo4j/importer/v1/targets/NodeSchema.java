@@ -22,7 +22,7 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
 
-public class NodeSchema implements Serializable {
+public class NodeSchema implements Schema, Serializable {
 
     static final NodeSchema EMPTY = new NodeSchema(
             List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of());
