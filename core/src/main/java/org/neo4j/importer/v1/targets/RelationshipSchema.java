@@ -22,7 +22,7 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
 
-public class RelationshipSchema implements Serializable {
+public class RelationshipSchema implements Schema, Serializable {
 
     static final RelationshipSchema EMPTY = new RelationshipSchema(
             List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of());
