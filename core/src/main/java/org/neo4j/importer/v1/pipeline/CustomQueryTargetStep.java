@@ -16,15 +16,15 @@
  */
 package org.neo4j.importer.v1.pipeline;
 
-import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import org.neo4j.importer.v1.targets.CustomQueryTarget;
 
 public class CustomQueryTargetStep extends TargetStep {
 
     private final CustomQueryTarget target;
 
-    CustomQueryTargetStep(CustomQueryTarget target, List<ImportStep> dependencies) {
+    CustomQueryTargetStep(CustomQueryTarget target, Set<ImportStep> dependencies) {
         super(dependencies);
         this.target = target;
     }
