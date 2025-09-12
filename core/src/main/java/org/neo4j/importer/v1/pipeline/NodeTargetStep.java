@@ -34,7 +34,7 @@ public class NodeTargetStep extends EntityTargetStep {
 
     private final NodeTarget target;
 
-    NodeTargetStep(NodeTarget target, List<ImportStep> dependencies) {
+    NodeTargetStep(NodeTarget target, Set<ImportStep> dependencies) {
         super(dependencies);
         this.target = target;
     }
@@ -80,6 +80,11 @@ public class NodeTargetStep extends EntityTargetStep {
     @Override
     public int hashCode() {
         return Objects.hash(super.hashCode(), target);
+    }
+
+    @Override
+    public String toString() {
+        return "NodeTargetStep{" + "target=" + target + "} " + super.toString();
     }
 
     @Override

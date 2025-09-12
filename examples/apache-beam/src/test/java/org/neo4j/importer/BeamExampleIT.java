@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Supplier;
@@ -211,7 +212,7 @@ public class BeamExampleIT {
     }
 
     private static List<PCollection<?>> stepsToOutputs(
-            List<ImportStep> dependencies, Map<String, PCollection<?>> outputs, PCollection<?>... extras) {
+            Set<ImportStep> dependencies, Map<String, PCollection<?>> outputs, PCollection<?>... extras) {
         var result = dependencies.stream()
                 .map(step -> outputs.get(step.name()))
                 .collect(Collectors.toCollection((Supplier<ArrayList<PCollection<?>>>) ArrayList::new));

@@ -17,6 +17,7 @@
 package org.neo4j.importer.v1.pipeline;
 
 import java.util.List;
+import java.util.Set;
 import java.util.Map;
 import java.util.stream.Collectors;
 import org.neo4j.importer.v1.targets.EntityTarget;
@@ -26,7 +27,7 @@ import org.neo4j.importer.v1.targets.PropertyType;
 
 public abstract sealed class EntityTargetStep extends TargetStep permits NodeTargetStep, RelationshipTargetStep {
 
-    protected EntityTargetStep(List<ImportStep> dependencies) {
+    protected EntityTargetStep(Set<ImportStep> dependencies) {
         super(dependencies);
     }
 

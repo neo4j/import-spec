@@ -1,0 +1,124 @@
+/*
+ * Copyright (c) "Neo4j"
+ * Neo4j Sweden AB [https://neo4j.com]
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package org.neo4j.importer.v1.pipeline;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.List;
+import java.util.Set;
+import org.junit.jupiter.api.Test;
+import org.neo4j.importer.v1.ImportSpecificationDeserializer;
+import org.neo4j.importer.v1.pipeline.ImportExecutionPlan.ImportStepStage;
+import org.neo4j.importer.v1.sources.JdbcSource;
+import org.neo4j.importer.v1.targets.NodeKeyConstraint;
+import org.neo4j.importer.v1.targets.NodeReference;
+import org.neo4j.importer.v1.targets.NodeSchema;
+import org.neo4j.importer.v1.targets.NodeTarget;
+import org.neo4j.importer.v1.targets.PropertyMapping;
+import org.neo4j.importer.v1.targets.RelationshipTarget;
+
+class ImportExecutionPlanIT {
+
+    @Test
+    void exposes_execution_plan() throws Exception {
+        try (InputStream stream = this.getClass().getResourceAsStream("/e2e/admin-import/spec.yaml")) {
+            assertThat(stream).isNotNull();
+            try (var reader = new InputStreamReader(stream)) {
+                var pipeline = ImportPipeline.of(ImportSpecificationDeserializer.deserialize(reader));
+
+                var executionPlan = pipeline.executionPlan();
+
+                var groups = executionPlan.getGroups();
+                assertThat(groups).hasSize(1);
+                var group = groups.getFirst();
+                var stages = group.getStages();
+                assertThat(stages).hasSize(3);
+                var productSource = new SourceStep(new JdbcSource(
+                        "products",
+                        "northwind",
+                        "SELECT productname, unitprice FROM products ORDER BY productname ASC"));
+                var productInCategorySource = new SourceStep(
+                        new JdbcSource(
+                                "products_in_categories",
+                                "northwind",
+                                "SELECT p.productname AS productname, c.categoryname AS categoryname FROM products p NATURAL JOIN categories c ORDER BY p.productname ASC "));
+                var categorySource = new SourceStep(new JdbcSource(
+                        "categories",
+                        "northwind",
+                        "SELECT categoryname, description FROM categories ORDER BY categoryname ASC"));
+                assertThat(stages.get(0))
+                        .isEqualTo(new ImportStepStage(Set.of(categorySource, productInCategorySource, productSource)));
+                var productNodeStep = new NodeTargetStep(
+                        new NodeTarget(
+                                true,
+                                "product_nodes",
+                                "products",
+                                null,
+                                null,
+                                (ObjectNode) null,
+                                List.of("Product"),
+                                List.of(
+                                        new PropertyMapping("productname", "name", null),
+                                        new PropertyMapping("unitprice", "unitPrice", null)),
+                                nodeSchema(new NodeKeyConstraint(
+                                        "name_key_constraint", "Product", List.of("name"), null))),
+                        Set.of(productSource));
+                var categoryNodeStep = new NodeTargetStep(
+                        new NodeTarget(
+                                true,
+                                "category_nodes",
+                                "categories",
+                                null,
+                                null,
+                                (ObjectNode) null,
+                                List.of("Category"),
+                                List.of(
+                                        new PropertyMapping("categoryname", "name", null),
+                                        new PropertyMapping("description", "description", null)),
+                                nodeSchema(new NodeKeyConstraint(
+                                        "name_key_constraint", "Category", List.of("name"), null))),
+                        Set.of(categorySource));
+                assertThat(stages.get(1)).isEqualTo(new ImportStepStage(Set.of(productNodeStep, categoryNodeStep)));
+                assertThat(stages.get(2))
+                        .isEqualTo(new ImportStepStage(Set.of(new RelationshipTargetStep(
+                                new RelationshipTarget(
+                                        true,
+                                        "product_in_category_relationships",
+                                        "products_in_categories",
+                                        null,
+                                        "BELONGS_TO_CATEGORY",
+                                        null,
+                                        null,
+                                        null,
+                                        new NodeReference("product_nodes"),
+                                        new NodeReference("category_nodes"),
+                                        null,
+                                        null),
+                                productNodeStep,
+                                categoryNodeStep,
+                                Set.of(productInCategorySource, productNodeStep, categoryNodeStep)))));
+            }
+        }
+    }
+
+    private NodeSchema nodeSchema(NodeKeyConstraint key) {
+        return new NodeSchema(null, List.of(key), null, null, null, null, null, null, null);
+    }
+}

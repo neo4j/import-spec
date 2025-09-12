@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 import org.apache.beam.sdk.coders.VarIntCoder;
@@ -232,7 +233,7 @@ public class BeamIT {
     }
 
     private static List<PCollection<?>> dependencyOutputs(
-            List<ImportStep> dependencies, Map<String, PCollection<?>> outputs) {
+            Set<ImportStep> dependencies, Map<String, PCollection<?>> outputs) {
         return dependencies.stream().map(dep -> outputs.get(dep.name())).collect(Collectors.toUnmodifiableList());
     }
 

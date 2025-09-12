@@ -21,6 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 import org.junit.jupiter.api.Test;
 import org.neo4j.importer.v1.targets.NodeMatchMode;
 import org.neo4j.importer.v1.targets.NodeReference;
@@ -63,7 +64,7 @@ class RelationshipTargetStepTest {
                         schema),
                 nodeTarget("a-node-target"),
                 nodeTarget("a-node-target"),
-                List.of());
+                Set.of());
 
         assertThat(task.keyProperties()).isEmpty();
         assertThat(task.nonKeyProperties()).isEqualTo(properties);
@@ -89,7 +90,7 @@ class RelationshipTargetStepTest {
                         schema),
                 nodeTarget("start-node-target"),
                 nodeTarget("end-node-target"),
-                List.of());
+                Set.of());
 
         assertThat(task.keyProperties()).containsExactly(mapping1, mapping2, mapping4);
         assertThat(task.nonKeyProperties()).containsExactly(mapping3);
@@ -117,7 +118,7 @@ class RelationshipTargetStepTest {
                         schema),
                 nodeTarget("start-node-target"),
                 nodeTarget("end-node-target"),
-                List.of());
+                Set.of());
 
         assertThat(task.keyProperties()).containsExactly(mapping2, mapping4);
         assertThat(task.nonKeyProperties()).containsExactly(mapping1, mapping3);
@@ -146,7 +147,7 @@ class RelationshipTargetStepTest {
                         schema),
                 nodeTarget("start-node-target"),
                 nodeTarget("end-node-target"),
-                List.of());
+                Set.of());
 
         assertThat(task.keyProperties()).containsExactly(mapping1, mapping2, mapping3);
         assertThat(task.nonKeyProperties()).containsExactly(mapping4);
@@ -196,6 +197,6 @@ class RelationshipTargetStepTest {
                         List.of("Label"),
                         List.of(new PropertyMapping("a-field", "a-property", null)),
                         null),
-                List.of());
+                Set.of());
     }
 }

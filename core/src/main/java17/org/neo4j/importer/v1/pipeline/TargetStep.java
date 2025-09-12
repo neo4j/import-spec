@@ -16,15 +16,15 @@
  */
 package org.neo4j.importer.v1.pipeline;
 
-import java.util.List;
+import java.util.Set;
 import java.util.Objects;
 import org.neo4j.importer.v1.targets.Target;
 
 public abstract sealed class TargetStep implements ImportStep permits EntityTargetStep, CustomQueryTargetStep {
 
-    private final List<ImportStep> dependencies;
+    private final Set<ImportStep> dependencies;
 
-    protected TargetStep(List<ImportStep> dependencies) {
+    protected TargetStep(Set<ImportStep> dependencies) {
         this.dependencies = dependencies;
     }
 
@@ -37,7 +37,7 @@ public abstract sealed class TargetStep implements ImportStep permits EntityTarg
         return target().getSource();
     }
 
-    public List<ImportStep> dependencies() {
+    public Set<ImportStep> dependencies() {
         return dependencies;
     }
 
