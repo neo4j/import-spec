@@ -64,7 +64,7 @@ public class JdbcSource implements Source {
 
     @Override
     public String toString() {
-        return "NamedJdbcSource{" + "name='"
+        return "JdbcSource{" + "name='"
                 + name + '\'' + ", dataSource='"
                 + dataSource + '\'' + ", sql='"
                 + sql + '\'' + '}';
