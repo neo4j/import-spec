@@ -21,6 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 import org.junit.jupiter.api.Test;
 import org.neo4j.importer.v1.targets.NodeExistenceConstraint;
 import org.neo4j.importer.v1.targets.NodeKeyConstraint;
@@ -55,7 +56,7 @@ class NodeTargetStepTest {
                         List.of("Label"),
                         properties,
                         schema),
-                List.of());
+                Set.of());
 
         assertThat(task.keyProperties()).isEmpty();
         assertThat(task.nonKeyProperties()).isEqualTo(properties);
@@ -77,7 +78,7 @@ class NodeTargetStepTest {
                         List.of("Label"),
                         properties,
                         schema),
-                List.of());
+                Set.of());
 
         assertThat(task.keyProperties()).containsExactly(mapping1, mapping2, mapping4);
         assertThat(task.nonKeyProperties()).containsExactly(mapping3);
@@ -100,7 +101,7 @@ class NodeTargetStepTest {
                         List.of("Label"),
                         properties,
                         schema),
-                List.of());
+                Set.of());
 
         assertThat(task.keyProperties()).containsExactly(mapping2, mapping4);
         assertThat(task.nonKeyProperties()).containsExactly(mapping1, mapping3);
@@ -124,7 +125,7 @@ class NodeTargetStepTest {
                         List.of("Label"),
                         properties,
                         schema),
-                List.of());
+                Set.of());
 
         assertThat(task.keyProperties()).containsExactly(mapping1, mapping2, mapping3);
         assertThat(task.nonKeyProperties()).containsExactly(mapping4);

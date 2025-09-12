@@ -17,12 +17,12 @@
 package org.neo4j.importer.v1.pipeline;
 
 import java.io.Serializable;
-import java.util.List;
+import java.util.Set;
 
 public sealed interface ImportStep extends Serializable permits SourceStep, ActionStep, TargetStep {
     String name();
 
-    default List<ImportStep> dependencies() {
-        return List.of();
+    default Set<ImportStep> dependencies() {
+        return Set.of();
     }
 }

@@ -20,6 +20,7 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -116,6 +117,34 @@ public class Graphs {
             }
         }
         return cycles;
+    }
+
+    public static <T> List<Set<T>> findWeaklyConnectedComponents(Map<T, Set<T>> graph) {
+        var adjacencyList = new LinkedHashMap<T, Set<T>>();
+        graph.forEach((node, neighbors) -> {
+            neighbors.forEach(neighbor -> {
+                adjacencyList.computeIfAbsent(node, key -> new HashSet<>()).add(neighbor);
+                adjacencyList.computeIfAbsent(neighbor, key -> new HashSet<>()).add(node);
+            });
+        });
+        List<Set<T>> result = new ArrayList<>();
+        Set<T> visitedNodes = new HashSet<>();
+        adjacencyList.keySet().forEach(node -> {
+            if (!visitedNodes.contains(node)) {
+                var component = new HashSet<T>();
+                var stack = new ArrayDeque<T>();
+                stack.push(node);
+                while (!stack.isEmpty()) {
+                    var neighbor = stack.pop();
+                    if (visitedNodes.add(neighbor)) {
+                        component.add(neighbor);
+                        adjacencyList.get(neighbor).forEach(stack::push);
+                    }
+                }
+                result.add(component);
+            }
+        });
+        return result;
     }
 
     private static <T> Stream<T> getAllValues(Map<T, Set<T>> graph) {

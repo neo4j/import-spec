@@ -16,17 +16,17 @@
  */
 package org.neo4j.importer.v1.pipeline;
 
-import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import org.neo4j.importer.v1.actions.Action;
 import org.neo4j.importer.v1.actions.ActionStage;
 
 public class ActionStep implements ImportStep {
 
     private final Action action;
-    private final List<ImportStep> dependencies;
+    private final Set<ImportStep> dependencies;
 
-    ActionStep(Action action, List<ImportStep> dependencies) {
+    ActionStep(Action action, Set<ImportStep> dependencies) {
         this.action = action;
         this.dependencies = dependencies;
     }
@@ -45,7 +45,7 @@ public class ActionStep implements ImportStep {
     }
 
     @Override
-    public List<ImportStep> dependencies() {
+    public Set<ImportStep> dependencies() {
         return dependencies;
     }
 
@@ -59,5 +59,10 @@ public class ActionStep implements ImportStep {
     @Override
     public int hashCode() {
         return Objects.hash(action, dependencies);
+    }
+
+    @Override
+    public String toString() {
+        return "ActionStep{" + "action=" + action + ", dependencies=" + dependencies + '}';
     }
 }
