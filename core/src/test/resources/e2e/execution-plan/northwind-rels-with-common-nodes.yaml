@@ -1,0 +1,82 @@
+version: "1"
+sources:
+  - name: "products"
+    type: "jdbc"
+    data_source: "northwind"
+    sql: "SELECT productname, unitprice FROM products ORDER BY productname ASC"
+  - name: "categories"
+    type: "jdbc"
+    data_source: "northwind"
+    sql: "SELECT categoryname, description FROM categories ORDER BY categoryname ASC"
+  - name: "customers"
+    type: "jdbc"
+    data_source: "northwind"
+    sql: "SELECT customer_id, first_name, last_name FROM customers ORDER BY first_name ASC, last_name ASC"
+  - name: "products_in_categories"
+    type: "jdbc"
+    data_source: "northwind"
+    sql: "SELECT p.productname AS productname, c.categoryname AS categoryname FROM products p NATURAL JOIN categories c ORDER BY p.productname ASC"
+  - name: "customers_bought_products"
+    type: "jdbc"
+    data_source: "northwind"
+    sql: "SELECT p.productname AS productname, c.customer_id AS customer_id FROM products p NATURAL JOIN customers c ORDER BY p.productname ASC"
+targets:
+  nodes:
+    - source: "products"
+      name: "product_nodes"
+      labels:
+        - "Product"
+      properties:
+        - source_field: "productname"
+          target_property: "name"
+        - source_field: "unitprice"
+          target_property: "unitPrice"
+      schema:
+        key_constraints:
+          - name: "product_name_key_constraint"
+            label: "Product"
+            properties:
+              - "name"
+    - source: "categories"
+      name: "category_nodes"
+      labels:
+        - "Category"
+      properties:
+        - source_field: "categoryname"
+          target_property: "name"
+        - source_field: "description"
+          target_property: "description"
+      schema:
+        key_constraints:
+          - name: "category_name_key_constraint"
+            label: "Category"
+            properties:
+              - "name"
+    - source: "customers"
+      name: "customer_nodes"
+      labels:
+        - "Customer"
+      properties:
+        - source_field: "customer_id"
+          target_property: "id"
+        - source_field: "first_name"
+          target_property: "first_name"
+        - source_field: "last_name"
+          target_property: "last_name"
+      schema:
+        key_constraints:
+          - name: "customer_id_key_constraint"
+            label: "Customer"
+            properties:
+              - "id"
+  relationships:
+    - source: "products_in_categories"
+      name: "product_in_category_relationships"
+      type: "BELONGS_TO_CATEGORY"
+      start_node_reference: "product_nodes"
+      end_node_reference: "category_nodes"
+    - source: "customers_bought_products"
+      name: "customers_bought_products_relationships"
+      type: "BOUGHT"
+      start_node_reference: "customer_nodes"
+      end_node_reference: "product_nodes"

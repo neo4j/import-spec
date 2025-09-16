@@ -38,7 +38,7 @@ class ImportExecutionPlanIT {
 
     @Test
     void exposes_execution_plan() throws Exception {
-        try (InputStream stream = this.getClass().getResourceAsStream("/e2e/admin-import/spec.yaml")) {
+        try (InputStream stream = this.getClass().getResourceAsStream("/e2e/execution-plan/northwind.yaml")) {
             assertThat(stream).isNotNull();
             try (var reader = new InputStreamReader(stream)) {
                 var pipeline = ImportPipeline.of(ImportSpecificationDeserializer.deserialize(reader));
@@ -58,7 +58,7 @@ class ImportExecutionPlanIT {
                         new JdbcSource(
                                 "products_in_categories",
                                 "northwind",
-                                "SELECT p.productname AS productname, c.categoryname AS categoryname FROM products p NATURAL JOIN categories c ORDER BY p.productname ASC "));
+                                "SELECT p.productname AS productname, c.categoryname AS categoryname FROM products p NATURAL JOIN categories c ORDER BY p.productname ASC"));
                 var categorySource = new SourceStep(new JdbcSource(
                         "categories",
                         "northwind",
@@ -78,7 +78,7 @@ class ImportExecutionPlanIT {
                                         new PropertyMapping("productname", "name", null),
                                         new PropertyMapping("unitprice", "unitPrice", null)),
                                 nodeSchema(new NodeKeyConstraint(
-                                        "name_key_constraint", "Product", List.of("name"), null))),
+                                        "product_name_key_constraint", "Product", List.of("name"), null))),
                         Set.of(productSource));
                 var categoryNodeStep = new NodeTargetStep(
                         new NodeTarget(
@@ -93,7 +93,7 @@ class ImportExecutionPlanIT {
                                         new PropertyMapping("categoryname", "name", null),
                                         new PropertyMapping("description", "description", null)),
                                 nodeSchema(new NodeKeyConstraint(
-                                        "name_key_constraint", "Category", List.of("name"), null))),
+                                        "category_name_key_constraint", "Category", List.of("name"), null))),
                         Set.of(categorySource));
                 assertThat(stages.get(1)).isEqualTo(new ImportStepStage(Set.of(productNodeStep, categoryNodeStep)));
                 assertThat(stages.get(2))
@@ -114,6 +114,93 @@ class ImportExecutionPlanIT {
                                 productNodeStep,
                                 categoryNodeStep,
                                 Set.of(productInCategorySource, productNodeStep, categoryNodeStep)))));
+            }
+        }
+    }
+
+    @Test
+    void exposes_execution_plan_with_relationships_sharing_common_nodes() throws Exception {
+        try (InputStream stream =
+                this.getClass().getResourceAsStream("/e2e/execution-plan/northwind-rels-with-common-nodes.yaml")) {
+            assertThat(stream).isNotNull();
+            try (var reader = new InputStreamReader(stream)) {
+                var pipeline = ImportPipeline.of(ImportSpecificationDeserializer.deserialize(reader));
+
+                var executionPlan = pipeline.executionPlan();
+
+                var groups = executionPlan.getGroups();
+                assertThat(groups).hasSize(1);
+                var group = groups.getFirst();
+                var stages = group.getStages();
+                assertThat(stages).hasSize(3);
+                assertThat(stages.get(0).getSteps()).hasSize(5);
+                var customerSource = new SourceStep(
+                        new JdbcSource(
+                                "customers",
+                                "northwind",
+                                "SELECT customer_id, first_name, last_name FROM customers ORDER BY first_name ASC, last_name ASC"));
+                var customerNodeStep = new NodeTargetStep(
+                        new NodeTarget(
+                                true,
+                                "customer_nodes",
+                                "customers",
+                                null,
+                                null,
+                                (ObjectNode) null,
+                                List.of("Customer"),
+                                List.of(
+                                        new PropertyMapping("customer_id", "id", null),
+                                        new PropertyMapping("first_name", "first_name", null),
+                                        new PropertyMapping("last_name", "last_name", null)),
+                                nodeSchema(new NodeKeyConstraint(
+                                        "customer_id_key_constraint", "Customer", List.of("id"), null))),
+                        Set.of(customerSource));
+                assertThat(stages.get(1).getSteps()).hasSize(3).contains(customerNodeStep);
+                var customerBoughtProductSource = new SourceStep(
+                        new JdbcSource(
+                                "customers_bought_products",
+                                "northwind",
+                                "SELECT p.productname AS productname, c.customer_id AS customer_id FROM products p NATURAL JOIN customers c ORDER BY p.productname ASC"));
+                var productNodeStep = new NodeTargetStep(
+                        new NodeTarget(
+                                true,
+                                "product_nodes",
+                                "products",
+                                null,
+                                null,
+                                (ObjectNode) null,
+                                List.of("Product"),
+                                List.of(
+                                        new PropertyMapping("productname", "name", null),
+                                        new PropertyMapping("unitprice", "unitPrice", null)),
+                                nodeSchema(new NodeKeyConstraint(
+                                        "product_name_key_constraint", "Product", List.of("name"), null))),
+                        Set.of(new SourceStep(new JdbcSource(
+                                "products",
+                                "northwind",
+                                "SELECT productname, unitprice FROM products ORDER BY productname ASC"))));
+                assertThat(stages.get(2).getSteps())
+                        .hasSize(2)
+                        // FIXME: overlapping rels should be spread across different stages
+                        // TODO: also add a test where rels overlap but don't use the same labels for the nodes
+                        // (possible with custom key mappings)
+                        .contains(new RelationshipTargetStep(
+                                new RelationshipTarget(
+                                        true,
+                                        "customers_bought_products_relationships",
+                                        "customers_bought_products",
+                                        null,
+                                        "BOUGHT",
+                                        null,
+                                        null,
+                                        null,
+                                        new NodeReference("customer_nodes"),
+                                        new NodeReference("product_nodes"),
+                                        null,
+                                        null),
+                                customerNodeStep,
+                                productNodeStep,
+                                Set.of(customerBoughtProductSource, productNodeStep, customerNodeStep)));
             }
         }
     }
