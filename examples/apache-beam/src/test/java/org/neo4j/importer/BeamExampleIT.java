@@ -19,6 +19,7 @@ package org.neo4j.importer;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.google.cloud.NoCredentials;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -57,7 +58,9 @@ import org.apache.beam.sdk.coders.KvCoder;
 import org.apache.beam.sdk.coders.StringUtf8Coder;
 import org.apache.beam.sdk.coders.VarIntCoder;
 import org.apache.beam.sdk.extensions.avro.coders.AvroCoder;
+import org.apache.beam.sdk.extensions.gcp.options.GcpOptions;
 import org.apache.beam.sdk.io.parquet.ParquetIO;
+import org.apache.beam.sdk.options.PipelineOptions;
 import org.apache.beam.sdk.testing.TestPipeline;
 import org.apache.beam.sdk.transforms.Create;
 import org.apache.beam.sdk.transforms.DoFn;
@@ -107,7 +110,7 @@ import org.testcontainers.utility.DockerImageName;
 public class BeamExampleIT {
 
     @Rule
-    public final TestPipeline pipeline = TestPipeline.create();
+    public final TestPipeline pipeline = TestPipeline.fromOptions(withAnonymousGcsAccess());
 
     @ClassRule
     public static Neo4jContainer<?> NEO4J = new Neo4jContainer<>(DockerImageName.parse("neo4j:5-enterprise"))
@@ -149,6 +152,13 @@ public class BeamExampleIT {
             assertRelationshipCount(driver, "Movie", "IN_CATEGORY", "Category", 1000L);
             assertRelationshipCount(driver, "Customer", "HAS_RENTED", "Movie", 16044L);
         }
+    }
+
+    private static PipelineOptions withAnonymousGcsAccess() {
+        PipelineOptions options = TestPipeline.testingPipelineOptions();
+        GcpOptions gcpOptions = options.as(GcpOptions.class);
+        gcpOptions.setGcpCredential(NoCredentials.getInstance());
+        return options;
     }
 
     private void handleSource(SourceStep step, Map<String, PCollection<?>> outputs) {
