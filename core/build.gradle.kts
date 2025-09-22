@@ -33,3 +33,10 @@ java {
     sourceCompatibility = JavaVersion.VERSION_17
     targetCompatibility = JavaVersion.VERSION_17
 }
+
+tasks {
+    compileTestJava {
+        sourceCompatibility = "21"
+        targetCompatibility = "21"
+    }
+}
