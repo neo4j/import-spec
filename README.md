@@ -89,5 +89,5 @@ class GettingStarted {
 
 ## Prerequisites
 
-- Maven
+- Gradle
 - JDK 21 (21 is used for tests, 11 and 17 for production sources)
