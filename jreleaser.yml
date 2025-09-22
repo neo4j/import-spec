@@ -53,7 +53,7 @@ hooks:
         verbose: true
         shell: BASH
         run: |
-          ./mvnw --quiet --batch-mode clean deploy -DskipTests -DaltDeploymentRepository=default::file://{{basedir}}/target/maven-artifacts
+          ./gradlew clean publish -x test --quiet -PrepositoryUrl=file://$PWD/target/maven-artifacts -PrepositoryId=default
 
 signing:
   active: ALWAYS
