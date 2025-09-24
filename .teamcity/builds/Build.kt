@@ -24,16 +24,17 @@ class Build(
         parallel {
           listOf("17", "21").forEach { java ->
             dependentBuildType(
-                Maven(
+                Gradle(
                     "${name}-build-${java}",
                     "build - java ${java}",
-                    "sortpom:verify license:check spotless:check compile",
-                    "-DspotlessFiles=src/main/java/.*.java",
-                    java))
+                    "spotlessCheck build",
+//                    "-DspotlessFiles=src/main/java/.*.java",
+                    javaVersion = java)
+            )
           }
         }
         dependentBuildType(
-            Maven(
+            Gradle(
                 "${name}-test",
                 "test",
                 "verify",
