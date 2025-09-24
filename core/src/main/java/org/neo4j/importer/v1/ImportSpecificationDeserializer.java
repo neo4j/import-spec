@@ -16,6 +16,8 @@
  */
 package org.neo4j.importer.v1;
 
+import static org.neo4j.importer.v1.ImportSpecificationSettings.DEFAULT_SETTINGS;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.StreamReadFeature;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -28,18 +30,11 @@ import com.networknt.schema.JsonSchemaFactory;
 import com.networknt.schema.SpecVersion.VersionFlag;
 import java.io.IOException;
 import java.io.Reader;
-import java.util.List;
-import java.util.Optional;
-import java.util.ServiceLoader;
-import java.util.ServiceLoader.Provider;
-import java.util.stream.Collectors;
 import org.neo4j.importer.v1.actions.Action;
 import org.neo4j.importer.v1.actions.ActionDeserializer;
-import org.neo4j.importer.v1.actions.ActionProvider;
 import org.neo4j.importer.v1.distribution.Neo4jDistribution;
 import org.neo4j.importer.v1.sources.Source;
 import org.neo4j.importer.v1.sources.SourceDeserializer;
-import org.neo4j.importer.v1.sources.SourceProvider;
 import org.neo4j.importer.v1.validation.ActionError;
 import org.neo4j.importer.v1.validation.InvalidSpecificationException;
 import org.neo4j.importer.v1.validation.Neo4jDistributionValidator;
@@ -59,6 +54,21 @@ public class ImportSpecificationDeserializer {
     private static final JsonSchema SCHEMA = JsonSchemaFactory.getInstance(VersionFlag.V202012)
             .getSchema(ImportSpecificationDeserializer.class.getResourceAsStream("/spec.v1.json"));
 
+    @Deprecated
+    public static ImportSpecification deserialize(Reader spec) throws SpecificationException {
+        return unpack(spec, DEFAULT_SETTINGS);
+    }
+
+    @Deprecated
+    public static ImportSpecification deserialize(Reader spec, Neo4jDistribution neo4jDistribution)
+            throws SpecificationException {
+        return unpack(
+                spec,
+                ImportSpecificationSettings.builder()
+                        .withRuntimeValidationEnabledAgainst(neo4jDistribution)
+                        .build());
+    }
+
     /**
      * Returns an instance of {@link ImportSpecification} based on the provided {@link Reader} content.
      * The result is guaranteed to be consistent with the specification JSON schema.
@@ -72,26 +82,26 @@ public class ImportSpecificationDeserializer {
      * @return an {@link ImportSpecification}
      * @throws SpecificationException if parsing, deserialization or validation fail
      */
-    public static ImportSpecification deserialize(Reader spec) throws SpecificationException {
-        return deserialize(spec, Optional.empty());
+    public static ImportSpecification deserialize(Reader spec, ImportSpecificationSettings settings)
+            throws SpecificationException {
+        return unpack(spec, settings);
     }
 
-    public static ImportSpecification deserialize(Reader spec, Neo4jDistribution neo4jDistribution)
+    private static ImportSpecification unpack(Reader rawSpecification, ImportSpecificationSettings settings)
             throws SpecificationException {
 
-        return deserialize(spec, Optional.of(neo4jDistribution));
-    }
-
-    private static ImportSpecification deserialize(
-            Reader rawSpecification, Optional<Neo4jDistribution> neo4jDistribution) throws SpecificationException {
-
-        YAMLMapper mapper = initMapper();
+        YAMLMapper mapper = initMapper(settings);
         JsonNode json = parse(mapper, rawSpecification);
-        validateSchema(SCHEMA, json);
+        validateSchema(json);
 
         ImportSpecification specification = deserialize(mapper, json);
-        validateStatically(specification);
-        validateRuntime(specification, neo4jDistribution);
+        validateStatically(specification, settings);
+        var neo4jDistribution = settings.getNeo4jDistribution();
+        if (neo4jDistribution
+                .filter(ImportSpecificationDeserializer::isDistributionSupported)
+                .isPresent()) {
+            validateRuntime(specification, neo4jDistribution.get());
+        }
         return specification;
     }
 
@@ -110,13 +120,13 @@ public class ImportSpecificationDeserializer {
      */
     @Deprecated
     public static void validateStatically(ImportSpecification specification) throws SpecificationException {
-        SpecificationValidators.of(loadValidators()).validate(specification);
+        validateStatically(specification, DEFAULT_SETTINGS);
     }
 
-    private static YAMLMapper initMapper() {
+    private static YAMLMapper initMapper(ImportSpecificationSettings settings) {
         var module = new SimpleModule();
-        module.addDeserializer(Source.class, new SourceDeserializer(loadProviders(SourceProvider.class)));
-        module.addDeserializer(Action.class, new ActionDeserializer(loadProviders(ActionProvider.class)));
+        module.addDeserializer(Source.class, new SourceDeserializer(Plugins.loadSourceProviders(settings)));
+        module.addDeserializer(Action.class, new ActionDeserializer(Plugins.loadActionProviders(settings)));
         return YAMLMapper.builder()
                 .addModule(module)
                 .enable(MapperFeature.ACCEPT_CASE_INSENSITIVE_ENUMS)
@@ -152,9 +162,9 @@ public class ImportSpecificationDeserializer {
         }
     }
 
-    private static void validateSchema(JsonSchema schema, JsonNode json) throws InvalidSpecificationException {
+    private static void validateSchema(JsonNode json) throws InvalidSpecificationException {
         Builder builder = SpecificationValidationResult.builder();
-        schema.validate(json)
+        SCHEMA.validate(json)
                 .forEach(msg -> builder.addError(
                         msg.getInstanceLocation().toString(),
                         String.format("SCHM-%s", msg.getCode()),
@@ -165,27 +175,19 @@ public class ImportSpecificationDeserializer {
         }
     }
 
-    private static List<SpecificationValidator> loadValidators() {
-        return ServiceLoader.load(SpecificationValidator.class).stream()
-                .map(Provider::get)
-                .collect(Collectors.toList());
+    private static void validateStatically(ImportSpecification specification, ImportSpecificationSettings settings)
+            throws SpecificationException {
+        var validators = Plugins.loadSpecificationValidators(settings);
+        SpecificationValidators.of(validators).validate(specification);
     }
 
-    private static void validateRuntime(ImportSpecification spec, Optional<Neo4jDistribution> neo4jDistribution)
+    private static void validateRuntime(ImportSpecification spec, Neo4jDistribution neo4jDistribution)
             throws SpecificationException {
-        if (neo4jDistribution
-                .filter(distribution -> distribution.isVersionLargerThanOrEqual("4.4"))
-                .isEmpty()) {
-            return;
-        }
-        var runtimeValidator = new Neo4jDistributionValidator(neo4jDistribution.get());
+        var runtimeValidator = new Neo4jDistributionValidator(neo4jDistribution);
         SpecificationValidators.of(runtimeValidator).validate(spec);
     }
 
-    @SuppressWarnings("unchecked")
-    private static <T> List<T> loadProviders(Class<?> type) {
-        return ServiceLoader.load(type).stream()
-                .map(provider -> (T) provider.get())
-                .collect(Collectors.toList());
+    private static boolean isDistributionSupported(Neo4jDistribution distribution) {
+        return distribution.isVersionLargerThanOrEqual("4.4");
     }
 }
