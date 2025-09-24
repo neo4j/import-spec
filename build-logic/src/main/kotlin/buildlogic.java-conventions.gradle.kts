@@ -74,7 +74,7 @@ tasks.withType<Javadoc> {
 configure<com.diffplug.gradle.spotless.SpotlessExtension> {
     java {
         target("src/main/java/**/*.java", "src/test/java/**/*.java")
-        googleJavaFormat()
+        palantirJavaFormat()
     }
     kotlin {
         ktfmt().kotlinlangStyle()
