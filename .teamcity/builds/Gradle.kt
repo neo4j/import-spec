@@ -18,8 +18,8 @@ class Gradle(
 
       steps {
         runGradle(javaVersion) {
-            this.tasks = goals
-            this.jvmArgs = "$GRADLE_DEFAULT_ARGS ${args ?: ""}"
+          this.tasks = goals
+          this.gradleParams = "$GRADLE_DEFAULT_ARGS ${args ?: ""}"
         }
       }
 
