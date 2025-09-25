@@ -98,18 +98,18 @@ fun BuildSteps.runGradle(
 
 fun BuildSteps.setVersion(name: String, version: String): GradleBuildStep {
   return this.runGradle {
-      this.name = name
-      gradleParams = "$GRADLE_DEFAULT_ARGS -Pversion=$version"
+    this.name = name
+    gradleParams = "$GRADLE_DEFAULT_ARGS -Pversion=$version"
   }
 }
 
-//fun BuildSteps.setVersion(name: String, version: String): MavenBuildStep {
+// fun BuildSteps.setVersion(name: String, version: String): MavenBuildStep {
 //  return this.runMaven {
 //    this.name = name
 //    goals = "versions:set"
 //    runnerArgs = "$MAVEN_DEFAULT_ARGS -DnewVersion=$version -DgenerateBackupPoms=false"
 //  }
-//}
+// }
 
 fun BuildSteps.commitAndPush(
     name: String,

@@ -28,9 +28,8 @@ class Build(
                     "${name}-build-${java}",
                     "build - java ${java}",
                     "spotlessCheck build",
-//                    "-DspotlessFiles=src/main/java/.*.java",
-                    javaVersion = java)
-            )
+                    //                    "-DspotlessFiles=src/main/java/.*.java",
+                    javaVersion = java))
           }
         }
         dependentBuildType(
