@@ -347,8 +347,8 @@ public class Neo4jAdminExampleIT {
             for (Target target : specification.getTargets().getAll()) {
                 switch (target) {
                     case NodeTarget nodeTarget -> copyFile(indexedSources, nodeTarget);
-                    case RelationshipTarget relationshipTarget ->
-                        copyFile(indexedSources, indexedNodes, relationshipTarget);
+                    case RelationshipTarget relationshipTarget -> copyFile(
+                            indexedSources, indexedNodes, relationshipTarget);
                     default -> throw new RuntimeException("unsupported target type: %s".formatted(target.getClass()));
                 }
             }
@@ -514,8 +514,8 @@ public class Neo4jAdminExampleIT {
             return targets.stream()
                     .flatMap(target -> switch (target) {
                         case NodeTarget nodeTarget -> generateNodeSchemaStatements(nodeTarget);
-                        case RelationshipTarget relationshipTarget ->
-                            generateRelationshipSchemaStatements(relationshipTarget);
+                        case RelationshipTarget relationshipTarget -> generateRelationshipSchemaStatements(
+                                relationshipTarget);
                         default -> Stream.empty();
                     })
                     .toList();
@@ -678,8 +678,8 @@ public class Neo4jAdminExampleIT {
                 case ZONED_DATETIME_ARRAY -> "LIST<ZONED DATETIME NOT NULL>";
                 case ZONED_TIME -> "ZONED TIME";
                 case ZONED_TIME_ARRAY -> "LIST<ZONED TIME NOT NULL>";
-                default ->
-                    throw new IllegalArgumentException(String.format("Unsupported property type: %s", propertyType));
+                default -> throw new IllegalArgumentException(
+                        String.format("Unsupported property type: %s", propertyType));
             };
         }
     }
