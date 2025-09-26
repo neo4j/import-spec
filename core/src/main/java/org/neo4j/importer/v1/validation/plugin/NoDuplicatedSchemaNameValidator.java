@@ -60,8 +60,7 @@ public class NoDuplicatedSchemaNameValidator implements SpecificationValidator {
                 ERROR_CODE,
                 String.format(
                         "Constraint or index name \"%s\" must be defined at most once but %d occurrences were found.",
-                        dup.getKey(),
-                        dup.getValue().size())));
+                        dup.getKey(), dup.getValue().size())));
         return !duplicates.isEmpty();
     }
 
