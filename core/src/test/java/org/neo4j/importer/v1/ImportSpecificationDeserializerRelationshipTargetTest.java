@@ -8608,7 +8608,7 @@ public class ImportSpecificationDeserializerRelationshipTargetTest {
                   ],
                   "schema": {
                       "key_constraints": [{
-                         "name": "a-key-constraint",
+                         "name": "another-key-constraint",
                          "label": "Label2",
                          "properties": ["id"]
                       }]
@@ -8669,7 +8669,7 @@ public class ImportSpecificationDeserializerRelationshipTargetTest {
                   ],
                   "schema": {
                       "key_constraints": [{
-                         "name": "a-key-constraint",
+                         "name": "another-key-constraint",
                          "label": "Label2",
                          "properties": ["id"]
                       }]
