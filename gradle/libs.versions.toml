@@ -1,0 +1,45 @@
+[versions]
+com-fasterxml-jackson-dataformat-jackson-dataformat-yaml = "2.20.0"
+com-networknt-json-schema-validator = "1.5.8"
+org-apache-beam-beam-sdks-java-io-jdbc = "2.67.0"
+org-apache-beam-beam-sdks-java-io-parquet = "2.67.0"
+org-apache-beam-beam-sdks-java-myextensions-sql = "2.67.0"
+org-apache-hadoop-hadoop-client-runtime = "3.4.2"
+org-apache-hadoop-hadoop-common = "3.4.2"
+org-apache-hadoop-hadoop-mapreduce-client-core = "3.4.2"
+org-assertj-assertj-core = "3.27.5"
+org-duckdb-duckdb-jdbc = "1.4.0.0"
+org-junit-jupiter-junit-jupiter = "5.13.4"
+org-junit-jupiter-junit-jupiter-params = "5.13.4"
+org-junit-vintage-junit-vintage-engine = "5.13.4"
+org-neo4j-driver-neo4j-java-driver = "5.28.9"
+org-neo4j-neo4j-cypher-dsl = "2025.0.1"
+org-postgresql-postgresql = "42.7.8"
+org-slf4j-slf4j-nop = "2.0.17"
+org-testcontainers-junit-jupiter = "1.21.3"
+org-testcontainers-neo4j = "1.21.3"
+org-testcontainers-postgresql = "1.21.3"
+org-testcontainers-testcontainers = "1.21.3"
+
+[libraries]
+com-fasterxml-jackson-dataformat-jackson-dataformat-yaml = { module = "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml", version.ref = "com-fasterxml-jackson-dataformat-jackson-dataformat-yaml" }
+com-networknt-json-schema-validator = { module = "com.networknt:json-schema-validator", version.ref = "com-networknt-json-schema-validator" }
+org-apache-beam-beam-sdks-java-io-jdbc = { module = "org.apache.beam:beam-sdks-java-io-jdbc", version.ref = "org-apache-beam-beam-sdks-java-io-jdbc" }
+org-apache-beam-beam-sdks-java-io-parquet = { module = "org.apache.beam:beam-sdks-java-io-parquet", version.ref = "org-apache-beam-beam-sdks-java-io-parquet" }
+org-apache-beam-beam-sdks-java-myextensions-sql = { module = "org.apache.beam:beam-sdks-java-extensions-sql", version.ref = "org-apache-beam-beam-sdks-java-myextensions-sql" }
+org-apache-hadoop-hadoop-client-runtime = { module = "org.apache.hadoop:hadoop-client-runtime", version.ref = "org-apache-hadoop-hadoop-client-runtime" }
+org-apache-hadoop-hadoop-common = { module = "org.apache.hadoop:hadoop-common", version.ref = "org-apache-hadoop-hadoop-common" }
+org-apache-hadoop-hadoop-mapreduce-client-core = { module = "org.apache.hadoop:hadoop-mapreduce-client-core", version.ref = "org-apache-hadoop-hadoop-mapreduce-client-core" }
+org-assertj-assertj-core = { module = "org.assertj:assertj-core", version.ref = "org-assertj-assertj-core" }
+org-duckdb-duckdb-jdbc = { module = "org.duckdb:duckdb_jdbc", version.ref = "org-duckdb-duckdb-jdbc" }
+org-junit-jupiter-junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "org-junit-jupiter-junit-jupiter" }
+org-junit-jupiter-junit-jupiter-params = { module = "org.junit.jupiter:junit-jupiter-params", version.ref = "org-junit-jupiter-junit-jupiter-params" }
+org-junit-vintage-junit-vintage-engine = { module = "org.junit.vintage:junit-vintage-engine", version.ref = "org-junit-vintage-junit-vintage-engine" }
+org-neo4j-driver-neo4j-java-driver = { module = "org.neo4j.driver:neo4j-java-driver", version.ref = "org-neo4j-driver-neo4j-java-driver" }
+org-neo4j-neo4j-cypher-dsl = { module = "org.neo4j:neo4j-cypher-dsl", version.ref = "org-neo4j-neo4j-cypher-dsl" }
+org-postgresql-postgresql = { module = "org.postgresql:postgresql", version.ref = "org-postgresql-postgresql" }
+org-slf4j-slf4j-nop = { module = "org.slf4j:slf4j-nop", version.ref = "org-slf4j-slf4j-nop" }
+org-testcontainers-junit-jupiter = { module = "org.testcontainers:junit-jupiter", version.ref = "org-testcontainers-junit-jupiter" }
+org-testcontainers-neo4j = { module = "org.testcontainers:neo4j", version.ref = "org-testcontainers-neo4j" }
+org-testcontainers-postgresql = { module = "org.testcontainers:postgresql", version.ref = "org-testcontainers-postgresql" }
+org-testcontainers-testcontainers = { module = "org.testcontainers:testcontainers", version.ref = "org-testcontainers-testcontainers" }

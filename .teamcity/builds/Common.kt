@@ -4,14 +4,17 @@ import jetbrains.buildServer.configs.kotlin.*
 import jetbrains.buildServer.configs.kotlin.buildFeatures.PullRequests
 import jetbrains.buildServer.configs.kotlin.buildFeatures.commitStatusPublisher
 import jetbrains.buildServer.configs.kotlin.buildFeatures.pullRequests
+import jetbrains.buildServer.configs.kotlin.buildSteps.GradleBuildStep
 import jetbrains.buildServer.configs.kotlin.buildSteps.MavenBuildStep
 import jetbrains.buildServer.configs.kotlin.buildSteps.ScriptBuildStep
+import jetbrains.buildServer.configs.kotlin.buildSteps.gradle
 import jetbrains.buildServer.configs.kotlin.buildSteps.maven
 import jetbrains.buildServer.configs.kotlin.buildSteps.script
 
 const val GITHUB_OWNER = "neo4j"
 const val GITHUB_REPOSITORY = "import-spec"
 const val MAVEN_DEFAULT_ARGS = "--no-transfer-progress --batch-mode --show-version"
+const val GRADLE_DEFAULT_ARGS = "--quiet"
 
 const val DEFAULT_JAVA_VERSION = "17"
 const val LTS_JAVA_VERSION = "21"
@@ -78,13 +81,35 @@ fun BuildSteps.runMaven(
   return maven
 }
 
-fun BuildSteps.setVersion(name: String, version: String): MavenBuildStep {
-  return this.runMaven {
+fun BuildSteps.runGradle(
+    javaVersion: String = DEFAULT_JAVA_VERSION,
+    init: GradleBuildStep.() -> Unit
+): GradleBuildStep {
+  val maven =
+      this.gradle {
+        dockerImagePlatform = GradleBuildStep.ImagePlatform.Linux
+        dockerImage = "eclipse-temurin:${javaVersion}-jdk"
+        dockerRunParameters = "--volume /var/run/docker.sock:/var/run/docker.sock"
+      }
+
+  init(maven)
+  return maven
+}
+
+fun BuildSteps.setVersion(name: String, version: String): GradleBuildStep {
+  return this.runGradle {
     this.name = name
-    goals = "versions:set"
-    runnerArgs = "$MAVEN_DEFAULT_ARGS -DnewVersion=$version -DgenerateBackupPoms=false"
+    gradleParams = "$GRADLE_DEFAULT_ARGS -Pversion=$version"
   }
 }
+
+// fun BuildSteps.setVersion(name: String, version: String): MavenBuildStep {
+//  return this.runMaven {
+//    this.name = name
+//    goals = "versions:set"
+//    runnerArgs = "$MAVEN_DEFAULT_ARGS -DnewVersion=$version -DgenerateBackupPoms=false"
+//  }
+// }
 
 fun BuildSteps.commitAndPush(
     name: String,

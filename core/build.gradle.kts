@@ -1,0 +1,34 @@
+plugins { id("buildlogic.java-conventions") }
+
+dependencies {
+    api(libs.com.fasterxml.jackson.dataformat.jackson.dataformat.yaml)
+    api(libs.com.networknt.json.schema.validator)
+    testImplementation(libs.org.apache.beam.beam.sdks.java.myextensions.sql)
+    testImplementation(libs.org.apache.beam.beam.sdks.java.io.jdbc)
+    testImplementation(libs.org.assertj.assertj.core)
+    testImplementation(libs.org.junit.jupiter.junit.jupiter)
+    testImplementation(libs.org.junit.jupiter.junit.jupiter.params)
+    testImplementation(libs.org.junit.vintage.junit.vintage.engine)
+    testImplementation(libs.org.neo4j.driver.neo4j.java.driver)
+    testImplementation(libs.org.postgresql.postgresql)
+    testImplementation(libs.org.slf4j.slf4j.nop)
+    testImplementation(libs.org.testcontainers.junit.jupiter)
+    testImplementation(libs.org.testcontainers.neo4j)
+    testImplementation(libs.org.testcontainers.postgresql)
+    testImplementation(libs.org.testcontainers.testcontainers)
+}
+
+description = "import-spec"
+
+java {
+    withJavadocJar()
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
+}
+
+tasks {
+    compileTestJava {
+        sourceCompatibility = "21"
+        targetCompatibility = "21"
+    }
+}
