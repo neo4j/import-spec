@@ -3452,6 +3452,6 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                 .hasMessageContainingAll(
                         "1 error(s)",
                         "0 warning(s)",
-                        "Constraint or index name \"a-name\" must be defined at most once but 3 occurrences were found: $.targets.nodes[0].schema.key_constraints[0], $.targets.nodes[1].schema.key_constraints[0], $.targets.relationships[0].schema.range_indexes[0]");
+                        "Constraint or index name \"a-name\" must be defined at most once but 3 occurrences were found.");
     }
 }
