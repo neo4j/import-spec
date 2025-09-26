@@ -645,7 +645,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                                     ],
                                     "schema": {
                                         "key_constraints": [{
-                                            "name": "a-key-constraint",
+                                            "name": "another-key-constraint",
                                             "label": "Label3",
                                             "properties": ["property1"]
                                         }]
@@ -710,7 +710,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                                             ],
                                             "schema": {
                                                 "key_constraints": [{
-                                                   "name": "a-key-constraint",
+                                                   "name": "another-key-constraint",
                                                    "label": "Label3",
                                                    "properties": ["property1"]
                                                 }]
@@ -1021,7 +1021,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                                     ],
                                     "schema": {
                                         "key_constraints": [{
-                                           "name": "a-key-constraint",
+                                           "name": "another-key-constraint",
                                            "label": "Label2",
                                            "properties": ["property1"]
                                         }]
@@ -3381,5 +3381,77 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                         "0 warning(s)",
                         "[$.targets.relationships[0].start_node_reference] Node a-node-target must define a key or unique constraint for property id, none found",
                         "[$.targets.relationships[0].end_node_reference] Node a-node-target must define a key or unique constraint for property id, none found");
+    }
+
+    @Test
+    void fails_if_different_indexes_and_constraints_use_same_name() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+                {
+                    "version": "1",
+                    "sources": [{
+                        "type": "bigquery",
+                        "name": "a-source",
+                        "query": "SELECT id, name FROM my.table"
+                    }],
+                    "targets": {
+                        "nodes": [{
+                            "source": "a-source",
+                            "name": "a-node-target",
+                            "write_mode": "merge",
+                            "labels": ["Label1", "Label2"],
+                            "properties": [
+                                {"source_field": "field_1", "target_property": "property1"},
+                                {"source_field": "field_2", "target_property": "property2"}
+                            ],
+                            "schema": {
+                                "key_constraints": [{
+                                    "name": "a-name",
+                                    "label": "Label1",
+                                    "properties": ["property1"]
+                                }]
+                            }
+                        },{
+                            "source": "a-source",
+                            "name": "another-node-target",
+                            "write_mode": "merge",
+                            "labels": ["Label3"],
+                            "properties": [
+                                {"source_field": "field_1", "target_property": "property1"},
+                                {"source_field": "field_2", "target_property": "property2"}
+                            ],
+                            "schema": {
+                                "key_constraints": [{
+                                    "name": "a-name",
+                                    "label": "Label3",
+                                    "properties": ["property1"]
+                                }]
+                            }
+                        }],
+                        "relationships": [{
+                            "name": "a-target",
+                            "source": "a-source",
+                            "type": "TYPE",
+                            "start_node_reference": "a-node-target",
+                            "end_node_reference": "another-node-target",
+                            "properties": [
+                                {"source_field": "field_1", "target_property": "property1"}
+                            ],
+                            "schema": {
+                                "range_indexes": [{
+                                    "name": "a-name",
+                                    "properties": ["property1"]
+                                }]
+                            }
+                        }]
+                    }
+                }
+                """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "Constraint or index name \"a-name\" must be defined at most once but 3 occurrences were found.");
     }
 }

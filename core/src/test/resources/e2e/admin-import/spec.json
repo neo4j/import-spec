@@ -41,7 +41,7 @@
         "schema": {
           "key_constraints": [
             {
-              "name": "name_key_constraint",
+              "name": "products_name_key_constraint",
               "label": "Product",
               "properties": [
                 "name"
@@ -69,7 +69,7 @@
         "schema": {
           "key_constraints": [
             {
-              "name": "name_key_constraint",
+              "name": "category_name_key_constraint",
               "label": "Category",
               "properties": [
                 "name"

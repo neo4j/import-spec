@@ -74,8 +74,10 @@ public class NoRedundantKeyAndExistenceConstraintsValidator implements Specifica
         List<List<String>> redundancies =
                 paths.values().stream().filter(allPaths -> allPaths.size() > 1).collect(Collectors.toList());
 
-        var schemaPath = String.format("$.targets.nodes[%d].schema", index);
-        invalidPaths.put(schemaPath, redundancies);
+        if (!redundancies.isEmpty()) {
+            var schemaPath = String.format("$.targets.nodes[%d].schema", index);
+            invalidPaths.put(schemaPath, redundancies);
+        }
     }
 
     @Override
@@ -104,8 +106,10 @@ public class NoRedundantKeyAndExistenceConstraintsValidator implements Specifica
         List<List<String>> redundancies =
                 paths.values().stream().filter(strings -> strings.size() > 1).collect(Collectors.toList());
 
-        var schemaPath = String.format("$.targets.relationships[%d].schema", index);
-        invalidPaths.put(schemaPath, redundancies);
+        if (!redundancies.isEmpty()) {
+            var schemaPath = String.format("$.targets.relationships[%d].schema", index);
+            invalidPaths.put(schemaPath, redundancies);
+        }
     }
 
     @Override

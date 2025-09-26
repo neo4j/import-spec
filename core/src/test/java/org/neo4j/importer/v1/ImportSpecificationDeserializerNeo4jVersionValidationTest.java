@@ -193,7 +193,7 @@ public class ImportSpecificationDeserializerNeo4jVersionValidationTest {
                             ],
                             "schema": {
                                "key_constraints": [{
-                                  "name": "a-key-constraint",
+                                  "name": "another-key-constraint",
                                   "label": "Label2",
                                   "properties": ["property2"]
                                }]
@@ -295,7 +295,7 @@ public class ImportSpecificationDeserializerNeo4jVersionValidationTest {
                             ],
                             "schema": {
                                 "type_constraints": [
-                                    {"name": "type_constraint_1", "property": "property1"}
+                                    {"name": "type_constraint_2", "property": "property1"}
                                 ]
                             }
                         },
@@ -395,7 +395,7 @@ public class ImportSpecificationDeserializerNeo4jVersionValidationTest {
                                     ],
                                     "schema": {
                                         "type_constraints": [
-                                            {"name": "type_constraint_1", "property": "property1"}
+                                            {"name": "type_constraint_2", "property": "property1"}
                                         ]
                                     }
                                 },

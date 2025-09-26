@@ -26,7 +26,7 @@ targets:
           target_property: unitPrice
       schema:
         key_constraints:
-          - name: name_key_constraint
+          - name: product_name_key_constraint
             label: Product
             properties:
               - name
@@ -42,7 +42,7 @@ targets:
           target_property: description
       schema:
         key_constraints:
-          - name: name_key_constraint
+          - name: category_name_key_constraint
             label: Category
             properties:
               - name
