@@ -376,9 +376,10 @@ class TargetWriteRowFn extends DoFn<Row, Row> {
     public void processElement(ProcessContext context) {
         Row row = context.element();
         switch (step) {
-            case CustomQueryTargetStep step -> driver.executableQuery(step.query())
-                    .withParameters(Map.of("rows", List.of(properties(row))))
-                    .execute();
+            case CustomQueryTargetStep step ->
+                driver.executableQuery(step.query())
+                        .withParameters(Map.of("rows", List.of(properties(row))))
+                        .execute();
             case NodeTargetStep step -> {
                 var keys = step.keyProperties();
                 var nonKeys = step.nonKeyProperties();
