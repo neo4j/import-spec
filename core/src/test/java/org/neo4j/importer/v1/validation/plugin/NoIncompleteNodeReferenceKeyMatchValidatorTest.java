@@ -200,7 +200,7 @@ class NoIncompleteNodeReferenceKeyMatchValidatorTest {
                 "SELF_LINKS_TO",
                 WriteMode.CREATE,
                 NodeMatchMode.MATCH,
-                null,
+                (ObjectNode) null,
                 startNodeReference,
                 new NodeReference(startNodeReference.getName()),
                 null,

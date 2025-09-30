@@ -112,7 +112,7 @@ class TargetsTest {
                         "TYPE",
                         WriteMode.CREATE,
                         NodeMatchMode.MATCH,
-                        null,
+                        (ObjectNode) null,
                         new NodeReference("my-minimal-node-target"),
                         new NodeReference("my-minimal-node-target"),
                         List.of(
