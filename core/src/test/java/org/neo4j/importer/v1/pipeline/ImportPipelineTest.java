@@ -82,7 +82,7 @@ class ImportPipelineTest {
                                 "PLAYED_IN",
                                 WriteMode.MERGE,
                                 NodeMatchMode.MATCH,
-                                null,
+                                (ObjectNode) null,
                                 // note: this example would actually be bogus in real life,
                                 // since the same "id" source field would map to both movie and actor IDs
                                 simpleStartRef,
@@ -146,7 +146,7 @@ class ImportPipelineTest {
                                 "PLAYED_IN",
                                 WriteMode.MERGE,
                                 NodeMatchMode.MATCH,
-                                null,
+                                (ObjectNode) null,
                                 startRef,
                                 endRef,
                                 List.of(),

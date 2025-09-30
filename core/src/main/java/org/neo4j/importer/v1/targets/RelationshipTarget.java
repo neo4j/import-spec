@@ -45,15 +45,35 @@ public class RelationshipTarget extends EntityTarget {
             @JsonProperty("properties") List<PropertyMapping> properties,
             @JsonProperty("schema") RelationshipSchema schema) {
 
-        super(
-                TargetType.RELATIONSHIP,
+        this(
                 active,
                 name,
                 source,
                 dependencies,
+                type,
                 writeMode,
+                nodeMatchMode,
                 mapExtensions(rawExtensionData),
-                properties);
+                startNodeReference,
+                endNodeReference,
+                properties,
+                schema);
+    }
+
+    public RelationshipTarget(
+            Boolean active,
+            String name,
+            String source,
+            List<String> dependencies,
+            String type,
+            WriteMode writeMode,
+            NodeMatchMode nodeMatchMode,
+            List<EntityTargetExtension> extensions,
+            NodeReference startNodeReference,
+            NodeReference endNodeReference,
+            List<PropertyMapping> properties,
+            RelationshipSchema schema) {
+        super(TargetType.RELATIONSHIP, active, name, source, dependencies, writeMode, extensions, properties);
         this.type = type;
         this.nodeMatchMode = nodeMatchMode;
         this.startNodeReference = startNodeReference;

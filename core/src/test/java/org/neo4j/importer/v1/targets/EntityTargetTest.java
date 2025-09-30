@@ -18,6 +18,7 @@ package org.neo4j.importer.v1.targets;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 
@@ -34,7 +35,7 @@ class EntityTargetTest {
                 "TYPE",
                 WriteMode.CREATE,
                 NodeMatchMode.MERGE,
-                null,
+                (ObjectNode) null,
                 new NodeReference("a-node-target"),
                 new NodeReference("a-node-target"),
                 properties,
