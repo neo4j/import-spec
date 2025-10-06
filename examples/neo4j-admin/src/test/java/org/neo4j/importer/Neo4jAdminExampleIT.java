@@ -19,11 +19,19 @@ package org.neo4j.importer;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URL;
+import java.nio.file.Files;
 import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -32,7 +40,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.neo4j.cypherdsl.core.Cypher;
 import org.neo4j.cypherdsl.core.internal.SchemaNames;
-import org.neo4j.driver.*;
+import org.neo4j.driver.AuthTokens;
+import org.neo4j.driver.Driver;
+import org.neo4j.driver.GraphDatabase;
+import org.neo4j.driver.QueryConfig;
+import org.neo4j.driver.SessionConfig;
 import org.neo4j.importer.v1.ImportSpecification;
 import org.neo4j.importer.v1.ImportSpecificationDeserializer;
 import org.neo4j.importer.v1.actions.Action;
@@ -41,9 +53,11 @@ import org.neo4j.importer.v1.actions.plugin.CypherAction;
 import org.neo4j.importer.v1.sources.Source;
 import org.neo4j.importer.v1.sources.SourceProvider;
 import org.neo4j.importer.v1.targets.EntityTarget;
+import org.neo4j.importer.v1.targets.NodeSchema;
 import org.neo4j.importer.v1.targets.NodeTarget;
 import org.neo4j.importer.v1.targets.PropertyMapping;
 import org.neo4j.importer.v1.targets.PropertyType;
+import org.neo4j.importer.v1.targets.RelationshipSchema;
 import org.neo4j.importer.v1.targets.RelationshipTarget;
 import org.neo4j.importer.v1.targets.Target;
 import org.neo4j.importer.v1.targets.Targets;
@@ -61,17 +75,13 @@ public class Neo4jAdminExampleIT {
 
     private static final String SHARED_FOLDER = "/admin-import/";
 
-    // neo4j-admin database import from Parquet files is an unreleased feature, and we are using a custom docker image
-    // for that reason, until the feature is publicly available. Set this image name using
-    // `NEO4J_PRE_RELEASE_DOCKER_IMAGE` environment variable.
     @Container
-    private static final GenericContainer<?> NEO4J = new Neo4jContainer<>(DockerImageName.parse(
-                            Optional.ofNullable(System.getenv("NEO4J_PRE_RELEASE_DOCKER_IMAGE"))
-                                    .orElseThrow(
-                                            () -> new IllegalArgumentException(
-                                                    "Docker image name is not set through NEO4J_PRE_RELEASE_DOCKER_IMAGE environment variable!")))
-                    .asCompatibleSubstituteFor("neo4j"))
+    private static final GenericContainer<?> NEO4J = new Neo4jContainer<>(
+                    DockerImageName.parse("neo4j:2025.09-enterprise"))
             .withEnv("NEO4J_ACCEPT_LICENSE_AGREEMENT", "yes")
+            .withNeo4jConfig("dbms.integrations.cloud_storage.gs.project_id", "connectors-public")
+            .withNeo4jConfig("server.config.strict_validation.enabled", "false")
+            .withNeo4jConfig("internal.dbms.cloud.storage.gs.host", "https://storage.googleapis.com")
             .withAdminPassword("letmein!")
             .withCreateContainerCmdModifier(cmd -> cmd.withUser("neo4j"))
             .withFileSystemBind(
@@ -106,7 +116,7 @@ public class Neo4jAdminExampleIT {
                 var specification = ImportSpecificationDeserializer.deserialize(reader);
                 var sharedFolder = pathFor(SHARED_FOLDER);
                 var neo4jAdmin = new Neo4jAdmin(sharedFolder, driver, TARGET_DATABASE);
-                neo4jAdmin.copyFiles(specification);
+                neo4jAdmin.createFiles(specification);
                 neo4jAdmin.executeImport(specification, NEO4J);
             }
         }
@@ -181,9 +191,9 @@ public class Neo4jAdminExampleIT {
     private static void assertNodeConstraint(Driver driver, String constraintType, String label, String property) {
         var records = driver.executableQuery(
                         """
-                        SHOW CONSTRAINTS YIELD type, entityType, labelsOrTypes, properties \
-                        WHERE type = $constraintType AND entityType = 'NODE' AND labelsOrTypes = [$label] AND properties = [$property] \
-                        RETURN count(*) = 1 AS result""")
+                                SHOW CONSTRAINTS YIELD type, entityType, labelsOrTypes, properties \
+                                WHERE type = $constraintType AND entityType = 'NODE' AND labelsOrTypes = [$label] AND properties = [$property] \
+                                RETURN count(*) = 1 AS result""")
                 .withConfig(QueryConfig.builder().withDatabase(TARGET_DATABASE).build())
                 .withParameters(Map.of("constraintType", constraintType, "label", label, "property", property))
                 .execute()
@@ -195,9 +205,9 @@ public class Neo4jAdminExampleIT {
     private static void assertNodeTypeConstraint(Driver driver, String label, String property, String propertyType) {
         var records = driver.executableQuery(
                         """
-                        SHOW CONSTRAINTS YIELD type, entityType, labelsOrTypes, properties, propertyType \
-                        WHERE type = 'NODE_PROPERTY_TYPE' AND entityType = 'NODE' AND labelsOrTypes = [$label] AND properties = [$property] AND propertyType = $propertyType \
-                        RETURN count(*) = 1 AS result""")
+                                SHOW CONSTRAINTS YIELD type, entityType, labelsOrTypes, properties, propertyType \
+                                WHERE type = 'NODE_PROPERTY_TYPE' AND entityType = 'NODE' AND labelsOrTypes = [$label] AND properties = [$property] AND propertyType = $propertyType \
+                                RETURN count(*) = 1 AS result""")
                 .withConfig(QueryConfig.builder().withDatabase(TARGET_DATABASE).build())
                 .withParameters(Map.of("label", label, "property", property, "propertyType", propertyType))
                 .execute()
@@ -210,9 +220,9 @@ public class Neo4jAdminExampleIT {
             Driver driver, String constraintType, String relType, String property) {
         var records = driver.executableQuery(
                         """
-                        SHOW CONSTRAINTS YIELD type, entityType, labelsOrTypes, properties \
-                        WHERE type = $constraintType AND entityType = 'RELATIONSHIP' AND labelsOrTypes = [$type] AND properties = [$property] \
-                        RETURN count(*) = 1 AS result""")
+                                SHOW CONSTRAINTS YIELD type, entityType, labelsOrTypes, properties \
+                                WHERE type = $constraintType AND entityType = 'RELATIONSHIP' AND labelsOrTypes = [$type] AND properties = [$property] \
+                                RETURN count(*) = 1 AS result""")
                 .withConfig(QueryConfig.builder().withDatabase(TARGET_DATABASE).build())
                 .withParameters(Map.of("constraintType", constraintType, "type", relType, "property", property))
                 .execute()
@@ -225,9 +235,9 @@ public class Neo4jAdminExampleIT {
             Driver driver, String relType, String property, String propertyType) {
         var records = driver.executableQuery(
                         """
-                        SHOW CONSTRAINTS YIELD type, entityType, labelsOrTypes, properties, propertyType \
-                        WHERE type = 'RELATIONSHIP_PROPERTY_TYPE' AND entityType = 'RELATIONSHIP' AND labelsOrTypes = [$type] AND properties = [$property] AND propertyType = $propertyType \
-                        RETURN count(*) = 1 AS result""")
+                                SHOW CONSTRAINTS YIELD type, entityType, labelsOrTypes, properties, propertyType \
+                                WHERE type = 'RELATIONSHIP_PROPERTY_TYPE' AND entityType = 'RELATIONSHIP' AND labelsOrTypes = [$type] AND properties = [$property] AND propertyType = $propertyType \
+                                RETURN count(*) = 1 AS result""")
                 .withConfig(QueryConfig.builder().withDatabase(TARGET_DATABASE).build())
                 .withParameters(Map.of("type", relType, "property", property, "propertyType", propertyType))
                 .execute()
@@ -301,103 +311,78 @@ public class Neo4jAdminExampleIT {
                     session.run(((CypherAction) action).getQuery()).consume();
                 }
             }
-
-            // migrate temporal typed properties from INTEGER
-            // This is a temporary post-processing step until we have complete support for Parquet types.
-            migrateTemporalProperties();
-
-            // create schema
-            for (String statement :
-                    generateSchemaStatements(specification.getTargets().getAll())) {
-                driver.executableQuery(statement)
-                        .withConfig(QueryConfig.builder()
-                                .withDatabase(targetDatabase)
-                                .build())
-                        .execute();
-            }
         }
 
-        private void migrateTemporalProperties() {
-            try (var session = driver.session(SessionConfig.forDatabase(targetDatabase))) {
-                session.run(
-                                """
-                    MATCH (customer:Customer)
-                    CALL (customer) {
-                      MATCH (customer)
-                      SET customer.creation_date = date({year: 1970, month: 1, day: 1}) + duration({days: customer.creation_date})
-                    } IN TRANSACTIONS""")
-                        .consume();
-
-                session.run(
-                                """
-                    MATCH ()-[rental:HAS_RENTED]->()
-                    CALL (rental) {
-                      WITH rental
-                      SET rental.date = datetime({epochMillis: rental.date/1000})
-                    } IN TRANSACTIONS""")
-                        .consume();
-            }
+        public void createFiles(ImportSpecification specification) throws Exception {
+            createHeaderFiles(specification);
+            createSchemaFile(specification);
         }
 
-        public void copyFiles(ImportSpecification specification) throws Exception {
+        private void createHeaderFiles(ImportSpecification specification) throws Exception {
             Map<String, Source> indexedSources =
                     specification.getSources().stream().collect(Collectors.toMap(Source::getName, Function.identity()));
             Map<String, NodeTarget> indexedNodes = specification.getTargets().getNodes().stream()
                     .collect(Collectors.toMap(Target::getName, Function.identity()));
             for (Target target : specification.getTargets().getAll()) {
                 switch (target) {
-                    case NodeTarget nodeTarget -> copyFile(indexedSources, nodeTarget);
+                    case NodeTarget nodeTarget -> createHeaderFile(indexedSources, nodeTarget);
                     case RelationshipTarget relationshipTarget ->
-                        copyFile(indexedSources, indexedNodes, relationshipTarget);
+                        createHeaderFile(indexedSources, indexedNodes, relationshipTarget);
                     default -> throw new RuntimeException("unsupported target type: %s".formatted(target.getClass()));
                 }
             }
         }
 
-        private void copyFile(Map<String, Source> sources, NodeTarget nodeTarget) throws Exception {
+        private void createSchemaFile(ImportSpecification specification) throws IOException {
+            var schemaStatements =
+                    generateSchemaStatements(specification.getTargets().getAll());
+            if (schemaStatements.isEmpty()) {
+                return;
+            }
+            var schemaFile = new File(sharedFolder, schemaFileName());
+            var content = String.join(";\n", schemaStatements) + ";";
+            Files.writeString(schemaFile.toPath(), content);
+        }
+
+        private void createHeaderFile(Map<String, Source> sources, NodeTarget nodeTarget) throws Exception {
+            // this assertion would be implemented as a custom validation rule
+            assertThat(nodeTarget.getSchema().getKeyConstraints())
+                    .overridingErrorMessage("At most one group ID can be defined")
+                    .hasSizeLessThanOrEqualTo(1);
             var source = sources.get(nodeTarget.getSource());
             assertThat(source).isInstanceOf(ParquetSource.class);
-            File parquetFile = new File(sharedFolder, fileName(nodeTarget));
+            File parquetFile = new File(sharedFolder, headerFileName(nodeTarget));
             List<String> fields = readFieldNames(source);
             Map<String, String> fieldMappings = computeFieldMappings(fields, nodeTarget);
 
-            copyParquetSource((ParquetSource) source, parquetFile, fieldMappings);
+            generateHeaderFile(parquetFile, fieldMappings);
         }
 
-        private void copyFile(
+        private void createHeaderFile(
                 Map<String, Source> sources, Map<String, NodeTarget> nodes, RelationshipTarget relationshipTarget)
                 throws Exception {
-            File parquetFile = new File(sharedFolder, fileName(relationshipTarget));
+            File parquetFile = new File(sharedFolder, headerFileName(relationshipTarget));
 
             var source = sources.get(relationshipTarget.getSource());
             assertThat(source).isInstanceOf(ParquetSource.class);
 
-            var startNodeTarget = nodes.get(relationshipTarget.getStartNodeReference());
-            var endNodeTarget = nodes.get(relationshipTarget.getEndNodeReference());
+            var startNodeTarget =
+                    nodes.get(relationshipTarget.getStartNodeReference().getName());
+            var endNodeTarget =
+                    nodes.get(relationshipTarget.getEndNodeReference().getName());
             List<String> fields = readFieldNames(source);
             Map<String, String> fieldMappings =
                     computeFieldMappings(fields, relationshipTarget, startNodeTarget, endNodeTarget);
 
-            copyParquetSource((ParquetSource) source, parquetFile, fieldMappings);
+            generateHeaderFile(parquetFile, fieldMappings);
         }
 
-        // 🐤
-        private void copyParquetSource(ParquetSource source, File targetFile, Map<String, String> fieldMappings)
-                throws SQLException {
-            var renamedColumns = String.join(
-                    ", ",
-                    fieldMappings.entrySet().stream()
-                            .map(e -> String.format("%s AS \"%s\"", e.getKey(), e.getValue()))
-                            .toList());
-
-            try (var connection = DriverManager.getConnection("jdbc:duckdb:");
-                    var statement = connection.prepareStatement(String.format(
-                            "COPY (SELECT %s FROM read_parquet($1)) TO '%s' (FORMAT 'parquet', CODEC 'zstd')",
-                            renamedColumns, targetFile.getAbsolutePath()))) {
-
-                statement.setString(1, source.uri());
-                statement.execute();
-            }
+        private void generateHeaderFile(File targetFile, Map<String, String> fieldMappings) throws IOException {
+            var originalFields = fieldMappings.keySet().stream().sorted().toList();
+            var mappedNames = originalFields.stream().map(fieldMappings::get).toList();
+            Files.writeString(
+                    targetFile.toPath(),
+                    "%s%n%s".formatted(String.join(",", mappedNames), String.join(",", originalFields)));
         }
 
         private static String[] importCommand(ImportSpecification specification, String database) {
@@ -410,14 +395,20 @@ public class Neo4jAdminExampleIT {
                 command.append(" --nodes=");
                 command.append(String.join(":", nodeTarget.getLabels()));
                 command.append("=");
-                command.append("/import/%s".formatted(fileName(nodeTarget)));
+                command.append("/import/%s,".formatted(headerFileName(nodeTarget)));
+                command.append("%s".formatted(sourceUri(specification, nodeTarget)));
             }
 
             for (RelationshipTarget relationshipTarget : targets.getRelationships()) {
                 command.append(" --relationships=");
                 command.append(relationshipTarget.getType());
                 command.append("=");
-                command.append("/import/%s".formatted(fileName(relationshipTarget)));
+                command.append("/import/%s,".formatted(headerFileName(relationshipTarget)));
+                command.append("%s".formatted(sourceUri(specification, relationshipTarget)));
+            }
+
+            if (targets.getAll().stream().anyMatch(Neo4jAdminExampleIT::hasSchemaOps)) {
+                command.append(" --schema=/import/schema.cypher");
             }
 
             return command.toString().split(" ");
@@ -490,8 +481,23 @@ public class Neo4jAdminExampleIT {
             return result;
         }
 
-        private static String fileName(Target target) {
-            return "%s.parquet".formatted(target.getName());
+        private static String headerFileName(Target target) {
+            return "%s_header.csv".formatted(target.getName());
+        }
+
+        private static String schemaFileName() {
+            return "schema.cypher";
+        }
+
+        private static String sourceUri(ImportSpecification specification, Target target) {
+            var maybeSource = specification.getSources().stream()
+                    .filter(src -> src.getName().equals(target.getSource()))
+                    .findFirst();
+            assertThat(maybeSource).isPresent();
+            var rawSource = maybeSource.get();
+            assertThat(rawSource).isInstanceOf(ParquetSource.class);
+            var source = (ParquetSource) rawSource;
+            return source.uri();
         }
 
         private static String idSpaceFor(NodeTarget nodeTarget) {
@@ -682,6 +688,38 @@ public class Neo4jAdminExampleIT {
                     throw new IllegalArgumentException(String.format("Unsupported property type: %s", propertyType));
             };
         }
+    }
+
+    private static boolean hasSchemaOps(Target target) {
+        return switch (target) {
+            case NodeTarget nodeTarget -> hasSchemaOps(nodeTarget.getSchema());
+            case RelationshipTarget relationshipTarget -> hasSchemaOps(relationshipTarget.getSchema());
+            default -> false;
+        };
+    }
+
+    private static boolean hasSchemaOps(NodeSchema schema) {
+        return !schema.getTypeConstraints().isEmpty()
+                || !schema.getKeyConstraints().isEmpty()
+                || !schema.getUniqueConstraints().isEmpty()
+                || !schema.getExistenceConstraints().isEmpty()
+                || !schema.getRangeIndexes().isEmpty()
+                || !schema.getTextIndexes().isEmpty()
+                || !schema.getPointIndexes().isEmpty()
+                || !schema.getFullTextIndexes().isEmpty()
+                || !schema.getVectorIndexes().isEmpty();
+    }
+
+    private static boolean hasSchemaOps(RelationshipSchema schema) {
+        return !schema.getTypeConstraints().isEmpty()
+                || !schema.getKeyConstraints().isEmpty()
+                || !schema.getUniqueConstraints().isEmpty()
+                || !schema.getExistenceConstraints().isEmpty()
+                || !schema.getRangeIndexes().isEmpty()
+                || !schema.getTextIndexes().isEmpty()
+                || !schema.getPointIndexes().isEmpty()
+                || !schema.getFullTextIndexes().isEmpty()
+                || !schema.getVectorIndexes().isEmpty();
     }
 
     private static File pathFor(String classpath) throws Exception {
