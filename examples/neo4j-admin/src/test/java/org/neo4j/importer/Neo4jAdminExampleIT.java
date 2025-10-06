@@ -77,7 +77,7 @@ public class Neo4jAdminExampleIT {
 
     @Container
     private static final GenericContainer<?> NEO4J = new Neo4jContainer<>(
-                    DockerImageName.parse("neo4j:2025.05-enterprise")) // minimum is 2025.05
+                    DockerImageName.parse("neo4j:2025.09-enterprise"))
             .withEnv("NEO4J_ACCEPT_LICENSE_AGREEMENT", "yes")
             .withNeo4jConfig("dbms.integrations.cloud_storage.gs.project_id", "connectors-public")
             .withNeo4jConfig("server.config.strict_validation.enabled", "false")
@@ -171,7 +171,7 @@ public class Neo4jAdminExampleIT {
         assertNodeTypeConstraint(driver, "Category", "name", "STRING");
         assertNodeConstraint(driver, "UNIQUENESS", "Category", "name");
         assertNodeConstraint(driver, "NODE_KEY", "Customer", "id");
-        //        assertNodeTypeConstraint(driver, "Customer", "creation_date", "DATE");
+        assertNodeTypeConstraint(driver, "Customer", "creation_date", "DATE");
         assertNodeTypeConstraint(driver, "Customer", "email", "STRING");
         assertNodeTypeConstraint(driver, "Customer", "first_name", "STRING");
         assertNodeTypeConstraint(driver, "Customer", "id", "INTEGER");
@@ -310,32 +310,6 @@ public class Neo4jAdminExampleIT {
                 try (var session = driver.session(SessionConfig.forDatabase(targetDatabase))) {
                     session.run(((CypherAction) action).getQuery()).consume();
                 }
-            }
-
-            // migrate temporal typed properties from INTEGER
-            // This is a temporary post-processing step until we have complete support for Parquet types.
-            migrateTemporalProperties();
-        }
-
-        private void migrateTemporalProperties() {
-            try (var session = driver.session(SessionConfig.forDatabase(targetDatabase))) {
-                session.run(
-                                """
-                                        MATCH (customer:Customer)
-                                        CALL (customer) {
-                                          MATCH (customer)
-                                          SET customer.creation_date = date({year: 1970, month: 1, day: 1}) + duration({days: customer.creation_date})
-                                        } IN TRANSACTIONS""")
-                        .consume();
-
-                session.run(
-                                """
-                                        MATCH ()-[rental:HAS_RENTED]->()
-                                        CALL (rental) {
-                                          WITH rental
-                                          SET rental.date = datetime({epochMillis: rental.date/1000})
-                                        } IN TRANSACTIONS""")
-                        .consume();
             }
         }
 
