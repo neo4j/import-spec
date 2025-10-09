@@ -16,15 +16,15 @@
  */
 package org.neo4j.importer.v1.pipeline;
 
-import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import org.neo4j.importer.v1.targets.Target;
 
 public abstract class TargetStep implements ImportStep {
 
-    private final List<ImportStep> dependencies;
+    private final Set<ImportStep> dependencies;
 
-    protected TargetStep(List<ImportStep> dependencies) {
+    protected TargetStep(Set<ImportStep> dependencies) {
         this.dependencies = dependencies;
     }
 
@@ -37,8 +37,8 @@ public abstract class TargetStep implements ImportStep {
         return target().getSource();
     }
 
-    public List<ImportStep> dependencies() {
-        return dependencies != null ? dependencies : List.of();
+    public Set<ImportStep> dependencies() {
+        return dependencies != null ? dependencies : Set.of();
     }
 
     protected abstract Target target();

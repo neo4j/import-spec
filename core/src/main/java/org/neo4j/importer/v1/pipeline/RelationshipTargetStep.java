@@ -38,10 +38,7 @@ public class RelationshipTargetStep extends EntityTargetStep {
     private final NodeTargetStep endNode;
 
     RelationshipTargetStep(
-            RelationshipTarget target,
-            NodeTargetStep startNode,
-            NodeTargetStep endNode,
-            List<ImportStep> dependencies) {
+            RelationshipTarget target, NodeTargetStep startNode, NodeTargetStep endNode, Set<ImportStep> dependencies) {
         super(dependencies);
         this.target = target;
         this.startNode = startNode;
@@ -103,6 +100,15 @@ public class RelationshipTargetStep extends EntityTargetStep {
     @Override
     public int hashCode() {
         return Objects.hash(super.hashCode(), target, startNode, endNode);
+    }
+
+    @Override
+    public String toString() {
+        return "RelationshipTargetStep{" + "target="
+                + target + ", startNode="
+                + startNode + ", endNode="
+                + endNode + "} "
+                + super.toString();
     }
 
     @Override
