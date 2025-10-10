@@ -8830,4 +8830,298 @@ public class ImportSpecificationDeserializerRelationshipTargetTest {
                         "0 warning(s)",
                         "[$.targets.relationships[0].depends_on] $.targets.relationships[0].depends_on defines dependency \"a-node-target\" 2 times, it must be defined at most once");
     }
+
+    @Test
+    public void rejects_reused_source_fields_for_different_relationship_nodes() {
+        assertThatThrownBy(() -> deserialize(new StringReader(
+                        """
+                {
+                    "version": "1",
+                    "sources": [{
+                        "name": "a-source",
+                        "type": "jdbc",
+                        "data_source": "a-data-source",
+                        "sql": "SELECT id, name FROM my.table"
+                    }],
+                    "targets": {
+                        "nodes": [
+                            {
+                              "name": "a-node-target",
+                              "source": "a-source",
+                              "labels": ["Label"],
+                              "properties": [
+                                {"source_field": "id", "target_property": "id"},
+                                {"source_field": "id2", "target_property": "id2"}
+                              ],
+                              "schema": {
+                                  "key_constraints": [
+                                      {
+                                         "name": "a-key-constraint",
+                                         "label": "Label",
+                                         "properties": ["id"]
+                                      },
+                                      {
+                                         "name": "a-key-constraint2",
+                                         "label": "Label",
+                                         "properties": ["id2"]
+                                      },
+                                ]
+                              }
+                            },
+                            {
+                              "name": "another-node-target",
+                              "source": "a-source",
+                              "labels": ["Label2"],
+                              "properties": [
+                                {"source_field": "id", "target_property": "id"},
+                                {"source_field": "id2", "target_property": "id2"},
+                              ],
+                              "schema": {
+                                  "key_constraints": [
+                                    {
+                                     "name": "another-key-constraint",
+                                     "label": "Label2",
+                                     "properties": ["id"]
+                                    },
+                                    {
+                                     "name": "another-key-constraint2",
+                                     "label": "Label2",
+                                     "properties": ["id2"]
+                                    }
+                                  ]
+                              }
+                            }
+                        ],
+                        "relationships": [{
+                            "name": "a-relationship-target",
+                            "source": "a-source",
+                            "type": "TYPE",
+                            "start_node_reference": {
+                                "name": "a-node-target",
+                                "key_mappings": [
+                                    {"source_field": "id", "node_property": "id"},
+                                    {"source_field": "id2", "node_property": "id2"}
+                                ]
+                            },
+                            "end_node_reference": {
+                                "name": "another-node-target",
+                                "key_mappings": [
+                                    {"source_field": "id", "node_property": "id"},
+                                    {"source_field": "id2", "node_property": "id2"}
+                                ]
+                            }
+                        }]
+                    }
+                }
+                """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "[$.targets.relationships[0]] the same source fields (id, id2) cannot be used to map different start and end nodes");
+    }
+
+    @Test
+    public void does_not_reject_reused_source_fields_for_same_relationship_nodes() {
+        assertThatCode(() -> deserialize(new StringReader(
+                        """
+                {
+                    "version": "1",
+                    "sources": [{
+                        "name": "a-source",
+                        "type": "jdbc",
+                        "data_source": "a-data-source",
+                        "sql": "SELECT id, name FROM my.table"
+                    }],
+                    "targets": {
+                        "nodes": [
+                            {
+                              "name": "a-node-target",
+                              "source": "a-source",
+                              "labels": ["Label"],
+                              "properties": [
+                                {"source_field": "id", "target_property": "id"},
+                                {"source_field": "id2", "target_property": "id2"}
+                              ],
+                              "schema": {
+                                  "key_constraints": [
+                                      {
+                                         "name": "a-key-constraint",
+                                         "label": "Label",
+                                         "properties": ["id"]
+                                      },
+                                      {
+                                         "name": "a-key-constraint2",
+                                         "label": "Label",
+                                         "properties": ["id2"]
+                                      },
+                                ]
+                              }
+                            }
+                        ],
+                        "relationships": [{
+                            "name": "a-relationship-target",
+                            "source": "a-source",
+                            "type": "TYPE",
+                            "start_node_reference": {
+                                "name": "a-node-target",
+                                "key_mappings": [
+                                    {"source_field": "id", "node_property": "id"},
+                                    {"source_field": "id2", "node_property": "id2"}
+                                ]
+                            },
+                            "end_node_reference": {
+                                "name": "a-node-target",
+                                "key_mappings": [
+                                    {"source_field": "id", "node_property": "id"},
+                                    {"source_field": "id2", "node_property": "id2"}
+                                ]
+                            }
+                        }]
+                    }
+                }
+                """
+                                .stripIndent())))
+                .doesNotThrowAnyException();
+    }
+
+    @Test
+    public void does_not_reject_reused_source_fields_for_same_relationship_nodes_without_key_mappings() {
+        assertThatCode(() -> deserialize(new StringReader(
+                        """
+                {
+                    "version": "1",
+                    "sources": [{
+                        "name": "a-source",
+                        "type": "jdbc",
+                        "data_source": "a-data-source",
+                        "sql": "SELECT id, name FROM my.table"
+                    }],
+                    "targets": {
+                        "nodes": [
+                            {
+                              "name": "a-node-target",
+                              "source": "a-source",
+                              "labels": ["Label"],
+                              "properties": [
+                                {"source_field": "id", "target_property": "id"},
+                                {"source_field": "id2", "target_property": "id2"}
+                              ],
+                              "schema": {
+                                  "key_constraints": [
+                                      {
+                                         "name": "a-key-constraint",
+                                         "label": "Label",
+                                         "properties": ["id"]
+                                      },
+                                      {
+                                         "name": "a-key-constraint2",
+                                         "label": "Label",
+                                         "properties": ["id2"]
+                                      },
+                                ]
+                              }
+                            }
+                        ],
+                        "relationships": [{
+                            "name": "a-relationship-target",
+                            "source": "a-source",
+                            "type": "TYPE",
+                            "start_node_reference": "a-node-target",
+                            "end_node_reference": "a-node-target"
+                        }]
+                    }
+                }
+                """
+                                .stripIndent())))
+                .doesNotThrowAnyException();
+    }
+
+    @Test
+    public void does_not_reject_reused_source_fields_for_different_relationship_nodes_when_fields_do_not_fully_match() {
+        assertThatCode(() -> deserialize(new StringReader(
+                        """
+                {
+                    "version": "1",
+                    "sources": [{
+                        "name": "a-source",
+                        "type": "jdbc",
+                        "data_source": "a-data-source",
+                        "sql": "SELECT id, name FROM my.table"
+                    }],
+                    "targets": {
+                        "nodes": [
+                            {
+                              "name": "a-node-target",
+                              "source": "a-source",
+                              "labels": ["Label"],
+                              "properties": [
+                                {"source_field": "id", "target_property": "id"},
+                                {"source_field": "id2", "target_property": "id2"}
+                              ],
+                              "schema": {
+                                  "key_constraints": [
+                                      {
+                                         "name": "a-key-constraint",
+                                         "label": "Label",
+                                         "properties": ["id"]
+                                      },
+                                      {
+                                         "name": "a-key-constraint2",
+                                         "label": "Label",
+                                         "properties": ["id2"]
+                                      },
+                                ]
+                              }
+                            },
+                            {
+                              "name": "another-node-target",
+                              "source": "a-source",
+                              "labels": ["Label2"],
+                              "properties": [
+                                {"source_field": "id", "target_property": "id"},
+                                {"source_field": "id3", "target_property": "id2"},
+                              ],
+                              "schema": {
+                                  "key_constraints": [
+                                    {
+                                     "name": "another-key-constraint",
+                                     "label": "Label2",
+                                     "properties": ["id"]
+                                    },
+                                    {
+                                     "name": "another-key-constraint2",
+                                     "label": "Label2",
+                                     "properties": ["id2"]
+                                    }
+                                  ]
+                              }
+                            }
+                        ],
+                        "relationships": [{
+                            "name": "a-relationship-target",
+                            "source": "a-source",
+                            "type": "TYPE",
+                            "start_node_reference": {
+                                "name": "a-node-target",
+                                "key_mappings": [
+                                    {"source_field": "id", "node_property": "id"},
+                                    {"source_field": "id2", "node_property": "id2"}
+                                ]
+                            },
+                            "end_node_reference": {
+                                "name": "another-node-target",
+                                "key_mappings": [
+                                    {"source_field": "id", "node_property": "id"},
+                                    {"source_field": "id3", "node_property": "id2"}
+                                ]
+                            }
+                        }]
+                    }
+                }
+                """
+                                .stripIndent())))
+                .doesNotThrowAnyException();
+    }
 }
