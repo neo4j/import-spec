@@ -38,4 +38,5 @@ org.neo4j.importer.v1.validation.plugin.NoRedundantKeyAndUniqueConstraintsValida
 org.neo4j.importer.v1.validation.plugin.NoRedundantKeyConstraintAndRangeIndexValidator
 org.neo4j.importer.v1.validation.plugin.NoRedundantRelationshipDependencyValidator
 org.neo4j.importer.v1.validation.plugin.NoRedundantUniqueConstraintAndRangeIndexValidator
+org.neo4j.importer.v1.validation.plugin.NoReusedNodeLookupFieldValidator
 org.neo4j.importer.v1.validation.plugin.NoUntypedPropertyInTypeConstraintValidator
