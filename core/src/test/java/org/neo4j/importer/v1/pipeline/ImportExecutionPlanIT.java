@@ -106,7 +106,7 @@ class ImportExecutionPlanIT {
                                         "BELONGS_TO_CATEGORY",
                                         null,
                                         null,
-                                        null,
+                                        (ObjectNode) null,
                                         new NodeReference("product_nodes"),
                                         new NodeReference("category_nodes"),
                                         null,
@@ -132,7 +132,7 @@ class ImportExecutionPlanIT {
                 assertThat(groups).hasSize(1);
                 var group = groups.getFirst();
                 var stages = group.getStages();
-                assertThat(stages).hasSize(3);
+                assertThat(stages).hasSize(4);
                 assertThat(stages.get(0).getSteps()).hasSize(5);
                 var customerSource = new SourceStep(
                         new JdbcSource(
@@ -179,28 +179,174 @@ class ImportExecutionPlanIT {
                                 "products",
                                 "northwind",
                                 "SELECT productname, unitprice FROM products ORDER BY productname ASC"))));
-                assertThat(stages.get(2).getSteps())
-                        .hasSize(2)
-                        // FIXME: overlapping rels should be spread across different stages
-                        // TODO: also add a test where rels overlap but don't use the same labels for the nodes
-                        // (possible with custom key mappings)
+                var categoryNodeStep = new NodeTargetStep(
+                        new NodeTarget(
+                                true,
+                                "category_nodes",
+                                "categories",
+                                null,
+                                null,
+                                (ObjectNode) null,
+                                List.of("Category"),
+                                List.of(
+                                        new PropertyMapping("categoryname", "name", null),
+                                        new PropertyMapping("description", "description", null)),
+                                nodeSchema(new NodeKeyConstraint(
+                                        "category_name_key_constraint", "Category", List.of("name"), null))),
+                        Set.of(new SourceStep(new JdbcSource(
+                                "categories",
+                                "northwind",
+                                "SELECT categoryname, description FROM categories ORDER BY categoryname ASC"))));
+                var customersBoughtProductsStep = new RelationshipTargetStep(
+                        new RelationshipTarget(
+                                true,
+                                "customers_bought_products_relationships",
+                                "customers_bought_products",
+                                null,
+                                "BOUGHT",
+                                null,
+                                null,
+                                (ObjectNode) null,
+                                new NodeReference("customer_nodes"),
+                                new NodeReference("product_nodes"),
+                                null,
+                                null),
+                        customerNodeStep,
+                        productNodeStep,
+                        Set.of(customerBoughtProductSource, productNodeStep, customerNodeStep));
+                assertThat(stages.get(2).getSteps()).hasSize(1).contains(customersBoughtProductsStep);
+                var productInCategorySource = new SourceStep(
+                        new JdbcSource(
+                                "products_in_categories",
+                                "northwind",
+                                "SELECT p.productname AS productname, c.categoryname AS categoryname FROM products p NATURAL JOIN categories c ORDER BY p.productname ASC"));
+                assertThat(stages.get(3).getSteps())
+                        .hasSize(1)
                         .contains(new RelationshipTargetStep(
                                 new RelationshipTarget(
                                         true,
-                                        "customers_bought_products_relationships",
-                                        "customers_bought_products",
+                                        "product_in_category_relationships",
+                                        "products_in_categories",
                                         null,
-                                        "BOUGHT",
+                                        "BELONGS_TO_CATEGORY",
                                         null,
                                         null,
-                                        null,
-                                        new NodeReference("customer_nodes"),
+                                        (ObjectNode) null,
                                         new NodeReference("product_nodes"),
+                                        new NodeReference("category_nodes"),
                                         null,
                                         null),
-                                customerNodeStep,
                                 productNodeStep,
-                                Set.of(customerBoughtProductSource, productNodeStep, customerNodeStep)));
+                                categoryNodeStep,
+                                // customersBoughtProductsStep is listed because it overlaps with this relationship
+                                Set.of(
+                                        customersBoughtProductsStep,
+                                        productInCategorySource,
+                                        productNodeStep,
+                                        categoryNodeStep)));
+            }
+        }
+    }
+
+    @Test
+    void exposes_execution_plan_with_reverse_relationships_sharing_common_nodes() throws Exception {
+        try (InputStream stream =
+                this.getClass().getResourceAsStream("/e2e/execution-plan/northwind-with-reverse-rels.yaml")) {
+            assertThat(stream).isNotNull();
+            try (var reader = new InputStreamReader(stream)) {
+                var pipeline = ImportPipeline.of(ImportSpecificationDeserializer.deserialize(reader));
+
+                var executionPlan = pipeline.executionPlan();
+
+                var groups = executionPlan.getGroups();
+                assertThat(groups).hasSize(1);
+                var group = groups.getFirst();
+                var stages = group.getStages();
+                assertThat(stages).hasSize(4);
+                var productNodeStep = new NodeTargetStep(
+                        new NodeTarget(
+                                true,
+                                "product_nodes",
+                                "products",
+                                null,
+                                null,
+                                (ObjectNode) null,
+                                List.of("Product"),
+                                List.of(
+                                        new PropertyMapping("productname", "name", null),
+                                        new PropertyMapping("unitprice", "unitPrice", null)),
+                                nodeSchema(new NodeKeyConstraint(
+                                        "product_name_key_constraint", "Product", List.of("name"), null))),
+                        Set.of(new SourceStep(new JdbcSource(
+                                "products",
+                                "northwind",
+                                "SELECT productname, unitprice FROM products ORDER BY productname ASC"))));
+                var categoryNodeStep = new NodeTargetStep(
+                        new NodeTarget(
+                                true,
+                                "category_nodes",
+                                "categories",
+                                null,
+                                null,
+                                (ObjectNode) null,
+                                List.of("Category"),
+                                List.of(
+                                        new PropertyMapping("categoryname", "name", null),
+                                        new PropertyMapping("description", "description", null)),
+                                nodeSchema(new NodeKeyConstraint(
+                                        "category_name_key_constraint", "Category", List.of("name"), null))),
+                        Set.of(new SourceStep(new JdbcSource(
+                                "categories",
+                                "northwind",
+                                "SELECT categoryname, description FROM categories ORDER BY categoryname ASC"))));
+                assertThat(stages.get(1).getSteps()).hasSize(2).contains(productNodeStep, categoryNodeStep);
+                var productInCategorySource = new SourceStep(
+                        new JdbcSource(
+                                "products_in_categories",
+                                "northwind",
+                                "SELECT p.productname AS productname, c.categoryname AS categoryname FROM products p NATURAL JOIN categories c ORDER BY p.productname ASC"));
+
+                RelationshipTargetStep categoryIncludesProduct = new RelationshipTargetStep(
+                        new RelationshipTarget(
+                                true,
+                                "category_of_product_relationships",
+                                "products_in_categories",
+                                null,
+                                "CATEGORY_INCLUDES_PRODUCT",
+                                null,
+                                null,
+                                (ObjectNode) null,
+                                new NodeReference("category_nodes"),
+                                new NodeReference("product_nodes"),
+                                null,
+                                null),
+                        categoryNodeStep,
+                        productNodeStep,
+                        Set.of(productInCategorySource, productNodeStep, categoryNodeStep));
+                assertThat(stages.get(2).getSteps()).hasSize(1).contains(categoryIncludesProduct);
+                assertThat(stages.get(3).getSteps())
+                        .hasSize(1)
+                        .contains(new RelationshipTargetStep(
+                                new RelationshipTarget(
+                                        true,
+                                        "product_in_category_relationships",
+                                        "products_in_categories",
+                                        null,
+                                        "BELONGS_TO_CATEGORY",
+                                        null,
+                                        null,
+                                        (ObjectNode) null,
+                                        new NodeReference("product_nodes"),
+                                        new NodeReference("category_nodes"),
+                                        null,
+                                        null),
+                                productNodeStep,
+                                categoryNodeStep,
+                                Set.of(
+                                        categoryIncludesProduct,
+                                        productInCategorySource,
+                                        productNodeStep,
+                                        categoryNodeStep)));
             }
         }
     }

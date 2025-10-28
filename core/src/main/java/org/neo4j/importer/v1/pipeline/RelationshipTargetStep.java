@@ -88,30 +88,6 @@ public class RelationshipTargetStep extends EntityTargetStep {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (!(o instanceof RelationshipTargetStep)) return false;
-        if (!super.equals(o)) return false;
-        RelationshipTargetStep that = (RelationshipTargetStep) o;
-        return Objects.equals(target, that.target)
-                && Objects.equals(startNode, that.startNode)
-                && Objects.equals(endNode, that.endNode);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(super.hashCode(), target, startNode, endNode);
-    }
-
-    @Override
-    public String toString() {
-        return "RelationshipTargetStep{" + "target="
-                + target + ", startNode="
-                + startNode + ", endNode="
-                + endNode + "} "
-                + super.toString();
-    }
-
-    @Override
     protected RelationshipTarget target() {
         return target;
     }
@@ -148,5 +124,29 @@ public class RelationshipTargetStep extends EntityTargetStep {
                 .filter(uniqueProperties::contains)
                 .collect(Collectors.toList()));
         return result;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof RelationshipTargetStep)) return false;
+        if (!super.equals(o)) return false;
+        RelationshipTargetStep step = (RelationshipTargetStep) o;
+        return Objects.equals(target, step.target)
+                && Objects.equals(startNode, step.startNode)
+                && Objects.equals(endNode, step.endNode);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), target, startNode, endNode);
+    }
+
+    @Override
+    public String toString() {
+        return "RelationshipTargetStep{" + "target="
+                + target + ", startNode="
+                + startNode + ", endNode="
+                + endNode + "} "
+                + super.toString();
     }
 }

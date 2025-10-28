@@ -45,7 +45,7 @@ public class ImportExecutionPlan {
         var groups = new ArrayList<ImportStepGroup>();
         components.forEach((component) -> {
             var stages = new ArrayList<ImportStepStage>();
-            // "out" as in (a:Step)-[:DEPENDS_ON]->(b:Step)
+            // "out" as in (a:Step)-[:DEPENDS_ON]->(b:Step) (i.e. "out" from a's perspective)
             // a is a "dependent", b is a dependency, b needs to run first
             var outDegrees = new HashMap<ImportStep, Long>();
             component.forEach(dependent -> {

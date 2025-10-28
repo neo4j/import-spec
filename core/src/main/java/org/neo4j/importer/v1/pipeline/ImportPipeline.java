@@ -21,6 +21,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -127,6 +128,8 @@ public class ImportPipeline implements Iterable<ImportStep>, Serializable {
         var preQueryActions = indexedActions.getOrDefault(ActionStage.PRE_QUERIES, Set.of());
         var queryTargets =
                 new LinkedHashSet<QualifiedName>(targets.getCustomQueries().size());
+        // K: node target name, V: rel target names (with node as start and/or end)
+        var relationshipNodeTracking = new HashMap<QualifiedName, Set<QualifiedName>>();
         activeTargets.forEach(target -> {
             var targetName = target.getName();
             var dependencies = new HashSet<QualifiedName>();
@@ -143,13 +146,21 @@ public class ImportPipeline implements Iterable<ImportStep>, Serializable {
             } else if (target instanceof RelationshipTarget) {
                 dependencies.addAll(preRelationshipActions);
                 var relationshipTarget = (RelationshipTarget) target;
-                dependencies.add(QualifiedName.ofNodeTarget(
-                        relationshipTarget.getStartNodeReference().getName()));
-                dependencies.add(QualifiedName.ofNodeTarget(
-                        relationshipTarget.getEndNodeReference().getName()));
-                var qualifiedName = QualifiedName.ofRelationshipTarget(targetName);
-                dependencyGraph.put(qualifiedName, dependencies);
-                relationshipTargets.add(qualifiedName);
+                var startNodeName = QualifiedName.ofNodeTarget(
+                        relationshipTarget.getStartNodeReference().getName());
+                dependencies.add(startNodeName);
+                var endNodeName = QualifiedName.ofNodeTarget(
+                        relationshipTarget.getEndNodeReference().getName());
+                dependencies.add(endNodeName);
+                var relationshipName = QualifiedName.ofRelationshipTarget(targetName);
+                dependencyGraph.put(relationshipName, dependencies);
+                relationshipTargets.add(relationshipName);
+                relationshipNodeTracking
+                        .computeIfAbsent(startNodeName, k -> new LinkedHashSet<>())
+                        .add(relationshipName);
+                relationshipNodeTracking
+                        .computeIfAbsent(endNodeName, k -> new LinkedHashSet<>())
+                        .add(relationshipName);
             } else if (target instanceof CustomQueryTarget) {
                 dependencies.addAll(preQueryActions);
                 var qualifiedName = QualifiedName.ofQueryTarget(targetName);
@@ -195,6 +206,20 @@ public class ImportPipeline implements Iterable<ImportStep>, Serializable {
             var dependencies = dependenciesByStage.get(stage);
             actions.forEach(action -> dependencyGraph.put(action, dependencies));
         });
+        relationshipNodeTracking.values().stream()
+                // more than 1 relationship starts from or ends to the same node
+                .filter(rels -> rels.size() > 1)
+                .forEach(overlappingRelationships -> {
+                    // rel_1 could go from node a to b, and rel_2 from b to a
+                    // process the relationships in the same consistent order to avoid that problem
+                    var overlaps = new ArrayList<>(overlappingRelationships);
+                    overlaps.sort(Comparator.comparing(QualifiedName::getValue));
+                    for (int i = 0; i < overlaps.size() - 1; i++) {
+                        var dependency = overlaps.get(i);
+                        var dependent = overlaps.get(i + 1);
+                        dependencyGraph.get(dependent).add(dependency);
+                    }
+                });
         return dependencyGraph;
     }
 
