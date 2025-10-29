@@ -21,6 +21,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -43,6 +46,9 @@ import org.neo4j.driver.GraphDatabase;
 import org.neo4j.driver.Session;
 import org.neo4j.driver.types.MapAccessor;
 import org.neo4j.importer.v1.ImportSpecificationDeserializer;
+import org.neo4j.importer.v1.actions.ActionStage;
+import org.neo4j.importer.v1.actions.plugin.CypherAction;
+import org.neo4j.importer.v1.pipeline.ActionStep;
 import org.neo4j.importer.v1.pipeline.EntityTargetStep;
 import org.neo4j.importer.v1.pipeline.ImportPipeline;
 import org.neo4j.importer.v1.pipeline.NodeTargetStep;
@@ -50,7 +56,9 @@ import org.neo4j.importer.v1.pipeline.RelationshipTargetStep;
 import org.neo4j.importer.v1.pipeline.SourceStep;
 import org.neo4j.importer.v1.sources.Source;
 import org.neo4j.importer.v1.sources.SourceProvider;
+import org.neo4j.importer.v1.targets.NodeMatchMode;
 import org.neo4j.importer.v1.targets.PropertyMapping;
+import org.neo4j.importer.v1.targets.PropertyType;
 import org.neo4j.importer.v1.targets.WriteMode;
 import org.testcontainers.containers.Neo4jContainer;
 import org.testcontainers.utility.DockerImageName;
@@ -65,7 +73,7 @@ public class SparkExampleIT {
             .withAdminPassword("letmein!");
 
     @BeforeClass
-    public static void beforeClass() throws Exception {
+    public static void beforeClass() {
         Assume.assumeTrue(
                 "Please run `gcloud auth application-default login` and define the environment variable GOOGLE_APPLICATION_CREDENTIALS with the resulting path",
                 System.getenv("GOOGLE_APPLICATION_CREDENTIALS") != null);
@@ -73,64 +81,94 @@ public class SparkExampleIT {
 
     @Test
     public void imports_dvd_rental_data_set() throws Exception {
-        try (InputStream stream = this.getClass().getResourceAsStream("/specs/dvd_rental.yaml")) {
-            assertThat(stream).isNotNull();
-
-            var spark = SparkSession.builder()
-                    .master("local[*]")
-                    .appName("SparkExample")
-                    .config("spark.hadoop.google.cloud.auth.service.account.enable", "true")
-                    .config("spark.hadoop.fs.gs.auth.type", "APPLICATION_DEFAULT")
-                    .config("neo4j.url", NEO4J.getBoltUrl())
-                    .config("neo4j.authentication.basic.username", "neo4j")
-                    .config("neo4j.authentication.basic.password", NEO4J.getAdminPassword())
-                    .getOrCreate();
-
-            try (var reader = new InputStreamReader(stream)) {
-                var importPipeline = ImportPipeline.of(ImportSpecificationDeserializer.deserialize(reader));
-                var plan = importPipeline.executionPlan();
-
-                var sourceDataFrames = new HashMap<String, Dataset<Row>>();
-                for (var group : plan.getGroups()) {
-                    for (var stage : group.getStages()) {
-                        for (var step : stage.getSteps()) {
-                            switch (step) {
-                                case SourceStep sourceStep -> {
-                                    var source = sourceStep.source();
-                                    assertThat(source).isInstanceOf(ParquetSource.class);
-                                    var parquetSource = (ParquetSource) source;
-                                    var df = spark.read()
-                                            .parquet(parquetSource.uri())
-                                            .cache();
-                                    sourceDataFrames.put(parquetSource.name(), df);
-                                }
-                                case NodeTargetStep nodeTargetStep -> {
-                                    var df = sourceDataFrames.get(nodeTargetStep.sourceName());
-                                    df.select(sourceColumns(nodeTargetStep))
-                                            .withColumnsRenamed(columnRenames(nodeTargetStep))
-                                            .write()
-                                            .format(NEO4J_DATASOURCE)
-                                            .mode(saveMode(nodeTargetStep.writeMode()))
-                                            .option("labels", labels(nodeTargetStep.labels()))
-                                            .option("node.keys", keys(nodeTargetStep))
-                                            .save();
-                                }
-                                case RelationshipTargetStep relationshipTargetStep -> {
-                                    var df = sourceDataFrames.get(relationshipTargetStep.sourceName());
-                                }
-                                default -> {}
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        // TODO: wait for import to complete e.g. in beam we: pipeline.run().waitUntilFinish();
 
         try (var driver =
                 GraphDatabase.driver(NEO4J.getBoltUrl(), AuthTokens.basic("neo4j", NEO4J.getAdminPassword()))) {
             driver.verifyConnectivity();
+            try (InputStream stream = this.getClass().getResourceAsStream("/specs/dvd_rental.yaml")) {
+                assertThat(stream).isNotNull();
+
+                var spark = SparkSession.builder()
+                        .master("local[*]")
+                        .appName("SparkExample")
+                        .config("spark.hadoop.google.cloud.auth.service.account.enable", "true")
+                        .config("spark.hadoop.fs.gs.auth.type", "APPLICATION_DEFAULT")
+                        .config("neo4j.url", NEO4J.getBoltUrl())
+                        .config("neo4j.authentication.basic.username", "neo4j")
+                        .config("neo4j.authentication.basic.password", NEO4J.getAdminPassword())
+                        .getOrCreate();
+
+                try (var reader = new InputStreamReader(stream)) {
+                    var importPipeline = ImportPipeline.of(ImportSpecificationDeserializer.deserialize(reader));
+                    var plan = importPipeline.executionPlan();
+
+                    var sourceDataFrames = new HashMap<String, Dataset<Row>>();
+                    for (var group : plan.getGroups()) {
+                        for (var stage : group.getStages()) {
+                            for (var step : stage.getSteps()) {
+                                switch (step) {
+                                    case SourceStep sourceStep -> {
+                                        var source = sourceStep.source();
+                                        assertThat(source).isInstanceOf(ParquetSource.class);
+                                        var parquetSource = (ParquetSource) source;
+                                        var df = spark.read()
+                                                .parquet(parquetSource.uri())
+                                                .cache();
+                                        sourceDataFrames.put(parquetSource.name(), df);
+                                    }
+                                    case NodeTargetStep node -> {
+                                        var df = sourceDataFrames.get(node.sourceName());
+                                        df.select(sourceColumns(node))
+                                                .withColumnsRenamed(columnRenames(node))
+                                                .write()
+                                                .format(NEO4J_DATASOURCE)
+                                                .mode(saveMode(node.writeMode()))
+                                                .option("script", String.join(";\n", schemaStatements(node)))
+                                                .option("labels", labels(node))
+                                                .option("node.keys", keys(node))
+                                                .save();
+                                    }
+                                    case RelationshipTargetStep relationship -> {
+                                        var df = sourceDataFrames.get(relationship.sourceName());
+                                        var nodeSaveMode = nodeSaveMode(relationship.nodeMatchMode());
+                                        var startNode = relationship.startNode();
+                                        var startNodeKeys = keyProperties(startNode);
+                                        var endNode = relationship.endNode();
+                                        var endNodeKeys = keyProperties(endNode);
+                                        df.select(sourceColumns(relationship))
+                                                .write()
+                                                .format(NEO4J_DATASOURCE)
+                                                .mode(saveMode(relationship.writeMode()))
+                                                .option("script", String.join(";\n", schemaStatements(relationship)))
+                                                .option("relationship", relationship.type())
+                                                .option("relationship.save.strategy", "keys")
+                                                .option("relationship.properties", properties(relationship))
+                                                .option("relationship.source.save.mode", nodeSaveMode)
+                                                .option("relationship.source.labels", labels(startNode))
+                                                .option("relationship.source.node.keys", startNodeKeys)
+                                                .option("relationship.source.node.properties", startNodeKeys)
+                                                .option("relationship.target.save.mode", nodeSaveMode)
+                                                .option("relationship.target.labels", labels(endNode))
+                                                .option("relationship.target.node.keys", endNodeKeys)
+                                                .option("relationship.target.node.properties", endNodeKeys)
+                                                .save();
+                                    }
+                                    case ActionStep action -> {
+                                        assertThat(action.action()).isInstanceOf(CypherAction.class);
+                                        assertThat(action.stage()).isEqualTo(ActionStage.END);
+                                        // TODO: actually wait on all other steps
+                                        var cypherAction = (CypherAction) action.action();
+                                        runAction(cypherAction, driver);
+                                    }
+                                    default -> {}
+                                }
+                            }
+                        }
+                    }
+                    // TODO: wait for import to complete e.g. in beam we: pipeline.run().waitUntilFinish();
+                    sourceDataFrames.values().forEach(Dataset::unpersist);
+                }
+            }
 
             assertSchema(driver);
             assertNodeCount(driver, "Actor", 200L);
@@ -144,13 +182,34 @@ public class SparkExampleIT {
         }
     }
 
-    private static Column[] sourceColumns(EntityTargetStep target) {
+    private static Column[] sourceColumns(NodeTargetStep target) {
         return allProperties(target).map(SparkExampleIT::toSourceColumn).toArray(Column[]::new);
     }
 
-    private Map<String, String> columnRenames(EntityTargetStep target) {
+    private static Column[] sourceColumns(RelationshipTargetStep target) {
+        return Streams.concatAll(
+                        allProperties(target),
+                        target.startNode().keyProperties().stream(),
+                        target.endNode().keyProperties().stream())
+                .map(SparkExampleIT::toSourceColumn)
+                .toArray(Column[]::new);
+    }
+
+    private Map<String, String> columnRenames(NodeTargetStep target) {
         return allProperties(target)
                 .collect(Collectors.toMap(PropertyMapping::getSourceField, PropertyMapping::getTargetProperty));
+    }
+
+    private String properties(EntityTargetStep target) {
+        return allProperties(target)
+                .map(mapping -> "%s:%s".formatted(mapping.getSourceField(), mapping.getTargetProperty()))
+                .collect(Collectors.joining(","));
+    }
+
+    private String keyProperties(EntityTargetStep target) {
+        return target.keyProperties().stream()
+                .map(mapping -> "%s:%s".formatted(mapping.getSourceField(), mapping.getTargetProperty()))
+                .collect(Collectors.joining(","));
     }
 
     private SaveMode saveMode(WriteMode writeMode) {
@@ -162,7 +221,19 @@ public class SparkExampleIT {
                 return SaveMode.Overwrite;
             }
         }
-        throw new IllegalStateException("unexpected write mode: " + writeMode);
+        throw new IllegalStateException("unexpected write mode: %s".formatted(writeMode));
+    }
+
+    private String nodeSaveMode(NodeMatchMode nodeMatchMode) {
+        switch (nodeMatchMode) {
+            case MATCH -> {
+                return "Match";
+            }
+            case MERGE -> {
+                return "Overwrite";
+            }
+        }
+        throw new IllegalStateException("unexpected node match mode: %s".formatted(nodeMatchMode));
     }
 
     private String keys(EntityTargetStep target) {
@@ -171,8 +242,8 @@ public class SparkExampleIT {
                 .collect(Collectors.joining(","));
     }
 
-    private String labels(List<String> labels) {
-        return labels.stream()
+    private String labels(NodeTargetStep target) {
+        return target.labels().stream()
                 .map(label -> {
                     Optional<String> result = SchemaNames.sanitize(label);
                     assertThat(result)
@@ -189,6 +260,127 @@ public class SparkExampleIT {
 
     private static Column toSourceColumn(PropertyMapping mapping) {
         return new Column(mapping.getSourceField());
+    }
+
+    private List<String> schemaStatements(NodeTargetStep step) {
+        var schema = step.schema();
+        if (schema == null) {
+            return Collections.emptyList();
+        }
+        var statements = new ArrayList<String>();
+        statements.addAll(schema.getKeyConstraints().stream()
+                .map(constraint -> "CREATE CONSTRAINT %s FOR (n:%s) REQUIRE (%s) IS NODE KEY"
+                        .formatted(
+                                constraint.getName(),
+                                sanitize(constraint.getLabel()),
+                                constraint.getProperties().stream()
+                                        .map(SparkExampleIT::sanitize)
+                                        .map(prop -> "%s.%s".formatted("n", prop))
+                                        .collect(Collectors.joining(","))))
+                .toList());
+        statements.addAll(schema.getUniqueConstraints().stream()
+                .map(constraint -> "CREATE CONSTRAINT %s FOR (n:%s) REQUIRE (%s) IS UNIQUE"
+                        .formatted(
+                                constraint.getName(),
+                                sanitize(constraint.getLabel()),
+                                constraint.getProperties().stream()
+                                        .map(SparkExampleIT::sanitize)
+                                        .map(prop -> "%s.%s".formatted("n", prop))
+                                        .collect(Collectors.joining(","))))
+                .toList());
+        Map<String, PropertyType> propertyTypes = step.propertyTypes();
+        statements.addAll(schema.getTypeConstraints().stream()
+                .map(constraint -> "CREATE CONSTRAINT %s FOR (n:%s) REQUIRE n.%s IS :: %s"
+                        .formatted(
+                                constraint.getName(),
+                                sanitize(constraint.getLabel()),
+                                sanitize(constraint.getProperty()),
+                                propertyType(propertyTypes.get(constraint.getProperty()))))
+                .toList());
+        return statements;
+    }
+
+    private List<String> schemaStatements(RelationshipTargetStep step) {
+        var schema = step.schema();
+        if (schema == null) {
+            return Collections.emptyList();
+        }
+        var statements = new ArrayList<String>();
+        statements.addAll(schema.getKeyConstraints().stream()
+                .map(constraint -> "CREATE CONSTRAINT %s FOR ()-[r:%s]-() REQUIRE (%s) IS RELATIONSHIP KEY"
+                        .formatted(
+                                constraint.getName(),
+                                sanitize(step.type()),
+                                constraint.getProperties().stream()
+                                        .map(SparkExampleIT::sanitize)
+                                        .map(prop -> "%s.%s".formatted("r", prop))
+                                        .collect(Collectors.joining(","))))
+                .toList());
+        statements.addAll(schema.getUniqueConstraints().stream()
+                .map(constraint -> "CREATE CONSTRAINT %s FOR ()-[r:%s]-() REQUIRE (%s) IS UNIQUE"
+                        .formatted(
+                                constraint.getName(),
+                                sanitize(step.type()),
+                                constraint.getProperties().stream()
+                                        .map(SparkExampleIT::sanitize)
+                                        .map(prop -> "%s.%s".formatted("r", prop))
+                                        .collect(Collectors.joining(","))))
+                .toList());
+        Map<String, PropertyType> propertyTypes = step.propertyTypes();
+        statements.addAll(schema.getTypeConstraints().stream()
+                .map(constraint -> "CREATE CONSTRAINT %s FOR ()-[r:%s]-() REQUIRE r.%s IS :: %s"
+                        .formatted(
+                                constraint.getName(),
+                                sanitize(step.type()),
+                                sanitize(constraint.getProperty()),
+                                propertyType(propertyTypes.get(constraint.getProperty()))))
+                .toList());
+        return statements;
+    }
+
+    private static String sanitize(String element) {
+        var result = SchemaNames.sanitize(element);
+        assertThat(result).isPresent();
+        return result.get();
+    }
+
+    private static String propertyType(PropertyType propertyType) {
+        return switch (propertyType) {
+            case BOOLEAN -> "BOOLEAN";
+            case BOOLEAN_ARRAY -> "LIST<BOOLEAN NOT NULL>";
+            case DATE -> "DATE";
+            case DATE_ARRAY -> "LIST<DATE NOT NULL>";
+            case DURATION -> "DURATION";
+            case DURATION_ARRAY -> "LIST<DURATION NOT NULL>";
+            case FLOAT -> "FLOAT";
+            case FLOAT_ARRAY -> "LIST<FLOAT NOT NULL>";
+            case INTEGER -> "INTEGER";
+            case INTEGER_ARRAY -> "LIST<INTEGER NOT NULL>";
+            case LOCAL_DATETIME -> "LOCAL DATETIME";
+            case LOCAL_DATETIME_ARRAY -> "LIST<LOCAL DATETIME NOT NULL>";
+            case LOCAL_TIME -> "LOCAL TIME";
+            case LOCAL_TIME_ARRAY -> "LIST<LOCAL TIME NOT NULL>";
+            case POINT -> "POINT";
+            case POINT_ARRAY -> "LIST<POINT NOT NULL>";
+            case STRING -> "STRING";
+            case STRING_ARRAY -> "LIST<STRING NOT NULL>";
+            case ZONED_DATETIME -> "ZONED DATETIME";
+            case ZONED_DATETIME_ARRAY -> "LIST<ZONED DATETIME NOT NULL>";
+            case ZONED_TIME -> "ZONED TIME";
+            case ZONED_TIME_ARRAY -> "LIST<ZONED TIME NOT NULL>";
+            default -> throw new IllegalArgumentException(String.format("Unsupported property type: %s", propertyType));
+        };
+    }
+
+    private static void runAction(CypherAction cypherAction, Driver driver) {
+        try (var session = driver.session()) {
+            var query = cypherAction.getQuery();
+            switch (cypherAction.getExecutionMode()) {
+                case TRANSACTION ->
+                    session.writeTransaction((tx) -> tx.run(query).consume());
+                case AUTOCOMMIT -> session.run(query).consume();
+            }
+        }
     }
 
     private static void assertSchema(Driver driver) {
@@ -323,6 +515,14 @@ public class SparkExampleIT {
         @Override
         public String getName() {
             return name;
+        }
+    }
+
+    private static class Streams {
+
+        @SafeVarargs
+        public static <T> Stream<T> concatAll(Stream<T>... streams) {
+            return Arrays.stream(streams).reduce(Stream::concat).orElse(Stream.empty());
         }
     }
 }
