@@ -12,6 +12,7 @@
     <name>import-spec-examples-parent</name>
     <modules>
         <module>apache-beam</module>
+        <module>apache-spark</module>
         <module>neo4j-admin</module>
     </modules>
     <dependencyManagement>
