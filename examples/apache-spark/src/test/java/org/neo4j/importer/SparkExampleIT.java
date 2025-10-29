@@ -19,11 +19,9 @@ package org.neo4j.importer;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
-
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Map;
-
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
@@ -55,7 +53,10 @@ public class SparkExampleIT {
         try (InputStream stream = this.getClass().getResourceAsStream("/specs/dvd_rental.yaml")) {
             assertThat(stream).isNotNull();
 
-            var spark = SparkSession.builder().master("local[*]").appName("SparkExample").getOrCreate();
+            var spark = SparkSession.builder()
+                    .master("local[*]")
+                    .appName("SparkExample")
+                    .getOrCreate();
 
             try (var reader = new InputStreamReader(stream)) {
                 var importPipeline = ImportPipeline.of(ImportSpecificationDeserializer.deserialize(reader));
@@ -78,12 +79,11 @@ public class SparkExampleIT {
                                 case RelationshipTargetStep relationshipTargetStep -> {
                                     // TODO: I want to create a DF.write(neo4j.........)
                                 }
-                                default -> { }
+                                default -> {}
                             }
                         }
                     }
                 }
-
             }
         }
 
