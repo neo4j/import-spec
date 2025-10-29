@@ -22,30 +22,42 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import org.apache.spark.sql.Column;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
+import org.apache.spark.sql.SaveMode;
 import org.apache.spark.sql.SparkSession;
 import org.junit.Assume;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
+import org.neo4j.cypherdsl.core.internal.SchemaNames;
 import org.neo4j.driver.AuthTokens;
 import org.neo4j.driver.Driver;
 import org.neo4j.driver.GraphDatabase;
 import org.neo4j.driver.Session;
 import org.neo4j.driver.types.MapAccessor;
 import org.neo4j.importer.v1.ImportSpecificationDeserializer;
+import org.neo4j.importer.v1.pipeline.EntityTargetStep;
 import org.neo4j.importer.v1.pipeline.ImportPipeline;
 import org.neo4j.importer.v1.pipeline.NodeTargetStep;
 import org.neo4j.importer.v1.pipeline.RelationshipTargetStep;
 import org.neo4j.importer.v1.pipeline.SourceStep;
 import org.neo4j.importer.v1.sources.Source;
 import org.neo4j.importer.v1.sources.SourceProvider;
+import org.neo4j.importer.v1.targets.PropertyMapping;
+import org.neo4j.importer.v1.targets.WriteMode;
 import org.testcontainers.containers.Neo4jContainer;
 import org.testcontainers.utility.DockerImageName;
 
 public class SparkExampleIT {
+
+    private static final String NEO4J_DATASOURCE = "org.neo4j.spark.DataSource";
 
     @ClassRule
     public static Neo4jContainer<?> NEO4J = new Neo4jContainer<>(DockerImageName.parse("neo4j:5-enterprise"))
@@ -69,6 +81,9 @@ public class SparkExampleIT {
                     .appName("SparkExample")
                     .config("spark.hadoop.google.cloud.auth.service.account.enable", "true")
                     .config("spark.hadoop.fs.gs.auth.type", "APPLICATION_DEFAULT")
+                    .config("neo4j.url", NEO4J.getBoltUrl())
+                    .config("neo4j.authentication.basic.username", "neo4j")
+                    .config("neo4j.authentication.basic.password", NEO4J.getAdminPassword())
                     .getOrCreate();
 
             try (var reader = new InputStreamReader(stream)) {
@@ -84,11 +99,21 @@ public class SparkExampleIT {
                                     var source = sourceStep.source();
                                     assertThat(source).isInstanceOf(ParquetSource.class);
                                     var parquetSource = (ParquetSource) source;
-                                    var df = spark.read().parquet(parquetSource.uri());
+                                    var df = spark.read()
+                                            .parquet(parquetSource.uri())
+                                            .cache();
                                     sourceDataFrames.put(parquetSource.name(), df);
                                 }
                                 case NodeTargetStep nodeTargetStep -> {
                                     var df = sourceDataFrames.get(nodeTargetStep.sourceName());
+                                    df.select(sourceColumns(nodeTargetStep))
+                                            .withColumnsRenamed(columnRenames(nodeTargetStep))
+                                            .write()
+                                            .format(NEO4J_DATASOURCE)
+                                            .mode(saveMode(nodeTargetStep.writeMode()))
+                                            .option("labels", labels(nodeTargetStep.labels()))
+                                            .option("node.keys", keys(nodeTargetStep))
+                                            .save();
                                 }
                                 case RelationshipTargetStep relationshipTargetStep -> {
                                     var df = sourceDataFrames.get(relationshipTargetStep.sourceName());
@@ -117,6 +142,53 @@ public class SparkExampleIT {
             assertRelationshipCount(driver, "Movie", "IN_CATEGORY", "Category", 1000L);
             assertRelationshipCount(driver, "Customer", "HAS_RENTED", "Movie", 16044L);
         }
+    }
+
+    private static Column[] sourceColumns(EntityTargetStep target) {
+        return allProperties(target).map(SparkExampleIT::toSourceColumn).toArray(Column[]::new);
+    }
+
+    private Map<String, String> columnRenames(EntityTargetStep target) {
+        return allProperties(target)
+                .collect(Collectors.toMap(PropertyMapping::getSourceField, PropertyMapping::getTargetProperty));
+    }
+
+    private SaveMode saveMode(WriteMode writeMode) {
+        switch (writeMode) {
+            case CREATE -> {
+                return SaveMode.Append;
+            }
+            case MERGE -> {
+                return SaveMode.Overwrite;
+            }
+        }
+        throw new IllegalStateException("unexpected write mode: " + writeMode);
+    }
+
+    private String keys(EntityTargetStep target) {
+        return target.keyProperties().stream()
+                .map(PropertyMapping::getTargetProperty)
+                .collect(Collectors.joining(","));
+    }
+
+    private String labels(List<String> labels) {
+        return labels.stream()
+                .map(label -> {
+                    Optional<String> result = SchemaNames.sanitize(label);
+                    assertThat(result)
+                            .overridingErrorMessage("Label '%s' could not be sanitized", label)
+                            .isPresent();
+                    return result.get();
+                })
+                .collect(Collectors.joining(":", ":", ""));
+    }
+
+    private static Stream<PropertyMapping> allProperties(EntityTargetStep target) {
+        return Stream.concat(target.keyProperties().stream(), target.nonKeyProperties().stream());
+    }
+
+    private static Column toSourceColumn(PropertyMapping mapping) {
+        return new Column(mapping.getSourceField());
     }
 
     private static void assertSchema(Driver driver) {
