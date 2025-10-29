@@ -10,7 +10,7 @@
     <artifactId>apache-spark-example</artifactId>
     <name>apache-spark-example</name>
     <properties>
-        <scala.binary.version>2.13</scala.binary.version>
+        <scala.version>2.13</scala.version>
         <surefire.jvm.args>-XX:+IgnoreUnrecognizedVMOptions
             --add-opens=java.base/java.lang=ALL-UNNAMED
             --add-opens=java.base/java.lang.invoke=ALL-UNNAMED
@@ -37,12 +37,12 @@
         </dependency>
         <dependency>
             <groupId>org.apache.spark</groupId>
-            <artifactId>spark-sql_${scala.binary.version}</artifactId>
+            <artifactId>spark-sql_${scala.version}</artifactId>
             <version>3.5.7</version>
         </dependency>
         <dependency>
             <groupId>org.neo4j</groupId>
-            <artifactId>neo4j-connector-apache-spark_2.13</artifactId>
+            <artifactId>neo4j-connector-apache-spark_${scala.version}</artifactId>
             <version>5.3.10_for_spark_3</version>
         </dependency>
         <dependency>
