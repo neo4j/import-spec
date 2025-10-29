@@ -21,16 +21,20 @@ import static org.assertj.core.api.Assertions.assertThat;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.HashMap;
 import java.util.Map;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
+import org.junit.Assume;
+import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
-import org.neo4j.cypherdsl.core.Cypher;
 import org.neo4j.driver.AuthTokens;
 import org.neo4j.driver.Driver;
 import org.neo4j.driver.GraphDatabase;
+import org.neo4j.driver.Session;
+import org.neo4j.driver.types.MapAccessor;
 import org.neo4j.importer.v1.ImportSpecificationDeserializer;
 import org.neo4j.importer.v1.pipeline.ImportPipeline;
 import org.neo4j.importer.v1.pipeline.NodeTargetStep;
@@ -48,6 +52,13 @@ public class SparkExampleIT {
             .withEnv("NEO4J_ACCEPT_LICENSE_AGREEMENT", "yes")
             .withAdminPassword("letmein!");
 
+    @BeforeClass
+    public static void beforeClass() throws Exception {
+        Assume.assumeTrue(
+                "Please run `gcloud auth application-default login` and define the environment variable GOOGLE_APPLICATION_CREDENTIALS with the resulting path",
+                System.getenv("GOOGLE_APPLICATION_CREDENTIALS") != null);
+    }
+
     @Test
     public void imports_dvd_rental_data_set() throws Exception {
         try (InputStream stream = this.getClass().getResourceAsStream("/specs/dvd_rental.yaml")) {
@@ -56,28 +67,31 @@ public class SparkExampleIT {
             var spark = SparkSession.builder()
                     .master("local[*]")
                     .appName("SparkExample")
+                    .config("spark.hadoop.google.cloud.auth.service.account.enable", "true")
+                    .config("spark.hadoop.fs.gs.auth.type", "APPLICATION_DEFAULT")
                     .getOrCreate();
 
             try (var reader = new InputStreamReader(stream)) {
                 var importPipeline = ImportPipeline.of(ImportSpecificationDeserializer.deserialize(reader));
                 var plan = importPipeline.executionPlan();
 
+                var sourceDataFrames = new HashMap<String, Dataset<Row>>();
                 for (var group : plan.getGroups()) {
                     for (var stage : group.getStages()) {
                         for (var step : stage.getSteps()) {
-                            // TODO: fun type checking!!!
-
                             switch (step) {
                                 case SourceStep sourceStep -> {
-                                    var parquetSource = (ParquetSource) sourceStep.source();
-                                    Dataset<Row> peopleDF = spark.read().parquet(parquetSource.uri);
-                                    // TODO: I want to create DFs, and mb put them in a map [sourceName -> df]
+                                    var source = sourceStep.source();
+                                    assertThat(source).isInstanceOf(ParquetSource.class);
+                                    var parquetSource = (ParquetSource) source;
+                                    var df = spark.read().parquet(parquetSource.uri());
+                                    sourceDataFrames.put(parquetSource.name(), df);
                                 }
                                 case NodeTargetStep nodeTargetStep -> {
-                                    // TODO: I want to create a DF.write(neo4j.........)
+                                    var df = sourceDataFrames.get(nodeTargetStep.sourceName());
                                 }
                                 case RelationshipTargetStep relationshipTargetStep -> {
-                                    // TODO: I want to create a DF.write(neo4j.........)
+                                    var df = sourceDataFrames.get(relationshipTargetStep.sourceName());
                                 }
                                 default -> {}
                             }
@@ -133,80 +147,83 @@ public class SparkExampleIT {
     }
 
     private static void assertNodeConstraint(Driver driver, String constraintType, String label, String property) {
-        var records = driver.executableQuery(
-                        """
-                        SHOW CONSTRAINTS YIELD type, entityType, labelsOrTypes, properties \
-                        WHERE type = $constraintType AND entityType = 'NODE' AND labelsOrTypes = [$label] AND properties = [$property] \
-                        RETURN count(*) = 1 AS result""")
-                .withParameters(Map.of("constraintType", constraintType, "label", label, "property", property))
-                .execute()
-                .records();
-        assertThat(records).hasSize(1);
-        assertThat(records.getFirst().get("result").asBoolean()).isTrue();
+        try (Session session = driver.session()) {
+            var result = session.run(
+                    """
+                            SHOW CONSTRAINTS YIELD type, entityType, labelsOrTypes, properties \
+                            WHERE type = $constraintType AND entityType = 'NODE' AND labelsOrTypes = [$label] AND properties = [$property] \
+                            RETURN count(*) = 1 AS result""",
+                    Map.of("constraintType", constraintType, "label", label, "property", property));
+            var records = result.list(MapAccessor::asMap);
+            assertThat(records).hasSize(1);
+            assertThat((boolean) records.getFirst().get("result")).isTrue();
+        }
     }
 
     private static void assertNodeTypeConstraint(Driver driver, String label, String property, String propertyType) {
-        var records = driver.executableQuery(
-                        """
-                        SHOW CONSTRAINTS YIELD type, entityType, labelsOrTypes, properties, propertyType \
-                        WHERE type = 'NODE_PROPERTY_TYPE' AND entityType = 'NODE' AND labelsOrTypes = [$label] AND properties = [$property] AND propertyType = $propertyType \
-                        RETURN count(*) = 1 AS result""")
-                .withParameters(Map.of("label", label, "property", property, "propertyType", propertyType))
-                .execute()
-                .records();
-        assertThat(records).hasSize(1);
-        assertThat(records.getFirst().get("result").asBoolean()).isTrue();
+        try (Session session = driver.session()) {
+            var result = session.run(
+                    """
+                            SHOW CONSTRAINTS YIELD type, entityType, labelsOrTypes, properties, propertyType \
+                            WHERE type = 'NODE_PROPERTY_TYPE' AND entityType = 'NODE' AND labelsOrTypes = [$label] AND properties = [$property] AND propertyType = $propertyType \
+                            RETURN count(*) = 1 AS result""",
+                    Map.of("label", label, "property", property, "propertyType", propertyType));
+            var records = result.list(MapAccessor::asMap);
+            assertThat(records).hasSize(1);
+            assertThat((boolean) records.getFirst().get("result")).isTrue();
+        }
     }
 
     private static void assertRelationshipConstraint(
             Driver driver, String constraintType, String relType, String property) {
-        var records = driver.executableQuery(
-                        """
-                        SHOW CONSTRAINTS YIELD type, entityType, labelsOrTypes, properties \
-                        WHERE type = $constraintType AND entityType = 'RELATIONSHIP' AND labelsOrTypes = [$type] AND properties = [$property] \
-                        RETURN count(*) = 1 AS result""")
-                .withParameters(Map.of("constraintType", constraintType, "type", relType, "property", property))
-                .execute()
-                .records();
-        assertThat(records).hasSize(1);
-        assertThat(records.getFirst().get("result").asBoolean()).isTrue();
+        try (Session session = driver.session()) {
+            var result = session.run(
+                    """
+                                    SHOW CONSTRAINTS YIELD type, entityType, labelsOrTypes, properties \
+                                    WHERE type = $constraintType AND entityType = 'RELATIONSHIP' AND labelsOrTypes = [$type] AND properties = [$property] \
+                                    RETURN count(*) = 1 AS result""",
+                    Map.of("constraintType", constraintType, "type", relType, "property", property));
+
+            var records = result.list(MapAccessor::asMap);
+            assertThat(records).hasSize(1);
+            assertThat((boolean) records.getFirst().get("result")).isTrue();
+        }
     }
 
     private static void assertRelationshipTypeConstraint(
             Driver driver, String relType, String property, String propertyType) {
-        var records = driver.executableQuery(
-                        """
-                        SHOW CONSTRAINTS YIELD type, entityType, labelsOrTypes, properties, propertyType \
-                        WHERE type = 'RELATIONSHIP_PROPERTY_TYPE' AND entityType = 'RELATIONSHIP' AND labelsOrTypes = [$type] AND properties = [$property] AND propertyType = $propertyType \
-                        RETURN count(*) = 1 AS result""")
-                .withParameters(Map.of("type", relType, "property", property, "propertyType", propertyType))
-                .execute()
-                .records();
-        assertThat(records).hasSize(1);
-        assertThat(records.getFirst().get("result").asBoolean()).isTrue();
+        try (Session session = driver.session()) {
+            var result = session.run(
+                    """
+                            SHOW CONSTRAINTS YIELD type, entityType, labelsOrTypes, properties, propertyType \
+                            WHERE type = 'RELATIONSHIP_PROPERTY_TYPE' AND entityType = 'RELATIONSHIP' AND labelsOrTypes = [$type] AND properties = [$property] AND propertyType = $propertyType \
+                            RETURN count(*) = 1 AS result""",
+                    Map.of("type", relType, "property", property, "propertyType", propertyType));
+
+            var records = result.list(MapAccessor::asMap);
+            assertThat(records).hasSize(1);
+            assertThat((boolean) records.getFirst().get("result")).isTrue();
+        }
     }
 
     private static void assertNodeCount(Driver driver, String label, long expectedCount) {
-        var node = Cypher.node(label).named("n");
-        var query = Cypher.match(node)
-                .returning(Cypher.count(node.getRequiredSymbolicName()).as("count"))
-                .build();
-        var records = driver.executableQuery(query.getCypher()).execute().records();
-        assertThat(records).hasSize(1);
-        assertThat(records.getFirst().get("count").asLong()).isEqualTo(expectedCount);
+        try (Session session = driver.session()) {
+            var query = String.format("MATCH (n:`%s`) RETURN count(n) AS count", label);
+            var records = session.run(query).list(MapAccessor::asMap);
+            assertThat(records).hasSize(1);
+            assertThat((long) records.getFirst().get("count")).isEqualTo(expectedCount);
+        }
     }
 
     private static void assertRelationshipCount(
             Driver driver, String startLabel, String type, String endLabel, long expectedCount) {
-        var startNode = Cypher.node(startLabel);
-        var endNode = Cypher.node(endLabel);
-        var relationship = startNode.relationshipTo(endNode, type).named("r");
-        var query = Cypher.match(relationship)
-                .returning(Cypher.count(relationship.getRequiredSymbolicName()).as("count"))
-                .build();
-        var records = driver.executableQuery(query.getCypher()).execute().records();
-        assertThat(records).hasSize(1);
-        assertThat(records.getFirst().get("count").asLong()).isEqualTo(expectedCount);
+        try (Session session = driver.session()) {
+            var query = String.format(
+                    "MATCH (:`%s`)-[r:`%s`]->(:`%s`) RETURN count(r) AS count", startLabel, type, endLabel);
+            var records = session.run(query).list(MapAccessor::asMap);
+            assertThat(records).hasSize(1);
+            assertThat((long) records.getFirst().get("count")).isEqualTo(expectedCount);
+        }
     }
 
     public static class ParquetSourceProvider implements SourceProvider<ParquetSource> {
