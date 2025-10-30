@@ -51,12 +51,7 @@ import org.neo4j.driver.types.MapAccessor;
 import org.neo4j.importer.v1.ImportSpecificationDeserializer;
 import org.neo4j.importer.v1.actions.ActionStage;
 import org.neo4j.importer.v1.actions.plugin.CypherAction;
-import org.neo4j.importer.v1.pipeline.ActionStep;
-import org.neo4j.importer.v1.pipeline.EntityTargetStep;
-import org.neo4j.importer.v1.pipeline.ImportPipeline;
-import org.neo4j.importer.v1.pipeline.NodeTargetStep;
-import org.neo4j.importer.v1.pipeline.RelationshipTargetStep;
-import org.neo4j.importer.v1.pipeline.SourceStep;
+import org.neo4j.importer.v1.pipeline.*;
 import org.neo4j.importer.v1.sources.Source;
 import org.neo4j.importer.v1.sources.SourceProvider;
 import org.neo4j.importer.v1.targets.NodeMatchMode;
@@ -108,18 +103,26 @@ public class SparkExampleIT {
                     var sourceDataFrames = new HashMap<String, Dataset<Row>>();
                     var actionStepsForPhaseTwo = new CopyOnWriteArrayList<ActionStep>();
 
-                    final AtomicReference<CompletableFuture<Void>> stageFuture = new AtomicReference<>();
                     var lastStageOfEachGroupFutures = new ArrayList<CompletableFuture<Void>>();
                     for (var group : plan.getGroups()) { // <- so if we make this routine "blocking"
-                        stageFuture.set(null);
-                        for (var stage : group.getStages()) { // <- and handle parallel coordination in here
-                            stageFuture.set(CompletableFuture.runAsync(() -> {
-                                if (stageFuture.get() != null) {
-                                    stageFuture.get().join();
+                        var stageFutures = new ArrayList<CompletableFuture<Void>>();
+                        List<ImportExecutionPlan.ImportStepStage> stages = group.getStages();
+
+                        for (int i = 0; i < stages.size(); i++) {
+                            var stageDescription = stages.get(i);
+
+                            final int lastStageIndex = i - 1;
+
+                            var work = CompletableFuture.runAsync(() -> {
+
+                                if (lastStageIndex >= 0) {
+                                    stageFutures.get(lastStageIndex).join();
+                                    System.out.println("RELEASING THIS INDEX NOW: " + lastStageIndex);
                                 }
+
                                 var stepFutures = new ArrayList<CompletableFuture<Void>>();
 
-                                for (var step : stage.getSteps()) { // <- with this work routine -- we're golden!
+                                for (var step : stageDescription.getSteps()) { // <- with this work routine -- we're golden!
                                     switch (step) {
                                         case SourceStep sourceStep -> {
                                             var source = sourceStep.source();
@@ -182,15 +185,21 @@ public class SparkExampleIT {
                                             // TODO: actually wait on all other steps
                                             actionStepsForPhaseTwo.add(action);
                                         }
-                                        default -> {}
+                                        default -> {
+                                        }
                                     }
                                 }
                                 CompletableFuture.allOf(stepFutures.toArray(new CompletableFuture[0]))
                                         .join();
-                            }));
+                            });
+
+
+                            stageFutures.add(work);
                         }
-                        lastStageOfEachGroupFutures.add(stageFuture.get());
+
+                        lastStageOfEachGroupFutures.add(stageFutures.getLast());
                     }
+
                     CompletableFuture.allOf(lastStageOfEachGroupFutures.toArray(new CompletableFuture[0]))
                             .join();
                     // TODO: wait for import to complete e.g. in beam we: pipeline.run().waitUntilFinish();
