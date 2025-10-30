@@ -28,6 +28,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.apache.spark.sql.Column;
@@ -102,10 +105,13 @@ public class SparkExampleIT {
                     var importPipeline = ImportPipeline.of(ImportSpecificationDeserializer.deserialize(reader));
                     var plan = importPipeline.executionPlan();
 
+                    var futures = new ArrayList<CompletableFuture<Void>>();
                     var sourceDataFrames = new HashMap<String, Dataset<Row>>();
-                    for (var group : plan.getGroups()) {
-                        for (var stage : group.getStages()) {
-                            for (var step : stage.getSteps()) {
+                    var actionStepsForPhaseTwo = new CopyOnWriteArrayList<ActionStep>();
+
+                    for (var group : plan.getGroups()) { // <- so if we make this routine "blocking"
+                        for (var stage : group.getStages()) { // <- and handle parallel coordination in here
+                            for (var step : stage.getSteps()) { // <- with this work routine -- we're golden!
                                 switch (step) {
                                     case SourceStep sourceStep -> {
                                         var source = sourceStep.source();
@@ -118,15 +124,18 @@ public class SparkExampleIT {
                                     }
                                     case NodeTargetStep node -> {
                                         var df = sourceDataFrames.get(node.sourceName());
-                                        df.select(sourceColumns(node))
-                                                .withColumnsRenamed(columnRenames(node))
-                                                .write()
-                                                .format(NEO4J_DATASOURCE)
-                                                .mode(saveMode(node.writeMode()))
-                                                .option("script", String.join(";\n", schemaStatements(node)))
-                                                .option("labels", labels(node))
-                                                .option("node.keys", keys(node))
-                                                .save();
+
+                                        futures.add(CompletableFuture.runAsync(() -> {
+                                            df.select(sourceColumns(node))
+                                                    .withColumnsRenamed(columnRenames(node))
+                                                    .write()
+                                                    .format(NEO4J_DATASOURCE)
+                                                    .mode(saveMode(node.writeMode()))
+                                                    .option("script", String.join(";\n", schemaStatements(node)))
+                                                    .option("labels", labels(node))
+                                                    .option("node.keys", keys(node))
+                                                    .save();
+                                        }));
                                     }
                                     case RelationshipTargetStep relationship -> {
                                         var df = sourceDataFrames.get(relationship.sourceName());
@@ -157,8 +166,7 @@ public class SparkExampleIT {
                                         assertThat(action.action()).isInstanceOf(CypherAction.class);
                                         assertThat(action.stage()).isEqualTo(ActionStage.END);
                                         // TODO: actually wait on all other steps
-                                        var cypherAction = (CypherAction) action.action();
-                                        runAction(cypherAction, driver);
+                                        actionStepsForPhaseTwo.add(action);
                                     }
                                     default -> {}
                                 }
@@ -166,6 +174,15 @@ public class SparkExampleIT {
                         }
                     }
                     // TODO: wait for import to complete e.g. in beam we: pipeline.run().waitUntilFinish();
+
+                    CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
+
+                    // run after we waited all other
+                    for (var actionStep : actionStepsForPhaseTwo) {
+                        var cypherAction = (CypherAction) actionStep.action();
+                        runAction(cypherAction, driver);
+                    }
+
                     sourceDataFrames.values().forEach(Dataset::unpersist);
                 }
             }
