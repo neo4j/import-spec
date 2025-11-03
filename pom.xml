@@ -39,7 +39,7 @@
         <url>https://github.com/neo4j/import-spec</url>
     </scm>
     <properties>
-        <beam.version>2.68.0</beam.version>
+        <beam.version>2.69.0</beam.version>
         <jreleaser-maven-plugin.version>1.18.0</jreleaser-maven-plugin.version>
         <license.id>neo4j_apache_v2</license.id>
         <maven.compiler.release>11</maven.compiler.release>
