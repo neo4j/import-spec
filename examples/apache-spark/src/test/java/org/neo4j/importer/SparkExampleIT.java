@@ -40,12 +40,15 @@ import org.junit.Assume;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.neo4j.cypherdsl.core.internal.SchemaNames;
 import org.neo4j.driver.*;
 import org.neo4j.driver.types.MapAccessor;
 import org.neo4j.importer.v1.ImportSpecificationDeserializer;
 import org.neo4j.importer.v1.actions.plugin.CypherAction;
 import org.neo4j.importer.v1.pipeline.*;
+import org.neo4j.importer.v1.pipeline.ImportExecutionPlan.ImportStepGroup;
+import org.neo4j.importer.v1.pipeline.ImportExecutionPlan.ImportStepStage;
 import org.neo4j.importer.v1.sources.Source;
 import org.neo4j.importer.v1.sources.SourceProvider;
 import org.neo4j.importer.v1.targets.NodeMatchMode;
@@ -96,7 +99,7 @@ public class SparkExampleIT {
 
                 try (var reader = new InputStreamReader(stream)) {
                     var importPipeline = ImportPipeline.of(ImportSpecificationDeserializer.deserialize(reader));
-                    sparkImportWithPlan(driver, importPipeline.executionPlan());
+                    runSparkImport(driver, importPipeline.executionPlan());
                 }
             }
 
@@ -112,102 +115,102 @@ public class SparkExampleIT {
         }
     }
 
-    private void sparkImportWithPlan(Driver driver, ImportExecutionPlan plan) {
-        var sourceDataFrames = new HashMap<String, Dataset<Row>>();
-        var lastStageOfEachGroupFutures = new ArrayList<CompletableFuture<Void>>();
-
-        for (var group : plan.getGroups()) {
-            var stageFutures = new ArrayList<CompletableFuture<Void>>();
-
-            for (int i = 0; i < group.getStages().size(); i++) {
-                var currentStage = group.getStages().get(i);
-                final int previousStageIndex = i - 1;
-
-                var work = CompletableFuture.runAsync(() -> {
-                    if (previousStageIndex >= 0) {
-                        stageFutures.get(previousStageIndex).join();
-                    }
-
-                    var stepFutures = new ArrayList<CompletableFuture<Void>>();
-                    for (var step : currentStage.getSteps()) {
-                        switch (step) {
-                            case SourceStep sourceStep -> {
-                                var source = sourceStep.source();
-                                assertThat(source).isInstanceOf(ParquetSource.class);
-                                var parquetSource = (ParquetSource) source;
-                                var df = spark.read()
-                                        .parquet(parquetSource.uri())
-                                        .cache();
-                                sourceDataFrames.put(parquetSource.name(), df);
-                            }
-                            case NodeTargetStep node -> {
-                                var df = sourceDataFrames.get(node.sourceName());
-                                var nodeFuture = CompletableFuture.runAsync(() -> {
-                                    df.select(sourceColumns(node))
-                                            .withColumnsRenamed(columnRenames(node))
-                                            .write()
-                                            .format(NEO4J_DATASOURCE)
-                                            .mode(saveMode(node.writeMode()))
-                                            .option("script", String.join(";\n", schemaStatements(node)))
-                                            .option("labels", labels(node))
-                                            .option("node.keys", keys(node))
-                                            .save();
-                                });
-                                stepFutures.add(nodeFuture);
-                            }
-                            case RelationshipTargetStep relationship -> {
-                                var df = sourceDataFrames.get(relationship.sourceName());
-                                var nodeSaveMode = nodeSaveMode(relationship.nodeMatchMode());
-                                var startNode = relationship.startNode();
-                                var startNodeKeys = keyProperties(startNode);
-                                var endNode = relationship.endNode();
-                                var endNodeKeys = keyProperties(endNode);
-
-                                var relationshipFuture = CompletableFuture.runAsync(() -> {
-                                    df.select(sourceColumns(relationship))
-                                            .write()
-                                            .format(NEO4J_DATASOURCE)
-                                            .mode(saveMode(relationship.writeMode()))
-                                            .option("script", String.join(";\n", schemaStatements(relationship)))
-                                            .option("relationship", relationship.type())
-                                            .option("relationship.save.strategy", "keys")
-                                            .option("relationship.properties", properties(relationship))
-                                            .option("relationship.source.save.mode", nodeSaveMode)
-                                            .option("relationship.source.labels", labels(startNode))
-                                            .option("relationship.source.node.keys", startNodeKeys)
-                                            .option("relationship.source.node.properties", startNodeKeys)
-                                            .option("relationship.target.save.mode", nodeSaveMode)
-                                            .option("relationship.target.labels", labels(endNode))
-                                            .option("relationship.target.node.keys", endNodeKeys)
-                                            .option("relationship.target.node.properties", endNodeKeys)
-                                            .save();
-                                });
-                                stepFutures.add(relationshipFuture);
-                            }
-                            case ActionStep action -> {
-                                assertThat(action.action()).isInstanceOf(CypherAction.class);
-                                var actionFuture = CompletableFuture.runAsync(() -> {
-                                    runAction((CypherAction) action.action(), driver);
-                                });
-                                stepFutures.add(actionFuture);
-                            }
-                            default -> {}
-                        }
-                    }
-                    CompletableFuture.allOf(stepFutures.toArray(new CompletableFuture[0]))
-                            .join();
-                });
-
-                stageFutures.add(work);
-            }
-
-            lastStageOfEachGroupFutures.add(stageFutures.getLast());
-        }
-
-        CompletableFuture.allOf(lastStageOfEachGroupFutures.toArray(new CompletableFuture[0]))
+    private void runSparkImport(Driver driver, ImportExecutionPlan plan) {
+        plan.getGroups().stream()
+                .reduce(
+                        CompletableFutures.initial(),
+                        (previous, currentGroup) -> CompletableFuture.allOf(previous, runGroup(driver, currentGroup)),
+                        CompletableFutures::mergeParallel)
                 .join();
+    }
 
-        sourceDataFrames.values().forEach(Dataset::unpersist);
+    private CompletableFuture<Void> runGroup(Driver driver, ImportStepGroup group) {
+        var sourceDataFrames = new HashMap<String, Dataset<Row>>();
+        try {
+            return group.getStages().stream()
+                    .reduce(
+                            CompletableFutures.initial(),
+                            (chain, currentStage) ->
+                                    chain.thenCompose((ignored) -> runStage(driver, currentStage, sourceDataFrames)),
+                            CompletableFutures::mergeSequential);
+        } finally {
+            sourceDataFrames.values().forEach(Dataset::unpersist);
+        }
+    }
+
+    private CompletableFuture<Void> runStage(
+            Driver driver, ImportStepStage currentStage, Map<String, Dataset<Row>> sourceDataFrames) {
+        return CompletableFuture.runAsync(() -> {
+            var stepFutures = new ArrayList<CompletableFuture<Void>>();
+            for (var step : currentStage.getSteps()) {
+                switch (step) {
+                    case SourceStep sourceStep -> indexSource(sourceDataFrames, sourceStep);
+                    case NodeTargetStep node -> {
+                        var df = sourceDataFrames.get(node.sourceName());
+                        stepFutures.add(runNodeImport(node, df));
+                    }
+                    case RelationshipTargetStep relationship -> {
+                        var df = sourceDataFrames.get(relationship.sourceName());
+                        stepFutures.add(runRelationshipImport(relationship, df));
+                    }
+                    case ActionStep action -> stepFutures.add(runAction(driver, action));
+                    default -> Assertions.fail("Unexpected step: %s".formatted(step));
+                }
+            }
+            CompletableFuture.allOf(stepFutures.toArray(new CompletableFuture[0]))
+                    .join();
+        });
+    }
+
+    private static void indexSource(Map<String, Dataset<Row>> sourceDataFrames, SourceStep sourceStep) {
+        var source = sourceStep.source();
+        assertThat(source).isInstanceOf(ParquetSource.class);
+        var parquetSource = (ParquetSource) source;
+        var df = spark.read().parquet(parquetSource.uri()).cache();
+        sourceDataFrames.put(parquetSource.name(), df);
+    }
+
+    private CompletableFuture<Void> runNodeImport(NodeTargetStep node, Dataset<Row> df) {
+        return CompletableFuture.runAsync(() -> df.select(sourceColumns(node))
+                .withColumnsRenamed(columnRenames(node))
+                .write()
+                .format(NEO4J_DATASOURCE)
+                .mode(saveMode(node.writeMode()))
+                .option("script", String.join(";\n", schemaStatements(node)))
+                .option("labels", labels(node))
+                .option("node.keys", keys(node))
+                .save());
+    }
+
+    private CompletableFuture<Void> runRelationshipImport(RelationshipTargetStep relationship, Dataset<Row> df) {
+        var nodeSaveMode = nodeSaveMode(relationship.nodeMatchMode());
+        var startNode = relationship.startNode();
+        var startNodeKeys = keyProperties(startNode);
+        var endNode = relationship.endNode();
+        var endNodeKeys = keyProperties(endNode);
+
+        return CompletableFuture.runAsync(() -> df.select(sourceColumns(relationship))
+                .write()
+                .format(NEO4J_DATASOURCE)
+                .mode(saveMode(relationship.writeMode()))
+                .option("script", String.join(";\n", schemaStatements(relationship)))
+                .option("relationship", relationship.type())
+                .option("relationship.save.strategy", "keys")
+                .option("relationship.properties", properties(relationship))
+                .option("relationship.source.save.mode", nodeSaveMode)
+                .option("relationship.source.labels", labels(startNode))
+                .option("relationship.source.node.keys", startNodeKeys)
+                .option("relationship.source.node.properties", startNodeKeys)
+                .option("relationship.target.save.mode", nodeSaveMode)
+                .option("relationship.target.labels", labels(endNode))
+                .option("relationship.target.node.keys", endNodeKeys)
+                .option("relationship.target.node.properties", endNodeKeys)
+                .save());
+    }
+
+    private static CompletableFuture<Void> runAction(Driver driver, ActionStep action) {
+        assertThat(action.action()).isInstanceOf(CypherAction.class);
+        return CompletableFuture.runAsync(() -> runAction((CypherAction) action.action(), driver));
     }
 
     private static Column[] sourceColumns(NodeTargetStep target) {
