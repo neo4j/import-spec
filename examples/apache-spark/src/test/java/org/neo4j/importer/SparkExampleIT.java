@@ -44,7 +44,6 @@ import org.neo4j.cypherdsl.core.internal.SchemaNames;
 import org.neo4j.driver.*;
 import org.neo4j.driver.types.MapAccessor;
 import org.neo4j.importer.v1.ImportSpecificationDeserializer;
-import org.neo4j.importer.v1.actions.ActionStage;
 import org.neo4j.importer.v1.actions.plugin.CypherAction;
 import org.neo4j.importer.v1.pipeline.*;
 import org.neo4j.importer.v1.sources.Source;
@@ -115,7 +114,6 @@ public class SparkExampleIT {
 
     private void sparkImportWithPlan(Driver driver, ImportExecutionPlan plan) {
         var sourceDataFrames = new HashMap<String, Dataset<Row>>();
-        var actionStepsForPhaseTwo = new ArrayList<ActionStep>();
         var lastStageOfEachGroupFutures = new ArrayList<CompletableFuture<Void>>();
 
         for (var group : plan.getGroups()) {
@@ -131,7 +129,6 @@ public class SparkExampleIT {
                     }
 
                     var stepFutures = new ArrayList<CompletableFuture<Void>>();
-
                     for (var step : currentStage.getSteps()) {
                         switch (step) {
                             case SourceStep sourceStep -> {
@@ -189,9 +186,10 @@ public class SparkExampleIT {
                             }
                             case ActionStep action -> {
                                 assertThat(action.action()).isInstanceOf(CypherAction.class);
-                                assertThat(action.stage()).isEqualTo(ActionStage.END);
-                                // TODO: actually wait on all other steps
-                                actionStepsForPhaseTwo.add(action);
+                                var actionFuture = CompletableFuture.runAsync(() -> {
+                                    runAction((CypherAction) action.action(), driver);
+                                });
+                                stepFutures.add(actionFuture);
                             }
                             default -> {}
                         }
@@ -208,14 +206,6 @@ public class SparkExampleIT {
 
         CompletableFuture.allOf(lastStageOfEachGroupFutures.toArray(new CompletableFuture[0]))
                 .join();
-
-        // TODO: wait for import to complete e.g. in beam we: pipeline.run().waitUntilFinish();
-
-        // run after we waited all other
-        for (var actionStep : actionStepsForPhaseTwo) {
-            var cypherAction = (CypherAction) actionStep.action();
-            runAction(cypherAction, driver);
-        }
 
         sourceDataFrames.values().forEach(Dataset::unpersist);
     }
