@@ -34,7 +34,7 @@ public class NodeTargetStep extends EntityTargetStep {
 
     private final NodeTarget target;
 
-    NodeTargetStep(NodeTarget target, List<ImportStep> dependencies) {
+    NodeTargetStep(NodeTarget target, Set<ImportStep> dependencies) {
         super(dependencies);
         this.target = target;
     }
@@ -67,19 +67,6 @@ public class NodeTargetStep extends EntityTargetStep {
 
     public NodeSchema schema() {
         return target.getSchema();
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (!(o instanceof NodeTargetStep)) return false;
-        if (!super.equals(o)) return false;
-        NodeTargetStep task = (NodeTargetStep) o;
-        return Objects.equals(target, task.target);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(super.hashCode(), target);
     }
 
     @Override
@@ -118,5 +105,23 @@ public class NodeTargetStep extends EntityTargetStep {
                 .filter(uniqueProperties::contains)
                 .collect(Collectors.toList()));
         return result;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof NodeTargetStep)) return false;
+        if (!super.equals(o)) return false;
+        NodeTargetStep step = (NodeTargetStep) o;
+        return Objects.equals(target, step.target);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), target);
+    }
+
+    @Override
+    public String toString() {
+        return "NodeTargetStep{" + "target=" + target + "} " + super.toString();
     }
 }

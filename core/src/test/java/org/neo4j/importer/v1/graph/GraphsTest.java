@@ -33,7 +33,7 @@ class GraphsTest {
 
     @Test
     void topologically_sorts_dependencyless_dependency_graph() {
-        Map<String, Set<String>> graph = new LinkedHashMap<>(3);
+        Map<String, Set<String>> graph = new LinkedHashMap<>();
         graph.put("a", Set.of());
         graph.put("b", Set.of());
         graph.put("c", Set.of());
@@ -45,7 +45,7 @@ class GraphsTest {
 
     @Test
     void topologically_sorts_dependency_graph() {
-        Map<String, Set<String>> graph = new LinkedHashMap<>(3);
+        Map<String, Set<String>> graph = new LinkedHashMap<>();
         graph.put("a", linkedHashSet("b", "c"));
         graph.put("c", linkedHashSet("d", "e", "f"));
         graph.put("e", linkedHashSet("g"));
@@ -57,7 +57,7 @@ class GraphsTest {
 
     @Test
     void fails_to_topologically_sort_cyclic_dependency_graph() {
-        Map<String, Set<String>> graph = new LinkedHashMap<>(2);
+        Map<String, Set<String>> graph = new LinkedHashMap<>();
         graph.put("a", linkedHashSet("b"));
         graph.put("b", linkedHashSet("a"));
 
@@ -68,7 +68,7 @@ class GraphsTest {
 
     @Test
     void fails_to_topologically_sort_dependency_graph_with_long_cycles() {
-        Map<String, Set<String>> graph = new LinkedHashMap<>(5);
+        Map<String, Set<String>> graph = new LinkedHashMap<>();
         graph.put("a", linkedHashSet("b"));
         graph.put("b", linkedHashSet("c"));
         graph.put("c", linkedHashSet("d"));
@@ -92,7 +92,7 @@ class GraphsTest {
 
     @Test
     void detects_no_cycles_for_dag_with_complex_graph() {
-        Map<String, Set<String>> graph = new LinkedHashMap<>(3);
+        Map<String, Set<String>> graph = new LinkedHashMap<>();
         graph.put("a", linkedHashSet("b", "c"));
         graph.put("c", linkedHashSet("d", "e", "f"));
         graph.put("e", linkedHashSet("g"));
@@ -104,7 +104,7 @@ class GraphsTest {
 
     @Test
     void detects_direct_cycles_with_complex_graph() {
-        Map<String, Set<String>> graph = new LinkedHashMap<>(2);
+        Map<String, Set<String>> graph = new LinkedHashMap<>();
         graph.put("a", linkedHashSet("a", "b"));
         graph.put("b", linkedHashSet("b", "c"));
 
@@ -122,6 +122,25 @@ class GraphsTest {
         var cycles = Graphs.detectCycles(graph);
 
         assertThat(cycles).isEqualTo(List.of(List.of("a", "c")));
+    }
+
+    @Test
+    void finds_weakly_connected_components() {
+        Map<String, Set<String>> graph = new LinkedHashMap<>();
+        graph.put("a", linkedHashSet("b", "c"));
+        graph.put("d", linkedHashSet("e", "f"));
+        graph.put("g", linkedHashSet("f"));
+        graph.put("h", linkedHashSet("i"));
+
+        var components = Graphs.findWeaklyConnectedComponents(graph);
+
+        assertThat(components).isEqualTo(List.of(Set.of("a", "b", "c"), Set.of("d", "e", "f", "g"), Set.of("h", "i")));
+    }
+
+    @Test
+    void finds_no_weakly_connected_components_for_empty_graph() {
+        assertThat(Graphs.findWeaklyConnectedComponents(new LinkedHashMap<String, Set<String>>()))
+                .isEmpty();
     }
 
     @SafeVarargs

@@ -47,4 +47,9 @@ public class SourceStep implements ImportStep {
     public int hashCode() {
         return Objects.hashCode(source);
     }
+
+    @Override
+    public String toString() {
+        return "SourceStep{" + "source=" + source + '}';
+    }
 }

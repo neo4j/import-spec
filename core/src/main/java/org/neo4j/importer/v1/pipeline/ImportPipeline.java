@@ -21,9 +21,11 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -75,21 +77,25 @@ import org.neo4j.importer.v1.targets.Targets;
  */
 public class ImportPipeline implements Iterable<ImportStep>, Serializable {
 
-    private final List<ImportStep> tasks;
+    private final Map<ImportStep, Set<ImportStep>> stepGraph;
 
     public static ImportPipeline of(ImportSpecification importSpecification) {
-        var dependencyGraph = buildDependencyNameGraph(importSpecification);
-        var tasks = collectTasks(importSpecification, dependencyGraph);
-        return new ImportPipeline(tasks);
+        var dependencyNameGraph = buildDependencyNameGraph(importSpecification);
+        var dependencyGraph = resolveNames(importSpecification, dependencyNameGraph);
+        return new ImportPipeline(dependencyGraph);
     }
 
-    private ImportPipeline(List<ImportStep> tasks) {
-        this.tasks = tasks;
+    private ImportPipeline(Map<ImportStep, Set<ImportStep>> stepGraph) {
+        this.stepGraph = stepGraph;
     }
 
     @Override
     public Iterator<ImportStep> iterator() {
-        return tasks.iterator();
+        return stepGraph.keySet().iterator();
+    }
+
+    public ImportExecutionPlan executionPlan() {
+        return ImportExecutionPlan.fromGraph(stepGraph);
     }
 
     private static Map<QualifiedName, Set<QualifiedName>> buildDependencyNameGraph(
@@ -122,6 +128,8 @@ public class ImportPipeline implements Iterable<ImportStep>, Serializable {
         var preQueryActions = indexedActions.getOrDefault(ActionStage.PRE_QUERIES, Set.of());
         var queryTargets =
                 new LinkedHashSet<QualifiedName>(targets.getCustomQueries().size());
+        // K: node target name, V: rel target names (with node as start and/or end)
+        var relationshipNodeTracking = new HashMap<QualifiedName, Set<QualifiedName>>();
         activeTargets.forEach(target -> {
             var targetName = target.getName();
             var dependencies = new HashSet<QualifiedName>();
@@ -138,13 +146,21 @@ public class ImportPipeline implements Iterable<ImportStep>, Serializable {
             } else if (target instanceof RelationshipTarget) {
                 dependencies.addAll(preRelationshipActions);
                 var relationshipTarget = (RelationshipTarget) target;
-                dependencies.add(QualifiedName.ofNodeTarget(
-                        relationshipTarget.getStartNodeReference().getName()));
-                dependencies.add(QualifiedName.ofNodeTarget(
-                        relationshipTarget.getEndNodeReference().getName()));
-                var qualifiedName = QualifiedName.ofRelationshipTarget(targetName);
-                dependencyGraph.put(qualifiedName, dependencies);
-                relationshipTargets.add(qualifiedName);
+                var startNodeName = QualifiedName.ofNodeTarget(
+                        relationshipTarget.getStartNodeReference().getName());
+                dependencies.add(startNodeName);
+                var endNodeName = QualifiedName.ofNodeTarget(
+                        relationshipTarget.getEndNodeReference().getName());
+                dependencies.add(endNodeName);
+                var relationshipName = QualifiedName.ofRelationshipTarget(targetName);
+                dependencyGraph.put(relationshipName, dependencies);
+                relationshipTargets.add(relationshipName);
+                relationshipNodeTracking
+                        .computeIfAbsent(startNodeName, k -> new LinkedHashSet<>())
+                        .add(relationshipName);
+                relationshipNodeTracking
+                        .computeIfAbsent(endNodeName, k -> new LinkedHashSet<>())
+                        .add(relationshipName);
             } else if (target instanceof CustomQueryTarget) {
                 dependencies.addAll(preQueryActions);
                 var qualifiedName = QualifiedName.ofQueryTarget(targetName);
@@ -190,10 +206,24 @@ public class ImportPipeline implements Iterable<ImportStep>, Serializable {
             var dependencies = dependenciesByStage.get(stage);
             actions.forEach(action -> dependencyGraph.put(action, dependencies));
         });
+        relationshipNodeTracking.values().stream()
+                // more than 1 relationship starts from or ends to the same node
+                .filter(rels -> rels.size() > 1)
+                .forEach(overlappingRelationships -> {
+                    // rel_1 could go from node a to b, and rel_2 from b to a
+                    // process the relationships in the same consistent order to avoid that problem
+                    var overlaps = new ArrayList<>(overlappingRelationships);
+                    overlaps.sort(Comparator.comparing(QualifiedName::getValue));
+                    for (int i = 0; i < overlaps.size() - 1; i++) {
+                        var dependency = overlaps.get(i);
+                        var dependent = overlaps.get(i + 1);
+                        dependencyGraph.get(dependent).add(dependency);
+                    }
+                });
         return dependencyGraph;
     }
 
-    private static List<ImportStep> collectTasks(
+    private static Map<ImportStep, Set<ImportStep>> resolveNames(
             ImportSpecification importSpecification, Map<QualifiedName, Set<QualifiedName>> dependencyGraph) {
         var indexedSources = importSpecification.getSources().stream()
                 .collect(Collectors.toMap(Source::getName, Function.identity()));
@@ -205,54 +235,61 @@ public class ImportPipeline implements Iterable<ImportStep>, Serializable {
                 .collect(Collectors.toMap(Target::getName, Function.identity()));
         var indexedActions = importSpecification.getActions().stream()
                 .collect(Collectors.toMap(Action::getName, Function.identity()));
-        var processedNodeTasks = new HashMap<String, NodeTargetStep>();
-        var processedTasks = new HashMap<QualifiedName, ImportStep>();
-        return Graphs.runTopologicalSort(dependencyGraph).stream()
-                // if A depends on B, B is guaranteed to be iterated on/mapped before A
-                .map(qualifiedName -> {
-                    String name = qualifiedName.getValue();
-                    var dependencyTasks = dependencyGraph.getOrDefault(qualifiedName, Set.of()).stream()
-                            .map(processedTasks::get)
-                            .collect(Collectors.toList());
-                    var nameType = qualifiedName.getType();
-                    switch (nameType) {
-                        case SOURCE:
-                            var sourceTask = new SourceStep(indexedSources.get(name));
-                            processedTasks.put(qualifiedName, sourceTask);
-                            return sourceTask;
-                        case NODE_TARGET:
-                            var nodeTask = new NodeTargetStep(indexedNodeTargets.get(name), dependencyTasks);
-                            processedTasks.put(qualifiedName, nodeTask);
-                            processedNodeTasks.put(name, nodeTask);
-                            return nodeTask;
-                        case RELATIONSHIP_TARGET:
-                            var relationshipTarget = indexedRelationshipTargets.get(name);
-                            var startNode = relationshipTarget.getStartNodeReference();
-                            var endNode = relationshipTarget.getEndNodeReference();
-                            var relationshipTask = new RelationshipTargetStep(
-                                    relationshipTarget,
-                                    redefineRelationshipNode(
-                                            processedNodeTasks.get(startNode.getName()), startNode.getKeyMappings()),
-                                    redefineRelationshipNode(
-                                            processedNodeTasks.get(endNode.getName()), endNode.getKeyMappings()),
-                                    dependencyTasks);
-                            processedTasks.put(qualifiedName, relationshipTask);
-                            return relationshipTask;
-                        case QUERY_TARGET:
-                            var queryTarget = indexedQueryTargets.get(name);
-                            var queryTask = new CustomQueryTargetStep(queryTarget, dependencyTasks);
-                            processedTasks.put(qualifiedName, queryTask);
-                            return queryTask;
-                        case ACTION:
-                            var action = indexedActions.get(name);
-                            var actionTask = new ActionStep(action, dependencyTasks);
-                            processedTasks.put(qualifiedName, actionTask);
-                            return actionTask;
-                        default:
-                            throw new RuntimeException("Unknown import task type: " + nameType);
-                    }
-                })
-                .collect(Collectors.toList());
+        var processedNodeSteps = new HashMap<String, NodeTargetStep>();
+        var processedSteps = new HashMap<QualifiedName, ImportStep>();
+        var result = new LinkedHashMap<ImportStep, Set<ImportStep>>();
+        Graphs.runTopologicalSort(dependencyGraph).forEach(qualifiedName -> {
+            // if A depends on B, B is guaranteed to be iterated on/mapped before A
+            String name = qualifiedName.getValue();
+            var dependencySteps = dependencyGraph.getOrDefault(qualifiedName, Set.of()).stream()
+                    .map(processedSteps::get)
+                    .collect(Collectors.toSet());
+            var nameType = qualifiedName.getType();
+            switch (nameType) {
+                case SOURCE:
+                    var sourceStep = new SourceStep(indexedSources.get(name));
+                    processedSteps.put(qualifiedName, sourceStep);
+                    result.put(sourceStep, Set.of());
+                    break;
+                case NODE_TARGET:
+                    var nodeStep = new NodeTargetStep(indexedNodeTargets.get(name), dependencySteps);
+                    processedSteps.put(qualifiedName, nodeStep);
+                    processedNodeSteps.put(name, nodeStep);
+                    result.put(nodeStep, dependencySteps);
+                    break;
+                case RELATIONSHIP_TARGET:
+                    var relationshipTarget = indexedRelationshipTargets.get(name);
+                    var startNode = relationshipTarget.getStartNodeReference();
+                    var endNode = relationshipTarget.getEndNodeReference();
+                    var startNodeStep = redefineRelationshipNode(
+                            processedNodeSteps.get(startNode.getName()), startNode.getKeyMappings());
+                    var endNodeStep = redefineRelationshipNode(
+                            processedNodeSteps.get(endNode.getName()), endNode.getKeyMappings());
+                    var relationshipStep =
+                            new RelationshipTargetStep(relationshipTarget, startNodeStep, endNodeStep, dependencySteps);
+                    processedSteps.put(qualifiedName, relationshipStep);
+                    var allDependencies = new HashSet<>(dependencySteps);
+                    allDependencies.add(startNodeStep);
+                    allDependencies.add(endNodeStep);
+                    result.put(relationshipStep, allDependencies);
+                    break;
+                case QUERY_TARGET:
+                    var queryTarget = indexedQueryTargets.get(name);
+                    var queryStep = new CustomQueryTargetStep(queryTarget, dependencySteps);
+                    processedSteps.put(qualifiedName, queryStep);
+                    result.put(queryStep, dependencySteps);
+                    break;
+                case ACTION:
+                    var action = indexedActions.get(name);
+                    var actionStep = new ActionStep(action, dependencySteps);
+                    processedSteps.put(qualifiedName, actionStep);
+                    result.put(actionStep, dependencySteps);
+                    break;
+                default:
+                    throw new RuntimeException("Unknown import task type: " + nameType);
+            }
+        });
+        return result;
     }
 
     // this redefines the mapping for key properties.
