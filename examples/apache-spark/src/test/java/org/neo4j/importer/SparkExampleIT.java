@@ -200,11 +200,9 @@ public class SparkExampleIT {
                 .option("relationship.source.save.mode", nodeSaveMode)
                 .option("relationship.source.labels", labels(startNode))
                 .option("relationship.source.node.keys", startNodeKeys)
-                .option("relationship.source.node.properties", startNodeKeys)
                 .option("relationship.target.save.mode", nodeSaveMode)
                 .option("relationship.target.labels", labels(endNode))
                 .option("relationship.target.node.keys", endNodeKeys)
-                .option("relationship.target.node.properties", endNodeKeys)
                 .save());
     }
 
