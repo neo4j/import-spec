@@ -19,7 +19,6 @@ package org.neo4j.importer.v1.pipeline;
 import java.util.Objects;
 import java.util.Set;
 import org.neo4j.importer.v1.actions.Action;
-import org.neo4j.importer.v1.actions.ActionStage;
 
 public class ActionStep implements ImportStep {
 
@@ -34,10 +33,6 @@ public class ActionStep implements ImportStep {
     @Override
     public String name() {
         return action.getName();
-    }
-
-    public ActionStage stage() {
-        return action().getStage();
     }
 
     public Action action() {
