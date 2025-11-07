@@ -47,10 +47,21 @@ import org.neo4j.importer.v1.targets.Target;
 import org.neo4j.importer.v1.targets.Targets;
 
 /**
- * {@link ImportPipeline} exposes a topologically-ordered set of {@link ImportStep},
+ * {@link ImportPipeline} exposes a topologically-ordered set of active {@link ImportStep},
  * based on the provided {@link ImportSpecification}, usually created with
  * {@link org.neo4j.importer.v1.ImportSpecificationDeserializer#deserialize(Reader)} or its variants.
+ * <br>
+ * The existing types of the provided {@link ImportSpecification} are converted to their Step equivalent: {@link Source}
+ * gets translated to {@link SourceStep}, {@link NodeTarget} to {@link NodeTargetStep} etc...<br>
+ * Inactive {@link Target}s (see {@link Target#isActive}) are skipped and therefore not translated to their
+ * corresponding step type.
  * <br><br>
+ * In particular, {@link RelationshipTargetStep}s directly reference their start and end {@link NodeTargetStep}, whereas
+ * {@link RelationshipTarget}s simply reference the start and end node target name. This reduces the amount of required
+ * lookup logic. If the corresponding start and/or end {@link org.neo4j.importer.v1.targets.NodeReference} define
+ * key mapping overrides, the resulting {@link NodeTargetStep} get their property mappings accordingly updated.
+ * <br><br>
+ * Here is an example usage of {@link ImportPipeline} made possible by its {@link Iterable} implementation:
  * <pre>
  *     var specification = org.neo4j.importer.v1.ImportSpecificationDeserializer.deserialize(aReader);
  *     var pipeline = @link ImportPipeline.of(specification);
@@ -66,14 +77,30 @@ import org.neo4j.importer.v1.targets.Targets;
  *          }
  *     });
  * </pre>
- * <br><br>
- * Since an {@link ImportStep} may have dependencies, which are either:<br><br>
- * - implicit like a {@link TargetStep} depending on a {@link SourceStep},
- * a {@link RelationshipTargetStep} depending on start/end {@link NodeTargetStep}s<br>
- * - and/or explicit (via {@link ImportStep#dependencies()}<br><br>
- * ... the pipeline guarantees that dependencies are *always* returned after their dependents.<br>
- * In particular, the dependencies of each {@link ActionStep} are resolved at pipeline construction, based on the
- * provided import specification and the corresponding {@link Action}'s {@link ActionStage}.
+ * The iteration returns every step in order.
+ * Each step is guaranteed to be processed after all its implicit and explicit dependencies.
+ * <br>
+ * Implicit dependencies are:<br><br>
+ * - {@link TargetStep} depending on a {@link SourceStep}<br>
+ * - {@link RelationshipTargetStep} depending on start/end {@link NodeTargetStep}s<br>
+ * - {@link RelationshipTargetStep} sharing common start/end nodes with other {@link RelationshipTargetStep}<br/>
+ * - {@link ActionStep} must define an {@link ActionStage}, which gets translated to a set of concrete dependencies<br>
+ * <br>
+ * Relationships sharing common nodes must not be imported in parallel as this would likely cause
+ * deadlock issues. Such relationships are defined with an explicit dependency between them.<br>
+ *<br>
+ * {@link Action}s with {@link ActionStage#POST_QUERIES} are translated to
+ * instance of {@link ActionStep}s with dependencies on all the {@link CustomQueryTargetStep} defined in the pipeline.
+ * {@link ActionStep}s with {@link ActionStage#PRE_NODES} result in making all the {@link NodeTargetStep} in
+ * the pipeline to depend on these actions.
+ * Finally, {@link ActionStep}s with {@link ActionStage#END} get the following dependencies:<br><br>
+ *  - all declared {@link SourceStep}<br>
+ *  - all declared {@link TargetStep}<br>
+ *  - all declared {@link ActionStep} with an {@link ActionStage} different from {@link ActionStage#END}<br>
+ * <br>
+ * Dependencies can also be explicit:<br><br>
+ *  - {@link TargetStep} can define dependencies to other {@link TargetStep}<br>
+ * <br>
  */
 public class ImportPipeline implements Iterable<ImportStep>, Serializable {
 
