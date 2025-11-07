@@ -121,6 +121,12 @@ public class ImportPipeline implements Iterable<ImportStep>, Serializable {
         return stepGraph.keySet().iterator();
     }
 
+    /**
+     * Returns an {@link ImportExecutionPlan}, which makes it easier to write parallelizable import backends, compared
+     * to the sequential {@link Iterable} API that {@link ImportPipeline} exposes.<br>
+     * Please consult the documentation of {@link ImportExecutionPlan} for more details.
+     * @return the import execution plan
+     */
     public ImportExecutionPlan executionPlan() {
         return ImportExecutionPlan.fromGraph(stepGraph);
     }
