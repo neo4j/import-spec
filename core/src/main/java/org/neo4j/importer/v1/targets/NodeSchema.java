@@ -22,6 +22,22 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * {@link NodeSchema} defines the indices and constraints that must be created for the enclosing {@link NodeTarget}.<br>
+ * All the indices and constraints below are optional:
+ * <ul>
+ *     <li>property type constraints (this only works where the corresponding {@link PropertyMapping} has defined a
+ *     type, see {@link NodeSchema#getTypeConstraints()})</li>
+ *     <li>node key constraints (see {@link NodeSchema#getKeyConstraints()} ()})</li>
+ *     <li>node unique constraints (see {@link NodeSchema#getUniqueConstraints()} ()})</li>
+ *     <li>property existence constraints (see {@link NodeSchema#getExistenceConstraints()})</li>
+ *     <li>range indexes (see {@link NodeSchema#getRangeIndexes()})</li>
+ *     <li>text indexes (see {@link NodeSchema#getTextIndexes()})</li>
+ *     <li>point indexes (see {@link NodeSchema#getPointIndexes()})</li>
+ *     <li>full-text indexes (see {@link NodeSchema#getFullTextIndexes()})</li>
+ *     <li>vector indexes (see {@link NodeSchema#getVectorIndexes()})</li>
+ * </ul>
+ */
 public class NodeSchema implements Schema, Serializable {
 
     static final NodeSchema EMPTY = new NodeSchema(
@@ -60,6 +76,10 @@ public class NodeSchema implements Schema, Serializable {
         this.vectorIndexes = vectorIndexes;
     }
 
+    /**
+     * Whether this {@link NodeSchema} define any constraints and indices
+     * @return true if no schema element is defined, false otherwise
+     */
     public boolean isEmpty() {
         return getTypeConstraints().isEmpty()
                 && getKeyConstraints().isEmpty()
@@ -72,38 +92,74 @@ public class NodeSchema implements Schema, Serializable {
                 && getVectorIndexes().isEmpty();
     }
 
+    /**
+     * Returns the defined property type constraints for this {@link NodeTarget}
+     * @return property type constraints, this is never <code>null</code>
+     */
     public List<NodeTypeConstraint> getTypeConstraints() {
         return typeConstraints != null ? typeConstraints : List.of();
     }
 
+    /**
+     * Returns the defined key constraints for this {@link NodeTarget}
+     * @return key constraints, this is never <code>null</code>
+     */
     public List<NodeKeyConstraint> getKeyConstraints() {
         return keyConstraints != null ? keyConstraints : List.of();
     }
 
+    /**
+     * Returns the defined unique constraints for this {@link NodeTarget}
+     * @return unique constraints, this is never <code>null</code>
+     */
     public List<NodeUniqueConstraint> getUniqueConstraints() {
         return uniqueConstraints != null ? uniqueConstraints : List.of();
     }
 
+    /**
+     * Returns the defined property existence constraints for this {@link NodeTarget}
+     * @return property existence constraints, this is never <code>null</code>
+     */
     public List<NodeExistenceConstraint> getExistenceConstraints() {
         return existenceConstraints != null ? existenceConstraints : List.of();
     }
 
+    /**
+     * Returns the defined range indexes for this {@link NodeTarget}
+     * @return range indexes, this is never <code>null</code>
+     */
     public List<NodeRangeIndex> getRangeIndexes() {
         return rangeIndexes != null ? rangeIndexes : List.of();
     }
 
+    /**
+     * Returns the defined text indexes for this {@link NodeTarget}
+     * @return text indexes, this is never <code>null</code>
+     */
     public List<NodeTextIndex> getTextIndexes() {
         return textIndexes != null ? textIndexes : List.of();
     }
 
+    /**
+     * Returns the defined point indexes for this {@link NodeTarget}
+     * @return point indexes, this is never <code>null</code>
+     */
     public List<NodePointIndex> getPointIndexes() {
         return pointIndexes != null ? pointIndexes : List.of();
     }
 
+    /**
+     * Returns the defined full-text indexes for this {@link NodeTarget}
+     * @return full-text indexes, this is never <code>null</code>
+     */
     public List<NodeFullTextIndex> getFullTextIndexes() {
         return fullTextIndexes != null ? fullTextIndexes : List.of();
     }
 
+    /**
+     * Returns the defined vector indexes for this {@link NodeTarget}
+     * @return vector indexes, this is never <code>null</code>
+     */
     public List<NodeVectorIndex> getVectorIndexes() {
         return vectorIndexes != null ? vectorIndexes : List.of();
     }

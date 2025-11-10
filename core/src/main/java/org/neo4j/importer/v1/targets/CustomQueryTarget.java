@@ -21,6 +21,22 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * {@link CustomQueryTarget} allows users to arbitrary map data from a particular source to the target database, with
+ * the means of a Cypher query.<br>
+ * In particular, {@link CustomQueryTarget} defines these mandatory attributes:
+ * <ul>
+ *     <li>the name of the source is maps data from ({@link CustomQueryTarget#getSource()})</li>
+ *     <li>the Cypher query that performs the import</li>
+ * </ul>
+ * {@link CustomQueryTarget} can optionally specify:<br>
+ * <ul>
+ *     <li>whether the target is active or not ({@link CustomQueryTarget#isActive()}): backends must skip inactive targets</li>
+ *     <li>dependencies on other targets (by their names, see {@link CustomQueryTarget#getDependencies()})</li>
+ * </ul>
+ * Note: depending on the backend, the specified query may be re-run several times (backends may batch source data,
+ * hence running the query at least once per batch, or more if the backend retries).
+ */
 public class CustomQueryTarget extends Target {
 
     private final String query;

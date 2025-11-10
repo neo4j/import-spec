@@ -19,4 +19,14 @@ package org.neo4j.importer.v1.targets;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.util.function.Function;
 
+/**
+ * {@link EntityTargetExtensionProvider} is a Service Provider Interface, allowing users to define their own entity
+ * (node, relationship) target extension data.<br>
+ * The deserialized extensions can then be retrieved with:
+ * <ul>
+ * <li>{@link NodeTarget#getExtensions()} or {@link RelationshipTarget#getExtensions()}</li>
+ * <li>{@link NodeTarget#getExtension(Class)} or {@link RelationshipTarget#getExtension(Class)}</li>
+ * </ul>
+ * @param <T> the concrete type of the {@link EntityTargetExtension} subclass
+ */
 public interface EntityTargetExtensionProvider<T extends EntityTargetExtension> extends Function<ObjectNode, T> {}

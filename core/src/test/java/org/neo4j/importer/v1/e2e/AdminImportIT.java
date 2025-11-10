@@ -36,6 +36,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -106,7 +107,7 @@ public class AdminImportIT {
                 importSpec.getSources().stream().collect(toMap(Source::getName, Function.identity()));
         File csvFolder = csvFolderPathFor("/e2e/admin-import");
         var targets = importSpec.getTargets();
-        var nodeTargets = targets.getNodes();
+        var nodeTargets = targets.getNodes().stream().filter(Target::isActive).collect(Collectors.toList());
         for (NodeTarget nodeTarget : nodeTargets) {
             var source = sources.get(nodeTarget.getSource());
             assertThat(source).isNotNull();
@@ -114,7 +115,9 @@ public class AdminImportIT {
             // note: source transformations are ignored, query is directly read from the source
             Neo4jAdmin.writeData(csvFolder, nodeTarget, SourceExecutor.read(source));
         }
-        for (RelationshipTarget relationshipTarget : targets.getRelationships()) {
+        var relationshipTargets =
+                targets.getRelationships().stream().filter(Target::isActive).collect(Collectors.toList());
+        for (RelationshipTarget relationshipTarget : relationshipTargets) {
             var source = sources.get(relationshipTarget.getSource());
             assertThat(source).isNotNull();
             Neo4jAdmin.writeHeader(csvFolder, relationshipTarget, nodeTargets);

@@ -23,6 +23,29 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * {@link RelationshipTarget} defines one kind of relationship to import.<br>
+ * In particular, {@link RelationshipTarget} defines these mandatory attributes:
+ * <ul>
+ *     <li>the resulting relationship type ({@link RelationshipTarget#getType()})</li>
+ *     <li>the name of the source is maps data from ({@link RelationshipTarget#getSource()})</li>
+ *     <li>how source fields are mapped to node properties via {@link RelationshipTarget#getProperties()}</li>
+ *     <li>a {@link NodeReference} to its start node</li>
+ *     <li>a {@link NodeReference} to its end node</li>
+ * </ul>
+ * {@link RelationshipTarget} can optionally specify:<br>
+ * <ul>
+ *     <li>its {@link WriteMode} for backends that support it</li>
+ *     <li>its {@link NodeMatchMode} for backends that support it</li>
+ *     <li>whether the target is active or not ({@link RelationshipTarget#isActive()}): backends must skip inactive targets</li>
+ *     <li>dependencies on other targets (by their names, see {@link RelationshipTarget#getDependencies()})</li>
+ *     <li>indices and/or constraints (via {@link RelationshipSchema})</li>
+ *     <li>extensions</li>
+ * </ul>
+ * Extensions must be registered with {@link EntityTargetExtensionProvider} through Java's standard Service Provider
+ * Interface mechanism.
+ * @see <a href="https://neo4j.com/docs/getting-started/appendix/graphdb-concepts">Graph database concepts</a>
+ */
 public class RelationshipTarget extends EntityTarget {
     private final String type;
     private final NodeMatchMode nodeMatchMode;

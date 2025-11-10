@@ -16,7 +16,19 @@
  */
 package org.neo4j.importer.v1.targets;
 
+/**
+ * {@link WriteMode} controls how an entity (node, relationship) is written to the graph.
+ */
 public enum WriteMode {
+    /**
+     * This tells the backend to insert the entity, regardless of similar entities already persisted in the graph
+     * @see <a href="https://neo4j.com/docs/cypher-manual/current/clauses/create/">Cypher's CREATE clause</a>
+     */
     CREATE,
+    /**
+     * This tells the backend to insert the entity, if no similar entity has been found in the graph (this can still
+     * lead to duplicates unless a uniqueness constraint has been set for the pattern being merged)
+     * @see <a href="https://neo4j.com/docs/cypher-manual/current/clauses/merge/">Cypher's MERGE clause</a>
+     */
     MERGE
 }
