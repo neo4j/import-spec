@@ -19,13 +19,12 @@ package org.neo4j.importer.v1.distribution;
 import java.util.Objects;
 
 /**
- * Represents a specific distribution of Neo4j, encapsulating the version and edition of the database.
- * This class provides methods to check for the availability of various features and constraints
- * based on the edition and version of the Neo4j distribution.
- * <p>
+ * {@link Neo4jDistribution} represents the target distribution of Neo4j, encapsulating its version and edition<br>
+ * {@link Neo4jDistribution} class provides methods to check for the availability of various features.
+ * <br>
  * Assumptions:
- * - Neo4j 4.4 is considered the minimum supported version. Therefore, certain features (like NodeRangeIndexes, NodePointIndexes etc.)
- * are assumed to be always present in all supported versions.
+ * - Neo4j 4.4 is considered the minimum supported version. Therefore, certain features (like NodeRangeIndexes,
+ * NodePointIndexes etc.) are assumed to be always present
  */
 public class Neo4jDistribution {
     private final String versionString;
@@ -38,82 +37,163 @@ public class Neo4jDistribution {
         this.versionString = String.format("Neo4j %s %s", version, edition);
     }
 
+    /**
+     * Whether this database version is larger than or equal to the provided raw version
+     * @param versionString raw Neo4j version
+     * @return true if this database version is larger than or equal to the provided raw version, false otherwise
+     */
     public boolean isVersionLargerThanOrEqual(String versionString) {
         return version.isLargerThanOrEqual(versionString);
     }
 
+    /**
+     * Whether this database edition is enterprise
+     * @return true if this database edition is enterprise, false otherwise
+     */
     public boolean isEnterprise() {
         return edition != Neo4jDistributions.Edition.COMMUNITY;
     }
 
+    /**
+     * Whether this database supports node property type constraints
+     * @return true if this database supports node property type constraints, false otherwise
+     */
     public boolean hasNodeTypeConstraints() {
         return isEnterprise() && version.isLargerThanOrEqual("5.9");
     }
 
+    /**
+     * Whether this database supports node key constraints
+     * @return true if this database supports node key constraints, false otherwise
+     */
     public boolean hasNodeKeyConstraints() {
         return isEnterprise();
     }
 
+    /**
+     * Whether this database supports node unique constraints
+     * @return true if this database supports node unique constraints, false otherwise
+     */
     public boolean hasNodeUniqueConstraints() {
         return true;
     }
 
+    /**
+     * Whether this database supports node property existence constraints
+     * @return true if this database supports node property existence constraints, false otherwise
+     */
     public boolean hasNodeExistenceConstraints() {
         return isEnterprise();
     }
 
+    /**
+     * Whether this database supports node range indexes
+     * @return true if this database supports node range indexes, false otherwise
+     */
     public boolean hasNodeRangeIndexes() {
         return true;
     }
 
+    /**
+     * Whether this database supports node text indexes
+     * @return true if this database supports node text indexes, false otherwise
+     */
     public boolean hasNodeTextIndexes() {
         return true;
     }
 
+    /**
+     * Whether this database supports node point indexes
+     * @return true if this database supports node point indexes, false otherwise
+     */
     public boolean hasNodePointIndexes() {
         return true;
     }
 
+    /**
+     * Whether this database supports node full-text indexes
+     * @return true if this database supports node full-text indexes, false otherwise
+     */
     public boolean hasNodeFullTextIndexes() {
         return true;
     }
 
+    /**
+     * Whether this database supports node vector indexes
+     * @return true if this database supports node vector indexes, false otherwise
+     */
     public boolean hasNodeVectorIndexes() {
         return version.isLargerThanOrEqual("5.13");
     }
 
+    /**
+     * Whether this database supports relationship key constraints
+     * @return true if this database supports relationship key constraints, false otherwise
+     */
     public boolean hasRelationshipKeyConstraints() {
         return isEnterprise() && version.isLargerThanOrEqual("5.7");
     }
 
+    /**
+     * Whether this database supports relationship property type constraints
+     * @return true if this database supports relationship property type constraints, false otherwise
+     */
     public boolean hasRelationshipTypeConstraints() {
         return isEnterprise() && version.isLargerThanOrEqual("5.9");
     }
 
+    /**
+     * Whether this database supports relationship unique constraints
+     * @return true if this database supports relationship unique constraints, false otherwise
+     */
     public boolean hasRelationshipUniqueConstraints() {
         return version.isLargerThanOrEqual("5.7");
     }
 
+    /**
+     * Whether this database supports relationship property existence constraints
+     * @return true if this database supports relationship property existence constraints, false otherwise
+     */
     public boolean hasRelationshipExistenceConstraints() {
         return isEnterprise();
     }
 
+    /**
+     * Whether this database supports relationship range indexes
+     * @return true if this database supports relationship range indexes, false otherwise
+     */
     public boolean hasRelationshipRangeIndexes() {
         return isEnterprise();
     }
 
+    /**
+     * Whether this database supports relationship text indexes
+     * @return true if this database supports relationship text indexes, false otherwise
+     */
     public boolean hasRelationshipTextIndexes() {
         return true;
     }
 
+    /**
+     * Whether this database supports relationship point indexes
+     * @return true if this database supports relationship point indexes, false otherwise
+     */
     public boolean hasRelationshipPointIndexes() {
         return true;
     }
 
+    /**
+     * Whether this database supports relationship full-text indexes
+     * @return true if this database supports relationship full-text indexes, false otherwise
+     */
     public boolean hasRelationshipFullTextIndexes() {
         return true;
     }
 
+    /**
+     * Whether this database supports relationship vector indexes
+     * @return true if this database supports relationship vector indexes, false otherwise
+     */
     public boolean hasRelationshipVectorIndexes() {
         return version.isLargerThanOrEqual("5.13");
     }
