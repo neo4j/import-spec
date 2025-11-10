@@ -24,6 +24,10 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+/**
+ * {@link Configuration} is a simple, type-safe wrapper class over arbitrary top-level {@link ImportSpecification}
+ * settings.
+ */
 public class Configuration implements Serializable {
 
     private final Map<String, Object> settings;
@@ -32,19 +36,23 @@ public class Configuration implements Serializable {
         this.settings = settings != null ? settings : Collections.emptyMap();
     }
 
+    /**
+     * Returns the setting matched by its primary name (or its alternate names), if it conforms to the provided type
+     * @param type expected value type of the setting
+     * @param name primary setting name
+     * @param alternativeNames alternative setting names, if any
+     * @return the setting value if it matches the provided parameters in an optional wrapper, or an empty optional
+     * @param <T> expected type of the setting value
+     */
     public <T> Optional<T> get(Class<T> type, String name, String... alternativeNames) {
         if (settings.isEmpty()) {
             return Optional.empty();
         }
         return Stream.concat(Stream.of(name), Arrays.stream(alternativeNames))
-                .map(key -> getElement(type, key))
+                .map(key -> get(type, key))
                 .dropWhile(Optional::isEmpty)
                 .flatMap(Optional::stream)
                 .findFirst();
-    }
-
-    private <T> Optional<T> getElement(Class<T> type, String name) {
-        return settings.containsKey(name) ? Optional.of(type.cast(settings.get(name))) : Optional.empty();
     }
 
     @Override
@@ -63,5 +71,18 @@ public class Configuration implements Serializable {
     @Override
     public String toString() {
         return "Configuration{" + "settings=" + settings + '}';
+    }
+
+    private <T> Optional<T> get(Class<T> type, String name) {
+        return settings.containsKey(name) ? Optional.ofNullable(safeCast(type, name)) : Optional.empty();
+    }
+
+    private <T> T safeCast(Class<T> type, String name) {
+        var rawValue = settings.get(name);
+        try {
+            return type.cast(rawValue);
+        } catch (ClassCastException e) {
+            return null;
+        }
     }
 }

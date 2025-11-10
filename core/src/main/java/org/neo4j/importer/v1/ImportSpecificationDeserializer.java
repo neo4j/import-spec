@@ -60,15 +60,13 @@ public class ImportSpecificationDeserializer {
             .getSchema(ImportSpecificationDeserializer.class.getResourceAsStream("/spec.v1.json"));
 
     /**
-     * Returns an instance of {@link ImportSpecification} based on the provided {@link Reader} content.
-     * The result is guaranteed to be consistent with the specification JSON schema.
+     * Returns an instance of {@link ImportSpecification} based on the provided {@link Reader} content.<br>
+     * The result is guaranteed to be consistent with the specification JSON schema.<br>
      * <br>
-     * If implementations of the {@link SpecificationValidator} SPI are provided, they will also run against the
-     * {@link ImportSpecification} instance before the latter is returned.
-     * <br>
-     * If the parsing, deserialization or validation (standard or via SPI implementations) fail, a {@link SpecificationException}
-     * is going to be thrown.
-     *
+     * If implementations of the {@link SpecificationValidator} Service Provider Interface are provided, they will also
+     * run against the {@link ImportSpecification} instance before the latter is returned.<br>
+     * If the parsing, deserialization or validation (standard or via SPI implementations) fail, a
+     * {@link SpecificationException} is thrown.
      * @return an {@link ImportSpecification}
      * @throws SpecificationException if parsing, deserialization or validation fail
      */
@@ -76,6 +74,12 @@ public class ImportSpecificationDeserializer {
         return deserialize(spec, Optional.empty());
     }
 
+    /**
+     * Same as {@link ImportSpecificationDeserializer#deserialize(Reader)}, except it checks extra validation rules
+     * against the provided {@link Neo4jDistribution} value.
+     * @return an {@link ImportSpecification}
+     * @throws SpecificationException if parsing, deserialization or validation fail
+     */
     public static ImportSpecification deserialize(Reader spec, Neo4jDistribution neo4jDistribution)
             throws SpecificationException {
 
