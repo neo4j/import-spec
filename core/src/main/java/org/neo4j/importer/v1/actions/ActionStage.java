@@ -16,14 +16,45 @@
  */
 package org.neo4j.importer.v1.actions;
 
+/**
+ * {@link ActionStage} defines when the enclosing {@link Action} must run.<br>
+ * {@link org.neo4j.importer.v1.pipeline.ImportPipeline} translate this into concrete dependencies.
+ */
 public enum ActionStage {
+    /**
+     * The enclosing {@link Action} must run before anything else (actively-used sources, active targets)
+     */
     START,
+    /**
+     * The enclosing {@link Action} must run after all actively-used {@link org.neo4j.importer.v1.sources.Source}s
+     */
     POST_SOURCES,
+    /**
+     * The enclosing {@link Action} must run before all active {@link org.neo4j.importer.v1.targets.NodeTarget}s
+     */
     PRE_NODES,
+    /**
+     * The enclosing {@link Action} must run after all active {@link org.neo4j.importer.v1.targets.NodeTarget}s
+     */
     POST_NODES,
+    /**
+     * The enclosing {@link Action} must run before all active {@link org.neo4j.importer.v1.targets.RelationshipTarget}s
+     */
     PRE_RELATIONSHIPS,
+    /**
+     * The enclosing {@link Action} must run after all active {@link org.neo4j.importer.v1.targets.RelationshipTarget}s
+     */
     POST_RELATIONSHIPS,
+    /**
+     * The enclosing {@link Action} must run before all active {@link org.neo4j.importer.v1.targets.CustomQueryTarget}s
+     */
     PRE_QUERIES,
+    /**
+     * The enclosing {@link Action} must run after all active {@link org.neo4j.importer.v1.targets.CustomQueryTarget}s
+     */
     POST_QUERIES,
+    /**
+     * The enclosing {@link Action} must run after everything else (actively-used sources, active targets)
+     */
     END
 }

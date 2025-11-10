@@ -20,6 +20,11 @@ import java.util.Objects;
 import org.neo4j.importer.v1.actions.Action;
 import org.neo4j.importer.v1.actions.ActionStage;
 
+/**
+ * {@link CypherAction} defines a one-off Cypher script to execute.<br>
+ * It defines a query (see {@link CypherAction#getQuery()} and an execution mode {@link CypherExecutionMode} (default:
+ * {@link CypherExecutionMode#TRANSACTION}).
+ */
 public class CypherAction implements Action {
     static final CypherExecutionMode DEFAULT_CYPHER_EXECUTION_MODE = CypherExecutionMode.TRANSACTION;
 

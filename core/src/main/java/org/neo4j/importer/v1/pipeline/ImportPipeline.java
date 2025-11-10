@@ -135,7 +135,7 @@ public class ImportPipeline implements Iterable<ImportStep>, Serializable {
             ImportSpecification importSpecification) {
         Map<QualifiedName, Set<QualifiedName>> dependencyGraph = new HashMap<>();
         Targets targets = importSpecification.getTargets();
-        var activeTargets = targets.getAll().stream().filter(Target::isActive).collect(Collectors.toList());
+        var activeTargets = targets.getAllActive();
         var activeSources =
                 activeTargets.stream().map(Target::getSource).distinct().collect(Collectors.toList());
         var sources = new LinkedHashSet<QualifiedName>(activeSources.size());
@@ -261,12 +261,16 @@ public class ImportPipeline implements Iterable<ImportStep>, Serializable {
         var indexedSources = importSpecification.getSources().stream()
                 .collect(Collectors.toMap(Source::getName, Function.identity()));
         var indexedNodeTargets = importSpecification.getTargets().getNodes().stream()
+                .filter(Target::isActive)
                 .collect(Collectors.toMap(Target::getName, Function.identity()));
         var indexedRelationshipTargets = importSpecification.getTargets().getRelationships().stream()
+                .filter(Target::isActive)
                 .collect(Collectors.toMap(Target::getName, Function.identity()));
         var indexedQueryTargets = importSpecification.getTargets().getCustomQueries().stream()
+                .filter(Target::isActive)
                 .collect(Collectors.toMap(Target::getName, Function.identity()));
         var indexedActions = importSpecification.getActions().stream()
+                .filter(Action::isActive)
                 .collect(Collectors.toMap(Action::getName, Function.identity()));
         var processedNodeSteps = new HashMap<String, NodeTargetStep>();
         var processedSteps = new HashMap<QualifiedName, ImportStep>();

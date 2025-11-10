@@ -27,24 +27,29 @@ import org.neo4j.importer.v1.targets.RelationshipTarget;
 import org.neo4j.importer.v1.validation.SpecificationValidationResult.Builder;
 
 /**
- * This is the SPI for custom validators.
- * Custom validators have the ability to validate elements of an {@link org.neo4j.importer.v1.ImportSpecification}.
- * The import specification at this stage is guaranteed to comply to the official import specification JSON schema.
- * Every custom validator is instantiated only once (per {@link org.neo4j.importer.v1.ImportSpecificationDeserializer#deserialize(Reader)} call.
- * The validation order is as follows:<br>
- * 1. visitConfiguration<br>
- * 2. visitSource (as many times as there are sources)<br>
- * 3. visitNodeTarget (as many times as there are node targets)<br>
- * 4. visitRelationshipTarget (as many times as there are relationship targets)<br>
- * 5. visitCustomQueryTarget (as many times as there are custom query targets)<br>
- * 6. visitAction (as many times as there are actions)<br>
- * Then {@link SpecificationValidator#report(Builder)} is called with a {@link SpecificationValidationResult.Builder}, where
- * errors are reported via {@link SpecificationValidationResult.Builder#addError(String, String, String)} and warnings
- * via {@link SpecificationValidationResult.Builder#addWarning(String, String, String)}.
- * Implementations are not expected to be thread-safe.
- * Implementations must not make any assumptions about the invocation order of other implementations.
- * If an implementation depends on the successful validation of another one, please include the latter to {@link SpecificationValidator#requires()}.
- * Mutating the provided arguments via any of the visitXxx or accept calls is considered undefined behavior.
+ * This is the Service Provider Interface for custom validators.<br>
+ * Custom validators have the ability to validate elements of an {@link org.neo4j.importer.v1.ImportSpecification}.<br>
+ * The import specification at this stage is guaranteed to comply to the official import specification JSON schema.<br>
+ * Every custom validator is instantiated only once
+ * (per {@link org.neo4j.importer.v1.ImportSpecificationDeserializer#deserialize(Reader)} call.<br>
+ * The validation order is as follows:
+ * <ol>
+ * <li>visitConfiguration</li>
+ * <li>visitSource (as many times as there are sources)</li>
+ * <li>visitNodeTarget (as many times as there are node targets)</li>
+ * <li>visitRelationshipTarget (as many times as there are relationship targets)</li>
+ * <li>visitCustomQueryTarget (as many times as there are custom query targets)</li>
+ * <li>visitAction (as many times as there are actions)</li>
+ * </ol>
+ * Then {@link SpecificationValidator#report(Builder)} is called with a {@link SpecificationValidationResult.Builder},
+ * where errors are reported via {@link SpecificationValidationResult.Builder#addError(String, String, String)} and
+ * warnings via {@link SpecificationValidationResult.Builder#addWarning(String, String, String)}.<br>
+ * Implementations are not expected to be thread-safe.<br>
+ * Implementations <strong>must not</strong> make any assumptions about the invocation order of other
+ * implementations.<br>
+ * If an implementation depends on the successful validation of another one, please include the latter to
+ * {@link SpecificationValidator#requires()}.<br>
+ * Mutating the provided arguments via any of the visitXxx or accept calls is considered undefined behavior.<br>
  */
 public interface SpecificationValidator {
 

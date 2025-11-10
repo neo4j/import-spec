@@ -27,6 +27,35 @@ import org.neo4j.importer.v1.actions.Action;
 import org.neo4j.importer.v1.sources.Source;
 import org.neo4j.importer.v1.targets.Targets;
 
+/**
+ * {@link ImportSpecification} is the direct representation of the import-spec configuration YAML/JSON files.<br>
+ * {@link ImportSpecification} is made of 3 mandatory attributes:
+ * <ul>
+ *  <li>version</li>
+ *  <li>a list of {@link Source}</li>
+ *  <li>targets, which is a mix of:
+ *      <ul>
+ *          <li>{@link org.neo4j.importer.v1.targets.NodeTarget}</li>
+ *          <li>{@link org.neo4j.importer.v1.targets.RelationshipTarget}</li>
+ *          <li>{@link org.neo4j.importer.v1.targets.CustomQueryTarget}</li>
+ *      </ul>
+ *  </li></ul>
+ * {@link ImportSpecification} can also include:
+ * <ul>
+ *     <li>top-level settings, wrapped into {@link Configuration}</li>
+ *     <li>one-off {@link Action} scripts</li>
+ * </ul><br>
+ * Note: It is <strong>strongly</strong> discouraged to instantiate this class directly.
+ * Please call one of the deserialization APIs of {@link ImportSpecificationDeserializer} instead.
+ * The deserializer automatically loads all built-in and external
+ * {@link org.neo4j.importer.v1.validation.SpecificationValidator} implementation and runs them against this.<br>
+ * The direct use of {@link ImportSpecification} is most suited when targeting import tools that fully manage import
+ * task ordering such as neo4j-admin (neo4j-admin handles the order between schema initialization, node import and
+ * relationship import itself).<br>
+ * In other cases, {@link org.neo4j.importer.v1.pipeline.ImportPipeline} is a better choice.<br>
+ * You can construct an {@link org.neo4j.importer.v1.pipeline.ImportPipeline} instance from an instance of
+ * {@link ImportSpecification} with {@link org.neo4j.importer.v1.pipeline.ImportPipeline#of(ImportSpecification)}.
+ */
 public class ImportSpecification implements Serializable {
 
     private final String version;
@@ -54,22 +83,42 @@ public class ImportSpecification implements Serializable {
         this.actions = actions;
     }
 
+    /**
+     * Returns the {@link ImportSpecification} version
+     * @return the version
+     */
     public String getVersion() {
         return version;
     }
 
+    /**
+     * Returns the {@link ImportSpecification} top-level settings
+     * @return the top-level settings
+     */
     public Configuration getConfiguration() {
         return configuration;
     }
 
+    /**
+     * Returns the {@link ImportSpecification} data sources
+     * @return the data sources
+     */
     public List<Source> getSources() {
         return sources;
     }
 
+    /**
+     * Returns the {@link ImportSpecification} node, relationship and custom query targets, wrapped into {@link Targets}
+     * @return the targets
+     */
     public Targets getTargets() {
         return targets;
     }
 
+    /**
+     * Returns the {@link ImportSpecification} actions, active or not
+     * @return the actions
+     */
     public List<Action> getActions() {
         return actions != null ? actions : Collections.emptyList();
     }

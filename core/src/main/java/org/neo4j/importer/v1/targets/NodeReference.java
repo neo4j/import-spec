@@ -22,6 +22,16 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * {@link NodeReference} defines a named reference to a start/end {@link NodeTarget} of a {@link RelationshipTarget}.<br>
+ * The corresponding {@link NodeTarget} is found by the provided name.<br>
+ * The node lookup pattern is determined either:
+ * <ol>
+ *     <li>by looking original field names of the {@link NodeTarget} key properties.
+ *     </li>
+ *     <li>by key mapping overrides: {@link KeyMapping} controls the field and property names to use for the lookup</li>
+ * </ol>
+ */
 public class NodeReference implements Serializable {
     private final String name;
     private final List<KeyMapping> keyMappings;
@@ -38,10 +48,18 @@ public class NodeReference implements Serializable {
         this.keyMappings = keyMappings;
     }
 
+    /**
+     * Returns the name of the {@link NodeTarget}
+     * @return node target name
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * Returns the node key mapping overrides
+     * @return the node key mapping overrides, this is never <code>null</code>
+     */
     public List<KeyMapping> getKeyMappings() {
         return keyMappings != null ? keyMappings : List.of();
     }

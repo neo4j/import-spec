@@ -23,7 +23,16 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
+/**
+ * {@link Targets} is a simple wrapper class for lists of:
+ * <ul>
+ *  <li>{@link org.neo4j.importer.v1.targets.NodeTarget}</li>
+ *  <li>{@link org.neo4j.importer.v1.targets.RelationshipTarget}</li>
+ *  <li>{@link org.neo4j.importer.v1.targets.CustomQueryTarget}</li>
+ * </ul>
+ */
 public class Targets implements Serializable {
 
     private final List<NodeTarget> nodes;
@@ -41,7 +50,12 @@ public class Targets implements Serializable {
         this.customQueries = customQueries;
     }
 
-    public List<Target> getAll() {
+    /**
+     * Returns all the active targets defined by the enclosing {@link org.neo4j.importer.v1.ImportSpecification}
+     * @return all active targets, this is never <code>null</code>
+     * @see Target#isActive()
+     */
+    public List<Target> getAllActive() {
         List<NodeTarget> nodeTargets = getNodes();
         List<RelationshipTarget> relationshipTargets = getRelationships();
         List<CustomQueryTarget> customQueryTargets = getCustomQueries();
@@ -50,17 +64,32 @@ public class Targets implements Serializable {
         result.addAll(nodeTargets);
         result.addAll(relationshipTargets);
         result.addAll(customQueryTargets);
-        return result;
+        return result.stream().filter(Target::isActive).collect(Collectors.toList());
     }
 
+    /**
+     * Returns all node targets, <strong>including</strong> inactive ones.
+     * @return all node targets, this is never null
+     * @see NodeTarget
+     */
     public List<NodeTarget> getNodes() {
         return nodes == null ? Collections.emptyList() : nodes;
     }
 
+    /**
+     * Returns all relationship targets, <strong>including</strong> inactive ones.
+     * @return all relationship targets, this is never null
+     * @see RelationshipTarget
+     */
     public List<RelationshipTarget> getRelationships() {
         return relationships == null ? Collections.emptyList() : relationships;
     }
 
+    /**
+     * Returns all custom query targets, <strong>including</strong> inactive ones.
+     * @return all custom query targets, this is never null
+     * @see CustomQueryTarget
+     */
     public List<CustomQueryTarget> getCustomQueries() {
         return customQueries == null ? Collections.emptyList() : customQueries;
     }

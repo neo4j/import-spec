@@ -19,7 +19,32 @@ package org.neo4j.importer.v1.sources;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.util.function.Function;
 
+/**
+ * {@link SourceProvider} is a Service Provider Interface, allowing users to define their own source.
+ * @param <T> the concrete type of the {@link Source} subclass
+ */
 public interface SourceProvider<T extends Source> extends Function<ObjectNode, T> {
 
+    /**
+     * User-facing type of the concrete supported source, it must match the result of {@link Source#getType()}
+     * @return the source type
+     */
     String supportedType();
+
+    /**
+     * Deserialization endpoint.<br>
+     * Note: implement deserialization leniently, validate strictly (define
+     * {@link org.neo4j.importer.v1.validation.SpecificationValidator} for your own sources)
+     * @return the deserialized source
+     */
+    @Override
+    default T apply(ObjectNode node) {
+        return provide(node);
+    }
+
+    /**
+     * @deprecated call {@code apply} instead
+     */
+    @Deprecated(forRemoval = true)
+    T provide(ObjectNode node);
 }

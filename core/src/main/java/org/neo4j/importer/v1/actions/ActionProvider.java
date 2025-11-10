@@ -19,7 +19,32 @@ package org.neo4j.importer.v1.actions;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.util.function.Function;
 
+/**
+ * {@link ActionProvider} is a Service Provider Interface, allowing users to define their own action.
+ * @param <T> the concrete type of the {@link Action} subclass
+ */
 public interface ActionProvider<T extends Action> extends Function<ObjectNode, T> {
 
+    /**
+     * User-facing type of the concrete supported action, it must match the result of {@link Action#getType()}
+     * @return the action type
+     */
     String supportedType();
+
+    /**
+     * Deserialization endpoint.<br>
+     * Note: implement deserialization leniently, validate strictly (define
+     * {@link org.neo4j.importer.v1.validation.SpecificationValidator} for your own sources)
+     * @return the deserialized action
+     */
+    @Override
+    default T apply(ObjectNode node) {
+        return provide(node);
+    }
+
+    /**
+     * @deprecated call {@code apply} instead
+     */
+    @Deprecated(forRemoval = true)
+    T provide(ObjectNode node);
 }
