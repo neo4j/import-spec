@@ -37,7 +37,7 @@ public class Configuration implements Serializable {
     }
 
     /**
-     * Returns the setting by its primary name (or its alternate names), if it conforms to the provided type
+     * Returns the setting matched by its primary name (or its alternate names), if it conforms to the provided type
      * @param type expected value type of the settings
      * @param name primary setting name
      * @param alternativeNames alternative setting names, if any
