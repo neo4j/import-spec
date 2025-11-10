@@ -331,9 +331,8 @@ public class BeamExampleIT {
             return "parquet";
         }
 
-        @SuppressWarnings({"removal"})
         @Override
-        public ParquetSource provide(ObjectNode objectNode) {
+        public ParquetSource apply(ObjectNode objectNode) {
             return new ParquetSource(
                     objectNode.get("name").textValue(), objectNode.get("uri").textValue());
         }

@@ -25,9 +25,8 @@ public class JdbcSourceProvider implements SourceProvider<JdbcSource> {
         return "jdbc";
     }
 
-    @SuppressWarnings({"removal"})
     @Override
-    public JdbcSource provide(ObjectNode node) {
+    public JdbcSource apply(ObjectNode node) {
         return new JdbcSource(
                 node.get("name").textValue(),
                 node.get("data_source").textValue(),
