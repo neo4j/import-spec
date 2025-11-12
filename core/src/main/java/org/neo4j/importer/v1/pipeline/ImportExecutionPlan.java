@@ -28,9 +28,71 @@ import java.util.stream.Collectors;
 import org.neo4j.importer.v1.graph.Graphs;
 
 /**
- * Represents the entire parallelizable execution plan for an import step graph.
- * Tasks are grouped into groups, as a list of independent ImportStepGroup. Each group can be processed
- * entirely in parallel with the others.
+ * {@link ImportExecutionPlan} exposes the graph of {@link ImportStep} to execute in a way that eases import
+ * parallelization.<br><br>
+ * The first level of parallelization is {@link org.neo4j.importer.v1.pipeline.ImportExecutionPlan.ImportStepGroup},
+ * retrieved with {@link ImportExecutionPlan#getGroups()}.
+ * Each group corresponds to a weakly connected component of the import step graph.<br>
+ * For instance, the following YAML serialization of {@link org.neo4j.importer.v1.ImportSpecification} (other attributes
+ * are omitted for brevity):
+ * <pre><code>
+ * version: "1"
+ * sources:
+ *   - name: actors
+ *   - name: films
+ * targets:
+ *   nodes:
+ *     - source: actors
+ *       name: actor_nodes
+ *     - source: films
+ *       name: film_nodes
+ * </code></pre>
+ * <br>
+ * ... results into 2 groups:<br><br>
+ *  - 1 with the "actors" source and "actor_nodes" node target (converted respectively to {@link SourceStep} and
+ *  {@link NodeTargetStep})<br>
+ *  - 1 with the "films" source and "film_nodes" node target (converted respectively to {@link SourceStep} and
+ *  {@link NodeTargetStep})<br>
+ *  <br>
+ *  These groups can be processed in parallel.
+ *  The import is considered completed when every group's import has completed.<br><br>
+ *  Each {@link org.neo4j.importer.v1.pipeline.ImportExecutionPlan.ImportStepGroup} is made of several
+ *  {@link org.neo4j.importer.v1.pipeline.ImportExecutionPlan.ImportStepStage}, retrieved with
+ *  {@link ImportStepGroup#getStages()}.<br>
+ *  Stages <strong>must</strong> be processed sequentially. In other words, the second stage can not run until the first
+ *  stage has completed, and so on.<br>
+ *  <br>
+ *  Assuming the following YAML serialization of {@link org.neo4j.importer.v1.ImportSpecification} (other attributes are
+ *  omitted for brevity):
+ * <pre><code>
+ * version: "1"
+ * sources:
+ *   - name: actors
+ *   - name: films
+ *   - name: actors_in_films
+ * targets:
+ *   nodes:
+ *     - source: actors
+ *       name: actor_nodes
+ *     - source: films
+ *       name: film_nodes
+ *   relationships:
+ *     - source: actors_in_films
+ *       name: actor_film_relationships
+ *       start_node_reference: actor_nodes
+ *       end_node_reference: film_nodes
+ * </code></pre>
+ * This would result in a single {@link org.neo4j.importer.v1.pipeline.ImportExecutionPlan.ImportStepGroup}
+ * (every step is linked, directly or indirectly).
+ * The group is made of at least 3 stages:<br>
+ *  - the first stage includes all the sources<br>
+ *  - the second stage includes all the nodes<br>
+ *  - the last stage includes the relationship<br>
+ *  <br>
+ *  Finally, each stage is made of several steps.
+ *  These steps (either {@link SourceStep}, {@link NodeTargetStep}, {@link RelationshipTargetStep},
+ *  {@link CustomQueryTargetStep} or {@link ActionStep}) can be processed in parallel.<br>
+ *  The enclosing stage execution is considered complete when all its steps have completed.
  */
 public class ImportExecutionPlan {
 
