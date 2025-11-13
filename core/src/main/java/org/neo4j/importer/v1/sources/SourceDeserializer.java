@@ -22,7 +22,6 @@ import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.io.IOException;
 import java.util.List;
-import java.util.Locale;
 import java.util.stream.Collectors;
 import org.neo4j.importer.v1.validation.NotExactlyOneSourceProviderException;
 import org.neo4j.importer.v1.validation.UndeserializableSourceIOException;
@@ -50,8 +49,7 @@ public class SourceDeserializer extends StdDeserializer<Source> {
 
     private SourceProvider<? extends Source> findSourceProviderByType(String type) {
         var providers = this.providers.stream()
-                .filter(provider ->
-                        provider.supportedType().toLowerCase(Locale.ROOT).equals(type.toLowerCase(Locale.ROOT)))
+                .filter(provider -> provider.supportsType(type))
                 .collect(Collectors.toList());
         var count = providers.size();
         if (count != 1) {

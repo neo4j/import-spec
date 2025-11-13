@@ -17,9 +17,26 @@
 package org.neo4j.importer.v1.sources;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import java.util.Locale;
 import java.util.function.Function;
 
 public interface SourceProvider<T extends Source> extends Function<ObjectNode, T> {
 
-    String supportedType();
+    /**
+     * This declares the source type this source provider supports
+     * Please implement {@link SourceProvider#supportsType(String)} instead.
+     * @return the source type supported by this provider
+     */
+    @Deprecated(forRemoval = true)
+    default String supportedType() {
+        return "###unset";
+    }
+
+    /**
+     * This provides a flexible to tell is the type is supported by this source provider
+     * @return true if this source provider supports the type, false otherwise
+     */
+    default boolean supportsType(String type) {
+        return supportedType().toLowerCase(Locale.ROOT).equals(type.toLowerCase(Locale.ROOT));
+    }
 }
