@@ -27,7 +27,7 @@ import java.util.Stack;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.neo4j.importer.v1.ImportSpecification;
-import org.neo4j.importer.v1.graph.Graphs;
+import org.neo4j.importer.v1.util.graph.Graphs;
 
 public class SpecificationValidators {
 

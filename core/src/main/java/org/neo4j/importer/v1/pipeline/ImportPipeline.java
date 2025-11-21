@@ -36,7 +36,6 @@ import java.util.stream.Collectors;
 import org.neo4j.importer.v1.ImportSpecification;
 import org.neo4j.importer.v1.actions.Action;
 import org.neo4j.importer.v1.actions.ActionStage;
-import org.neo4j.importer.v1.graph.Graphs;
 import org.neo4j.importer.v1.sources.Source;
 import org.neo4j.importer.v1.targets.CustomQueryTarget;
 import org.neo4j.importer.v1.targets.KeyMapping;
@@ -45,6 +44,7 @@ import org.neo4j.importer.v1.targets.PropertyMapping;
 import org.neo4j.importer.v1.targets.RelationshipTarget;
 import org.neo4j.importer.v1.targets.Target;
 import org.neo4j.importer.v1.targets.Targets;
+import org.neo4j.importer.v1.util.graph.Graphs;
 
 /**
  * {@link ImportPipeline} exposes a topologically-ordered set of {@link ImportStep},

@@ -25,7 +25,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
-import org.neo4j.importer.v1.graph.Graphs;
+import org.neo4j.importer.v1.util.graph.Graphs;
 
 /**
  * Represents the entire parallelizable execution plan for an import step graph.

@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.neo4j.importer.v1.graph;
+package org.neo4j.importer.v1.util.graph;
 
 import java.util.Objects;
 

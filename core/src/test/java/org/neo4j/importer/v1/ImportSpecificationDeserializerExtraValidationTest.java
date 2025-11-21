@@ -3331,7 +3331,8 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
                         "0 warning(s)",
-                        "[$.targets.relationships[0].start_node_reference] Node a-node-target must define a key or unique constraint for property id, none found");
+                        "[$.targets.relationships[0].start_node_reference] Node 'a-node-target' must define key or unique constraints for all of the properties ('id')",
+                        "[$.targets.relationships[0].end_node_reference] Node 'a-node-target' must define key or unique constraints for any of the properties ('id')");
     }
 
     @Test
@@ -3379,8 +3380,160 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                 .hasMessageContainingAll(
                         "2 error(s)",
                         "0 warning(s)",
-                        "[$.targets.relationships[0].start_node_reference] Node a-node-target must define a key or unique constraint for property id, none found",
-                        "[$.targets.relationships[0].end_node_reference] Node a-node-target must define a key or unique constraint for property id, none found");
+                        "[$.targets.relationships[0].start_node_reference] Node 'a-node-target' must define key or unique constraints for any of the properties ('id')",
+                        "[$.targets.relationships[0].end_node_reference] Node 'a-node-target' must define key or unique constraints for all of the properties ('id')");
+    }
+
+    @Test // sibling keys = another node target with labels/properties in common define key/unique constraints
+    public void does_not_fail_if_relationship_node_reference_refers_to_keyless_node_with_sibling_keys() {
+        assertThatCode(() -> deserialize(new StringReader(
+                        """
+                        {
+                            "version": "1",
+                            "sources": [
+                                {
+                                    "name": "a-source-1",
+                                    "type": "jdbc",
+                                    "data_source": "a-data-source",
+                                    "sql": "SELECT field_1, field_2, field_3 FROM my.table1"
+                                },
+                                {
+                                    "name": "a-source-2",
+                                    "type": "jdbc",
+                                    "data_source": "a-data-source",
+                                    "sql": "SELECT field_1, field_2, field_3 FROM my.table1"
+                                }
+                            ],
+                            "targets": {
+                                "nodes": [
+                                    {
+                                        "name": "a-node-target",
+                                        "source": "a-source-1",
+                                        "labels": ["Label3", "Label1"],
+                                        "properties": [
+                                            {"source_field": "field_1", "target_property": "prop_1"},
+                                            {"source_field": "field_3", "target_property": "prop_3"},
+                                            {"source_field": "field_2", "target_property": "prop_4"}
+                                        ]
+                                    },
+                                    {
+                                        "name": "a-sibling-node-target",
+                                        "source": "a-source-2",
+                                        "labels": ["Label2", "Label1"],
+                                        "properties": [
+                                            {"source_field": "field_1", "target_property": "prop_1"},
+                                            {"source_field": "field_2", "target_property": "prop_2"},
+                                            {"source_field": "field_3", "target_property": "prop_3"}
+                                        ],
+                                        "schema": {
+                                            "key_constraints": [
+                                                {"name": "unique-props", "label": "Label1", "properties": ["prop_1", "prop_3"]}
+                                            ]
+                                        }
+                                    }
+                                ],
+                                "relationships": [{
+                                    "name": "a-relationship-target",
+                                    "source": "a-source-1",
+                                    "type": "TYPE",
+                                    "write_mode": "create",
+                                    "start_node_reference": "a-node-target",
+                                    "end_node_reference": "a-node-target"
+                                }]
+                            }
+                        }
+                        """
+                                .stripIndent())))
+                .doesNotThrowAnyException();
+    }
+
+    @Test // sibling keys = another node target with labels/properties in common define key/unique constraints
+    public void
+            fails_if_relationship_node_reference_refers_to_keyless_node_with_sibling_keys_not_covering_all_key_mappings() {
+        assertThatCode(() -> deserialize(new StringReader(
+                        """
+                        {
+                            "version": "1",
+                            "sources": [
+                                {
+                                    "name": "a-source-1",
+                                    "type": "jdbc",
+                                    "data_source": "a-data-source",
+                                    "sql": "SELECT field_1, field_2, field_3 FROM my.table1"
+                                },
+                                {
+                                    "name": "a-source-2",
+                                    "type": "jdbc",
+                                    "data_source": "a-data-source",
+                                    "sql": "SELECT field_1, field_2, field_3 FROM my.table1"
+                                }
+                            ],
+                            "targets": {
+                                "nodes": [
+                                    {
+                                        "name": "a-node-target",
+                                        "source": "a-source-1",
+                                        "labels": ["Label3", "Label1"],
+                                        "properties": [
+                                            {"source_field": "field_1", "target_property": "prop_1"},
+                                            {"source_field": "field_3", "target_property": "prop_3"},
+                                            {"source_field": "field_2", "target_property": "prop_4"}
+                                        ]
+                                    },
+                                    {
+                                        "name": "a-sibling-node-target",
+                                        "source": "a-source-2",
+                                        "labels": ["Label2", "Label1"],
+                                        "properties": [
+                                            {"source_field": "field_1", "target_property": "prop_1"},
+                                            {"source_field": "field_2", "target_property": "prop_2"},
+                                            {"source_field": "field_3", "target_property": "prop_3"}
+                                        ],
+                                        "schema": {
+                                            "key_constraints": [
+                                                {"name": "unique-props", "label": "Label1", "properties": ["prop_1", "prop_3"]}
+                                            ]
+                                        }
+                                    }
+                                ],
+                                "relationships": [{
+                                    "name": "a-relationship-target",
+                                    "source": "a-source-1",
+                                    "type": "TYPE",
+                                    "write_mode": "create",
+                                    "start_node_reference": {
+                                        "name": "a-node-target",
+                                        "key_mappings": [
+                                            {
+                                                "source_field": "field_1",
+                                                "node_property": "prop_1"
+                                            }
+                                        ]
+                                    },
+                                    "end_node_reference": {
+                                        "name": "a-node-target",
+                                        "key_mappings": [
+                                            {
+                                                "source_field": "field_1",
+                                                "node_property": "prop_1"
+                                            },
+                                            {
+                                                "source_field": "source_id",
+                                                "node_property": "prop_4"
+                                            }
+                                        ]
+                                    }
+                                }]
+                            }
+                        }
+                        """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "2 error(s)",
+                        "0 warning(s)",
+                        "[$.targets.relationships[0].start_node_reference] Node 'a-node-target' must define key or unique constraints for all of the properties ('prop_1')",
+                        "[$.targets.relationships[0].end_node_reference] Node 'a-node-target' must define key or unique constraints for all of the properties ('prop_1','prop_4')");
     }
 
     @Test

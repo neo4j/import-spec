@@ -14,11 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.neo4j.importer.v1.graph;
+package org.neo4j.importer.v1.util.graph;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.neo4j.importer.v1.graph.TopologicalSortAsserter.topologicalSortOf;
+import static org.neo4j.importer.v1.util.graph.TopologicalSortAsserter.topologicalSortOf;
 
 import java.util.Arrays;
 import java.util.LinkedHashMap;

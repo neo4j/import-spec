@@ -22,11 +22,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
-import org.neo4j.importer.v1.graph.Pair;
 import org.neo4j.importer.v1.targets.CustomQueryTarget;
 import org.neo4j.importer.v1.targets.NodeTarget;
 import org.neo4j.importer.v1.targets.RelationshipTarget;
 import org.neo4j.importer.v1.targets.Target;
+import org.neo4j.importer.v1.util.graph.Pair;
 import org.neo4j.importer.v1.validation.SpecificationValidationResult.Builder;
 import org.neo4j.importer.v1.validation.SpecificationValidator;
 
