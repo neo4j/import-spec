@@ -27,6 +27,18 @@ import org.junit.jupiter.api.Test;
 class SetsTest {
 
     @Test
+    void computes_set_differences() {
+        assertThat(Sets.difference(Set.of(1, 2), Set.of(2, 3))).isEqualTo(Set.of(1));
+        assertThat(Sets.difference(Set.of(2, 3), Set.of(2, 3))).isEmpty();
+    }
+
+    @Test
+    void computes_set_intersections() {
+        assertThat(Sets.intersection(Set.of(1, 2), Set.of(2, 3))).isEqualTo(Set.of(2));
+        assertThat(Sets.intersection(Set.of(1, 4), Set.of(2, 3))).isEmpty();
+    }
+
+    @Test
     void provides_no_subsets_for_empty_set() {
         var result = Sets.<String>generateNonEmptySubsets(Set.of());
 

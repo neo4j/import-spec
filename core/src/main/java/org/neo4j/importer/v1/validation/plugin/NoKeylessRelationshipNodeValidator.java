@@ -134,21 +134,47 @@ public class NoKeylessRelationshipNodeValidator implements SpecificationValidato
         }
 
         public PropertyMatchResult match(Set<NodePattern> patterns, List<KeyMapping> keyMappings) {
-            var allProperties = new HashSet<>(this.properties);
-            var keys = keyMappings.stream().map(KeyMapping::getNodeProperty).collect(Collectors.toSet());
-            // if no known key properties, we need to check all the non-empty subsets from the node properties
-            var coveredProperties = Sets.generateNonEmptySubsets(keys.isEmpty() ? allProperties : keys)
+            var allLabels = patterns.stream().map(NodePattern::getLabel).collect(Collectors.toSet());
+            var nodeLabels = new HashSet<>(this.labels);
+            var nodeKeys = keyMappings.stream().map(KeyMapping::getNodeProperty).collect(Collectors.toSet());
+            var nodeProperties = new HashSet<>(this.properties);
+            var nodePropertiesToCheck = nodeKeys.isEmpty() ? nodeProperties : nodeKeys;
+
+            // first short-circuit attempt: if no overlap with other node labels, then let's stop there
+            var overlappingLabels = Sets.intersection(nodeLabels, allLabels);
+            if (overlappingLabels.isEmpty()) {
+                return new PropertyMatchResult(false, nodePropertiesToCheck);
+            }
+
+            // second short-circuit attempt: if no overlap with other nodes' key properties, then let's stop there
+            var labelMatchingPatterns = overlappingLabels.stream()
+                    .flatMap(label -> patterns.stream()
+                            .filter(nodePattern -> nodePattern.getLabel().equals(label)))
+                    .collect(Collectors.toSet());
+            var overlappingLabelProperties = labelMatchingPatterns.stream()
+                    .flatMap(n -> n.getProperties().stream())
+                    .collect(Collectors.toSet());
+            if (Sets.intersection(nodePropertiesToCheck, overlappingLabelProperties)
+                    .isEmpty()) {
+                return new PropertyMatchResult(false, nodePropertiesToCheck);
+            }
+
+            // final attempt: there is an overlap, but it needs to match key/unique constraints
+            var coveredProperties = Sets.generateNonEmptySubsets(nodePropertiesToCheck)
                     .flatMap(combination -> this.labels.stream().map(label -> new NodePattern(label, combination)))
-                    .filter(patterns::contains)
+                    .filter(labelMatchingPatterns::contains)
                     // all key properties must match a key/unique constraint pattern
                     // (individually or as part of a larger subset)
                     .flatMap(pattern -> pattern.properties.stream())
                     .collect(Collectors.toSet());
-            if (keys.isEmpty()) {
+            if (nodeKeys.isEmpty()) {
+                // no key mapping override, so at least 1 property covered by a key constraint is enough
                 var success = !coveredProperties.isEmpty();
-                return new PropertyMatchResult(success, success ? Set.of() : allProperties);
+                return new PropertyMatchResult(success, success ? Set.of() : nodeProperties);
             }
-            var uncoveredKeys = Sets.difference(keys, coveredProperties);
+            // key mapping override means key properties are knows
+            // all key properties must be backed by a key/unique constraint
+            var uncoveredKeys = Sets.difference(nodeKeys, coveredProperties);
             return new PropertyMatchResult(uncoveredKeys.isEmpty(), uncoveredKeys);
         }
     }
@@ -179,6 +205,14 @@ public class NoKeylessRelationshipNodeValidator implements SpecificationValidato
         public NodePattern(String label, Set<String> properties) {
             this.label = label;
             this.properties = properties;
+        }
+
+        public String getLabel() {
+            return label;
+        }
+
+        public Set<String> getProperties() {
+            return properties;
         }
 
         @Override

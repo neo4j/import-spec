@@ -37,6 +37,17 @@ public class Sets {
     }
 
     /**
+     * Returns all elements of the first set contained in set2
+     * @param set1 first set
+     * @param set2 second set
+     * @return elements of set1 not in set2
+     * @param <T> type of elements
+     */
+    public static <T> Set<T> intersection(Set<T> set1, Set<T> set2) {
+        return set1.stream().filter(set2::contains).collect(Collectors.toSet());
+    }
+
+    /**
      * @see Sets#generateNonEmptySubsets(Set, Comparator)
      */
     public static <T> Stream<Set<T>> generateNonEmptySubsets(Set<T> inputSet) {
