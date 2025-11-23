@@ -61,7 +61,7 @@ public class Sets {
      * stream of subsets. If the comparator is {@code null}, the subsets are returned
      * in the order they are generated.
      * <p>
-     * This method has an exponential time complexity of O(n * 2^n)**, where n is the size
+     * This method has an exponential time complexity of O(n * 2^n), where n is the size
      * of the input set. Please call this sparingly.
      *
      * @param <T> type of inputs.
