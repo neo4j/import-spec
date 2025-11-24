@@ -24,9 +24,7 @@ import java.util.List;
 import java.util.Objects;
 
 public class NodeTarget extends EntityTarget {
-
     private final List<String> labels;
-
     private final NodeSchema schema;
 
     @JsonCreator

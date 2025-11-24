@@ -69,6 +69,8 @@ public abstract class EntityTarget extends Target {
                 .findFirst();
     }
 
+    public abstract Schema getSchema();
+
     @Override
     public boolean equals(Object o) {
         if (!(o instanceof EntityTarget)) return false;
