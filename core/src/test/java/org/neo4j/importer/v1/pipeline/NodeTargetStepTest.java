@@ -35,32 +35,11 @@ class NodeTargetStepTest {
 
     private final Random random = new Random();
 
-    private final PropertyMapping mapping1 = mappingTo("prop1");
-    private final PropertyMapping mapping2 = mappingTo("prop2");
-    private final PropertyMapping mapping3 = mappingTo("prop3");
-    private final PropertyMapping mapping4 = mappingTo("prop4");
-    private final List<PropertyMapping> properties = List.of(mapping1, mapping2, mapping3, mapping4);
-
-    @Test
-    void returns_no_keys_when_schema_is_not_defined() {
-        NodeSchema schema = null;
-
-        var task = new NodeTargetStep(
-                new NodeTarget(
-                        true,
-                        "a-target",
-                        "a-source",
-                        null,
-                        WriteMode.CREATE,
-                        (ObjectNode) null,
-                        List.of("Label"),
-                        properties,
-                        schema),
-                Set.of());
-
-        assertThat(task.keyProperties()).isEmpty();
-        assertThat(task.nonKeyProperties()).isEqualTo(properties);
-    }
+    private final PropertyMapping prop1 = mappingTo("prop1");
+    private final PropertyMapping prop2 = mappingTo("prop2");
+    private final PropertyMapping prop3 = mappingTo("prop3");
+    private final PropertyMapping prop4 = mappingTo("prop4");
+    private final List<PropertyMapping> properties = List.of(prop1, prop2, prop3, prop4);
 
     @Test
     void returns_key_and_non_key_properties() {
@@ -80,12 +59,12 @@ class NodeTargetStepTest {
                         schema),
                 Set.of());
 
-        assertThat(task.keyProperties()).containsExactly(mapping1, mapping2, mapping4);
-        assertThat(task.nonKeyProperties()).containsExactly(mapping3);
+        assertThat(task.keyProperties()).containsExactly(prop1, prop2, prop4);
+        assertThat(task.nonKeyProperties()).containsExactly(prop3);
     }
 
     @Test
-    void returns_non_null_unique_properties_as_keys() {
+    void returns_unique_properties_as_keys_when_no_key_constraints_are_defined() {
         var schema = schemaFor(
                 List.of(unique("Label", List.of("prop1", "prop2")), unique("Label", List.of("prop2", "prop4"))),
                 List.of(notNull("Label", "prop2"), notNull("Label", "prop3"), notNull("Label", "prop4")));
@@ -103,12 +82,12 @@ class NodeTargetStepTest {
                         schema),
                 Set.of());
 
-        assertThat(task.keyProperties()).containsExactly(mapping2, mapping4);
-        assertThat(task.nonKeyProperties()).containsExactly(mapping1, mapping3);
+        assertThat(task.keyProperties()).containsExactly(prop1, prop2, prop4);
+        assertThat(task.nonKeyProperties()).containsExactly(prop3);
     }
 
     @Test
-    void returns_both_key_and_non_null_unique_properties() {
+    void returns_key_over_unique_properties() {
         var schema = schemaFor(
                 List.of(key("Label", List.of("prop1", "prop2"))),
                 List.of(unique("Label", List.of("prop3"))),
@@ -127,8 +106,8 @@ class NodeTargetStepTest {
                         schema),
                 Set.of());
 
-        assertThat(task.keyProperties()).containsExactly(mapping1, mapping2, mapping3);
-        assertThat(task.nonKeyProperties()).containsExactly(mapping4);
+        assertThat(task.keyProperties()).containsExactly(prop1, prop2);
+        assertThat(task.nonKeyProperties()).containsExactly(prop3, prop4);
     }
 
     private NodeKeyConstraint key(String label, List<String> properties) {
