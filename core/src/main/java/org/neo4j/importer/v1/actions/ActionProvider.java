@@ -38,13 +38,5 @@ public interface ActionProvider<T extends Action> extends Function<ObjectNode, T
      * @return the deserialized action
      */
     @Override
-    default T apply(ObjectNode node) {
-        return provide(node);
-    }
-
-    /**
-     * @deprecated call {@code apply} instead
-     */
-    @Deprecated(forRemoval = true)
-    T provide(ObjectNode node);
+    T apply(ObjectNode node);
 }

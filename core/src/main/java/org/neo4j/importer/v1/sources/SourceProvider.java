@@ -38,13 +38,5 @@ public interface SourceProvider<T extends Source> extends Function<ObjectNode, T
      * @return the deserialized source
      */
     @Override
-    default T apply(ObjectNode node) {
-        return provide(node);
-    }
-
-    /**
-     * @deprecated call {@code apply} instead
-     */
-    @Deprecated(forRemoval = true)
-    T provide(ObjectNode node);
+    T apply(ObjectNode node);
 }
