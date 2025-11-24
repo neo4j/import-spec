@@ -322,7 +322,7 @@ public class Neo4jAdminExampleIT {
                     specification.getSources().stream().collect(Collectors.toMap(Source::getName, Function.identity()));
             Map<String, NodeTarget> indexedNodes = specification.getTargets().getNodes().stream()
                     .collect(Collectors.toMap(Target::getName, Function.identity()));
-            for (Target target : specification.getTargets().getAll()) {
+            for (Target target : specification.getTargets().getAllActive()) {
                 switch (target) {
                     case NodeTarget nodeTarget -> createHeaderFile(indexedSources, nodeTarget);
                     case RelationshipTarget relationshipTarget ->
@@ -334,7 +334,7 @@ public class Neo4jAdminExampleIT {
 
         private void createSchemaFile(ImportSpecification specification) throws IOException {
             var schemaStatements =
-                    generateSchemaStatements(specification.getTargets().getAll());
+                    generateSchemaStatements(specification.getTargets().getAllActive());
             if (schemaStatements.isEmpty()) {
                 return;
             }
@@ -406,7 +406,7 @@ public class Neo4jAdminExampleIT {
                 command.append("%s".formatted(sourceUri(specification, relationshipTarget)));
             }
 
-            if (targets.getAll().stream().anyMatch(Neo4jAdminExampleIT::hasSchemaOps)) {
+            if (targets.getAllActive().stream().anyMatch(Neo4jAdminExampleIT::hasSchemaOps)) {
                 command.append(" --schema=/import/schema.cypher");
             }
 

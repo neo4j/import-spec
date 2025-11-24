@@ -20,6 +20,9 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Objects;
 
+/**
+ * {@link KeyMapping} defines the node lookup override for the given start/end node of a {@link RelationshipTarget}.
+ */
 public class KeyMapping {
 
     private final String sourceField;
@@ -33,10 +36,18 @@ public class KeyMapping {
         this.nodeProperty = nodeProperty;
     }
 
+    /**
+     * Source field name to use when mapping data from the enclosing {@link  RelationshipTarget} source
+     * @return the source field
+     */
     public String getSourceField() {
         return sourceField;
     }
 
+    /**
+     * Key property name to use when looking the start/end node named by the enclosing {@link NodeReference}
+     * @return the source field
+     */
     public String getNodeProperty() {
         return nodeProperty;
     }

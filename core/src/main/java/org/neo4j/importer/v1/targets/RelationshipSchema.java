@@ -22,6 +22,22 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * {@link RelationshipSchema} defines the indices and constraints that must be created for the enclosing {@link RelationshipTarget}.<br>
+ * All the indices and constraints below are optional:
+ * <ul>
+ *     <li>property type constraints (this only works where the corresponding {@link PropertyMapping} has defined a
+ *     type, see {@link RelationshipSchema#getTypeConstraints()})</li>
+ *     <li>relationship key constraints (see {@link RelationshipSchema#getKeyConstraints()} ()})</li>
+ *     <li>relationship unique constraints (see {@link RelationshipSchema#getUniqueConstraints()} ()})</li>
+ *     <li>property existence constraints (see {@link RelationshipSchema#getExistenceConstraints()})</li>
+ *     <li>range indexes (see {@link RelationshipSchema#getRangeIndexes()})</li>
+ *     <li>text indexes (see {@link RelationshipSchema#getTextIndexes()})</li>
+ *     <li>point indexes (see {@link RelationshipSchema#getPointIndexes()})</li>
+ *     <li>full-text indexes (see {@link RelationshipSchema#getFullTextIndexes()})</li>
+ *     <li>vector indexes (see {@link RelationshipSchema#getVectorIndexes()})</li>
+ * </ul>
+ */
 public class RelationshipSchema implements Schema, Serializable {
 
     static final RelationshipSchema EMPTY = new RelationshipSchema(
@@ -61,6 +77,10 @@ public class RelationshipSchema implements Schema, Serializable {
         this.vectorIndexes = vectorIndexes;
     }
 
+    /**
+     * Whether this {@link RelationshipSchema} define any constraints and indices
+     * @return true if no schema element is defined, false otherwise
+     */
     public boolean isEmpty() {
         return getTypeConstraints().isEmpty()
                 && getKeyConstraints().isEmpty()
@@ -73,38 +93,74 @@ public class RelationshipSchema implements Schema, Serializable {
                 && getVectorIndexes().isEmpty();
     }
 
+    /**
+     * Returns the defined property type constraints for this {@link RelationshipTarget}
+     * @return property type constraints, this is never <code>null</code>
+     */
     public List<RelationshipTypeConstraint> getTypeConstraints() {
         return typeConstraints != null ? typeConstraints : List.of();
     }
 
+    /**
+     * Returns the defined key constraints for this {@link RelationshipTarget}
+     * @return key constraints, this is never <code>null</code>
+     */
     public List<RelationshipKeyConstraint> getKeyConstraints() {
         return keyConstraints != null ? keyConstraints : List.of();
     }
 
+    /**
+     * Returns the defined unique constraints for this {@link RelationshipTarget}
+     * @return unique constraints, this is never <code>null</code>
+     */
     public List<RelationshipUniqueConstraint> getUniqueConstraints() {
         return uniqueConstraints != null ? uniqueConstraints : List.of();
     }
 
+    /**
+     * Returns the defined property existence constraints for this {@link RelationshipTarget}
+     * @return property existence constraints, this is never <code>null</code>
+     */
     public List<RelationshipExistenceConstraint> getExistenceConstraints() {
         return existenceConstraints != null ? existenceConstraints : List.of();
     }
 
+    /**
+     * Returns the defined range indexes for this {@link RelationshipTarget}
+     * @return range indexes, this is never <code>null</code>
+     */
     public List<RelationshipRangeIndex> getRangeIndexes() {
         return rangeIndexes != null ? rangeIndexes : List.of();
     }
 
+    /**
+     * Returns the defined text indexes for this {@link RelationshipTarget}
+     * @return text indexes, this is never <code>null</code>
+     */
     public List<RelationshipTextIndex> getTextIndexes() {
         return textIndexes != null ? textIndexes : List.of();
     }
 
+    /**
+     * Returns the defined point indexes for this {@link RelationshipTarget}
+     * @return point indexes, this is never <code>null</code>
+     */
     public List<RelationshipPointIndex> getPointIndexes() {
         return pointIndexes != null ? pointIndexes : List.of();
     }
 
+    /**
+     * Returns the defined full-text indexes for this {@link RelationshipTarget}
+     * @return full-text indexes, this is never <code>null</code>
+     */
     public List<RelationshipFullTextIndex> getFullTextIndexes() {
         return fullTextIndexes != null ? fullTextIndexes : List.of();
     }
 
+    /**
+     * Returns the defined vector indexes for this {@link RelationshipTarget}
+     * @return vector indexes, this is never <code>null</code>
+     */
     public List<RelationshipVectorIndex> getVectorIndexes() {
         return vectorIndexes != null ? vectorIndexes : List.of();
     }

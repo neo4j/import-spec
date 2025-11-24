@@ -17,7 +17,6 @@
 package org.neo4j.importer.v1;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.Map;
 import java.util.Optional;
@@ -53,9 +52,11 @@ class ConfigurationTest {
     }
 
     @Test
-    void throws_if_requested_type_does_not_match() {
+    void does_not_return_element_if_type_does_not_match() {
         Configuration configuration = new Configuration(Map.of("a", 1));
 
-        assertThatThrownBy(() -> configuration.get(String.class, "a")).isInstanceOf(ClassCastException.class);
+        Optional<String> result = configuration.get(String.class, "a");
+
+        assertThat(result).isEmpty();
     }
 }

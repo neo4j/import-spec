@@ -23,6 +23,26 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * {@link NodeTarget} defines one kind of node to import.<br>
+ * In particular, {@link NodeTarget} defines these mandatory attributes:
+ * <ul>
+ *     <li>the resulting node labels ({@link NodeTarget#getLabels()})</li>
+ *     <li>the name of the source is maps data from ({@link NodeTarget#getSource()})</li>
+ *     <li>how source fields are mapped to node properties via {@link NodeTarget#getProperties()}</li>
+ * </ul>
+ * {@link NodeTarget} can optionally specify:<br>
+ * <ul>
+ *     <li>its {@link WriteMode} for backends that support it</li>
+ *     <li>whether the target is active or not ({@link NodeTarget#isActive()}): backends must skip inactive targets</li>
+ *     <li>dependencies on other targets (by their names, see {@link NodeTarget#getDependencies()})</li>
+ *     <li>indices and/or constraints (via {@link NodeSchema})</li>
+ *     <li>extensions</li>
+ * </ul>
+ * Extensions must be registered with {@link EntityTargetExtensionProvider} through Java's standard Service Provider
+ * Interface mechanism.
+ * @see <a href="https://neo4j.com/docs/getting-started/appendix/graphdb-concepts">Graph database concepts</a>
+ */
 public class NodeTarget extends EntityTarget {
     private final List<String> labels;
     private final NodeSchema schema;
