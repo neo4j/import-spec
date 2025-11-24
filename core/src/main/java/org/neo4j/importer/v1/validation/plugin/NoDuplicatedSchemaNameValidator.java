@@ -24,7 +24,7 @@ import org.neo4j.importer.v1.validation.SpecificationValidator;
 
 public class NoDuplicatedSchemaNameValidator implements SpecificationValidator {
     private static final String ERROR_CODE = "DUPL-011";
-    private final List<SchemaElement> elements = new ArrayList<>();
+    private final Set<SchemaElement> elements = new LinkedHashSet<>();
 
     @Override
     public Set<Class<? extends SpecificationValidator>> requires() {
@@ -53,7 +53,7 @@ public class NoDuplicatedSchemaNameValidator implements SpecificationValidator {
     public boolean report(Builder builder) {
         var duplicates = elements.stream().collect(Collectors.groupingBy(SchemaElement::getName)).entrySet().stream()
                 .filter(e -> e.getValue().size() > 1)
-                .collect(Collectors.toList());
+                .collect(Collectors.toCollection(LinkedHashSet::new));
 
         duplicates.forEach(dup -> builder.addError(
                 dup.getValue().get(0).getPath(),
@@ -115,6 +115,19 @@ public class NoDuplicatedSchemaNameValidator implements SpecificationValidator {
         public String getPath() {
             return path;
         }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            ConstraintElement that = (ConstraintElement) o;
+            return Objects.equals(constraint, that.constraint);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(constraint);
+        }
     }
 
     private static class IndexElement implements SchemaElement {
@@ -132,6 +145,19 @@ public class NoDuplicatedSchemaNameValidator implements SpecificationValidator {
 
         public String getPath() {
             return path;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            IndexElement that = (IndexElement) o;
+            return Objects.equals(index, that.index);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(index);
         }
     }
 }

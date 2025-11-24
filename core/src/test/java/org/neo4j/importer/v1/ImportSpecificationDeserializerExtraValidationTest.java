@@ -674,59 +674,59 @@ public class ImportSpecificationDeserializerExtraValidationTest {
         assertThatNoException()
                 .isThrownBy(() -> deserialize(new StringReader(
                         """
-                                {
-                                    "version": "1",
-                                    "sources": [{
-                                        "type": "bigquery",
-                                        "name": "a-source",
-                                        "query": "SELECT id, name FROM my.table"
-                                    }],
-                                    "targets": {
-                                        "nodes": [{
-                                            "active": false,
-                                            "source": "a-source",
-                                            "name": "a-node-target",
-                                            "write_mode": "merge",
-                                            "labels": ["Label1", "Label2"],
-                                            "properties": [
-                                                {"source_field": "field_1", "target_property": "property1"},
-                                                {"source_field": "field_2", "target_property": "property2"}
-                                            ],
-                                            "schema": {
-                                                "key_constraints": [{
-                                                   "name": "a-key-constraint",
-                                                   "label": "Label1",
-                                                   "properties": ["property1"]
-                                                }]
-                                            }
-                                        },{
-                                            "source": "a-source",
-                                            "name": "another-node-target",
-                                            "write_mode": "merge",
-                                            "labels": ["Label3"],
-                                            "properties": [
-                                                {"source_field": "field_1", "target_property": "property1"},
-                                                {"source_field": "field_2", "target_property": "property2"}
-                                            ],
-                                            "schema": {
-                                                "key_constraints": [{
-                                                   "name": "another-key-constraint",
-                                                   "label": "Label3",
-                                                   "properties": ["property1"]
-                                                }]
-                                            }
-                                        }],
-                                        "relationships": [{
-                                            "active": false,
-                                            "name": "a-target",
-                                            "source": "a-source",
-                                            "type": "TYPE",
-                                            "start_node_reference": "a-node-target",
-                                            "end_node_reference": "another-node-target"
+                        {
+                            "version": "1",
+                            "sources": [{
+                                "type": "bigquery",
+                                "name": "a-source",
+                                "query": "SELECT id, name FROM my.table"
+                            }],
+                            "targets": {
+                                "nodes": [{
+                                    "active": false,
+                                    "source": "a-source",
+                                    "name": "a-node-target",
+                                    "write_mode": "merge",
+                                    "labels": ["Label1", "Label2"],
+                                    "properties": [
+                                        {"source_field": "field_1", "target_property": "property1"},
+                                        {"source_field": "field_2", "target_property": "property2"}
+                                    ],
+                                    "schema": {
+                                        "key_constraints": [{
+                                           "name": "a-key-constraint",
+                                           "label": "Label1",
+                                           "properties": ["property1"]
                                         }]
                                     }
-                                }
-                                """
+                                },{
+                                    "source": "a-source",
+                                    "name": "another-node-target",
+                                    "write_mode": "merge",
+                                    "labels": ["Label3"],
+                                    "properties": [
+                                        {"source_field": "field_1", "target_property": "property1"},
+                                        {"source_field": "field_2", "target_property": "property2"}
+                                    ],
+                                    "schema": {
+                                        "key_constraints": [{
+                                           "name": "another-key-constraint",
+                                           "label": "Label3",
+                                           "properties": ["property1"]
+                                        }]
+                                    }
+                                }],
+                                "relationships": [{
+                                    "active": false,
+                                    "name": "a-target",
+                                    "source": "a-source",
+                                    "type": "TYPE",
+                                    "start_node_reference": "a-node-target",
+                                    "end_node_reference": "another-node-target"
+                                }]
+                            }
+                        }
+                        """
                                 .stripIndent())));
     }
 
@@ -735,59 +735,59 @@ public class ImportSpecificationDeserializerExtraValidationTest {
         assertThatNoException()
                 .isThrownBy(() -> deserialize(new StringReader(
                         """
-                                {
-                                    "version": "1",
-                                    "sources": [{
-                                        "type": "bigquery",
-                                        "name": "a-source",
-                                        "query": "SELECT id, name FROM my.table"
-                                    }],
-                                    "targets": {
-                                        "nodes": [{
-                                            "source": "a-source",
-                                            "name": "a-node-target",
-                                            "write_mode": "merge",
-                                            "labels": ["Label1", "Label2"],
-                                            "properties": [
-                                                {"source_field": "field_1", "target_property": "property1"},
-                                                {"source_field": "field_2", "target_property": "property2"}
-                                            ],
-                                            "schema": {
-                                                "key_constraints": [{
-                                                   "name": "a-key-constraint1",
-                                                   "label": "Label1",
-                                                   "properties": ["property1"]
-                                                }]
-                                            }
-                                        },{
-                                            "active": false,
-                                            "source": "a-source",
-                                            "name": "another-node-target",
-                                            "write_mode": "merge",
-                                            "labels": ["Label3"],
-                                            "properties": [
-                                                {"source_field": "field_1", "target_property": "property1"},
-                                                {"source_field": "field_2", "target_property": "property2"}
-                                            ],
-                                            "schema": {
-                                                "key_constraints": [{
-                                                   "name": "a-key-constraint2",
-                                                   "label": "Label3",
-                                                   "properties": ["property1"]
-                                                }]
-                                            }
-                                        }],
-                                        "relationships": [{
-                                            "active": false,
-                                            "name": "a-target",
-                                            "source": "a-source",
-                                            "type": "TYPE",
-                                            "start_node_reference": "a-node-target",
-                                            "end_node_reference": "another-node-target"
+                        {
+                            "version": "1",
+                            "sources": [{
+                                "type": "bigquery",
+                                "name": "a-source",
+                                "query": "SELECT id, name FROM my.table"
+                            }],
+                            "targets": {
+                                "nodes": [{
+                                    "source": "a-source",
+                                    "name": "a-node-target",
+                                    "write_mode": "merge",
+                                    "labels": ["Label1", "Label2"],
+                                    "properties": [
+                                        {"source_field": "field_1", "target_property": "property1"},
+                                        {"source_field": "field_2", "target_property": "property2"}
+                                    ],
+                                    "schema": {
+                                        "key_constraints": [{
+                                           "name": "a-key-constraint1",
+                                           "label": "Label1",
+                                           "properties": ["property1"]
                                         }]
                                     }
-                                }
-                                """
+                                },{
+                                    "active": false,
+                                    "source": "a-source",
+                                    "name": "another-node-target",
+                                    "write_mode": "merge",
+                                    "labels": ["Label3"],
+                                    "properties": [
+                                        {"source_field": "field_1", "target_property": "property1"},
+                                        {"source_field": "field_2", "target_property": "property2"}
+                                    ],
+                                    "schema": {
+                                        "key_constraints": [{
+                                           "name": "a-key-constraint2",
+                                           "label": "Label3",
+                                           "properties": ["property1"]
+                                        }]
+                                    }
+                                }],
+                                "relationships": [{
+                                    "active": false,
+                                    "name": "a-target",
+                                    "source": "a-source",
+                                    "type": "TYPE",
+                                    "start_node_reference": "a-node-target",
+                                    "end_node_reference": "another-node-target"
+                                }]
+                            }
+                        }
+                        """
                                 .stripIndent())));
     }
 
@@ -2983,50 +2983,50 @@ public class ImportSpecificationDeserializerExtraValidationTest {
     public void fails_if_relationship_start_node_reference_refers_to_non_key_and_non_unique_property() {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
-                {
-                    "version": "1",
-                    "sources": [{
-                        "name": "a-source",
-                        "type": "jdbc",
-                        "data_source": "a-data-source",
-                        "sql": "SELECT id, name FROM my.table"
-                    }],
-                    "targets": {
-                        "nodes": [{
-                            "name": "a-node-target",
-                            "source": "a-source",
-                            "labels": ["Label"],
-                            "properties": [
-                                {"source_field": "id", "target_property": "id"},
-                                {"source_field": "field", "target_property": "prop"}
-                            ],
-                            "schema": {
-                                "key_constraints": [{
-                                    "name": "a-key-constraint",
-                                    "label": "Label",
-                                    "properties": ["id"]
+                        {
+                            "version": "1",
+                            "sources": [{
+                                "name": "a-source",
+                                "type": "jdbc",
+                                "data_source": "a-data-source",
+                                "sql": "SELECT id, name FROM my.table"
+                            }],
+                            "targets": {
+                                "nodes": [{
+                                    "name": "a-node-target",
+                                    "source": "a-source",
+                                    "labels": ["Label"],
+                                    "properties": [
+                                        {"source_field": "id", "target_property": "id"},
+                                        {"source_field": "field", "target_property": "prop"}
+                                    ],
+                                    "schema": {
+                                        "key_constraints": [{
+                                            "name": "a-key-constraint",
+                                            "label": "Label",
+                                            "properties": ["id"]
+                                        }]
+                                    }
+                                }],
+                                "relationships": [{
+                                    "name": "a-relationship-target",
+                                    "source": "a-source",
+                                    "type": "TYPE",
+                                    "write_mode": "create",
+                                    "start_node_reference": {
+                                        "name": "a-node-target",
+                                        "key_mappings": [
+                                            {
+                                                "source_field": "source_id",
+                                                "node_property": "prop"
+                                            }
+                                        ]
+                                    },
+                                    "end_node_reference": "a-node-target"
                                 }]
                             }
-                        }],
-                        "relationships": [{
-                            "name": "a-relationship-target",
-                            "source": "a-source",
-                            "type": "TYPE",
-                            "write_mode": "create",
-                            "start_node_reference": {
-                                "name": "a-node-target",
-                                "key_mappings": [
-                                    {
-                                        "source_field": "source_id",
-                                        "node_property": "prop"
-                                    }
-                                ]
-                            },
-                            "end_node_reference": "a-node-target"
-                        }]
-                    }
-                }
-                """
+                        }
+                        """
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
@@ -3039,50 +3039,50 @@ public class ImportSpecificationDeserializerExtraValidationTest {
     public void fails_if_relationship_end_node_reference_refers_to_non_key_and_non_unique_property() {
         assertThatThrownBy(() -> deserialize(new StringReader(
                         """
-                {
-                    "version": "1",
-                    "sources": [{
-                        "name": "a-source",
-                        "type": "jdbc",
-                        "data_source": "a-data-source",
-                        "sql": "SELECT id, name FROM my.table"
-                    }],
-                    "targets": {
-                        "nodes": [{
-                            "name": "a-node-target",
-                            "source": "a-source",
-                            "labels": ["Label"],
-                            "properties": [
-                                {"source_field": "id", "target_property": "id"},
-                                {"source_field": "field", "target_property": "prop"}
-                            ],
-                            "schema": {
-                                "key_constraints": [{
-                                    "name": "a-key-constraint",
-                                    "label": "Label",
-                                    "properties": ["id"]
+                        {
+                            "version": "1",
+                            "sources": [{
+                                "name": "a-source",
+                                "type": "jdbc",
+                                "data_source": "a-data-source",
+                                "sql": "SELECT id, name FROM my.table"
+                            }],
+                            "targets": {
+                                "nodes": [{
+                                    "name": "a-node-target",
+                                    "source": "a-source",
+                                    "labels": ["Label"],
+                                    "properties": [
+                                        {"source_field": "id", "target_property": "id"},
+                                        {"source_field": "field", "target_property": "prop"}
+                                    ],
+                                    "schema": {
+                                        "key_constraints": [{
+                                            "name": "a-key-constraint",
+                                            "label": "Label",
+                                            "properties": ["id"]
+                                        }]
+                                    }
+                                }],
+                                "relationships": [{
+                                    "name": "a-relationship-target",
+                                    "source": "a-source",
+                                    "type": "TYPE",
+                                    "write_mode": "create",
+                                    "start_node_reference": "a-node-target",
+                                    "end_node_reference": {
+                                        "name": "a-node-target",
+                                        "key_mappings": [
+                                            {
+                                                "source_field": "source_id",
+                                                "node_property": "prop"
+                                            }
+                                        ]
+                                    }
                                 }]
                             }
-                        }],
-                        "relationships": [{
-                            "name": "a-relationship-target",
-                            "source": "a-source",
-                            "type": "TYPE",
-                            "write_mode": "create",
-                            "start_node_reference": "a-node-target",
-                            "end_node_reference": {
-                                "name": "a-node-target",
-                                "key_mappings": [
-                                    {
-                                        "source_field": "source_id",
-                                        "node_property": "prop"
-                                    }
-                                ]
-                            }
-                        }]
-                    }
-                }
-                """
+                        }
+                        """
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
@@ -3331,7 +3331,8 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
                         "0 warning(s)",
-                        "[$.targets.relationships[0].start_node_reference] Node a-node-target must define a key or unique constraint for property id, none found");
+                        "[$.targets.relationships[0].start_node_reference] Node a-node-target must define a key or unique constraint for property id, none found",
+                        "[$.targets.relationships[0].end_node_reference] Node a-node-target must define a key or unique constraint for property id, none found");
     }
 
     @Test
@@ -3385,73 +3386,213 @@ public class ImportSpecificationDeserializerExtraValidationTest {
 
     @Test
     void fails_if_different_indexes_and_constraints_use_same_name() {
-        assertThatThrownBy(() -> deserialize(new StringReader(
+        assertThatCode(() -> deserialize(new StringReader(
                         """
-                {
-                    "version": "1",
-                    "sources": [{
-                        "type": "bigquery",
-                        "name": "a-source",
-                        "query": "SELECT id, name FROM my.table"
-                    }],
-                    "targets": {
-                        "nodes": [{
-                            "source": "a-source",
-                            "name": "a-node-target",
-                            "write_mode": "merge",
-                            "labels": ["Label1", "Label2"],
-                            "properties": [
-                                {"source_field": "field_1", "target_property": "property1"},
-                                {"source_field": "field_2", "target_property": "property2"}
-                            ],
-                            "schema": {
-                                "key_constraints": [{
-                                    "name": "a-name",
-                                    "label": "Label1",
-                                    "properties": ["property1"]
+                        {
+                            "version": "1",
+                            "sources": [{
+                                "type": "bigquery",
+                                "name": "a-source",
+                                "query": "SELECT id, name FROM my.table"
+                            }],
+                            "targets": {
+                                "nodes": [{
+                                    "source": "a-source",
+                                    "name": "a-node-target",
+                                    "write_mode": "merge",
+                                    "labels": ["Label1", "Label2"],
+                                    "properties": [
+                                        {"source_field": "field_1", "target_property": "property1"},
+                                        {"source_field": "field_2", "target_property": "property2"}
+                                    ],
+                                    "schema": {
+                                        "key_constraints": [{
+                                            "name": "a-name",
+                                            "label": "Label1",
+                                            "properties": ["property1"]
+                                        }]
+                                    }
+                                },{
+                                    "source": "a-source",
+                                    "name": "another-node-target",
+                                    "write_mode": "merge",
+                                    "labels": ["Label3"],
+                                    "properties": [
+                                        {"source_field": "field_1", "target_property": "property1"},
+                                        {"source_field": "field_2", "target_property": "property2"}
+                                    ],
+                                    "schema": {
+                                        "key_constraints": [{
+                                            "name": "a-name",
+                                            "label": "Label3",
+                                            "properties": ["property1"]
+                                        }]
+                                    }
+                                }],
+                                "relationships": [{
+                                    "name": "a-target",
+                                    "source": "a-source",
+                                    "type": "TYPE",
+                                    "start_node_reference": "a-node-target",
+                                    "end_node_reference": "another-node-target",
+                                    "properties": [
+                                        {"source_field": "field_1", "target_property": "property1"}
+                                    ],
+                                    "schema": {
+                                        "range_indexes": [{
+                                            "name": "a-name",
+                                            "properties": ["property1"]
+                                        }]
+                                    }
                                 }]
                             }
-                        },{
-                            "source": "a-source",
-                            "name": "another-node-target",
-                            "write_mode": "merge",
-                            "labels": ["Label3"],
-                            "properties": [
-                                {"source_field": "field_1", "target_property": "property1"},
-                                {"source_field": "field_2", "target_property": "property2"}
-                            ],
-                            "schema": {
-                                "key_constraints": [{
-                                    "name": "a-name",
-                                    "label": "Label3",
-                                    "properties": ["property1"]
-                                }]
-                            }
-                        }],
-                        "relationships": [{
-                            "name": "a-target",
-                            "source": "a-source",
-                            "type": "TYPE",
-                            "start_node_reference": "a-node-target",
-                            "end_node_reference": "another-node-target",
-                            "properties": [
-                                {"source_field": "field_1", "target_property": "property1"}
-                            ],
-                            "schema": {
-                                "range_indexes": [{
-                                    "name": "a-name",
-                                    "properties": ["property1"]
-                                }]
-                            }
-                        }]
-                    }
-                }
-                """
+                        }
+                        """
                                 .stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
                         "1 error(s)",
                         "0 warning(s)",
                         "Constraint or index name \"a-name\" must be defined at most once but 3 occurrences were found.");
+    }
+
+    @Test
+    void pass_when_shared_name_indexes_and_constraints_are_equivalent() {
+        assertThatCode(() -> deserialize(new StringReader(
+                        """
+                        {
+                            "version": "1",
+                            "sources": [{
+                                "type": "bigquery",
+                                "name": "a-source",
+                                "query": "SELECT id, name FROM my.table"
+                            }],
+                            "targets": {
+                                "nodes": [{
+                                    "source": "a-source",
+                                    "name": "a-node-target",
+                                    "write_mode": "merge",
+                                    "labels": ["Label1", "Label2"],
+                                    "properties": [
+                                        {"source_field": "field_1", "target_property": "property1"},
+                                        {"source_field": "field_2", "target_property": "property2"}
+                                    ],
+                                    "schema": {
+                                        "key_constraints": [{
+                                            "name": "a-name",
+                                            "label": "Label1",
+                                            "properties": ["property1"]
+                                        }]
+                                    }
+                                },{
+                                    "source": "a-source",
+                                    "name": "another-node-target",
+                                    "write_mode": "merge",
+                                    "labels": ["Label1"],
+                                    "properties": [
+                                        {"source_field": "field_1", "target_property": "property1"},
+                                        {"source_field": "field_2", "target_property": "property2"}
+                                    ],
+                                    "schema": {
+                                        "key_constraints": [{
+                                            "name": "a-name",
+                                            "label": "Label1",
+                                            "properties": ["property1"]
+                                        }]
+                                    }
+                                }],
+                                "relationships": [{
+                                    "name": "a-target",
+                                    "source": "a-source",
+                                    "type": "TYPE",
+                                    "start_node_reference": "a-node-target",
+                                    "end_node_reference": "another-node-target",
+                                    "properties": [
+                                        {"source_field": "field_1", "target_property": "property1"}
+                                    ],
+                                    "schema": {
+                                        "range_indexes": [{
+                                            "name": "a-relationship-range-index",
+                                            "properties": ["property1"]
+                                        }]
+                                    }
+                                }]
+                            }
+                        }
+                        """
+                                .stripIndent())))
+                .doesNotThrowAnyException();
+    }
+
+    @Test
+    void fail_when_shared_name_indexes_and_constraints_are_almost_equivalent() {
+        assertThatCode(() -> deserialize(new StringReader(
+                        """
+                        {
+                            "version": "1",
+                            "sources": [{
+                                "type": "bigquery",
+                                "name": "a-source",
+                                "query": "SELECT id, name FROM my.table"
+                            }],
+                            "targets": {
+                                "nodes": [{
+                                    "source": "a-source",
+                                    "name": "a-node-target",
+                                    "write_mode": "merge",
+                                    "labels": ["Label1", "Label2"],
+                                    "properties": [
+                                        {"source_field": "field_1", "target_property": "property1"},
+                                        {"source_field": "field_2", "target_property": "property2"}
+                                    ],
+                                    "schema": {
+                                        "unique_constraints": [{
+                                            "name": "a-name",
+                                            "label": "Label1",
+                                            "properties": ["property1"]
+                                        }]
+                                    }
+                                },{
+                                    "source": "a-source",
+                                    "name": "another-node-target",
+                                    "write_mode": "merge",
+                                    "labels": ["Label1"],
+                                    "properties": [
+                                        {"source_field": "field_1", "target_property": "property1"},
+                                        {"source_field": "field_2", "target_property": "property2"}
+                                    ],
+                                    "schema": {
+                                        "key_constraints": [{
+                                            "name": "a-name",
+                                            "label": "Label1",
+                                            "properties": ["property1"]
+                                        }]
+                                    }
+                                }],
+                                "relationships": [{
+                                    "name": "a-target",
+                                    "source": "a-source",
+                                    "type": "TYPE",
+                                    "start_node_reference": "a-node-target",
+                                    "end_node_reference": "another-node-target",
+                                    "properties": [
+                                        {"source_field": "field_1", "target_property": "property1"}
+                                    ],
+                                    "schema": {
+                                        "range_indexes": [{
+                                            "name": "a-relationship-range-index",
+                                            "properties": ["property1"]
+                                        }]
+                                    }
+                                }]
+                            }
+                        }
+                        """
+                                .stripIndent())))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "Constraint or index name \"a-name\" must be defined at most once but 2 occurrences were found.");
     }
 }
