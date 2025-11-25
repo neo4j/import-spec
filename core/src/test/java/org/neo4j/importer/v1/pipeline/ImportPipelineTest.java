@@ -168,6 +168,69 @@ class ImportPipelineTest {
                 .containsExactly(new PropertyMapping("movieId", "movie_id", PropertyType.STRING));
     }
 
+    @Test
+    void exposes_correct_execution_plan_for_relationship_with_explicit_key_mappings() {
+        var startRef = new NodeReference("actor-nodes", List.of(new KeyMapping("actorId", "actor_id")));
+        var endRef = new NodeReference("movie-nodes", List.of(new KeyMapping("movieId", "movie_id")));
+        var spec = new ImportSpecification(
+                "a-version",
+                new HashMap<>(),
+                List.of(new DummySource("movies"), new DummySource("actors"), new DummySource("actor-in-movies")),
+                new Targets(
+                        List.of(
+                                new NodeTarget(
+                                        true,
+                                        "movie-nodes",
+                                        "movies",
+                                        List.of(),
+                                        WriteMode.MERGE,
+                                        (ObjectNode) null,
+                                        List.of("Movie"),
+                                        List.of(new PropertyMapping("id", "movie_id", PropertyType.STRING)),
+                                        schemaFor(new NodeKeyConstraint(
+                                                "movie_id-key", "Movie", List.of("movie_id"), Map.of()))),
+                                new NodeTarget(
+                                        true,
+                                        "actor-nodes",
+                                        "actors",
+                                        List.of(),
+                                        WriteMode.MERGE,
+                                        (ObjectNode) null,
+                                        List.of("Actor"),
+                                        List.of(new PropertyMapping("id", "actor_id", PropertyType.INTEGER)),
+                                        schemaFor(new NodeKeyConstraint(
+                                                "actor_id-key", "Actor", List.of("actor_id"), Map.of())))),
+                        List.of(new RelationshipTarget(
+                                true,
+                                "played-relationships",
+                                "actor-in-movies",
+                                List.of(),
+                                "PLAYED_IN",
+                                WriteMode.MERGE,
+                                NodeMatchMode.MATCH,
+                                (ObjectNode) null,
+                                startRef,
+                                endRef,
+                                List.of(),
+                                null)),
+                        List.of()),
+                List.of());
+
+        var plan = ImportPipeline.of(spec).executionPlan();
+
+        var groups = plan.getGroups();
+        assertThat(groups).hasSize(1);
+        var group = groups.getFirst();
+        var stages = group.getStages();
+        assertThat(stages).hasSize(3);
+        assertThat(stages.get(0).getSteps().stream().map(ImportStep::name))
+                .containsExactlyInAnyOrder("movies", "actors", "actor-in-movies");
+        assertThat(stages.get(1).getSteps().stream().map(ImportStep::name))
+                .containsExactlyInAnyOrder("movie-nodes", "actor-nodes");
+        assertThat(stages.get(2).getSteps().stream().map(ImportStep::name))
+                .containsExactlyInAnyOrder("played-relationships");
+    }
+
     private static @NotNull NodeSchema schemaFor(NodeKeyConstraint keyConstraint) {
         return new NodeSchema(null, List.of(keyConstraint), null, null, null, null, null, null, null);
     }
