@@ -30,8 +30,7 @@ public class ImportSpecificationDeserializerNeo4jVersionValidationTest {
     @Test
     public void fails_if_version_below_5_9_with_node_type_constraint() {
         assertThatThrownBy(() -> deserialize(
-                        new StringReader(
-                                """
+                        new StringReader("""
             {
                 "version": "1",
                 "sources": [
@@ -59,8 +58,7 @@ public class ImportSpecificationDeserializerNeo4jVersionValidationTest {
                     ]
                 }
             }
-            """
-                                        .stripIndent()),
+            """.stripIndent()),
                         Neo4jDistributions.enterprise().of("5.0")))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
@@ -72,8 +70,7 @@ public class ImportSpecificationDeserializerNeo4jVersionValidationTest {
     @Test
     public void fails_if_edition_community_with_node_key_constraint() {
         assertThatThrownBy(() -> deserialize(
-                        new StringReader(
-                                """
+                        new StringReader("""
             {
                 "version": "1",
                 "sources": [
@@ -101,8 +98,7 @@ public class ImportSpecificationDeserializerNeo4jVersionValidationTest {
                     ]
                 }
             }
-            """
-                                        .stripIndent()),
+            """.stripIndent()),
                         Neo4jDistributions.community().of("5.0")))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
@@ -114,8 +110,7 @@ public class ImportSpecificationDeserializerNeo4jVersionValidationTest {
     @Test
     public void fails_if_version_below_5_13_with_node_vector_index() {
         assertThatThrownBy(() -> deserialize(
-                        new StringReader(
-                                """
+                        new StringReader("""
             {
                 "version": "1",
                 "sources": [
@@ -143,8 +138,7 @@ public class ImportSpecificationDeserializerNeo4jVersionValidationTest {
                     ]
                 }
             }
-            """
-                                        .stripIndent()),
+            """.stripIndent()),
                         Neo4jDistributions.enterprise().of("5.12")))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
@@ -156,8 +150,7 @@ public class ImportSpecificationDeserializerNeo4jVersionValidationTest {
     @Test
     public void fails_if_version_below_5_9_with_relationship_type_constraint() {
         assertThatThrownBy(() -> deserialize(
-                        new StringReader(
-                                """
+                        new StringReader("""
             {
                 "version": "1",
                 "sources": [
@@ -220,8 +213,7 @@ public class ImportSpecificationDeserializerNeo4jVersionValidationTest {
                 }
             }
 
-            """
-                                        .stripIndent()),
+            """.stripIndent()),
                         Neo4jDistributions.enterprise().of("5.8")))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
@@ -233,8 +225,7 @@ public class ImportSpecificationDeserializerNeo4jVersionValidationTest {
     @Test
     public void fails_if_below_the_version_with_multiple_nodes_and_relationships() {
         assertThatThrownBy(() -> deserialize(
-                        new StringReader(
-                                """
+                        new StringReader("""
             {
                 "version": "1",
                 "sources": [
@@ -317,8 +308,7 @@ public class ImportSpecificationDeserializerNeo4jVersionValidationTest {
                     ]
                 }
             }
-            """
-                                        .stripIndent()),
+            """.stripIndent()),
                         Neo4jDistributions.community().of("5.0")))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
@@ -333,8 +323,7 @@ public class ImportSpecificationDeserializerNeo4jVersionValidationTest {
     @Test
     public void does_not_fail_if_above_the_version() {
         assertDoesNotThrow(() -> deserialize(
-                new StringReader(
-                        """
+                new StringReader("""
                     {
                         "version": "1",
                         "sources": [
@@ -417,8 +406,7 @@ public class ImportSpecificationDeserializerNeo4jVersionValidationTest {
                             ]
                         }
                     }
-                    """
-                                .stripIndent()),
+                    """.stripIndent()),
                 Neo4jDistributions.enterprise().of("5.20")));
     }
 }

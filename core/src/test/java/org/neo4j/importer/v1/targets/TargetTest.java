@@ -34,15 +34,13 @@ class TargetTest {
 
     @Test
     void deserializes_minimal_custom_query_target() throws Exception {
-        var json =
-                """
+        var json = """
         {
             "name": "my-minimal-custom-query-target",
             "source": "a-source",
             "query": "UNWIND $rows AS row CREATE (n:ANode) SET n = row"
         }
-        """
-                        .stripIndent();
+        """.stripIndent();
 
         var target = mapper.readValue(json, CustomQueryTarget.class);
 
@@ -55,8 +53,7 @@ class TargetTest {
 
     @Test
     void deserializes_custom_query_target() throws Exception {
-        var json =
-                """
+        var json = """
         {
             "name": "my-custom-query-target",
             "active": false,
@@ -64,8 +61,7 @@ class TargetTest {
             "depends_on": ["another-action-or-target"],
             "query": "UNWIND $rows AS row CREATE (n:ANode) SET n = row"
         }
-        """
-                        .stripIndent();
+        """.stripIndent();
 
         var target = mapper.readValue(json, CustomQueryTarget.class);
 
@@ -79,8 +75,7 @@ class TargetTest {
 
     @Test
     void deserializes_minimal_node_target() throws Exception {
-        var json =
-                """
+        var json = """
         {
             "name": "my-minimal-node-target",
             "source": "a-source",
@@ -90,8 +85,7 @@ class TargetTest {
                 {"source_field": "field_2", "target_property": "property2"}
             ]
         }
-        """
-                        .stripIndent();
+        """.stripIndent();
 
         var target = mapper.readValue(json, NodeTarget.class);
 
@@ -108,8 +102,7 @@ class TargetTest {
 
     @Test
     void deserializes_node_target() throws Exception {
-        var json =
-                """
+        var json = """
         {
             "name": "my-node-target",
             "active": false,
@@ -171,8 +164,7 @@ class TargetTest {
                 ]
             }
         }
-        """
-                        .stripIndent();
+        """.stripIndent();
 
         var target = mapper.readValue(json, NodeTarget.class);
 
@@ -258,8 +250,7 @@ class TargetTest {
 
     @Test
     void deserializes_minimal_relationship_target() throws Exception {
-        var json =
-                """
+        var json = """
         {
             "name": "my-minimal-relationship-target",
             "source": "a-source",
@@ -275,8 +266,7 @@ class TargetTest {
                 ]
             }
         }
-        """
-                        .stripIndent();
+        """.stripIndent();
 
         var target = mapper.readValue(json, RelationshipTarget.class);
 
@@ -293,8 +283,7 @@ class TargetTest {
 
     @Test
     void deserializes_relationship_target() throws Exception {
-        var json =
-                """
+        var json = """
                 {
             "name": "my-relationship-target",
             "active": false,
@@ -367,8 +356,7 @@ class TargetTest {
                 ]
             }
         }
-        """
-                        .stripIndent();
+        """.stripIndent();
 
         var target = mapper.readValue(json, RelationshipTarget.class);
 

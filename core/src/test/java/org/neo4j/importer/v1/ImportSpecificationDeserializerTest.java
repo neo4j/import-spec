@@ -39,8 +39,7 @@ class ImportSpecificationDeserializerTest {
 
     @Test
     void deserializes_minimal_job_spec() throws Exception {
-        var json =
-                """
+        var json = """
                             {
                                 "version": "1",
                                 "sources": [{
@@ -56,8 +55,7 @@ class ImportSpecificationDeserializerTest {
                                     }]
                                 }
                             }
-                        """
-                        .stripIndent();
+                        """.stripIndent();
 
         var spec = deserialize(new StringReader(json));
 
@@ -79,8 +77,7 @@ class ImportSpecificationDeserializerTest {
 
     @Test
     void deserializes_job_spec() throws Exception {
-        var json =
-                """
+        var json = """
                             {
                                 "version": "1",
                                 "config": {
@@ -107,8 +104,7 @@ class ImportSpecificationDeserializerTest {
                                     "stage": "start"
                                 }]
                             }
-                        """
-                        .stripIndent();
+                        """.stripIndent();
 
         var spec = deserialize(new StringReader(json));
 
@@ -150,8 +146,7 @@ class ImportSpecificationDeserializerTest {
 
     @Test
     void fails_if_version_is_missing() {
-        assertThatThrownBy(() -> deserialize(new StringReader(
-                        """
+        assertThatThrownBy(() -> deserialize(new StringReader("""
                         {
                             "sources": [{
                                 "name": "a-source",
@@ -166,16 +161,14 @@ class ImportSpecificationDeserializerTest {
                                 }]
                             }
                         }
-                        """
-                                .stripIndent())))
+                        """.stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll("1 error(s)", "0 warning(s)", "$: required property 'version' not found");
     }
 
     @Test
     void fails_if_version_is_invalid() {
-        assertThatThrownBy(() -> deserialize(new StringReader(
-                        """
+        assertThatThrownBy(() -> deserialize(new StringReader("""
                         {
                             "version": [],
                             "sources": [{
@@ -191,16 +184,14 @@ class ImportSpecificationDeserializerTest {
                                 }]
                             }
                         }
-                        """
-                                .stripIndent())))
+                        """.stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll("1 error(s)", "0 warning(s)", "$.version: must be the constant value '1'");
     }
 
     @Test
     void fails_if_sources_are_missing() {
-        assertThatThrownBy(() -> deserialize(new StringReader(
-                        """
+        assertThatThrownBy(() -> deserialize(new StringReader("""
                         {
                             "version": "1",
                             "targets": {
@@ -211,16 +202,14 @@ class ImportSpecificationDeserializerTest {
                                 }]
                             }
                         }
-                        """
-                                .stripIndent())))
+                        """.stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll("1 error(s)", "0 warning(s)", "$: required property 'sources' not found");
     }
 
     @Test
     void fails_if_sources_are_wrongly_typed() {
-        assertThatThrownBy(() -> deserialize(new StringReader(
-                        """
+        assertThatThrownBy(() -> deserialize(new StringReader("""
                         {
                             "version": "1",
                             "sources": 42,
@@ -232,16 +221,14 @@ class ImportSpecificationDeserializerTest {
                                 }]
                             }
                         }
-                        """
-                                .stripIndent())))
+                        """.stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll("1 error(s)", "0 warning(s)", "$.sources: integer found, array expected");
     }
 
     @Test
     void fails_if_source_is_wrongly_typed() {
-        assertThatThrownBy(() -> deserialize(new StringReader(
-                        """
+        assertThatThrownBy(() -> deserialize(new StringReader("""
                         {
                             "version": "1",
                             "sources": [42],
@@ -253,16 +240,14 @@ class ImportSpecificationDeserializerTest {
                                 }]
                             }
                         }
-                        """
-                                .stripIndent())))
+                        """.stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll("1 error(s)", "0 warning(s)", "$.sources[0]: integer found, object expected");
     }
 
     @Test
     void fails_if_sources_are_empty() {
-        assertThatThrownBy(() -> deserialize(new StringReader(
-                        """
+        assertThatThrownBy(() -> deserialize(new StringReader("""
                         {
                             "version": "1",
                             "sources": [],
@@ -274,8 +259,7 @@ class ImportSpecificationDeserializerTest {
                                 }]
                             }
                         }
-                        """
-                                .stripIndent())))
+                        """.stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
                         "1 error(s)", "0 warning(s)", "$.sources: must have at least 1 items but found 0");
@@ -283,8 +267,7 @@ class ImportSpecificationDeserializerTest {
 
     @Test
     void fails_if_targets_are_missing() {
-        assertThatThrownBy(() -> deserialize(new StringReader(
-                        """
+        assertThatThrownBy(() -> deserialize(new StringReader("""
                         {
                             "version": "1",
                             "sources": [{
@@ -293,16 +276,14 @@ class ImportSpecificationDeserializerTest {
                                 "query": "SELECT id, name FROM my.table"
                             }]
                         }
-                        """
-                                .stripIndent())))
+                        """.stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll("1 error(s)", "0 warning(s)", "$: required property 'targets' not found");
     }
 
     @Test
     void fails_if_targets_are_wrongly_typed() {
-        assertThatThrownBy(() -> deserialize(new StringReader(
-                        """
+        assertThatThrownBy(() -> deserialize(new StringReader("""
                         {
                             "version": "1",
                             "sources": [{
@@ -312,16 +293,14 @@ class ImportSpecificationDeserializerTest {
                             }],
                             "targets": 42
                         }
-                        """
-                                .stripIndent())))
+                        """.stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll("1 error(s)", "0 warning(s)", "$.targets: integer found, object expected");
     }
 
     @Test
     void fails_if_targets_are_empty() {
-        assertThatThrownBy(() -> deserialize(new StringReader(
-                        """
+        assertThatThrownBy(() -> deserialize(new StringReader("""
                         {
                             "version": "1",
                             "sources": [{
@@ -331,8 +310,7 @@ class ImportSpecificationDeserializerTest {
                             }],
                             "targets": {}
                         }
-                        """
-                                .stripIndent())))
+                        """.stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
                         "3 error(s)",
@@ -344,8 +322,7 @@ class ImportSpecificationDeserializerTest {
 
     @Test
     void fails_if_node_targets_are_wrongly_typed() {
-        assertThatThrownBy(() -> deserialize(new StringReader(
-                        """
+        assertThatThrownBy(() -> deserialize(new StringReader("""
                         {
                             "version": "1",
                             "sources": [{
@@ -357,8 +334,7 @@ class ImportSpecificationDeserializerTest {
                                 "nodes": 42
                             }
                         }
-                        """
-                                .stripIndent())))
+                        """.stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
                         "1 error(s)", "0 warning(s)", "$.targets.nodes: integer found, array expected");
@@ -366,8 +342,7 @@ class ImportSpecificationDeserializerTest {
 
     @Test
     void fails_if_relationship_targets_are_wrongly_typed() {
-        assertThatThrownBy(() -> deserialize(new StringReader(
-                        """
+        assertThatThrownBy(() -> deserialize(new StringReader("""
                         {
                             "version": "1",
                             "sources": [{
@@ -379,8 +354,7 @@ class ImportSpecificationDeserializerTest {
                                 "relationships": 42
                             }
                         }
-                        """
-                                .stripIndent())))
+                        """.stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
                         "1 error(s)", "0 warning(s)", "$.targets.relationships: integer found, array expected");
@@ -388,8 +362,7 @@ class ImportSpecificationDeserializerTest {
 
     @Test
     void fails_if_custom_query_targets_are_wrongly_typed() {
-        assertThatThrownBy(() -> deserialize(new StringReader(
-                        """
+        assertThatThrownBy(() -> deserialize(new StringReader("""
                         {
                             "version": "1",
                             "sources": [{
@@ -401,8 +374,7 @@ class ImportSpecificationDeserializerTest {
                                 "queries": 42
                             }
                         }
-                        """
-                                .stripIndent())))
+                        """.stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
                         "1 error(s)", "0 warning(s)", "$.targets.queries: integer found, array expected");
@@ -410,8 +382,7 @@ class ImportSpecificationDeserializerTest {
 
     @Test
     void fails_if_actions_are_wrongly_typed() {
-        assertThatThrownBy(() -> deserialize(new StringReader(
-                        """
+        assertThatThrownBy(() -> deserialize(new StringReader("""
                         {
                             "version": "1",
                             "sources": [{
@@ -428,16 +399,14 @@ class ImportSpecificationDeserializerTest {
                             },
                             "actions": 42
                         }
-                        """
-                                .stripIndent())))
+                        """.stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll("1 error(s)", "0 warning(s)", "$.actions: integer found, array expected");
     }
 
     @Test
     void fails_if_action_is_wrongly_typed() {
-        assertThatThrownBy(() -> deserialize(new StringReader(
-                        """
+        assertThatThrownBy(() -> deserialize(new StringReader("""
                         {
                             "version": "1",
                             "sources": [{
@@ -454,16 +423,14 @@ class ImportSpecificationDeserializerTest {
                             },
                             "actions": [42]
                         }
-                        """
-                                .stripIndent())))
+                        """.stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll("1 error(s)", "0 warning(s)", "$.actions[0]: integer found, object expected");
     }
 
     @Test
     void fails_if_name_is_missing_in_source() {
-        assertThatThrownBy(() -> deserialize(new StringReader(
-                        """
+        assertThatThrownBy(() -> deserialize(new StringReader("""
                         {
                             "version": "1",
                             "sources": [{
@@ -478,8 +445,7 @@ class ImportSpecificationDeserializerTest {
                                 }]
                             }
                         }
-                        """
-                                .stripIndent())))
+                        """.stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
                         "1 error(s)", "0 warning(s)", "$.sources[0]: required property 'name' not found");
@@ -487,8 +453,7 @@ class ImportSpecificationDeserializerTest {
 
     @Test
     void fails_if_name_is_missing_in_node_target() {
-        assertThatThrownBy(() -> deserialize(new StringReader(
-                        """
+        assertThatThrownBy(() -> deserialize(new StringReader("""
                         {
                             "version": "1",
                             "sources": [{
@@ -508,8 +473,7 @@ class ImportSpecificationDeserializerTest {
                                 }]
                             }
                         }
-                        """
-                                .stripIndent())))
+                        """.stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
                         "1 error(s)", "0 warning(s)", "$.targets.nodes[0]: required property 'name' not found");
@@ -517,8 +481,7 @@ class ImportSpecificationDeserializerTest {
 
     @Test
     void fails_if_name_is_missing_in_relationship_target() {
-        assertThatThrownBy(() -> deserialize(new StringReader(
-                        """
+        assertThatThrownBy(() -> deserialize(new StringReader("""
                         {
                             "version": "1",
                             "sources": [{
@@ -547,8 +510,7 @@ class ImportSpecificationDeserializerTest {
                                 }]
                             }
                         }
-                        """
-                                .stripIndent())))
+                        """.stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
                         "1 error(s)", "0 warning(s)", "$.targets.relationships[0]: required property 'name' not found");
@@ -556,8 +518,7 @@ class ImportSpecificationDeserializerTest {
 
     @Test
     void fails_if_name_is_missing_in_custom_query_target() {
-        assertThatThrownBy(() -> deserialize(new StringReader(
-                        """
+        assertThatThrownBy(() -> deserialize(new StringReader("""
                         {
                             "version": "1",
                             "sources": [{
@@ -572,8 +533,7 @@ class ImportSpecificationDeserializerTest {
                                 }]
                             }
                         }
-                        """
-                                .stripIndent())))
+                        """.stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
                         "1 error(s)", "0 warning(s)", "$.targets.queries[0]: required property 'name' not found");
@@ -581,8 +541,7 @@ class ImportSpecificationDeserializerTest {
 
     @Test
     void fails_if_name_is_missing_in_action() {
-        assertThatThrownBy(() -> deserialize(new StringReader(
-                        """
+        assertThatThrownBy(() -> deserialize(new StringReader("""
                         {
                             "version": "1",
                             "sources": [{
@@ -604,8 +563,7 @@ class ImportSpecificationDeserializerTest {
                                 "url": "https://example.com"
                             }]
                         }
-                        """
-                                .stripIndent())))
+                        """.stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
                         "1 error(s)", "0 warning(s)", "$.actions[0]: required property 'name' not found");
@@ -613,8 +571,7 @@ class ImportSpecificationDeserializerTest {
 
     @Test
     void fails_if_name_is_blank_in_source() {
-        assertThatThrownBy(() -> deserialize(new StringReader(
-                        """
+        assertThatThrownBy(() -> deserialize(new StringReader("""
                         {
                             "version": "1",
                             "sources": [{
@@ -630,8 +587,7 @@ class ImportSpecificationDeserializerTest {
                                 }]
                             }
                         }
-                        """
-                                .stripIndent())))
+                        """.stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
                         "1 error(s)", "0 warning(s)", "$.sources[0].name: does not match the regex pattern \\S+");
@@ -639,8 +595,7 @@ class ImportSpecificationDeserializerTest {
 
     @Test
     void fails_if_name_is_blank_in_node_target() {
-        assertThatThrownBy(() -> deserialize(new StringReader(
-                        """
+        assertThatThrownBy(() -> deserialize(new StringReader("""
                         {
                             "version": "1",
                             "sources": [{
@@ -661,8 +616,7 @@ class ImportSpecificationDeserializerTest {
                                 }]
                             }
                         }
-                        """
-                                .stripIndent())))
+                        """.stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
                         "1 error(s)", "0 warning(s)", "$.targets.nodes[0].name: does not match the regex pattern \\S+");
@@ -670,8 +624,7 @@ class ImportSpecificationDeserializerTest {
 
     @Test
     void fails_if_name_is_blank_in_relationship_target() {
-        assertThatThrownBy(() -> deserialize(new StringReader(
-                        """
+        assertThatThrownBy(() -> deserialize(new StringReader("""
                         {
                             "version": "1",
                             "sources": [{
@@ -701,8 +654,7 @@ class ImportSpecificationDeserializerTest {
                                 }]
                             }
                         }
-                        """
-                                .stripIndent())))
+                        """.stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
                         "1 error(s)",
@@ -712,8 +664,7 @@ class ImportSpecificationDeserializerTest {
 
     @Test
     void fails_if_name_is_blank_in_custom_query_target() {
-        assertThatThrownBy(() -> deserialize(new StringReader(
-                        """
+        assertThatThrownBy(() -> deserialize(new StringReader("""
                         {
                             "version": "1",
                             "sources": [{
@@ -729,8 +680,7 @@ class ImportSpecificationDeserializerTest {
                                 }]
                             }
                         }
-                        """
-                                .stripIndent())))
+                        """.stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
                         "1 error(s)",
@@ -740,8 +690,7 @@ class ImportSpecificationDeserializerTest {
 
     @Test
     void fails_if_name_is_blank_in_action() {
-        assertThatThrownBy(() -> deserialize(new StringReader(
-                        """
+        assertThatThrownBy(() -> deserialize(new StringReader("""
                         {
                             "version": "1",
                             "sources": [{
@@ -764,8 +713,7 @@ class ImportSpecificationDeserializerTest {
                                 "url": "https://example.com"
                             }]
                         }
-                        """
-                                .stripIndent())))
+                        """.stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
                         "1 error(s)", "0 warning(s)", "$.actions[0].name: does not match the regex pattern \\S+");

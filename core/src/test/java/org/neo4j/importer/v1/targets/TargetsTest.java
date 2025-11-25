@@ -32,8 +32,7 @@ class TargetsTest {
 
     @Test
     void deserializes_targets() throws Exception {
-        var json =
-                """
+        var json = """
                 {
                   "nodes": [
                     {
@@ -85,8 +84,7 @@ class TargetsTest {
                     }
                   ]
                 }
-                """
-                        .stripIndent();
+                """.stripIndent();
 
         Targets targets = mapper.readValue(json, Targets.class);
 

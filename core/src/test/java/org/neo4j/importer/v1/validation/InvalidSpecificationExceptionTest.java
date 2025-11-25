@@ -35,9 +35,7 @@ class InvalidSpecificationExceptionTest {
 
         var exception = new InvalidSpecificationException(result);
 
-        assertThat(exception)
-                .hasMessageContaining(
-                        """
+        assertThat(exception).hasMessageContaining("""
                 Import specification is invalid, see report below:
                 ===============================================================================
                 Summary
@@ -49,8 +47,7 @@ class InvalidSpecificationExceptionTest {
                 \t- [OOPSIE][$.sources] something wrong occurred
                 \t- [WELP][$.targets] something bad happened
                 ===============================================================================\
-                """
-                                .stripIndent());
+                """.stripIndent());
     }
 
     @Test
@@ -65,9 +62,7 @@ class InvalidSpecificationExceptionTest {
 
         var exception = new InvalidSpecificationException(result);
 
-        assertThat(exception)
-                .hasMessageContaining(
-                        """
+        assertThat(exception).hasMessageContaining("""
                 Import specification is invalid, see report below:
                 ===============================================================================
                 Summary
@@ -83,8 +78,7 @@ class InvalidSpecificationExceptionTest {
                 \t- [HMMM][$.actions[0].name] something is a bit strange
                 \t- [AHEM][$.targets[2].depends-on] are you sure this is right
                 ===============================================================================\
-                """
-                                .stripIndent());
+                """.stripIndent());
     }
 
     @SafeVarargs
