@@ -56,9 +56,9 @@ import org.neo4j.importer.v1.targets.RelationshipTarget;
 import org.neo4j.importer.v1.targets.Target;
 import org.neo4j.importer.v1.targets.Targets;
 import org.testcontainers.containers.BindMode;
-import org.testcontainers.containers.Neo4jContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.neo4j.Neo4jContainer;
 import org.testcontainers.utility.DockerImageName;
 import org.testcontainers.utility.MountableFile;
 
@@ -66,7 +66,7 @@ import org.testcontainers.utility.MountableFile;
 public class AdminImportIT {
 
     @Container
-    private static final Neo4jContainer<?> NEO4J = new Neo4jContainer<>(DockerImageName.parse("neo4j:5-enterprise"))
+    private static final Neo4jContainer NEO4J = new Neo4jContainer(DockerImageName.parse("neo4j:5-enterprise"))
             .withEnv("NEO4J_ACCEPT_LICENSE_AGREEMENT", "yes")
             .withAdminPassword("letmein!")
             .withCreateContainerCmdModifier(cmd -> cmd.withUser("neo4j"))
@@ -328,7 +328,7 @@ public class AdminImportIT {
         }
 
         public static void executeImport(
-                Neo4jContainer<?> neo4j, Driver driver, ImportSpecification importSpec, String neo4jDatabase)
+                Neo4jContainer neo4j, Driver driver, ImportSpecification importSpec, String neo4jDatabase)
                 throws Exception {
 
             var command = importCommand(importSpec, neo4jDatabase);

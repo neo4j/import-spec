@@ -36,44 +36,56 @@ import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SaveMode;
 import org.apache.spark.sql.SparkSession;
-import org.junit.Assume;
-import org.junit.BeforeClass;
-import org.junit.ClassRule;
-import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Assumptions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.neo4j.cypherdsl.core.internal.SchemaNames;
-import org.neo4j.driver.*;
+import org.neo4j.driver.AuthToken;
+import org.neo4j.driver.AuthTokens;
+import org.neo4j.driver.Driver;
+import org.neo4j.driver.GraphDatabase;
+import org.neo4j.driver.Session;
 import org.neo4j.driver.types.MapAccessor;
 import org.neo4j.importer.v1.ImportSpecificationDeserializer;
 import org.neo4j.importer.v1.actions.plugin.CypherAction;
-import org.neo4j.importer.v1.pipeline.*;
+import org.neo4j.importer.v1.pipeline.ActionStep;
+import org.neo4j.importer.v1.pipeline.EntityTargetStep;
+import org.neo4j.importer.v1.pipeline.ImportExecutionPlan;
 import org.neo4j.importer.v1.pipeline.ImportExecutionPlan.ImportStepGroup;
 import org.neo4j.importer.v1.pipeline.ImportExecutionPlan.ImportStepStage;
+import org.neo4j.importer.v1.pipeline.ImportPipeline;
+import org.neo4j.importer.v1.pipeline.NodeTargetStep;
+import org.neo4j.importer.v1.pipeline.RelationshipTargetStep;
+import org.neo4j.importer.v1.pipeline.SourceStep;
 import org.neo4j.importer.v1.sources.Source;
 import org.neo4j.importer.v1.sources.SourceProvider;
 import org.neo4j.importer.v1.targets.NodeMatchMode;
 import org.neo4j.importer.v1.targets.PropertyMapping;
 import org.neo4j.importer.v1.targets.PropertyType;
 import org.neo4j.importer.v1.targets.WriteMode;
-import org.testcontainers.containers.Neo4jContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.neo4j.Neo4jContainer;
 import org.testcontainers.utility.DockerImageName;
 
+@Testcontainers
 public class SparkExampleIT {
 
     private static final String NEO4J_DATASOURCE = "org.neo4j.spark.DataSource";
 
     private static SparkSession spark = null;
 
-    @ClassRule
-    public static Neo4jContainer<?> NEO4J = new Neo4jContainer<>(DockerImageName.parse("neo4j:5-enterprise"))
+    @Container
+    public static Neo4jContainer NEO4J = new Neo4jContainer(DockerImageName.parse("neo4j:5-enterprise"))
             .withEnv("NEO4J_ACCEPT_LICENSE_AGREEMENT", "yes")
             .withAdminPassword("letmein!");
 
-    @BeforeClass
+    @BeforeAll
     public static void beforeClass() {
-        Assume.assumeTrue(
-                "Please run `gcloud auth application-default login` and define the environment variable GOOGLE_APPLICATION_CREDENTIALS with the resulting path",
-                System.getenv("GOOGLE_APPLICATION_CREDENTIALS") != null);
+        Assumptions.assumeTrue(
+                System.getenv("GOOGLE_APPLICATION_CREDENTIALS") != null,
+                "Please run `gcloud auth application-default login` and define the environment variable GOOGLE_APPLICATION_CREDENTIALS with the resulting path");
 
         spark = SparkSession.builder()
                 .master("local[*]")

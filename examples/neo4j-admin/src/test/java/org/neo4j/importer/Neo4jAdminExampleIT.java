@@ -63,21 +63,20 @@ import org.neo4j.importer.v1.targets.Target;
 import org.neo4j.importer.v1.targets.Targets;
 import org.testcontainers.containers.BindMode;
 import org.testcontainers.containers.GenericContainer;
-import org.testcontainers.containers.Neo4jContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.neo4j.Neo4jContainer;
 import org.testcontainers.utility.DockerImageName;
 import org.testcontainers.utility.MountableFile;
 
-@SuppressWarnings({"SameParameterValue", "resource"})
+@SuppressWarnings({"SameParameterValue"})
 @Testcontainers
 public class Neo4jAdminExampleIT {
 
     private static final String SHARED_FOLDER = "/admin-import/";
 
     @Container
-    private static final GenericContainer<?> NEO4J = new Neo4jContainer<>(
-                    DockerImageName.parse("neo4j:2025.09-enterprise"))
+    private static final Neo4jContainer NEO4J = new Neo4jContainer(DockerImageName.parse("neo4j:2025.09-enterprise"))
             .withEnv("NEO4J_ACCEPT_LICENSE_AGREEMENT", "yes")
             .withNeo4jConfig("dbms.integrations.cloud_storage.gs.project_id", "connectors-public")
             .withNeo4jConfig("server.config.strict_validation.enabled", "false")
