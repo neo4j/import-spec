@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.neo4j.importer.v1.targets.NodeMatchMode;
 import org.neo4j.importer.v1.targets.PropertyMapping;
@@ -62,19 +61,6 @@ public class RelationshipTargetStep extends EntityTargetStep {
         return List.copyOf(distinctKeyProperties(target.getProperties(), target.getSchema()));
     }
 
-    @Override
-    public List<PropertyMapping> nonKeyProperties() {
-        var schema = target.getSchema();
-        var mappings = target.getProperties();
-        if (schema.isEmpty()) {
-            return mappings;
-        }
-        var keyProperties = distinctKeyProperties(mappings, schema);
-        return mappings.stream()
-                .filter(mapping -> !keyProperties.contains(mapping))
-                .collect(Collectors.toUnmodifiableList());
-    }
-
     public NodeTargetStep startNode() {
         return startNode;
     }
@@ -95,17 +81,17 @@ public class RelationshipTargetStep extends EntityTargetStep {
     private static Set<PropertyMapping> distinctKeyProperties(
             List<PropertyMapping> properties, RelationshipSchema schema) {
         var mappings = indexByPropertyName(properties);
-        Set<PropertyMapping> result = schema.getKeyConstraints().stream()
+        var keyConstraints = schema.getKeyConstraints();
+        if (!keyConstraints.isEmpty()) {
+            return keyConstraints.stream()
+                    .flatMap(constraint -> constraint.getProperties().stream())
+                    .map(mappings::get)
+                    .collect(Collectors.toCollection(LinkedHashSet::new));
+        }
+        return schema.getUniqueConstraints().stream()
                 .flatMap(constraint -> constraint.getProperties().stream())
                 .map(mappings::get)
                 .collect(Collectors.toCollection(LinkedHashSet::new));
-        result.addAll(
-                keyEquivalentProperties(schema.getUniqueConstraints(), schema.getExistenceConstraints(), mappings));
-        return result;
-    }
-
-    private static Map<String, PropertyMapping> indexByPropertyName(List<PropertyMapping> mappings) {
-        return mappings.stream().collect(Collectors.toMap(PropertyMapping::getTargetProperty, Function.identity()));
     }
 
     private static Set<PropertyMapping> keyEquivalentProperties(

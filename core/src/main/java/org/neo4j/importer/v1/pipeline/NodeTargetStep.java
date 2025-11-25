@@ -18,15 +18,11 @@ package org.neo4j.importer.v1.pipeline;
 
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.function.Function;
 import java.util.stream.Collectors;
-import org.neo4j.importer.v1.targets.NodeExistenceConstraint;
 import org.neo4j.importer.v1.targets.NodeSchema;
 import org.neo4j.importer.v1.targets.NodeTarget;
-import org.neo4j.importer.v1.targets.NodeUniqueConstraint;
 import org.neo4j.importer.v1.targets.PropertyMapping;
 import org.neo4j.importer.v1.targets.WriteMode;
 
@@ -52,19 +48,6 @@ public class NodeTargetStep extends EntityTargetStep {
         return List.copyOf(distinctKeyProperties(target.getProperties(), schema()));
     }
 
-    @Override
-    public List<PropertyMapping> nonKeyProperties() {
-        var schema = schema();
-        var mappings = target.getProperties();
-        if (schema.isEmpty()) {
-            return mappings;
-        }
-        var keyProperties = distinctKeyProperties(mappings, schema);
-        return mappings.stream()
-                .filter(mapping -> !keyProperties.contains(mapping))
-                .collect(Collectors.toUnmodifiableList());
-    }
-
     public NodeSchema schema() {
         return target.getSchema();
     }
@@ -76,35 +59,17 @@ public class NodeTargetStep extends EntityTargetStep {
 
     private static Set<PropertyMapping> distinctKeyProperties(List<PropertyMapping> properties, NodeSchema schema) {
         var mappings = indexByPropertyName(properties);
-        Set<PropertyMapping> result = schema.getKeyConstraints().stream()
+        var keyConstraints = schema.getKeyConstraints();
+        if (!keyConstraints.isEmpty()) {
+            return keyConstraints.stream()
+                    .flatMap(constraint -> constraint.getProperties().stream())
+                    .map(mappings::get)
+                    .collect(Collectors.toCollection(LinkedHashSet::new));
+        }
+        return schema.getUniqueConstraints().stream()
                 .flatMap(constraint -> constraint.getProperties().stream())
                 .map(mappings::get)
                 .collect(Collectors.toCollection(LinkedHashSet::new));
-        result.addAll(
-                keyEquivalentProperties(schema.getUniqueConstraints(), schema.getExistenceConstraints(), mappings));
-        return result;
-    }
-
-    private static Map<String, PropertyMapping> indexByPropertyName(List<PropertyMapping> mappings) {
-        return mappings.stream().collect(Collectors.toMap(PropertyMapping::getTargetProperty, Function.identity()));
-    }
-
-    private static Set<PropertyMapping> keyEquivalentProperties(
-            List<NodeUniqueConstraint> uniqueConstraints,
-            List<NodeExistenceConstraint> existenceConstraints,
-            Map<String, PropertyMapping> mappings) {
-
-        Set<PropertyMapping> result =
-                new LinkedHashSet<>(Math.min(uniqueConstraints.size(), existenceConstraints.size()));
-        Set<PropertyMapping> uniqueProperties = uniqueConstraints.stream()
-                .flatMap(constraint -> constraint.getProperties().stream())
-                .map(mappings::get)
-                .collect(Collectors.toCollection(LinkedHashSet::new));
-        result.addAll(existenceConstraints.stream()
-                .map(constraint -> mappings.get(constraint.getProperty()))
-                .filter(uniqueProperties::contains)
-                .collect(Collectors.toList()));
-        return result;
     }
 
     @Override

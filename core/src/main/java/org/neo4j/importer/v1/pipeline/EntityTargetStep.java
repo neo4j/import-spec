@@ -16,9 +16,11 @@
  */
 package org.neo4j.importer.v1.pipeline;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.neo4j.importer.v1.targets.EntityTarget;
 import org.neo4j.importer.v1.targets.EntityTargetExtension;
@@ -43,7 +45,16 @@ public abstract class EntityTargetStep extends TargetStep {
 
     public abstract List<PropertyMapping> keyProperties();
 
-    public abstract List<PropertyMapping> nonKeyProperties();
+    public List<PropertyMapping> nonKeyProperties() {
+        var keys = new HashSet<>(keyProperties());
+        return target().getProperties().stream()
+                .filter(mapping -> !keys.contains(mapping))
+                .collect(Collectors.toUnmodifiableList());
+    }
 
     protected abstract EntityTarget target();
+
+    protected static Map<String, PropertyMapping> indexByPropertyName(List<PropertyMapping> mappings) {
+        return mappings.stream().collect(Collectors.toMap(PropertyMapping::getTargetProperty, Function.identity()));
+    }
 }

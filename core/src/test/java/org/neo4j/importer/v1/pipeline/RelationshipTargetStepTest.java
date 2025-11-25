@@ -38,11 +38,11 @@ class RelationshipTargetStepTest {
 
     private final Random random = new Random();
 
-    private final PropertyMapping mapping1 = mappingTo("prop1");
-    private final PropertyMapping mapping2 = mappingTo("prop2");
-    private final PropertyMapping mapping3 = mappingTo("prop3");
-    private final PropertyMapping mapping4 = mappingTo("prop4");
-    private final List<PropertyMapping> properties = List.of(mapping1, mapping2, mapping3, mapping4);
+    private final PropertyMapping prop1 = mappingTo("prop1");
+    private final PropertyMapping prop2 = mappingTo("prop2");
+    private final PropertyMapping prop3 = mappingTo("prop3");
+    private final PropertyMapping prop4 = mappingTo("prop4");
+    private final List<PropertyMapping> properties = List.of(prop1, prop2, prop3, prop4);
 
     @Test
     void returns_no_properties_when_schema_is_not_defined() {
@@ -92,12 +92,12 @@ class RelationshipTargetStepTest {
                 nodeTarget("end-node-target"),
                 Set.of());
 
-        assertThat(task.keyProperties()).containsExactly(mapping1, mapping2, mapping4);
-        assertThat(task.nonKeyProperties()).containsExactly(mapping3);
+        assertThat(task.keyProperties()).containsExactly(prop1, prop2, prop4);
+        assertThat(task.nonKeyProperties()).containsExactly(prop3);
     }
 
     @Test
-    void returns_non_null_unique_properties_as_keys() {
+    void returns_unique_properties_as_keys() {
         var schema = schemaFor(
                 List.of(unique(List.of("prop1", "prop2")), unique(List.of("prop2", "prop4"))),
                 List.of(notNull("prop2"), notNull("prop3"), notNull("prop4")));
@@ -120,12 +120,12 @@ class RelationshipTargetStepTest {
                 nodeTarget("end-node-target"),
                 Set.of());
 
-        assertThat(task.keyProperties()).containsExactly(mapping2, mapping4);
-        assertThat(task.nonKeyProperties()).containsExactly(mapping1, mapping3);
+        assertThat(task.keyProperties()).containsExactly(prop1, prop2, prop4);
+        assertThat(task.nonKeyProperties()).containsExactly(prop3);
     }
 
     @Test
-    void returns_both_key_and_non_null_unique_properties() {
+    void returns_key_over_unique_properties() {
         var schema = schemaFor(
                 List.of(key(List.of("prop1", "prop2"))),
                 List.of(unique(List.of("prop3"))),
@@ -149,8 +149,8 @@ class RelationshipTargetStepTest {
                 nodeTarget("end-node-target"),
                 Set.of());
 
-        assertThat(task.keyProperties()).containsExactly(mapping1, mapping2, mapping3);
-        assertThat(task.nonKeyProperties()).containsExactly(mapping4);
+        assertThat(task.keyProperties()).containsExactly(prop1, prop2);
+        assertThat(task.nonKeyProperties()).containsExactly(prop3, prop4);
     }
 
     private RelationshipKeyConstraint key(List<String> properties) {
