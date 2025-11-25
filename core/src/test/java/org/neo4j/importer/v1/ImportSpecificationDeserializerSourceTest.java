@@ -37,8 +37,7 @@ public class ImportSpecificationDeserializerSourceTest {
 
     @Test
     void fails_if_source_is_missing_type() {
-        assertThatThrownBy(() -> deserialize(new StringReader(
-                        """
+        assertThatThrownBy(() -> deserialize(new StringReader("""
                         {
                             "version": "1",
                             "sources": [{
@@ -53,16 +52,14 @@ public class ImportSpecificationDeserializerSourceTest {
                                 }]
                             }
                         }
-                        """
-                                .stripIndent())))
+                        """.stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll("0 warning(s)", "$.sources[0]: required property 'type' not found");
     }
 
     @Test
     void fails_if_source_type_is_wrongly_typed() {
-        assertThatThrownBy(() -> deserialize(new StringReader(
-                        """
+        assertThatThrownBy(() -> deserialize(new StringReader("""
                         {
                             "version": "1",
                             "sources": [{
@@ -78,16 +75,14 @@ public class ImportSpecificationDeserializerSourceTest {
                                 }]
                             }
                         }
-                        """
-                                .stripIndent())))
+                        """.stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll("0 warning(s)", "$.sources[0].type: integer found, string expected");
     }
 
     @Test
     void fails_if_source_type_is_not_supported_by_any_loaded_source_provider() {
-        assertThatThrownBy(() -> deserialize(new StringReader(
-                        """
+        assertThatThrownBy(() -> deserialize(new StringReader("""
                         {
                             "version": "1",
                             "sources": [{
@@ -103,8 +98,7 @@ public class ImportSpecificationDeserializerSourceTest {
                                 }]
                             }
                         }
-                        """
-                                .stripIndent())))
+                        """.stripIndent())))
                 .isInstanceOf(UndeserializableSourceException.class)
                 .hasMessageContainingAll(
                         "Expected exactly one source provider for sources of type unsupported, but found: 0");
@@ -112,8 +106,7 @@ public class ImportSpecificationDeserializerSourceTest {
 
     @Test
     void fails_if_third_party_source_and_supplier_do_not_match() {
-        assertThatThrownBy(() -> deserialize(new StringReader(
-                        """
+        assertThatThrownBy(() -> deserialize(new StringReader("""
                         {
                             "version": "1",
                             "sources": [{
@@ -129,8 +122,7 @@ public class ImportSpecificationDeserializerSourceTest {
                                 }]
                             }
                         }
-                        """
-                                .stripIndent())))
+                        """.stripIndent())))
                 .isInstanceOf(UndeserializableSourceException.class)
                 .hasMessageContainingAll(
                         "Source provider org.neo4j.importer.v1.sources.JdbcSourceProvider failed to deserialize the following source definition");

@@ -192,9 +192,7 @@ public class BeamIT {
                 .records();
         assertThat(productInCategoryCount).hasSize(1);
         assertThat(productInCategoryCount.getFirst().get("count").asLong()).isEqualTo(77L);
-        var countRows = neo4jDriver
-                .executableQuery(
-                        """
+        var countRows = neo4jDriver.executableQuery("""
                                  MATCH (post_s:Count {stage: 'post_sources'})
                                  MATCH  (pre_n:Count {stage: 'pre_nodes'})
                                  MATCH (post_n:Count {stage: 'post_nodes'})
@@ -212,10 +210,7 @@ public class BeamIT {
                                     pre_q.count  AS pre_q_count,
                                     post_q.count AS post_q_count,
                                     end.count    AS end_count
-                                 """
-                                .stripIndent())
-                .execute()
-                .records();
+                                 """.stripIndent()).execute().records();
         assertThat(countRows).hasSize(1);
         Record counts = countRows.getFirst();
         assertThat(counts.get("post_s_count").asLong())

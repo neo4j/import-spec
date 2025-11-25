@@ -31,8 +31,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
 
     @Test
     void fails_if_source_name_is_duplicated() {
-        assertThatThrownBy(() -> deserialize(new StringReader(
-                        """
+        assertThatThrownBy(() -> deserialize(new StringReader("""
                         {
                             "version": "1",
                             "sources": [{
@@ -58,8 +57,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                                 }]
                             }
                         }
-                        """
-                                .stripIndent())))
+                        """.stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
                         "1 error(s)",
@@ -69,8 +67,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
 
     @Test
     void fails_if_source_name_is_duplicated_with_target_name() {
-        assertThatThrownBy(() -> deserialize(new StringReader(
-                        """
+        assertThatThrownBy(() -> deserialize(new StringReader("""
                         {
                             "version": "1",
                             "sources": [{
@@ -91,8 +88,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                                 }]
                             }
                         }
-                        """
-                                .stripIndent())))
+                        """.stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
                         "1 error(s)",
@@ -102,8 +98,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
 
     @Test
     void fails_if_source_name_is_duplicated_with_action_name() {
-        assertThatThrownBy(() -> deserialize(new StringReader(
-                        """
+        assertThatThrownBy(() -> deserialize(new StringReader("""
                         {
                             "version": "1",
                             "sources": [{
@@ -130,8 +125,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                                 "query": "CREATE (:PreRel)"
                             }]
                         }
-                        """
-                                .stripIndent())))
+                        """.stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
                         "1 error(s)",
@@ -141,8 +135,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
 
     @Test
     void fails_if_node_target_name_is_duplicated() {
-        assertThatThrownBy(() -> deserialize(new StringReader(
-                        """
+        assertThatThrownBy(() -> deserialize(new StringReader("""
                         {
                             "version": "1",
                             "sources": [{
@@ -172,8 +165,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                                 }]
                             }
                         }
-                        """
-                                .stripIndent())))
+                        """.stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
                         "1 error(s)",
@@ -183,8 +175,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
 
     @Test
     void fails_if_node_target_name_is_duplicated_with_rel_target() {
-        assertThatThrownBy(() -> deserialize(new StringReader(
-                        """
+        assertThatThrownBy(() -> deserialize(new StringReader("""
                         {
                             "version": "1",
                             "sources": [{
@@ -212,8 +203,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                                 }]
                             }
                         }
-                        """
-                                .stripIndent())))
+                        """.stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
                         "1 error(s)",
@@ -223,8 +213,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
 
     @Test
     void fails_if_node_target_name_is_duplicated_with_custom_query_target() {
-        assertThatThrownBy(() -> deserialize(new StringReader(
-                        """
+        assertThatThrownBy(() -> deserialize(new StringReader("""
                         {
                             "version": "1",
                             "sources": [{
@@ -250,8 +239,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                                 }]
                             }
                         }
-                        """
-                                .stripIndent())))
+                        """.stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
                         "1 error(s)",
@@ -261,8 +249,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
 
     @Test
     void fails_if_query_target_name_is_duplicated_with_action() {
-        assertThatThrownBy(() -> deserialize(new StringReader(
-                        """
+        assertThatThrownBy(() -> deserialize(new StringReader("""
                         {
                             "version": "1",
                             "sources": [{
@@ -284,8 +271,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                                 "query": "CREATE (:PreRel)"
                             }]
                         }
-                        """
-                                .stripIndent())))
+                        """.stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
                         "1 error(s)",
@@ -295,8 +281,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
 
     @Test
     void fails_if_node_target_does_not_refer_to_existing_source() {
-        assertThatThrownBy(() -> deserialize(new StringReader(
-                        """
+        assertThatThrownBy(() -> deserialize(new StringReader("""
                         {
                             "version": "1",
                             "sources": [{
@@ -317,8 +302,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                                 }]
                             }
                         }
-                        """
-                                .stripIndent())))
+                        """.stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
                         "1 error(s)",
@@ -329,8 +313,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
 
     @Test
     void fails_if_relationship_target_does_not_refer_to_existing_source() {
-        assertThatThrownBy(() -> deserialize(new StringReader(
-                        """
+        assertThatThrownBy(() -> deserialize(new StringReader("""
                         {
                             "version": "1",
                             "sources": [{
@@ -365,8 +348,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                                 }]
                             }
                         }
-                        """
-                                .stripIndent())))
+                        """.stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
                         "1 error(s)",
@@ -377,8 +359,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
 
     @Test
     void fails_if_custom_query_target_does_not_refer_to_existing_source() {
-        assertThatThrownBy(() -> deserialize(new StringReader(
-                        """
+        assertThatThrownBy(() -> deserialize(new StringReader("""
                         {
                             "version": "1",
                             "sources": [{
@@ -394,8 +375,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                                 }]
                             }
                         }
-                        """
-                                .stripIndent())))
+                        """.stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
                         "1 error(s)",
@@ -406,8 +386,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
 
     @Test
     void fails_if_node_target_depends_on_non_existing_target() {
-        assertThatThrownBy(() -> deserialize(new StringReader(
-                        """
+        assertThatThrownBy(() -> deserialize(new StringReader("""
                         {
                             "version": "1",
                             "sources": [{
@@ -429,8 +408,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                                 }]
                             }
                         }
-                        """
-                                .stripIndent())))
+                        """.stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
                         "1 error(s)",
@@ -440,8 +418,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
 
     @Test
     void fails_if_relationship_target_depends_on_non_existing_target_or_action() {
-        assertThatThrownBy(() -> deserialize(new StringReader(
-                        """
+        assertThatThrownBy(() -> deserialize(new StringReader("""
                         {
                             "version": "1",
                             "sources": [{
@@ -477,8 +454,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                                 }]
                             }
                         }
-                        """
-                                .stripIndent())))
+                        """.stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
                         "1 error(s)",
@@ -488,8 +464,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
 
     @Test
     void fails_if_custom_query_target_depends_on_non_existing_target_or_action() {
-        assertThatThrownBy(() -> deserialize(new StringReader(
-                        """
+        assertThatThrownBy(() -> deserialize(new StringReader("""
                         {
                             "version": "1",
                             "sources": [{
@@ -506,8 +481,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                                 }]
                             }
                         }
-                        """
-                                .stripIndent())))
+                        """.stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
                         "1 error(s)",
@@ -517,8 +491,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
 
     @Test
     void fails_if_relationship_refers_to_a_non_existing_node_target_for_start() {
-        assertThatThrownBy(() -> deserialize(new StringReader(
-                        """
+        assertThatThrownBy(() -> deserialize(new StringReader("""
                         {
                             "version": "1",
                             "sources": [{
@@ -546,8 +519,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                                 }]
                             }
                         }
-                        """
-                                .stripIndent())))
+                        """.stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
                         "1 error(s)",
@@ -557,8 +529,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
 
     @Test
     void fails_if_active_relationship_target_refers_to_an_inactive_node_target_for_start() {
-        assertThatThrownBy(() -> deserialize(new StringReader(
-                        """
+        assertThatThrownBy(() -> deserialize(new StringReader("""
                         {
                             "version": "1",
                             "sources": [{
@@ -596,8 +567,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                                 }]
                             }
                         }
-                        """
-                                .stripIndent())))
+                        """.stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
                         "1 error(s)",
@@ -607,8 +577,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
 
     @Test
     void fails_if_active_relationship_target_refers_to_an_inactive_node_target_for_end() {
-        assertThatThrownBy(() -> deserialize(new StringReader(
-                        """
+        assertThatThrownBy(() -> deserialize(new StringReader("""
                         {
                             "version": "1",
                             "sources": [{
@@ -660,8 +629,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                                 }]
                             }
                         }
-                        """
-                                .stripIndent())))
+                        """.stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
                         "1 error(s)",
@@ -671,9 +639,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
 
     @Test
     void does_not_fail_if_inactive_relationship_refers_to_an_inactive_node_target_for_start() {
-        assertThatNoException()
-                .isThrownBy(() -> deserialize(new StringReader(
-                        """
+        assertThatNoException().isThrownBy(() -> deserialize(new StringReader("""
                         {
                             "version": "1",
                             "sources": [{
@@ -726,15 +692,12 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                                 }]
                             }
                         }
-                        """
-                                .stripIndent())));
+                        """.stripIndent())));
     }
 
     @Test
     void does_not_fail_if_inactive_relationship_refers_to_an_inactive_node_target_for_end() {
-        assertThatNoException()
-                .isThrownBy(() -> deserialize(new StringReader(
-                        """
+        assertThatNoException().isThrownBy(() -> deserialize(new StringReader("""
                         {
                             "version": "1",
                             "sources": [{
@@ -787,14 +750,12 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                                 }]
                             }
                         }
-                        """
-                                .stripIndent())));
+                        """.stripIndent())));
     }
 
     @Test
     void does_not_report_inactive_node_reference_when_other_references_are_dangling() {
-        assertThatThrownBy(() -> deserialize(new StringReader(
-                        """
+        assertThatThrownBy(() -> deserialize(new StringReader("""
                         {
                             "version": "1",
                             "sources": [{
@@ -823,8 +784,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                                 }]
                             }
                         }
-                        """
-                                .stripIndent())))
+                        """.stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
                         "1 error(s)",
@@ -834,8 +794,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
 
     @Test
     void fails_if_relationship_refers_to_a_non_existing_node_target_for_end() {
-        assertThatThrownBy(() -> deserialize(new StringReader(
-                        """
+        assertThatThrownBy(() -> deserialize(new StringReader("""
                         {
                             "version": "1",
                             "sources": [{
@@ -863,8 +822,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                                 }]
                             }
                         }
-                        """
-                                .stripIndent())))
+                        """.stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
                         "1 error(s)",
@@ -874,8 +832,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
 
     @Test
     void fails_if_direct_dependency_cycle_is_detected() {
-        assertThatThrownBy(() -> deserialize(new StringReader(
-                        """
+        assertThatThrownBy(() -> deserialize(new StringReader("""
                         {
                             "version": "1",
                             "sources": [{
@@ -911,8 +868,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                                 }]
                             }
                         }
-                        """
-                                .stripIndent())))
+                        """.stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
                         "1 error(s)", "0 warning(s)", "A dependency cycle has been detected: a-target->a-target");
@@ -920,8 +876,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
 
     @Test
     void fails_if_longer_dependency_cycle_is_detected() {
-        assertThatThrownBy(() -> deserialize(new StringReader(
-                        """
+        assertThatThrownBy(() -> deserialize(new StringReader("""
                         {
                             "version": "1",
                             "sources": [{
@@ -971,8 +926,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                                 ]
                             }
                         }
-                        """
-                                .stripIndent())))
+                        """.stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
                         "1 error(s)",
@@ -982,8 +936,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
 
     @Test
     void fails_if_dependency_cycle_is_detected_via_start_node_reference() {
-        assertThatThrownBy(() -> deserialize(new StringReader(
-                        """
+        assertThatThrownBy(() -> deserialize(new StringReader("""
                         {
                             "version": "1",
                             "sources": [{
@@ -1036,8 +989,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                                 }]
                             }
                         }
-                        """
-                                .stripIndent())))
+                        """.stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
                         "1 error(s)",
@@ -1047,8 +999,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
 
     @Test
     void fails_if_dependency_cycle_is_detected_via_end_node_reference() {
-        assertThatThrownBy(() -> deserialize(new StringReader(
-                        """
+        assertThatThrownBy(() -> deserialize(new StringReader("""
                         {
                             "version": "1",
                             "sources": [{
@@ -1093,8 +1044,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                                 }]
                             }
                         }
-                        """
-                                .stripIndent())))
+                        """.stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
                         "1 error(s)",
@@ -1104,8 +1054,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
 
     @Test
     void does_not_report_cycles_if_names_are_duplicated() {
-        assertThatThrownBy(() -> deserialize(new StringReader(
-                        """
+        assertThatThrownBy(() -> deserialize(new StringReader("""
                         {
                             "version": "1",
                             "sources": [{
@@ -1140,8 +1089,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                                 }]
                             }
                         }
-                        """
-                                .stripIndent())))
+                        """.stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
                         "1 error(s)",
@@ -1151,8 +1099,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
 
     @Test
     void does_not_report_cycles_if_depends_on_are_dangling() {
-        assertThatThrownBy(() -> deserialize(new StringReader(
-                        """
+        assertThatThrownBy(() -> deserialize(new StringReader("""
                         {
                             "version": "1",
                             "sources": [{
@@ -1200,8 +1147,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                                 }]
                             }
                         }
-                        """
-                                .stripIndent())))
+                        """.stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
                         "1 error(s)",
@@ -1211,8 +1157,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
 
     @Test
     void does_not_report_cycles_if_node_references_are_dangling() {
-        assertThatThrownBy(() -> deserialize(new StringReader(
-                        """
+        assertThatThrownBy(() -> deserialize(new StringReader("""
                         {
                             "version": "1",
                             "sources": [{
@@ -1248,8 +1193,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                                 ]
                             }
                         }
-                        """
-                                .stripIndent())))
+                        """.stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
                         "1 error(s)",
@@ -1259,8 +1203,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
 
     @Test
     void fails_if_all_targets_are_inactive() {
-        assertThatThrownBy(() -> deserialize(new StringReader(
-                        """
+        assertThatThrownBy(() -> deserialize(new StringReader("""
                         {
                             "version": "1",
                             "sources": [{
@@ -1285,8 +1228,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                               }]
                             }
                         }
-                        """
-                                .stripIndent())))
+                        """.stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
                         "1 error(s)", "0 warning(s)", "[$.targets] at least one target must be active, none found");
@@ -1294,8 +1236,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
 
     @Test
     void fails_if_node_target_duplicates_dependency() {
-        assertThatThrownBy(() -> deserialize(new StringReader(
-                        """
+        assertThatThrownBy(() -> deserialize(new StringReader("""
                         {
                             "version": "1",
                             "sources": [
@@ -1332,8 +1273,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                                 }]
                             }
                         }
-                        """
-                                .stripIndent())))
+                        """.stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
                         "1 error(s)",
@@ -1343,8 +1283,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
 
     @Test
     void fails_if_relationship_target_duplicates_dependency() {
-        assertThatThrownBy(() -> deserialize(new StringReader(
-                        """
+        assertThatThrownBy(() -> deserialize(new StringReader("""
                         {
                             "version": "1",
                             "sources": [
@@ -1395,8 +1334,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                                 }]
                             }
                         }
-                        """
-                                .stripIndent())))
+                        """.stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
                         "1 error(s)",
@@ -1406,8 +1344,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
 
     @Test
     void fails_if_query_target_duplicates_dependency() {
-        assertThatThrownBy(() -> deserialize(new StringReader(
-                        """
+        assertThatThrownBy(() -> deserialize(new StringReader("""
                         {
                             "version": "1",
                             "sources": [
@@ -1458,8 +1395,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                                 }]
                             }
                         }
-                        """
-                                .stripIndent())))
+                        """.stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
                         "1 error(s)",
@@ -1469,8 +1405,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
 
     @Test
     void does_not_report_cycles_if_targets_duplicate_dependency() {
-        assertThatThrownBy(() -> deserialize(new StringReader(
-                        """
+        assertThatThrownBy(() -> deserialize(new StringReader("""
                         {
                             "version": "1",
                             "sources": [
@@ -1522,8 +1457,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                                 }]
                             }
                         }
-                        """
-                                .stripIndent())))
+                        """.stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
                         "1 error(s)",
@@ -1533,8 +1467,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
 
     @Test
     public void fails_if_node_target_labels_are_duplicated() {
-        assertThatThrownBy(() -> deserialize(new StringReader(
-                        """
+        assertThatThrownBy(() -> deserialize(new StringReader("""
                         {
                             "version": "1",
                             "sources": [{
@@ -1555,8 +1488,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                                 }]
                             }
                         }
-                        """
-                                .stripIndent())))
+                        """.stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
                         "2 error(s)",
@@ -1567,8 +1499,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
 
     @Test
     public void fails_if_node_target_property_mappings_target_property_is_duplicated() {
-        assertThatThrownBy(() -> deserialize(new StringReader(
-                        """
+        assertThatThrownBy(() -> deserialize(new StringReader("""
                           {
                           "version": "1",
                           "sources": [{
@@ -1589,8 +1520,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                               ]
                             }]
                           }
-                        }"""
-                                .stripIndent())))
+                        }""".stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
                         "1 error(s)",
@@ -1600,8 +1530,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
 
     @Test
     public void fails_if_relationship_target_property_mappings_target_property_is_duplicated() {
-        assertThatThrownBy(() -> deserialize(new StringReader(
-                        """
+        assertThatThrownBy(() -> deserialize(new StringReader("""
                         {
                           "version": "1",
                           "sources": [{
@@ -1639,8 +1568,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                             }]
                           }
                         }
-                        """
-                                .stripIndent())))
+                        """.stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
                         "1 error(s)",
@@ -1650,8 +1578,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
 
     @Test
     public void fails_if_node_target_type_constraint_refers_to_non_existent_property() {
-        assertThatThrownBy(() -> deserialize(new StringReader(
-                        """
+        assertThatThrownBy(() -> deserialize(new StringReader("""
                         {
                           "version": "1",
                           "sources": [{
@@ -1676,8 +1603,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                             }]
                           }
                         }
-                        """
-                                .stripIndent())))
+                        """.stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
                         "1 error(s)",
@@ -1687,8 +1613,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
 
     @Test
     public void fails_if_node_target_type_constraint_refers_to_non_existent_label() {
-        assertThatThrownBy(() -> deserialize(new StringReader(
-                        """
+        assertThatThrownBy(() -> deserialize(new StringReader("""
                         {
                           "version": "1",
                           "sources": [{
@@ -1713,8 +1638,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                             }]
                           }
                         }
-                        """
-                                .stripIndent())))
+                        """.stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
                         "1 error(s)",
@@ -1724,8 +1648,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
 
     @Test
     public void fails_if_node_target_type_constraint_property_refers_to_an_untyped_property() {
-        assertThatThrownBy(() -> deserialize(new StringReader(
-                        """
+        assertThatThrownBy(() -> deserialize(new StringReader("""
                         {
                           "version": "1",
                           "sources": [{
@@ -1750,8 +1673,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                             }]
                           }
                         }
-                        """
-                                .stripIndent())))
+                        """.stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
                         "1 error(s)",
@@ -1761,8 +1683,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
 
     @Test
     public void fails_if_relationship_target_type_constraint_property_refers_to_an_untyped_property() {
-        assertThatThrownBy(() -> deserialize(new StringReader(
-                        """
+        assertThatThrownBy(() -> deserialize(new StringReader("""
 
                                 {
                           "version": "1",
@@ -1803,8 +1724,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                             }]
                           }
                         }
-                        """
-                                .stripIndent())))
+                        """.stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
                         "1 error(s)",
@@ -1814,8 +1734,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
 
     @Test
     public void fails_if_node_target_unique_constraint_refers_to_non_existent_property() {
-        assertThatThrownBy(() -> deserialize(new StringReader(
-                        """
+        assertThatThrownBy(() -> deserialize(new StringReader("""
                         {
                           "version": "1",
                           "sources": [{
@@ -1840,8 +1759,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                             }]
                           }
                         }
-                        """
-                                .stripIndent())))
+                        """.stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
                         "1 error(s)",
@@ -1851,8 +1769,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
 
     @Test
     public void fails_if_node_target_unique_constraint_refers_to_non_existent_label() {
-        assertThatThrownBy(() -> deserialize(new StringReader(
-                        """
+        assertThatThrownBy(() -> deserialize(new StringReader("""
                         {
                           "version": "1",
                           "sources": [{
@@ -1877,8 +1794,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                             }]
                           }
                         }
-                        """
-                                .stripIndent())))
+                        """.stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
                         "1 error(s)",
@@ -1888,8 +1804,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
 
     @Test
     public void fails_if_node_target_key_constraint_refers_to_non_existent_property() {
-        assertThatThrownBy(() -> deserialize(new StringReader(
-                        """
+        assertThatThrownBy(() -> deserialize(new StringReader("""
                         {
                           "version": "1",
                           "sources": [{
@@ -1914,8 +1829,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                             }]
                           }
                         }
-                        """
-                                .stripIndent())))
+                        """.stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
                         "1 error(s)",
@@ -1925,8 +1839,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
 
     @Test
     public void fails_if_node_target_key_constraint_refers_to_non_existent_label() {
-        assertThatThrownBy(() -> deserialize(new StringReader(
-                        """
+        assertThatThrownBy(() -> deserialize(new StringReader("""
                         {
                           "version": "1",
                           "sources": [{
@@ -1951,8 +1864,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                             }]
                           }
                         }
-                        """
-                                .stripIndent())))
+                        """.stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
                         "1 error(s)",
@@ -1962,8 +1874,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
 
     @Test
     public void fails_if_node_target_existence_constraint_refers_to_non_existent_label() {
-        assertThatThrownBy(() -> deserialize(new StringReader(
-                        """
+        assertThatThrownBy(() -> deserialize(new StringReader("""
                         {
                           "version": "1",
                           "sources": [{
@@ -1988,8 +1899,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                             }]
                           }
                         }
-                        """
-                                .stripIndent())))
+                        """.stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
                         "1 error(s)",
@@ -1999,8 +1909,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
 
     @Test
     public void fails_if_node_target_existence_constraint_property_refers_to_non_existent_property() {
-        assertThatThrownBy(() -> deserialize(new StringReader(
-                        """
+        assertThatThrownBy(() -> deserialize(new StringReader("""
                         {
                           "version": "1",
                           "sources": [{
@@ -2025,8 +1934,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                             }]
                           }
                         }
-                        """
-                                .stripIndent())))
+                        """.stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
                         "1 error(s)",
@@ -2036,8 +1944,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
 
     @Test
     public void fails_if_node_target_range_index_refers_to_non_existent_label() {
-        assertThatThrownBy(() -> deserialize(new StringReader(
-                        """
+        assertThatThrownBy(() -> deserialize(new StringReader("""
                         {
                           "version": "1",
                           "sources": [{
@@ -2062,8 +1969,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                             }]
                           }
                         }
-                        """
-                                .stripIndent())))
+                        """.stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
                         "1 error(s)",
@@ -2073,8 +1979,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
 
     @Test
     public void fails_if_node_target_range_index_property_refers_to_non_existent_property() {
-        assertThatThrownBy(() -> deserialize(new StringReader(
-                        """
+        assertThatThrownBy(() -> deserialize(new StringReader("""
                         {
                           "version": "1",
                           "sources": [{
@@ -2099,8 +2004,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                             }]
                           }
                         }
-                        """
-                                .stripIndent())))
+                        """.stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
                         "1 error(s)",
@@ -2110,8 +2014,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
 
     @Test
     public void fails_if_node_target_text_index_refers_to_non_existent_label() {
-        assertThatThrownBy(() -> deserialize(new StringReader(
-                        """
+        assertThatThrownBy(() -> deserialize(new StringReader("""
                         {
                           "version": "1",
                           "sources": [{
@@ -2136,8 +2039,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                             }]
                           }
                         }
-                        """
-                                .stripIndent())))
+                        """.stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
                         "1 error(s)",
@@ -2147,8 +2049,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
 
     @Test
     public void fails_if_node_target_text_index_property_refers_to_non_existent_property() {
-        assertThatThrownBy(() -> deserialize(new StringReader(
-                        """
+        assertThatThrownBy(() -> deserialize(new StringReader("""
                         {
                           "version": "1",
                           "sources": [{
@@ -2173,8 +2074,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                             }]
                           }
                         }
-                        """
-                                .stripIndent())))
+                        """.stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
                         "1 error(s)",
@@ -2184,8 +2084,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
 
     @Test
     public void fails_if_node_target_point_index_refers_to_non_existent_label() {
-        assertThatThrownBy(() -> deserialize(new StringReader(
-                        """
+        assertThatThrownBy(() -> deserialize(new StringReader("""
                         {
                           "version": "1",
                           "sources": [{
@@ -2210,8 +2109,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                             }]
                           }
                         }
-                        """
-                                .stripIndent())))
+                        """.stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
                         "1 error(s)",
@@ -2221,8 +2119,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
 
     @Test
     public void fails_if_node_target_point_index_property_refers_to_non_existent_property() {
-        assertThatThrownBy(() -> deserialize(new StringReader(
-                        """
+        assertThatThrownBy(() -> deserialize(new StringReader("""
                         {
                           "version": "1",
                           "sources": [{
@@ -2247,8 +2144,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                             }]
                           }
                         }
-                        """
-                                .stripIndent())))
+                        """.stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
                         "1 error(s)",
@@ -2258,8 +2154,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
 
     @Test
     public void fails_if_node_target_fulltext_index_refers_to_non_existent_label() {
-        assertThatThrownBy(() -> deserialize(new StringReader(
-                        """
+        assertThatThrownBy(() -> deserialize(new StringReader("""
                         {
                           "version": "1",
                           "sources": [{
@@ -2284,8 +2179,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                             }]
                           }
                         }
-                        """
-                                .stripIndent())))
+                        """.stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
                         "1 error(s)",
@@ -2295,8 +2189,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
 
     @Test
     public void fails_if_node_target_fulltext_index_property_refers_to_non_existent_property() {
-        assertThatThrownBy(() -> deserialize(new StringReader(
-                        """
+        assertThatThrownBy(() -> deserialize(new StringReader("""
                         {
                           "version": "1",
                           "sources": [{
@@ -2321,8 +2214,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                             }]
                           }
                         }
-                        """
-                                .stripIndent())))
+                        """.stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
                         "1 error(s)",
@@ -2332,8 +2224,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
 
     @Test
     public void fails_if_node_target_vector_index_refers_to_non_existent_label() {
-        assertThatThrownBy(() -> deserialize(new StringReader(
-                        """
+        assertThatThrownBy(() -> deserialize(new StringReader("""
                         {
                           "version": "1",
                           "sources": [{
@@ -2358,8 +2249,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                             }]
                           }
                         }
-                        """
-                                .stripIndent())))
+                        """.stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
                         "1 error(s)",
@@ -2369,8 +2259,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
 
     @Test
     public void fails_if_node_target_vector_index_property_refers_to_non_existent_property() {
-        assertThatThrownBy(() -> deserialize(new StringReader(
-                        """
+        assertThatThrownBy(() -> deserialize(new StringReader("""
                         {
                           "version": "1",
                           "sources": [{
@@ -2395,8 +2284,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                             }]
                           }
                         }
-                        """
-                                .stripIndent())))
+                        """.stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
                         "1 error(s)",
@@ -2406,8 +2294,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
 
     @Test
     public void fails_if_relationship_target_type_constraint_property_refers_to_non_existent_property() {
-        assertThatThrownBy(() -> deserialize(new StringReader(
-                        """
+        assertThatThrownBy(() -> deserialize(new StringReader("""
                         {
                             "version": "1",
                             "sources": [{
@@ -2449,8 +2336,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                                 }]
                             }
                         }
-                        """
-                                .stripIndent())))
+                        """.stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
                         "1 error(s)",
@@ -2460,8 +2346,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
 
     @Test
     public void fails_if_relationship_target_key_constraint_property_refers_to_non_existent_property() {
-        assertThatThrownBy(() -> deserialize(new StringReader(
-                        """
+        assertThatThrownBy(() -> deserialize(new StringReader("""
                         {
                             "version": "1",
                             "sources": [{
@@ -2496,8 +2381,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                                 }]
                             }
                         }
-                        """
-                                .stripIndent())))
+                        """.stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
                         "1 error(s)",
@@ -2507,8 +2391,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
 
     @Test
     public void fails_if_relationship_target_unique_constraint_property_refers_to_non_existent_property() {
-        assertThatThrownBy(() -> deserialize(new StringReader(
-                        """
+        assertThatThrownBy(() -> deserialize(new StringReader("""
                         {
                             "version": "1",
                             "sources": [{
@@ -2543,8 +2426,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                                 }]
                             }
                         }
-                        """
-                                .stripIndent())))
+                        """.stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
                         "1 error(s)",
@@ -2554,8 +2436,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
 
     @Test
     public void fails_if_relationship_target_existence_constraint_property_refers_to_non_existent_property() {
-        assertThatThrownBy(() -> deserialize(new StringReader(
-                        """
+        assertThatThrownBy(() -> deserialize(new StringReader("""
                         {
                             "version": "1",
                             "sources": [{
@@ -2597,8 +2478,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                                 }]
                             }
                         }
-                        """
-                                .stripIndent())))
+                        """.stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
                         "1 error(s)",
@@ -2608,8 +2488,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
 
     @Test
     public void fails_if_relationship_target_range_index_property_refers_to_non_existent_property() {
-        assertThatThrownBy(() -> deserialize(new StringReader(
-                        """
+        assertThatThrownBy(() -> deserialize(new StringReader("""
                         {
                             "version": "1",
                             "sources": [{
@@ -2651,8 +2530,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                                 }]
                             }
                         }
-                        """
-                                .stripIndent())))
+                        """.stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
                         "1 error(s)",
@@ -2662,8 +2540,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
 
     @Test
     public void fails_if_relationship_target_text_index_property_refers_to_non_existent_property() {
-        assertThatThrownBy(() -> deserialize(new StringReader(
-                        """
+        assertThatThrownBy(() -> deserialize(new StringReader("""
                         {
                             "version": "1",
                             "sources": [{
@@ -2705,8 +2582,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                                 }]
                             }
                         }
-                        """
-                                .stripIndent())))
+                        """.stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
                         "1 error(s)",
@@ -2716,8 +2592,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
 
     @Test
     public void fails_if_relationship_target_point_index_property_refers_to_non_existent_property() {
-        assertThatThrownBy(() -> deserialize(new StringReader(
-                        """
+        assertThatThrownBy(() -> deserialize(new StringReader("""
                         {
                             "version": "1",
                             "sources": [{
@@ -2759,8 +2634,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                                 }]
                             }
                         }
-                        """
-                                .stripIndent())))
+                        """.stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
                         "1 error(s)",
@@ -2770,8 +2644,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
 
     @Test
     public void fails_if_relationship_target_fulltext_index_property_refers_to_non_existent_property() {
-        assertThatThrownBy(() -> deserialize(new StringReader(
-                        """
+        assertThatThrownBy(() -> deserialize(new StringReader("""
                         {
                             "version": "1",
                             "sources": [{
@@ -2813,8 +2686,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                                 }]
                             }
                         }
-                        """
-                                .stripIndent())))
+                        """.stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
                         "1 error(s)",
@@ -2824,8 +2696,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
 
     @Test
     public void fails_if_relationship_target_vector_index_property_refers_to_non_existent_property() {
-        assertThatThrownBy(() -> deserialize(new StringReader(
-                        """
+        assertThatThrownBy(() -> deserialize(new StringReader("""
                         {
                             "version": "1",
                             "sources": [{
@@ -2867,8 +2738,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                                 }]
                             }
                         }
-                        """
-                                .stripIndent())))
+                        """.stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
                         "1 error(s)",
@@ -2878,8 +2748,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
 
     @Test
     public void fails_if_relationship_start_node_reference_refers_to_non_existent_property() {
-        assertThatThrownBy(() -> deserialize(new StringReader(
-                        """
+        assertThatThrownBy(() -> deserialize(new StringReader("""
                         {
                             "version": "1",
                             "sources": [{
@@ -2915,8 +2784,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                                 }]
                             }
                         }
-                        """
-                                .stripIndent())))
+                        """.stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
                         "1 error(s)",
@@ -2926,8 +2794,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
 
     @Test
     public void fails_if_relationship_end_node_reference_refers_to_non_existent_property() {
-        assertThatThrownBy(() -> deserialize(new StringReader(
-                        """
+        assertThatThrownBy(() -> deserialize(new StringReader("""
                         {
                             "version": "1",
                             "sources": [{
@@ -2970,8 +2837,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                                 }]
                             }
                         }
-                        """
-                                .stripIndent())))
+                        """.stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
                         "1 error(s)",
@@ -2981,8 +2847,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
 
     @Test
     public void fails_if_relationship_start_node_reference_refers_to_non_key_and_non_unique_property() {
-        assertThatThrownBy(() -> deserialize(new StringReader(
-                        """
+        assertThatThrownBy(() -> deserialize(new StringReader("""
                         {
                             "version": "1",
                             "sources": [{
@@ -3026,8 +2891,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                                 }]
                             }
                         }
-                        """
-                                .stripIndent())))
+                        """.stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
                         "1 error(s)",
@@ -3037,8 +2901,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
 
     @Test
     public void fails_if_relationship_end_node_reference_refers_to_non_key_and_non_unique_property() {
-        assertThatThrownBy(() -> deserialize(new StringReader(
-                        """
+        assertThatThrownBy(() -> deserialize(new StringReader("""
                         {
                             "version": "1",
                             "sources": [{
@@ -3082,8 +2945,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                                 }]
                             }
                         }
-                        """
-                                .stripIndent())))
+                        """.stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
                         "1 error(s)",
@@ -3093,8 +2955,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
 
     @Test
     public void does_not_fail_if_relationship_start_node_reference_refers_to_node_key_property() {
-        assertThatCode(() -> deserialize(new StringReader(
-                        """
+        assertThatCode(() -> deserialize(new StringReader("""
                         {
                             "version": "1",
                             "sources": [{
@@ -3135,15 +2996,12 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                                 }]
                             }
                         }
-                        """
-                                .stripIndent())))
-                .doesNotThrowAnyException();
+                        """.stripIndent()))).doesNotThrowAnyException();
     }
 
     @Test
     public void does_not_fail_if_relationship_end_node_reference_refers_to_node_key_property() {
-        assertThatCode(() -> deserialize(new StringReader(
-                        """
+        assertThatCode(() -> deserialize(new StringReader("""
                         {
                             "version": "1",
                             "sources": [{
@@ -3184,15 +3042,12 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                                 }]
                             }
                         }
-                        """
-                                .stripIndent())))
-                .doesNotThrowAnyException();
+                        """.stripIndent()))).doesNotThrowAnyException();
     }
 
     @Test
     public void does_not_fail_if_relationship_start_node_reference_refers_to_node_unique_property() {
-        assertThatCode(() -> deserialize(new StringReader(
-                        """
+        assertThatCode(() -> deserialize(new StringReader("""
                         {
                             "version": "1",
                             "sources": [{
@@ -3233,15 +3088,12 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                                 }]
                             }
                         }
-                        """
-                                .stripIndent())))
-                .doesNotThrowAnyException();
+                        """.stripIndent()))).doesNotThrowAnyException();
     }
 
     @Test
     public void does_not_fail_if_relationship_end_node_reference_refers_to_node_unique_property() {
-        assertThatCode(() -> deserialize(new StringReader(
-                        """
+        assertThatCode(() -> deserialize(new StringReader("""
                         {
                             "version": "1",
                             "sources": [{
@@ -3282,15 +3134,12 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                                 }]
                             }
                         }
-                        """
-                                .stripIndent())))
-                .doesNotThrowAnyException();
+                        """.stripIndent()))).doesNotThrowAnyException();
     }
 
     @Test
     public void fails_if_relationship_start_node_reference_does_not_refer_to_node_key_or_unique_property() {
-        assertThatThrownBy(() -> deserialize(new StringReader(
-                        """
+        assertThatThrownBy(() -> deserialize(new StringReader("""
                         {
                             "version": "1",
                             "sources": [{
@@ -3326,8 +3175,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                                 }]
                             }
                         }
-                        """
-                                .stripIndent())))
+                        """.stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
                         "0 warning(s)",
@@ -3337,8 +3185,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
 
     @Test
     public void fails_if_relationship_end_node_reference_refers_to_node_without_keys_nor_unique_properties() {
-        assertThatCode(() -> deserialize(new StringReader(
-                        """
+        assertThatCode(() -> deserialize(new StringReader("""
                         {
                             "version": "1",
                             "sources": [{
@@ -3374,8 +3221,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                                 }]
                             }
                         }
-                        """
-                                .stripIndent())))
+                        """.stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
                         "2 error(s)",
@@ -3386,8 +3232,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
 
     @Test
     void fails_if_different_indexes_and_constraints_use_same_name() {
-        assertThatCode(() -> deserialize(new StringReader(
-                        """
+        assertThatCode(() -> deserialize(new StringReader("""
                         {
                             "version": "1",
                             "sources": [{
@@ -3447,8 +3292,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                                 }]
                             }
                         }
-                        """
-                                .stripIndent())))
+                        """.stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
                         "1 error(s)",
@@ -3458,8 +3302,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
 
     @Test
     void pass_when_shared_name_indexes_and_constraints_are_equivalent() {
-        assertThatCode(() -> deserialize(new StringReader(
-                        """
+        assertThatCode(() -> deserialize(new StringReader("""
                         {
                             "version": "1",
                             "sources": [{
@@ -3519,15 +3362,12 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                                 }]
                             }
                         }
-                        """
-                                .stripIndent())))
-                .doesNotThrowAnyException();
+                        """.stripIndent()))).doesNotThrowAnyException();
     }
 
     @Test
     void fail_when_shared_name_indexes_and_constraints_are_almost_equivalent() {
-        assertThatCode(() -> deserialize(new StringReader(
-                        """
+        assertThatCode(() -> deserialize(new StringReader("""
                         {
                             "version": "1",
                             "sources": [{
@@ -3587,8 +3427,7 @@ public class ImportSpecificationDeserializerExtraValidationTest {
                                 }]
                             }
                         }
-                        """
-                                .stripIndent())))
+                        """.stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
                         "1 error(s)",

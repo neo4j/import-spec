@@ -34,8 +34,7 @@ public class ImportSpecificationDeserializerActionTest {
 
     @Test
     void fails_if_actions_are_wrongly_typed() {
-        assertThatThrownBy(() -> deserialize(new StringReader(
-                        """
+        assertThatThrownBy(() -> deserialize(new StringReader("""
                         {
                             "version": "1",
                             "sources": [{
@@ -52,16 +51,14 @@ public class ImportSpecificationDeserializerActionTest {
                             },
                             "actions": 42
                         }
-                        """
-                                .stripIndent())))
+                        """.stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll("1 error(s)", "0 warning(s)", "$.actions: integer found, array expected");
     }
 
     @Test
     void fails_if_action_in_array_is_wrongly_typed() {
-        assertThatThrownBy(() -> deserialize(new StringReader(
-                        """
+        assertThatThrownBy(() -> deserialize(new StringReader("""
                         {
                             "version": "1",
                             "sources": [{
@@ -78,16 +75,14 @@ public class ImportSpecificationDeserializerActionTest {
                             },
                             "actions": [42]
                         }
-                        """
-                                .stripIndent())))
+                        """.stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll("1 error(s)", "0 warning(s)", "$.actions[0]: integer found, object expected");
     }
 
     @Test
     void fails_if_action_active_attribute_is_wrongly_typed() {
-        assertThatThrownBy(() -> deserialize(new StringReader(
-                        """
+        assertThatThrownBy(() -> deserialize(new StringReader("""
                         {
                             "version": "1",
                             "sources": [{
@@ -110,8 +105,7 @@ public class ImportSpecificationDeserializerActionTest {
                                 "query": "CREATE INDEX FOR (n:ANode) ON n.name"
                             }]
                         }
-                        """
-                                .stripIndent())))
+                        """.stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
                         "1 error(s)", "0 warning(s)", "$.actions[0].active: integer found, boolean expected");
@@ -119,8 +113,7 @@ public class ImportSpecificationDeserializerActionTest {
 
     @Test
     void fails_if_action_is_missing_type() {
-        assertThatThrownBy(() -> deserialize(new StringReader(
-                        """
+        assertThatThrownBy(() -> deserialize(new StringReader("""
                         {
                             "version": "1",
                             "sources": [{
@@ -141,16 +134,14 @@ public class ImportSpecificationDeserializerActionTest {
                                 "query": "CREATE INDEX FOR (n:ANode) ON n.name"
                             }]
                         }
-                        """
-                                .stripIndent())))
+                        """.stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll("0 warning(s)", "$.actions[0]: required property 'type' not found");
     }
 
     @Test
     void fails_if_action_is_wrongly_typed() {
-        assertThatThrownBy(() -> deserialize(new StringReader(
-                        """
+        assertThatThrownBy(() -> deserialize(new StringReader("""
                         {
                             "version": "1",
                             "sources": [{
@@ -172,16 +163,14 @@ public class ImportSpecificationDeserializerActionTest {
                                 "query": "CREATE INDEX FOR (n:ANode) ON n.name"
                             }]
                         }
-                        """
-                                .stripIndent())))
+                        """.stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll("0 warning(s)", "$.actions[0].type: integer found, string expected");
     }
 
     @Test
     void fails_if_action_type_is_unsupported() {
-        assertThatThrownBy(() -> deserialize(new StringReader(
-                        """
+        assertThatThrownBy(() -> deserialize(new StringReader("""
                         {
                             "version": "1",
                             "sources": [{
@@ -203,16 +192,14 @@ public class ImportSpecificationDeserializerActionTest {
                                 "query": "CREATE INDEX FOR (n:ANode) ON n.name"
                             }]
                         }
-                        """
-                                .stripIndent())))
+                        """.stripIndent())))
                 .isInstanceOf(UndeserializableActionException.class)
                 .hasMessageContaining("Expected exactly one action provider for action of type foobar, but found: 0");
     }
 
     @Test
     void fails_if_action_stage_is_wrongly_typed() {
-        assertThatThrownBy(() -> deserialize(new StringReader(
-                        """
+        assertThatThrownBy(() -> deserialize(new StringReader("""
                         {
                             "version": "1",
                             "sources": [{
@@ -234,16 +221,14 @@ public class ImportSpecificationDeserializerActionTest {
                                 "query": "CREATE INDEX FOR (n:ANode) ON n.name"
                             }]
                         }
-                        """
-                                .stripIndent())))
+                        """.stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll("0 warning(s)", "$.actions[0].stage: integer found, string expected");
     }
 
     @Test
     void fails_if_action_stage_is_unsupported() {
-        assertThatThrownBy(() -> deserialize(new StringReader(
-                        """
+        assertThatThrownBy(() -> deserialize(new StringReader("""
                         {
                             "version": "1",
                             "sources": [{
@@ -265,8 +250,7 @@ public class ImportSpecificationDeserializerActionTest {
                                 "query": "CREATE INDEX FOR (n:ANode) ON n.name"
                             }]
                         }
-                        """
-                                .stripIndent())))
+                        """.stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
                         "1 error(s)",
@@ -277,8 +261,7 @@ public class ImportSpecificationDeserializerActionTest {
 
     @Test
     void fails_if_cypher_action_execution_mode_is_wrongly_typed() {
-        assertThatThrownBy(() -> deserialize(new StringReader(
-                        """
+        assertThatThrownBy(() -> deserialize(new StringReader("""
                         {
                             "version": "1",
                             "sources": [{
@@ -301,8 +284,7 @@ public class ImportSpecificationDeserializerActionTest {
                                 "execution_mode": 42
                             }]
                         }
-                        """
-                                .stripIndent())))
+                        """.stripIndent())))
                 .isInstanceOf(UndeserializableActionException.class)
                 .hasMessageContaining(
                         "Action provider org.neo4j.importer.v1.actions.plugin.CypherActionProvider failed to deserialize");
@@ -310,8 +292,7 @@ public class ImportSpecificationDeserializerActionTest {
 
     @Test
     void fails_if_cypher_action_execution_mode_is_unsupported() {
-        assertThatThrownBy(() -> deserialize(new StringReader(
-                        """
+        assertThatThrownBy(() -> deserialize(new StringReader("""
                         {
                             "version": "1",
                             "sources": [{
@@ -334,8 +315,7 @@ public class ImportSpecificationDeserializerActionTest {
                                 "execution_mode": "foobar"
                             }]
                         }
-                        """
-                                .stripIndent())))
+                        """.stripIndent())))
                 .isInstanceOf(UndeserializableActionException.class)
                 .hasMessageContaining(
                         "Action provider org.neo4j.importer.v1.actions.plugin.CypherActionProvider failed to deserialize");

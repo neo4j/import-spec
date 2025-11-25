@@ -441,12 +441,11 @@ public class SparkExampleIT {
 
     private static void assertNodeConstraint(Driver driver, String constraintType, String label, String property) {
         try (Session session = driver.session()) {
-            var result = session.run(
-                    """
+            var result =
+                    session.run("""
                             SHOW CONSTRAINTS YIELD type, entityType, labelsOrTypes, properties \
                             WHERE type = $constraintType AND entityType = 'NODE' AND labelsOrTypes = [$label] AND properties = [$property] \
-                            RETURN count(*) = 1 AS result""",
-                    Map.of("constraintType", constraintType, "label", label, "property", property));
+                            RETURN count(*) = 1 AS result""", Map.of("constraintType", constraintType, "label", label, "property", property));
             var records = result.list(MapAccessor::asMap);
             assertThat(records).hasSize(1);
             assertThat((boolean) records.getFirst().get("result")).isTrue();
@@ -455,12 +454,10 @@ public class SparkExampleIT {
 
     private static void assertNodeTypeConstraint(Driver driver, String label, String property, String propertyType) {
         try (Session session = driver.session()) {
-            var result = session.run(
-                    """
+            var result = session.run("""
                             SHOW CONSTRAINTS YIELD type, entityType, labelsOrTypes, properties, propertyType \
                             WHERE type = 'NODE_PROPERTY_TYPE' AND entityType = 'NODE' AND labelsOrTypes = [$label] AND properties = [$property] AND propertyType = $propertyType \
-                            RETURN count(*) = 1 AS result""",
-                    Map.of("label", label, "property", property, "propertyType", propertyType));
+                            RETURN count(*) = 1 AS result""", Map.of("label", label, "property", property, "propertyType", propertyType));
             var records = result.list(MapAccessor::asMap);
             assertThat(records).hasSize(1);
             assertThat((boolean) records.getFirst().get("result")).isTrue();
@@ -470,12 +467,11 @@ public class SparkExampleIT {
     private static void assertRelationshipConstraint(
             Driver driver, String constraintType, String relType, String property) {
         try (Session session = driver.session()) {
-            var result = session.run(
-                    """
+            var result =
+                    session.run("""
                                     SHOW CONSTRAINTS YIELD type, entityType, labelsOrTypes, properties \
                                     WHERE type = $constraintType AND entityType = 'RELATIONSHIP' AND labelsOrTypes = [$type] AND properties = [$property] \
-                                    RETURN count(*) = 1 AS result""",
-                    Map.of("constraintType", constraintType, "type", relType, "property", property));
+                                    RETURN count(*) = 1 AS result""", Map.of("constraintType", constraintType, "type", relType, "property", property));
 
             var records = result.list(MapAccessor::asMap);
             assertThat(records).hasSize(1);
@@ -486,12 +482,10 @@ public class SparkExampleIT {
     private static void assertRelationshipTypeConstraint(
             Driver driver, String relType, String property, String propertyType) {
         try (Session session = driver.session()) {
-            var result = session.run(
-                    """
+            var result = session.run("""
                             SHOW CONSTRAINTS YIELD type, entityType, labelsOrTypes, properties, propertyType \
                             WHERE type = 'RELATIONSHIP_PROPERTY_TYPE' AND entityType = 'RELATIONSHIP' AND labelsOrTypes = [$type] AND properties = [$property] AND propertyType = $propertyType \
-                            RETURN count(*) = 1 AS result""",
-                    Map.of("type", relType, "property", property, "propertyType", propertyType));
+                            RETURN count(*) = 1 AS result""", Map.of("type", relType, "property", property, "propertyType", propertyType));
 
             var records = result.list(MapAccessor::asMap);
             assertThat(records).hasSize(1);

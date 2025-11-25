@@ -189,8 +189,7 @@ public class Neo4jAdminExampleIT {
     }
 
     private static void assertNodeConstraint(Driver driver, String constraintType, String label, String property) {
-        var records = driver.executableQuery(
-                        """
+        var records = driver.executableQuery("""
                                 SHOW CONSTRAINTS YIELD type, entityType, labelsOrTypes, properties \
                                 WHERE type = $constraintType AND entityType = 'NODE' AND labelsOrTypes = [$label] AND properties = [$property] \
                                 RETURN count(*) = 1 AS result""")
@@ -203,8 +202,7 @@ public class Neo4jAdminExampleIT {
     }
 
     private static void assertNodeTypeConstraint(Driver driver, String label, String property, String propertyType) {
-        var records = driver.executableQuery(
-                        """
+        var records = driver.executableQuery("""
                                 SHOW CONSTRAINTS YIELD type, entityType, labelsOrTypes, properties, propertyType \
                                 WHERE type = 'NODE_PROPERTY_TYPE' AND entityType = 'NODE' AND labelsOrTypes = [$label] AND properties = [$property] AND propertyType = $propertyType \
                                 RETURN count(*) = 1 AS result""")
@@ -218,8 +216,7 @@ public class Neo4jAdminExampleIT {
 
     private static void assertRelationshipConstraint(
             Driver driver, String constraintType, String relType, String property) {
-        var records = driver.executableQuery(
-                        """
+        var records = driver.executableQuery("""
                                 SHOW CONSTRAINTS YIELD type, entityType, labelsOrTypes, properties \
                                 WHERE type = $constraintType AND entityType = 'RELATIONSHIP' AND labelsOrTypes = [$type] AND properties = [$property] \
                                 RETURN count(*) = 1 AS result""")
@@ -233,8 +230,7 @@ public class Neo4jAdminExampleIT {
 
     private static void assertRelationshipTypeConstraint(
             Driver driver, String relType, String property, String propertyType) {
-        var records = driver.executableQuery(
-                        """
+        var records = driver.executableQuery("""
                                 SHOW CONSTRAINTS YIELD type, entityType, labelsOrTypes, properties, propertyType \
                                 WHERE type = 'RELATIONSHIP_PROPERTY_TYPE' AND entityType = 'RELATIONSHIP' AND labelsOrTypes = [$type] AND properties = [$property] AND propertyType = $propertyType \
                                 RETURN count(*) = 1 AS result""")
