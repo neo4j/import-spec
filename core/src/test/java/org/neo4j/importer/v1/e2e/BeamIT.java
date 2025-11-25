@@ -33,6 +33,7 @@ import org.apache.beam.sdk.io.jdbc.JdbcIO;
 import org.apache.beam.sdk.io.jdbc.JdbcIO.DataSourceConfiguration;
 import org.apache.beam.sdk.schemas.SchemaCoder;
 import org.apache.beam.sdk.testing.TestPipeline;
+import org.apache.beam.sdk.testing.TestPipelineExtension;
 import org.apache.beam.sdk.transforms.Create;
 import org.apache.beam.sdk.transforms.DoFn;
 import org.apache.beam.sdk.transforms.PTransform;
@@ -43,11 +44,10 @@ import org.apache.beam.sdk.values.PCollection;
 import org.apache.beam.sdk.values.Row;
 import org.assertj.core.api.Assertions;
 import org.jetbrains.annotations.NotNull;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.ClassRule;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.neo4j.driver.AuthTokens;
 import org.neo4j.driver.Driver;
 import org.neo4j.driver.GraphDatabase;
@@ -68,28 +68,29 @@ import org.neo4j.importer.v1.pipeline.TargetStep;
 import org.neo4j.importer.v1.sources.JdbcSource;
 import org.neo4j.importer.v1.sources.Source;
 import org.neo4j.importer.v1.targets.PropertyMapping;
-import org.testcontainers.containers.Neo4jContainer;
-import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.neo4j.Neo4jContainer;
+import org.testcontainers.postgresql.PostgreSQLContainer;
 import org.testcontainers.utility.DockerImageName;
 
+@ExtendWith(TestPipelineExtension.class)
+@Testcontainers
 public class BeamIT {
 
-    @Rule
-    public final TestPipeline pipeline = TestPipeline.create();
-
-    @ClassRule
-    public static Neo4jContainer<?> NEO4J = new Neo4jContainer<>(DockerImageName.parse("neo4j:5-enterprise"))
+    @Container
+    public static Neo4jContainer NEO4J = new Neo4jContainer(DockerImageName.parse("neo4j:5-enterprise"))
             .withEnv("NEO4J_ACCEPT_LICENSE_AGREEMENT", "yes")
             .withAdminPassword("letmein!");
 
-    @ClassRule
-    public static PostgreSQLContainer<?> POSTGRES = new PostgreSQLContainer<>(DockerImageName.parse("postgres:16.2"))
+    @Container
+    public static PostgreSQLContainer POSTGRES = new PostgreSQLContainer(DockerImageName.parse("postgres:16.2"))
             .withDatabaseName("northwind")
             .withInitScript("e2e/postgres-dump/northwind.sql");
 
     private Driver neo4jDriver;
 
-    @Before
+    @BeforeEach
     public void prepare() {
         neo4jDriver = GraphDatabase.driver(NEO4J.getBoltUrl(), AuthTokens.basic("neo4j", NEO4J.getAdminPassword()));
         neo4jDriver.verifyConnectivity();
@@ -99,22 +100,22 @@ public class BeamIT {
         }
     }
 
-    @After
+    @AfterEach
     public void cleanUp() {
         neo4jDriver.close();
     }
 
     @Test
-    public void imports_data_via_Beam_and_json_spec() throws Exception {
-        runBeamImport("json");
+    public void imports_data_via_Beam_and_json_spec(TestPipeline pipeline) throws Exception {
+        runBeamImport(pipeline, "json");
     }
 
     @Test
-    public void imports_data_via_Beam_and_yaml_spec() throws Exception {
-        runBeamImport("yaml");
+    public void imports_data_via_Beam_and_yaml_spec(TestPipeline pipeline) throws Exception {
+        runBeamImport(pipeline, "yaml");
     }
 
-    private void runBeamImport(String extension) throws Exception {
+    private void runBeamImport(TestPipeline pipeline, String extension) throws Exception {
         String neo4jUrl = NEO4J.getBoltUrl();
         String neo4jPassword = NEO4J.getAdminPassword();
         var importSpec =

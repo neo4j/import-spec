@@ -60,6 +60,7 @@ import org.apache.beam.sdk.coders.VarIntCoder;
 import org.apache.beam.sdk.extensions.avro.coders.AvroCoder;
 import org.apache.beam.sdk.io.parquet.ParquetIO;
 import org.apache.beam.sdk.testing.TestPipeline;
+import org.apache.beam.sdk.testing.TestPipelineExtension;
 import org.apache.beam.sdk.transforms.Create;
 import org.apache.beam.sdk.transforms.DoFn;
 import org.apache.beam.sdk.transforms.GroupIntoBatches;
@@ -70,10 +71,8 @@ import org.apache.beam.sdk.transforms.Wait;
 import org.apache.beam.sdk.transforms.WithKeys;
 import org.apache.beam.sdk.values.KV;
 import org.apache.beam.sdk.values.PCollection;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.junit.ClassRule;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.neo4j.cypherdsl.core.Cypher;
 import org.neo4j.cypherdsl.core.Expression;
 import org.neo4j.cypherdsl.core.MapExpression;
@@ -102,21 +101,22 @@ import org.neo4j.importer.v1.pipeline.TargetStep;
 import org.neo4j.importer.v1.sources.Source;
 import org.neo4j.importer.v1.sources.SourceProvider;
 import org.neo4j.importer.v1.targets.PropertyType;
-import org.testcontainers.containers.Neo4jContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.neo4j.Neo4jContainer;
 import org.testcontainers.utility.DockerImageName;
 
+@ExtendWith(TestPipelineExtension.class)
+@Testcontainers
 public class BeamExampleIT {
 
-    @Rule
-    public final TestPipeline pipeline = TestPipeline.create();
-
-    @ClassRule
-    public static Neo4jContainer<?> NEO4J = new Neo4jContainer<>(DockerImageName.parse("neo4j:5-enterprise"))
+    @Container
+    public static Neo4jContainer NEO4J = new Neo4jContainer(DockerImageName.parse("neo4j:5-enterprise"))
             .withEnv("NEO4J_ACCEPT_LICENSE_AGREEMENT", "yes")
             .withAdminPassword("letmein!");
 
     @Test
-    public void imports_dvd_rental_data_set() throws Exception {
+    public void imports_dvd_rental_data_set(TestPipeline pipeline) throws Exception {
         try (InputStream stream = this.getClass().getResourceAsStream("/specs/dvd_rental.yaml")) {
             assertThat(stream).isNotNull();
 
@@ -125,9 +125,9 @@ public class BeamExampleIT {
                 var importPipeline = ImportPipeline.of(ImportSpecificationDeserializer.deserialize(reader));
                 importPipeline.forEach(step -> {
                     switch (step) {
-                        case SourceStep source -> handleSource(source, outputs);
-                        case ActionStep action -> handleAction(action, outputs);
-                        case TargetStep target -> handleTarget(target, outputs);
+                        case SourceStep source -> handleSource(source, pipeline, outputs);
+                        case ActionStep action -> handleAction(action, pipeline, outputs);
+                        case TargetStep target -> handleTarget(target, pipeline, outputs);
                         default -> throw new IllegalStateException("Unexpected value: " + step);
                     }
                 });
@@ -152,7 +152,7 @@ public class BeamExampleIT {
         }
     }
 
-    private void handleSource(SourceStep step, Map<String, PCollection<?>> outputs) {
+    private void handleSource(SourceStep step, TestPipeline pipeline, Map<String, PCollection<?>> outputs) {
         var name = step.name();
         var source = step.source();
         assertThat(source).isInstanceOf(ParquetSource.class);
@@ -165,7 +165,7 @@ public class BeamExampleIT {
         outputs.put(source.getName(), output);
     }
 
-    private void handleAction(ActionStep step, Map<String, PCollection<?>> outputs) {
+    private void handleAction(ActionStep step, TestPipeline pipeline, Map<String, PCollection<?>> outputs) {
         var actionName = step.name();
         var action = step.action();
         assertThat(action).isInstanceOf(CypherAction.class);
@@ -183,7 +183,7 @@ public class BeamExampleIT {
     }
 
     @SuppressWarnings("unchecked")
-    private void handleTarget(TargetStep step, Map<String, PCollection<?>> outputs) {
+    private void handleTarget(TargetStep step, TestPipeline pipeline, Map<String, PCollection<?>> outputs) {
         var stepName = step.name();
         assertThat(step).isInstanceOf(EntityTargetStep.class);
         var entityTargetStep = (EntityTargetStep) step;
@@ -347,8 +347,7 @@ public class BeamExampleIT {
         }
     }
 
-    private static class TargetSchemaIO
-            extends PTransform<@NonNull PCollection<Integer>, @NonNull PCollection<WriteCounters>> {
+    private static class TargetSchemaIO extends PTransform<PCollection<Integer>, PCollection<WriteCounters>> {
 
         private final String url;
 
@@ -362,13 +361,13 @@ public class BeamExampleIT {
             this.target = target;
         }
 
-        public static PTransform<@NonNull PCollection<Integer>, @NonNull PCollection<WriteCounters>> initSchema(
+        public static PTransform<PCollection<Integer>, PCollection<WriteCounters>> initSchema(
                 String url, String password, EntityTargetStep target) {
             return new TargetSchemaIO(url, password, target);
         }
 
         @Override
-        public @NonNull PCollection<WriteCounters> expand(@NonNull PCollection<Integer> input) {
+        public PCollection<WriteCounters> expand(PCollection<Integer> input) {
             return input.apply(ParDo.of(TargetSchemaWriteFn.of(url, password, target)));
         }
 
@@ -552,8 +551,7 @@ public class BeamExampleIT {
     }
 
     private static class TargetIO
-            extends PTransform<
-                    @NonNull PCollection<KV<Integer, Iterable<GenericRecord>>>, @NonNull PCollection<WriteCounters>> {
+            extends PTransform<PCollection<KV<Integer, Iterable<GenericRecord>>>, PCollection<WriteCounters>> {
 
         private final String url;
 
@@ -567,14 +565,13 @@ public class BeamExampleIT {
             this.target = target;
         }
 
-        public static PTransform<
-                        @NonNull PCollection<KV<Integer, Iterable<GenericRecord>>>, @NonNull PCollection<WriteCounters>>
+        public static PTransform<PCollection<KV<Integer, Iterable<GenericRecord>>>, PCollection<WriteCounters>>
                 writeAll(String boltUrl, String adminPassword, EntityTargetStep target) {
             return new TargetIO(boltUrl, adminPassword, target);
         }
 
         @Override
-        public @NonNull PCollection<WriteCounters> expand(PCollection<KV<Integer, Iterable<GenericRecord>>> input) {
+        public PCollection<WriteCounters> expand(PCollection<KV<Integer, Iterable<GenericRecord>>> input) {
             return input.apply(ParDo.of(TargetWriteFn.of(url, password, target)));
         }
 
@@ -774,7 +771,7 @@ public class BeamExampleIT {
         }
 
         @Override
-        public void encode(GenericRecord value, @NonNull OutputStream outStream) throws IOException {
+        public void encode(GenericRecord value, OutputStream outStream) throws IOException {
             assertThat(value).isNotNull();
             var schema = value.getSchema();
             String schemaString = schema.toString();
@@ -786,7 +783,7 @@ public class BeamExampleIT {
         }
 
         @Override
-        public GenericRecord decode(@NonNull InputStream inStream) throws IOException {
+        public GenericRecord decode(InputStream inStream) throws IOException {
             String schemaString = StringUtf8Coder.of().decode(inStream);
             String schemaHash = StringUtf8Coder.of().decode(inStream);
             AvroCoder<GenericRecord> coder =
@@ -1005,8 +1002,7 @@ public class BeamExampleIT {
         }
     }
 
-    private static class CypherActionIO
-            extends PTransform<@NonNull PCollection<Integer>, @NonNull PCollection<Integer>> {
+    private static class CypherActionIO extends PTransform<PCollection<Integer>, PCollection<Integer>> {
 
         private final CypherAction action;
 
@@ -1020,13 +1016,13 @@ public class BeamExampleIT {
             this.password = password;
         }
 
-        public static PTransform<@NonNull PCollection<Integer>, @NonNull PCollection<Integer>> run(
+        public static PTransform<PCollection<Integer>, PCollection<Integer>> run(
                 CypherAction action, String url, String password) {
             return new CypherActionIO(action, url, password);
         }
 
         @Override
-        public @NonNull PCollection<Integer> expand(@NonNull PCollection<Integer> input) {
+        public PCollection<Integer> expand(PCollection<Integer> input) {
             return input.apply(ParDo.of(new CypherActionFn(action, url, password)));
         }
     }
