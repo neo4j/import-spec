@@ -298,16 +298,16 @@ public class ImportPipeline implements Iterable<ImportStep>, Serializable {
                     var relationshipTarget = indexedRelationshipTargets.get(name);
                     var startNode = relationshipTarget.getStartNodeReference();
                     var endNode = relationshipTarget.getEndNodeReference();
-                    var startNodeStep = redefineRelationshipNode(
-                            processedNodeSteps.get(startNode.getName()), startNode.getKeyMappings());
-                    var endNodeStep = redefineRelationshipNode(
-                            processedNodeSteps.get(endNode.getName()), endNode.getKeyMappings());
+                    var originalStartNodeTarget = processedNodeSteps.get(startNode.getName());
+                    var startNodeStep = redefineRelationshipNode(originalStartNodeTarget, startNode.getKeyMappings());
+                    var originalEndNodeTarget = processedNodeSteps.get(endNode.getName());
+                    var endNodeStep = redefineRelationshipNode(originalEndNodeTarget, endNode.getKeyMappings());
                     var relationshipStep =
                             new RelationshipTargetStep(relationshipTarget, startNodeStep, endNodeStep, dependencySteps);
                     processedSteps.put(qualifiedName, relationshipStep);
                     var allDependencies = new HashSet<>(dependencySteps);
-                    allDependencies.add(startNodeStep);
-                    allDependencies.add(endNodeStep);
+                    allDependencies.add(originalStartNodeTarget);
+                    allDependencies.add(originalEndNodeTarget);
                     result.put(relationshipStep, allDependencies);
                     break;
                 case QUERY_TARGET:
