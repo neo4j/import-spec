@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.neo4j.importer</groupId>
         <artifactId>import-spec-examples-parent</artifactId>
-        <version>v1.0.0-rc09</version>
+        <version>1.0.0-rc09</version>
     </parent>
     <artifactId>apache-beam-example</artifactId>
     <name>apache-beam-example</name>
