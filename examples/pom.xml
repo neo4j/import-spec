@@ -25,7 +25,7 @@
             <dependency>
                 <groupId>org.neo4j</groupId>
                 <artifactId>neo4j-cypher-dsl</artifactId>
-                <version>2025.2.0</version>
+                <version>2025.2.1</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
