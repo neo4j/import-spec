@@ -21,15 +21,22 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.neo4j.importer.v1.ImportSpecificationDeserializer.deserialize;
 
 import java.io.StringReader;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.assertj.core.util.Arrays;
 import org.junit.jupiter.api.Test;
 import org.neo4j.importer.v1.actions.ActionStage;
 import org.neo4j.importer.v1.actions.plugin.CypherAction;
 import org.neo4j.importer.v1.actions.plugin.CypherExecutionMode;
 import org.neo4j.importer.v1.sources.BigQuerySource;
 import org.neo4j.importer.v1.targets.CustomQueryTarget;
+import org.neo4j.importer.v1.targets.NodeTarget;
+import org.neo4j.importer.v1.targets.PropertyMapping;
 import org.neo4j.importer.v1.targets.Targets;
+import org.neo4j.importer.v1.targets.WriteMode;
 import org.neo4j.importer.v1.validation.InvalidSpecificationException;
 import org.neo4j.importer.v1.validation.UnparseableSpecificationException;
 
@@ -129,6 +136,58 @@ class ImportSpecificationDeserializerTest {
                         ActionStage.START,
                         "CREATE (:Started)",
                         CypherExecutionMode.TRANSACTION)));
+    }
+
+    @Test
+    void deserializes_job_spec_with_uppercase_write_mode() throws Exception {
+        var json = """
+                            {
+                                "version": "1",
+                                "sources": [{
+                                    "name": "my-bigquery-source",
+                                    "type": "bigquery",
+                                    "query": "SELECT id, name FROM my.table"
+                                }],
+                                "targets": {
+                                    "nodes": [{
+                                        "name": "my-node",
+                                        "source": "my-bigquery-source",
+                                        "write_mode": "CREATE",
+                                        "labels": ["ALabel"],
+                                        "properties": [
+                                            {
+                                                "source_field": "id",
+                                                "target_property": "id"
+                                            },
+                                        ]
+                                    }]
+                                }
+                            }
+                        """.stripIndent();
+
+        var spec = deserialize(new StringReader(json));
+
+        assertThat(spec.getConfiguration()).isEqualTo(new Configuration(null));
+        assertThat(spec.getSources())
+                .isEqualTo(List.of(new BigQuerySource("my-bigquery-source", "SELECT id, name FROM my.table")));
+        assertThat(spec.getTargets())
+                .isEqualTo(new Targets(
+                        List.of(new NodeTarget(
+                                true,
+                                "my-node",
+                                "my-bigquery-source",
+                                null,
+                                WriteMode.CREATE,
+                                (ObjectNode) null,
+                                List.of("ALabel"),
+                                List.of(new PropertyMapping(
+                                        "id", "id", null
+                                )),
+                                null
+                        )),
+                        null,
+                        null));
+        assertThat(spec.getActions()).isEmpty();
     }
 
     @Test

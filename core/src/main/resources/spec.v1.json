@@ -142,7 +142,9 @@
           "type": "string",
           "enum": [
             "create",
-            "merge"
+            "CREATE",
+            "merge",
+            "MERGE"
           ]
         },
         "properties": {
