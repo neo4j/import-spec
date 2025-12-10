@@ -250,7 +250,9 @@
           "type": "string",
           "enum": [
             "match",
-            "merge"
+            "MATCH",
+            "merge",
+            "MERGE"
           ]
         },
         "type": {
@@ -387,14 +389,23 @@
           "type": "string",
           "enum": [
             "start",
+            "START",
             "post_sources",
+            "POST_SOURCES",
             "pre_nodes",
+            "PRE_NODES",
             "post_nodes",
+            "POST_NODES",
             "pre_relationships",
+            "PRE_RELATIONSHIPS",
             "post_relationships",
+            "POST_RELATIONSHIPS",
             "pre_queries",
+            "PRE_QUERIES",
             "post_queries",
-            "end"
+            "POST_QUERIES",
+            "end",
+            "END"
           ]
         }
       },
@@ -422,28 +433,51 @@
           "type": "string",
           "enum": [
             "boolean",
+            "BOOLEAN",
             "boolean_array",
+            "BOOLEAN_ARRAY",
             "byte_array",
+            "BYTE_ARRAY",
             "date",
+            "DATE",
             "date_array",
+            "DATE_ARRAY",
             "duration",
+            "DURATION",
             "duration_array",
+            "DURATION_ARRAY",
             "float",
+            "FLOAT",
             "float_array",
+            "FLOAT_ARRAY",
             "integer",
+            "INTEGER",
             "integer_array",
+            "INTEGER_ARRAY",
             "local_datetime",
+            "LOCAL_DATETIME",
             "local_datetime_array",
+            "LOCAL_DATETIME_ARRAY",
             "local_time",
+            "LOCAL_TIME",
             "local_time_array",
+            "LOCAL_TIME_ARRAY",
             "point",
+            "POINT",
             "point_array",
+            "POINT_ARRAY",
             "string",
+            "STRING",
             "string_array",
+            "STRING_ARRAY",
             "zoned_datetime",
+            "ZONED_DATETIME",
             "zoned_datetime_array",
+            "ZONED_DATETIME_ARRAY",
             "zoned_time",
-            "zoned_time_array"
+            "ZONED_TIME",
+            "zoned_time_array",
+            "ZONED_TIME_ARRAY"
           ]
         }
       },

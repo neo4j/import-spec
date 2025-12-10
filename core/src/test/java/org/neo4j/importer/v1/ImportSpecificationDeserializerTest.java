@@ -20,13 +20,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.neo4j.importer.v1.ImportSpecificationDeserializer.deserialize;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.io.StringReader;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import org.assertj.core.util.Arrays;
 import org.junit.jupiter.api.Test;
 import org.neo4j.importer.v1.actions.ActionStage;
 import org.neo4j.importer.v1.actions.plugin.CypherAction;
@@ -35,6 +32,7 @@ import org.neo4j.importer.v1.sources.BigQuerySource;
 import org.neo4j.importer.v1.targets.CustomQueryTarget;
 import org.neo4j.importer.v1.targets.NodeTarget;
 import org.neo4j.importer.v1.targets.PropertyMapping;
+import org.neo4j.importer.v1.targets.PropertyType;
 import org.neo4j.importer.v1.targets.Targets;
 import org.neo4j.importer.v1.targets.WriteMode;
 import org.neo4j.importer.v1.validation.InvalidSpecificationException;
@@ -139,7 +137,7 @@ class ImportSpecificationDeserializerTest {
     }
 
     @Test
-    void deserializes_job_spec_with_uppercase_write_mode() throws Exception {
+    void deserializes_job_spec_with_uppercase_write_mode_and_property_type() throws Exception {
         var json = """
                             {
                                 "version": "1",
@@ -157,7 +155,8 @@ class ImportSpecificationDeserializerTest {
                                         "properties": [
                                             {
                                                 "source_field": "id",
-                                                "target_property": "id"
+                                                "target_property": "id",
+                                                "target_property_type": "STRING"
                                             },
                                         ]
                                     }]
@@ -180,11 +179,8 @@ class ImportSpecificationDeserializerTest {
                                 WriteMode.CREATE,
                                 (ObjectNode) null,
                                 List.of("ALabel"),
-                                List.of(new PropertyMapping(
-                                        "id", "id", null
-                                )),
-                                null
-                        )),
+                                List.of(new PropertyMapping("id", "id", PropertyType.STRING)),
+                                null)),
                         null,
                         null));
         assertThat(spec.getActions()).isEmpty();

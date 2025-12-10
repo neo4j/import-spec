@@ -21,16 +21,12 @@ import static org.neo4j.importer.v1.ImportSpecificationDeserializer.deserialize;
 
 import java.io.StringReader;
 import org.junit.jupiter.api.Test;
-import org.neo4j.importer.v1.actions.ActionStage;
 import org.neo4j.importer.v1.validation.InvalidSpecificationException;
 import org.neo4j.importer.v1.validation.UndeserializableActionException;
 
 // This exercises the compliance of various import spec payloads with the JSON schema
 // The class focuses on (lack of) compliance of the action side of the spec.
 public class ImportSpecificationDeserializerActionTest {
-
-    private static final String ENUM_ARRAY_ACTION_STAGE =
-            ImportSpecificationDeserializerEnumUtil.enumToJsonString(ActionStage.class);
 
     @Test
     void fails_if_actions_are_wrongly_typed() {
@@ -253,10 +249,7 @@ public class ImportSpecificationDeserializerActionTest {
                         """.stripIndent())))
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
-                        "1 error(s)",
-                        "0 warning(s)",
-                        "$.actions[0].stage: does not have a value in the enumeration",
-                        ENUM_ARRAY_ACTION_STAGE);
+                        "1 error(s)", "0 warning(s)", "$.actions[0].stage: does not have a value in the enumeration");
     }
 
     @Test
