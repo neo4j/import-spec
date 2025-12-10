@@ -23,22 +23,10 @@ import static org.neo4j.importer.v1.ImportSpecificationDeserializer.deserialize;
 
 import java.io.StringReader;
 import org.junit.Test;
-import org.neo4j.importer.v1.targets.NodeMatchMode;
-import org.neo4j.importer.v1.targets.PropertyType;
-import org.neo4j.importer.v1.targets.WriteMode;
 import org.neo4j.importer.v1.validation.InvalidSpecificationException;
 import org.neo4j.importer.v1.validation.SpecificationException;
 
 public class ImportSpecificationDeserializerRelationshipTargetTest {
-
-    private static final String ENUM_ARRAY_NODE_MATCH_MODE =
-            ImportSpecificationDeserializerEnumUtil.enumToJsonString(NodeMatchMode.class);
-
-    private static final String ENUM_ARRAY_PROPERTY_TYPE =
-            ImportSpecificationDeserializerEnumUtil.enumToJsonString(PropertyType.class);
-
-    private static final String ENUM_ARRAY_WRITE_MODE =
-            ImportSpecificationDeserializerEnumUtil.enumToJsonString(WriteMode.class);
 
     @Test
     public void deserializes_full_start_and_end_node_references() throws SpecificationException {
@@ -418,8 +406,7 @@ public class ImportSpecificationDeserializerRelationshipTargetTest {
                 .hasMessageContainingAll(
                         "1 error(s)",
                         "0 warning(s)",
-                        "$.targets.relationships[0].write_mode: does not have a value in the enumeration",
-                        ENUM_ARRAY_WRITE_MODE);
+                        "$.targets.relationships[0].write_mode: does not have a value in the enumeration");
     }
 
     @Test
@@ -501,8 +488,7 @@ public class ImportSpecificationDeserializerRelationshipTargetTest {
                 .hasMessageContainingAll(
                         "1 error(s)",
                         "0 warning(s)",
-                        "$.targets.relationships[0].node_match_mode: does not have a value in the enumeration",
-                        ENUM_ARRAY_NODE_MATCH_MODE);
+                        "$.targets.relationships[0].node_match_mode: does not have a value in the enumeration");
     }
 
     @Test
@@ -2625,8 +2611,7 @@ public class ImportSpecificationDeserializerRelationshipTargetTest {
                 .hasMessageContainingAll(
                         "1 error(s)",
                         "0 warning(s)",
-                        "$.targets.relationships[0].properties[0].target_property_type: does not have a value in the enumeration",
-                        ENUM_ARRAY_PROPERTY_TYPE);
+                        "$.targets.relationships[0].properties[0].target_property_type: does not have a value in the enumeration");
     }
 
     @Test

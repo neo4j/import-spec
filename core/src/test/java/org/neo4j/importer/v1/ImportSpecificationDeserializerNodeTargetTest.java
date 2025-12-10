@@ -22,17 +22,9 @@ import static org.neo4j.importer.v1.ImportSpecificationDeserializer.deserialize;
 
 import java.io.StringReader;
 import org.junit.Test;
-import org.neo4j.importer.v1.targets.PropertyType;
-import org.neo4j.importer.v1.targets.WriteMode;
 import org.neo4j.importer.v1.validation.InvalidSpecificationException;
 
 public class ImportSpecificationDeserializerNodeTargetTest {
-
-    private static final String ENUM_ARRAY_PROPERTY_TYPE =
-            ImportSpecificationDeserializerEnumUtil.enumToJsonString(PropertyType.class);
-
-    private static final String ENUM_ARRAY_WRITE_MODE =
-            ImportSpecificationDeserializerEnumUtil.enumToJsonString(WriteMode.class);
 
     @Test
     public void fails_if_node_target_active_attribute_has_wrong_type() {
@@ -236,8 +228,7 @@ public class ImportSpecificationDeserializerNodeTargetTest {
                 .hasMessageContainingAll(
                         "1 error(s)",
                         "0 warning(s)",
-                        "$.targets.nodes[0].write_mode: does not have a value in the enumeration",
-                        ENUM_ARRAY_WRITE_MODE);
+                        "$.targets.nodes[0].write_mode: does not have a value in the enumeration");
     }
 
     @Test
@@ -803,8 +794,7 @@ public class ImportSpecificationDeserializerNodeTargetTest {
                 .hasMessageContainingAll(
                         "1 error(s)",
                         "0 warning(s)",
-                        "$.targets.nodes[0].properties[0].target_property_type: does not have a value in the enumeration",
-                        ENUM_ARRAY_PROPERTY_TYPE);
+                        "$.targets.nodes[0].properties[0].target_property_type: does not have a value in the enumeration");
     }
 
     @Test
