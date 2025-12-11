@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://neo4j.com/docs/common-content-dataflow/_attachments/schemas/spec.v1.0.json",
-  "title": "Dataflow Flex Template for Google Cloud to Neo4j - Job Specification",
-  "description": "Neo4j Import Job Specification",
+  "title": "Neo4j Import Specification Schema",
+  "description": "Emerging configuration standard for Neo4j import workflows",
   "type": "object",
   "properties": {
     "version": {
@@ -25,7 +25,7 @@
       "type": "object",
       "properties": {
         "nodes": {
-          "description": "Target specification of the nodes to import in batch",
+          "description": "Target specification of the nodes to import",
           "type": "array",
           "items": {
             "$ref": "#/$defs/target.node"
@@ -33,7 +33,7 @@
           "minItems": 1
         },
         "relationships": {
-          "description": "Target specification of the relationships to import in batch",
+          "description": "Target specification of the relationships to import",
           "type": "array",
           "items": {
             "$ref": "#/$defs/target.relationship"
@@ -41,7 +41,7 @@
           "minItems": 1
         },
         "queries": {
-          "description": "Import queries to run in batch",
+          "description": "Import queries to run",
           "type": "array",
           "items": {
             "$ref": "#/$defs/target.query"
@@ -68,7 +68,7 @@
       ]
     },
     "actions": {
-      "description": "One-off actions to execute",
+      "description": "One-off lifecycle actions to execute",
       "type": "array",
       "items": {
         "$ref": "#/$defs/action"
