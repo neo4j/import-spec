@@ -15,6 +15,9 @@
         <module>apache-spark</module>
         <module>neo4j-admin</module>
     </modules>
+    <properties>
+        <maven.compiler.testRelease>21</maven.compiler.testRelease>
+    </properties>
     <dependencyManagement>
         <dependencies>
             <dependency>

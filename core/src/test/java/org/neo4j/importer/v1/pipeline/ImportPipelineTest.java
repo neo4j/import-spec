@@ -22,6 +22,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import org.jetbrains.annotations.NotNull;
@@ -97,9 +98,9 @@ class ImportPipelineTest {
         var relationships = stream(pipeline)
                 .filter(step -> step instanceof RelationshipTargetStep)
                 .map(step -> (RelationshipTargetStep) step)
-                .toList();
+                .collect(Collectors.toList());
         assertThat(relationships).hasSize(1);
-        var relationship = relationships.getFirst();
+        var relationship = relationships.get(0);
         assertThat(relationship.startNode().keyProperties())
                 .containsExactly(new PropertyMapping("id", "actor_id", PropertyType.INTEGER));
         assertThat(relationship.endNode().keyProperties())
@@ -159,9 +160,9 @@ class ImportPipelineTest {
         var relationships = stream(pipeline)
                 .filter(step -> step instanceof RelationshipTargetStep)
                 .map(step -> (RelationshipTargetStep) step)
-                .toList();
+                .collect(Collectors.toList());
         assertThat(relationships).hasSize(1);
-        var relationship = relationships.getFirst();
+        var relationship = relationships.get(0);
         assertThat(relationship.startNode().keyProperties())
                 .containsExactly(new PropertyMapping("actorId", "actor_id", PropertyType.INTEGER));
         assertThat(relationship.endNode().keyProperties())
@@ -220,7 +221,7 @@ class ImportPipelineTest {
 
         var groups = plan.getGroups();
         assertThat(groups).hasSize(1);
-        var group = groups.getFirst();
+        var group = groups.get(0);
         var stages = group.getStages();
         assertThat(stages).hasSize(3);
         assertThat(stages.get(0).getSteps().stream().map(ImportStep::name))

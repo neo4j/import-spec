@@ -1,0 +1,81 @@
+
+{
+    "version": "1",
+    "sources": [
+         {
+             "name": "movies-source",
+             "type": "jdbc",
+             "data_source": "db",
+             "sql": "SELECT id, title FROM db.movies"
+         },
+         {
+             "name": "categories-source",
+             "type": "jdbc",
+             "data_source": "db",
+             "sql": "SELECT id, name FROM db.categories"
+         },
+         {
+             "name": "movies-in-categories-source",
+             "type": "jdbc",
+             "data_source": "db",
+             "sql": "SELECT movie_id, category_id FROM db.movies_in_categories"
+         },
+    ],
+    "targets": {
+        "nodes": [
+             {
+                 "name": "movie",
+                 "source": "movies-source",
+                 "labels": ["Movie"],
+                 "properties": [
+                     {"source_field": "id", "target_property": "identifier"},
+                     {"source_field": "title", "target_property": "title"},
+                 ],
+                 "schema": {
+                   "key_constraints": [
+                       {"name": "movie-id-key-constraint", "label": "Movie", "properties": ["identifier"]},
+                   ]
+                 }
+             },
+             {
+                 "name": "category",
+                 "source": "categories-source",
+                 "labels": ["Category"],
+                 "properties": [
+                     {"source_field": "id", "target_property": "identifier"},
+                     {"source_field": "name", "target_property": "name"}
+                 ],
+                 "schema": {
+                   "key_constraints": [
+                       {"name": "category-id-key-constraint", "label": "Category", "properties": ["identifier"]}
+                   ]
+                 }
+             }
+        ],
+        "relationships": [
+             {
+                 "name": "in-category",
+                 "source": "movies-in-categories-source",
+                 "type": "IN_CATEGORY",
+                 "start_node_reference": {
+                      "name": "movie",
+                      "key_mappings": [
+                         {
+                             "source_field": "movie_id",
+                             "node_property": "identifier"
+                         }
+                      ]
+                 },
+                 "end_node_reference": {
+                      "name": "category",
+                      "key_mappings": [
+                         {
+                             "source_field": "category_id",
+                             "node_property": "identifier"
+                         }
+                      ]
+                 }
+             }
+        ]
+    }
+}

@@ -46,7 +46,8 @@ public class BigQuerySource implements Source {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof BigQuerySource that)) return false;
+        if (!(o instanceof BigQuerySource)) return false;
+        var that = (BigQuerySource) o;
         return Objects.equals(name, that.name) && Objects.equals(query, that.query);
     }
 

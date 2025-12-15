@@ -25,7 +25,9 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Random;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
@@ -66,15 +68,15 @@ class NoIncompleteNodeReferenceKeyMatchValidatorTest {
         var spec = importSpec(
                 node("a-node", keyProperties(List.of("a", "c"), List.of("b")), uniqueProperties(List.of("d", "e"))),
                 relationship(startNodeReference("a-node", nodeReferenceKeys)));
-        validator.visitNodeTarget(0, spec.getTargets().getNodes().getFirst());
+        validator.visitNodeTarget(0, spec.getTargets().getNodes().get(0));
         validator.visitRelationshipTarget(
-                0, spec.getTargets().getRelationships().getFirst());
+                0, spec.getTargets().getRelationships().get(0));
         var reportBuilder = new Builder();
 
         boolean result = validator.report(reportBuilder);
 
         assertThat(result)
-                .overridingErrorMessage("expected no error message, but got %s".formatted(reportBuilder.build()))
+                .overridingErrorMessage(String.format("expected no error message, but got %s", reportBuilder.build()))
                 .isFalse();
     }
 
@@ -85,9 +87,9 @@ class NoIncompleteNodeReferenceKeyMatchValidatorTest {
         var spec = importSpec(
                 node("a-node", keyProperties(List.of("a", "c"), List.of("b")), uniqueProperties(List.of("d", "e"))),
                 relationship(startNodeReference("a-node", nodeReferenceKeys)));
-        validator.visitNodeTarget(0, spec.getTargets().getNodes().getFirst());
+        validator.visitNodeTarget(0, spec.getTargets().getNodes().get(0));
         validator.visitRelationshipTarget(
-                0, spec.getTargets().getRelationships().getFirst());
+                0, spec.getTargets().getRelationships().get(0));
         var reportBuilder = new Builder();
 
         boolean result = validator.report(reportBuilder);
@@ -97,7 +99,7 @@ class NoIncompleteNodeReferenceKeyMatchValidatorTest {
                 .isTrue();
         var errorMessages = reportBuilder.build().getErrors().stream()
                 .map(SpecificationError::getMessage)
-                .toList();
+                .collect(Collectors.toList());
         assertThat(errorMessages).hasSize(allMissingProperties.size());
         allMissingProperties.forEach((mappedKey, missingProperties) -> {
             assertThat(errorMessages).anyMatch(message -> {
@@ -119,9 +121,9 @@ class NoIncompleteNodeReferenceKeyMatchValidatorTest {
                         keyProperties(List.of("a", "c"), List.of("b")),
                         uniqueProperties(List.of("a", "f", "g"))),
                 relationship(startNodeReference("a-node", List.of("a"))));
-        validator.visitNodeTarget(0, spec.getTargets().getNodes().getFirst());
+        validator.visitNodeTarget(0, spec.getTargets().getNodes().get(0));
         validator.visitRelationshipTarget(
-                0, spec.getTargets().getRelationships().getFirst());
+                0, spec.getTargets().getRelationships().get(0));
         var reportBuilder = new Builder();
 
         boolean result = validator.report(reportBuilder);
@@ -130,9 +132,9 @@ class NoIncompleteNodeReferenceKeyMatchValidatorTest {
                 .isTrue();
         var errorMessages = reportBuilder.build().getErrors().stream()
                 .map(SpecificationError::getMessage)
-                .toList();
+                .collect(Collectors.toList());
         assertThat(errorMessages).hasSize(1);
-        assertThat(errorMessages.getFirst())
+        assertThat(errorMessages.get(0))
                 .startsWith(
                         "Insufficient key mapping for node reference 'a-node'. Please also map ['f', 'g'] alongside 'a' to fully match the node target's unique constraint 'unique-constraint-");
     }
@@ -211,24 +213,27 @@ class NoIncompleteNodeReferenceKeyMatchValidatorTest {
     private List<NodeKeyConstraint> keyProperties(List<String>... keyProps) {
         return Arrays.stream(keyProps)
                 .map(props -> new NodeKeyConstraint(
-                        "key-constraint-%d".formatted(RAND.nextInt(0, 2048)), NODE_LABEL, props, null))
-                .toList();
+                        String.format("key-constraint-%d", Math.abs(RAND.nextInt()) % 2048), NODE_LABEL, props, null))
+                .collect(Collectors.toList());
     }
 
     @SafeVarargs
     private List<NodeUniqueConstraint> uniqueProperties(List<String>... uniqueProps) {
         return Arrays.stream(uniqueProps)
                 .map(props -> new NodeUniqueConstraint(
-                        "unique-constraint-%d".formatted(RAND.nextInt(0, 2048)), NODE_LABEL, props, null))
-                .toList();
+                        String.format("unique-constraint-%d", Math.abs(RAND.nextInt()) % 2048),
+                        NODE_LABEL,
+                        props,
+                        null))
+                .collect(Collectors.toList());
     }
 
     private NodeReference startNodeReference(String name, List<String> keys) {
         return new NodeReference(
                 name,
                 IntStream.range(0, keys.size())
-                        .mapToObj(i -> new KeyMapping("source-field-%d".formatted(i), keys.get(i)))
-                        .toList());
+                        .mapToObj(i -> new KeyMapping(String.format("source-field-%d", i), keys.get(i)))
+                        .collect(Collectors.toList()));
     }
 
     private static List<String> extractProperties(List<NodeKeyConstraint> keys, List<NodeUniqueConstraint> uniques) {
@@ -244,11 +249,18 @@ class NoIncompleteNodeReferenceKeyMatchValidatorTest {
 
     private static List<PropertyMapping> imagineMappingsFor(List<String> properties) {
         return IntStream.range(0, properties.size())
-                .mapToObj(i -> new PropertyMapping("source-field-%d".formatted(i), properties.get(i), null))
-                .toList();
+                .mapToObj(i -> new PropertyMapping(String.format("source-field-%d", i), properties.get(i), null))
+                .collect(Collectors.toList());
     }
 
-    private record DummySource(String name) implements Source {
+    private static class DummySource implements Source {
+
+        private final String name;
+
+        public DummySource(String name) {
+            this.name = name;
+        }
+
         @Override
         public String getType() {
             return "dummy";
@@ -258,15 +270,56 @@ class NoIncompleteNodeReferenceKeyMatchValidatorTest {
         public String getName() {
             return name;
         }
+
+        @Override
+        public boolean equals(Object o) {
+            if (!(o instanceof DummySource)) return false;
+            DummySource that = (DummySource) o;
+            return Objects.equals(name, that.name);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hashCode(name);
+        }
     }
 
-    private record LookupProperty(String name, LookupType type) {
+    private static class LookupProperty {
+
+        private final String name;
+        private final LookupType type;
+
+        private LookupProperty(String name, LookupType type) {
+            this.name = name;
+            this.type = type;
+        }
+
         public static LookupProperty key(String name) {
             return new LookupProperty(name, LookupType.KEY);
         }
 
         public static LookupProperty unique(String name) {
             return new LookupProperty(name, LookupType.UNIQUE);
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public LookupType getType() {
+            return type;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (!(o instanceof LookupProperty)) return false;
+            LookupProperty that = (LookupProperty) o;
+            return Objects.equals(name, that.name) && type == that.type;
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(name, type);
         }
     }
 }

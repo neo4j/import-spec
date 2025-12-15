@@ -1,0 +1,15 @@
+---
+version: '1'
+sources:
+- name: a-source
+  type: jdbc
+  data_source: a-data-source
+  sql: SELECT id, name FROM my.table
+targets:
+  nodes:
+  - name: a-node-target
+    labels:
+    - Label
+    properties:
+    - source_field: id
+      target_property: id

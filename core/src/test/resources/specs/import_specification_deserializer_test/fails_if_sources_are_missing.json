@@ -1,0 +1,11 @@
+
+{
+    "version": "1",
+    "targets": {
+        "queries": [{
+            "name": "a-target",
+            "source": "a-source",
+            "query": "UNWIND $rows AS row CREATE (n:ANode) SET n = row"
+        }]
+    }
+}

@@ -1,0 +1,16 @@
+
+{
+    "version": "1",
+    "sources": [{
+        "name": "a-source",
+        "type": 42,
+        "query": "SELECT id, name FROM my.table"
+    }],
+    "targets": {
+        "queries": [{
+            "name": "a-target",
+            "source": "a-source",
+            "query": "UNWIND $rows AS row CREATE (n:ANode) SET n = row"
+        }]
+    }
+}

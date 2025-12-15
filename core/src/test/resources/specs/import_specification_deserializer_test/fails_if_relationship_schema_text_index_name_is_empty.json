@@ -1,0 +1,35 @@
+
+{
+    "version": "1",
+    "sources": [{
+        "name": "a-source",
+        "type": "jdbc",
+        "data_source": "a-data-source",
+        "sql": "SELECT id, name FROM my.table"
+    }],
+    "targets": {
+        "nodes": [{
+          "name": "a-node-target",
+          "source": "a-source",
+          "labels": ["Label"],
+          "properties": [
+            {"source_field": "id", "target_property": "id"}
+          ]
+        }],
+        "relationships": [{
+          "name": "a-relationship-target",
+          "source": "a-source",
+          "type": "TYPE",
+          "start_node_reference": "a-node-target",
+          "end_node_reference": "a-node-target",
+          "properties": [
+            {"source_field": "id", "target_property": "id"}
+          ],
+          "schema": {
+            "text_indexes": [{
+                "name": "", "property": "id"
+            }]
+          }
+        }]
+    }
+}

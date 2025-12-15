@@ -35,19 +35,18 @@ class InvalidSpecificationExceptionTest {
 
         var exception = new InvalidSpecificationException(result);
 
-        assertThat(exception).hasMessageContaining("""
-                Import specification is invalid, see report below:
-                ===============================================================================
-                Summary
-                ===============================================================================
-                \t- 2 error(s)
-                \t- 0 warning(s)
-
-                === Errors ===
-                \t- [OOPSIE][$.sources] something wrong occurred
-                \t- [WELP][$.targets] something bad happened
-                ===============================================================================\
-                """.stripIndent());
+        assertThat(exception)
+                .hasMessageContaining("Import specification is invalid, see report below:\n"
+                        + "===============================================================================\n"
+                        + "Summary\n"
+                        + "===============================================================================\n"
+                        + "\t- 2 error(s)\n"
+                        + "\t- 0 warning(s)\n"
+                        + "\n"
+                        + "=== Errors ===\n"
+                        + "\t- [OOPSIE][$.sources] something wrong occurred\n"
+                        + "\t- [WELP][$.targets] something bad happened\n"
+                        + "===============================================================================");
     }
 
     @Test
@@ -62,23 +61,22 @@ class InvalidSpecificationExceptionTest {
 
         var exception = new InvalidSpecificationException(result);
 
-        assertThat(exception).hasMessageContaining("""
-                Import specification is invalid, see report below:
-                ===============================================================================
-                Summary
-                ===============================================================================
-                \t- 2 error(s)
-                \t- 2 warning(s)
-
-                === Errors ===
-                \t- [OOPSIE][$.sources] something wrong occurred
-                \t- [WELP][$.targets] something bad happened
-
-                === Warnings ===
-                \t- [HMMM][$.actions[0].name] something is a bit strange
-                \t- [AHEM][$.targets[2].depends-on] are you sure this is right
-                ===============================================================================\
-                """.stripIndent());
+        assertThat(exception)
+                .hasMessageContaining("Import specification is invalid, see report below:\n"
+                        + "===============================================================================\n"
+                        + "Summary\n"
+                        + "===============================================================================\n"
+                        + "\t- 2 error(s)\n"
+                        + "\t- 2 warning(s)\n"
+                        + "\n"
+                        + "=== Errors ===\n"
+                        + "\t- [OOPSIE][$.sources] something wrong occurred\n"
+                        + "\t- [WELP][$.targets] something bad happened\n"
+                        + "\n"
+                        + "=== Warnings ===\n"
+                        + "\t- [HMMM][$.actions[0].name] something is a bit strange\n"
+                        + "\t- [AHEM][$.targets[2].depends-on] are you sure this is right\n"
+                        + "===============================================================================");
     }
 
     @SafeVarargs

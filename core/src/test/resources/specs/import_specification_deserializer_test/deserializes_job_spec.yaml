@@ -1,0 +1,23 @@
+---
+version: '1'
+config:
+  foo: bar
+  baz: 42
+  qix:
+  - true
+  - 1.0
+  - {}
+sources:
+- name: my-bigquery-source
+  type: bigquery
+  query: SELECT id, name FROM my.table
+targets:
+  queries:
+  - name: my-query
+    source: my-bigquery-source
+    query: UNWIND $rows AS row CREATE (n:ANode) SET n = row
+actions:
+- name: my-cypher-action
+  type: cypher
+  query: CREATE (:Started)
+  stage: start

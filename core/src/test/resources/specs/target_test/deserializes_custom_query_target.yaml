@@ -1,0 +1,6 @@
+name: "my-custom-query-target"
+active: false
+source: "a-source"
+depends_on:
+  - "another-action-or-target"
+query: "UNWIND $rows AS row CREATE (n:ANode) SET n = row"

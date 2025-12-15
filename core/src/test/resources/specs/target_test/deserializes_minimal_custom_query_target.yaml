@@ -1,0 +1,3 @@
+name: "my-minimal-custom-query-target"
+source: "a-source"
+query: "UNWIND $rows AS row CREATE (n:ANode) SET n = row"

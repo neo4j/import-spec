@@ -1,0 +1,23 @@
+---
+version: '1'
+sources:
+- type: bigquery
+  name: source
+  query: SELECT id, name FROM my.table
+targets:
+  nodes:
+  - source: source
+    name: duplicate
+    write_mode: merge
+    labels:
+    - Label1
+    - Label2
+    properties:
+    - source_field: field_1
+      target_property: property1
+    - source_field: field_2
+      target_property: property2
+  queries:
+  - name: duplicate
+    source: source
+    query: UNWIND $rows AS row CREATE (n:ANode) SET n = row

@@ -1,0 +1,17 @@
+---
+version: '1'
+sources:
+- name: my-bigquery-source
+  type: bigquery
+  query: SELECT id, name FROM my.table
+targets:
+  nodes:
+  - name: my-node
+    source: my-bigquery-source
+    write_mode: CREATE
+    labels:
+    - ALabel
+    properties:
+    - source_field: id
+      target_property: id
+      target_property_type: STRING

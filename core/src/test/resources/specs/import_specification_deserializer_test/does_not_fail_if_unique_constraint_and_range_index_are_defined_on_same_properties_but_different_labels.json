@@ -1,0 +1,30 @@
+
+{
+    "version": "1",
+    "sources": [{
+        "name": "a-source",
+        "type": "jdbc",
+        "data_source": "a-data-source",
+        "sql": "SELECT id, name FROM my.table"
+    }],
+    "targets": {
+        "nodes": [{
+            "active": true,
+            "name": "a-target",
+            "source": "a-source",
+            "write_mode": "merge",
+            "labels": ["Label1", "Label2"],
+            "properties": [
+                {"source_field": "id", "target_property": "property"}
+            ],
+            "schema": {
+                "unique_constraints": [
+                    {"name": "a unique constraint", "label": "Label1", "properties": ["property"]}
+                ],
+                "range_indexes": [
+                    {"name": "a range index", "label": "Label2", "properties": ["property"]}
+                ]
+            }
+        }]
+    }
+}

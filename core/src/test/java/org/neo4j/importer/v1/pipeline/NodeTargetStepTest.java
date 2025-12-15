@@ -111,19 +111,19 @@ class NodeTargetStepTest {
     }
 
     private NodeKeyConstraint key(String label, List<String> properties) {
-        return new NodeKeyConstraint("key-%d".formatted(random.nextInt()), label, properties, null);
+        return new NodeKeyConstraint(String.format("key-%d", random.nextInt()), label, properties, null);
     }
 
     private NodeUniqueConstraint unique(String label, List<String> properties) {
-        return new NodeUniqueConstraint("unique-%d".formatted(random.nextInt()), label, properties, null);
+        return new NodeUniqueConstraint(String.format("unique-%d", random.nextInt()), label, properties, null);
     }
 
     private NodeExistenceConstraint notNull(String label, String property) {
-        return new NodeExistenceConstraint("not-null-%d".formatted(random.nextInt()), label, property);
+        return new NodeExistenceConstraint(String.format("not-null-%d", random.nextInt()), label, property);
     }
 
     private PropertyMapping mappingTo(String name) {
-        return new PropertyMapping("a-column-%d".formatted(random.nextInt()), name, null);
+        return new PropertyMapping(String.format("a-column-%d", random.nextInt()), name, null);
     }
 
     private static NodeSchema schemaFor(List<NodeKeyConstraint> keys) {
