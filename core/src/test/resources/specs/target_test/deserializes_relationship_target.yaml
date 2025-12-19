@@ -1,0 +1,106 @@
+name: "my-relationship-target"
+active: false
+source: "a-source"
+depends_on:
+  - "an-action-or-target"
+write_mode: "MERGE"
+node_match_mode: "MATCH"
+source_transformations:
+  enable_grouping: true
+  aggregations:
+    - expression: "SUM(unit_price*quantity)"
+      field_name: "total_price"
+    - expression: "SUM(quantity)"
+      field_name: "total_quantity"
+  where: "column IS NOT NULL"
+  order_by:
+    - expression: "column_1"
+    - expression: "column_2"
+      order: "ASC"
+    - expression: "column_3"
+      order: "DESC"
+  limit: 42
+type: "TYPE"
+start_node_reference: "a-node-target"
+end_node_reference:
+  name: "another-node-target"
+  key_mappings:
+    - source_field: "source_id"
+      node_property: "target_id"
+properties:
+  - source_field: "field_1"
+    target_property: "property1"
+    target_property_type: "LOCAL_TIME_ARRAY"
+  - source_field: "field_2"
+    target_property: "property2"
+    target_property_type: "STRING_ARRAY"
+  - source_field: "field_3"
+    target_property: "property3"
+    target_property_type: "FLOAT"
+schema:
+  type_constraints:
+    - name: "type_constraint_1"
+      property: "property1"
+  key_constraints:
+    - name: "key_constraint_1"
+      properties:
+        - "property1"
+    - name: "key_constraint_2"
+      properties:
+        - "property2"
+      options:
+        indexProvider: "range-1.0"
+  unique_constraints:
+    - name: "unique_constraint_1"
+      properties:
+        - "property3"
+      options:
+        indexProvider: "range-1.0"
+  existence_constraints:
+    - name: "existence_constraint_1"
+      property: "property3"
+  range_indexes:
+    - name: "range_index_1"
+      properties:
+        - "property1"
+        - "property3"
+    - name: "range_index_2"
+      properties:
+        - "property2"
+  text_indexes:
+    - name: "text_index_1"
+      property: "property1"
+      options:
+        indexProvider: "text-2.0"
+    - name: "text_index_2"
+      property: "property2"
+  point_indexes:
+    - name: "point_index_1"
+      property: "property1"
+      options:
+        indexConfig:
+          spatial.cartesian.min:
+            - -100.0
+            - -100.0
+          spatial.cartesian.max:
+            - 100.0
+            - 100.0
+    - name: "point_index_2"
+      property: "property2"
+  fulltext_indexes:
+    - name: "fulltext_index_1"
+      properties:
+        - "property1"
+      options:
+        indexConfig:
+          fulltext.analyzer: "english"
+    - name: "fulltext_index_2"
+      properties:
+        - "property2"
+        - "property3"
+  vector_indexes:
+    - name: "vector_index_1"
+      property: "property1"
+      options:
+        vector.dimensions: 1536
+        vector.similarity_function: "cosine"

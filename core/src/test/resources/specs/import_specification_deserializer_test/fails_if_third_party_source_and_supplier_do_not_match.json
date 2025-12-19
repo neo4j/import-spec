@@ -1,0 +1,16 @@
+
+{
+    "version": "1",
+    "sources": [{
+        "name": "a-source",
+        "type": "jdbc",
+        "sql": "SELECT p.productname FROM products p ORDER BY p.productname ASC "
+    }],
+    "targets": {
+        "queries": [{
+            "name": "a-target",
+            "source": "a-source",
+            "query": "UNWIND $rows AS row CREATE (n:ANode) SET n = row"
+        }]
+    }
+}

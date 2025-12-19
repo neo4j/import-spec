@@ -1,0 +1,17 @@
+---
+version: '1'
+sources:
+- name: a-source
+  type: bigquery
+  query: SELECT id, name FROM my.table
+targets:
+  queries:
+  - name: a-target
+    source: a-source
+    query: UNWIND $rows AS row CREATE (n:ANode) SET n = row
+actions:
+- name: an-action
+  stage: start
+  type: cypher
+  query: RETURN 42
+  execution_mode: 42

@@ -1,0 +1,16 @@
+---
+version: '1'
+sources:
+- type: bigquery
+  name: source
+  query: SELECT id, name FROM my.table
+targets:
+  queries:
+  - name: duplicate
+    source: source
+    query: UNWIND $rows AS row CREATE (n:ANode) SET n = row
+actions:
+- name: duplicate
+  type: cypher
+  stage: pre_relationships
+  query: CREATE (:PreRel)

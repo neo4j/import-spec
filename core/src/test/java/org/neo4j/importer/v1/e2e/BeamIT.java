@@ -118,58 +118,55 @@ public class BeamIT {
     private void runBeamImport(TestPipeline pipeline, String extension) throws Exception {
         String neo4jUrl = NEO4J.getBoltUrl();
         String neo4jPassword = NEO4J.getAdminPassword();
-        var importSpec =
-                read("/e2e/beam-import/spec.%s".formatted(extension), ImportSpecificationDeserializer::deserialize);
+        var importSpec = read(
+                String.format("/e2e/beam-import/spec.%s", extension), ImportSpecificationDeserializer::deserialize);
         var importPipeline = ImportPipeline.of(importSpec);
 
         Map<String, PCollection<?>> outputs = new HashMap<>();
         Map<String, PCollection<Row>> sourceOutputs =
                 new HashMap<>(importSpec.getSources().size());
         importPipeline.forEach(importStep -> {
-            switch (importStep) {
-                case SourceStep step -> {
-                    var name = step.name();
-                    PCollection<Row> output = pipeline.apply(
-                            "[Source %s] Read rows".formatted(name),
-                            SourceIO.readAll(
-                                    step.source(),
-                                    POSTGRES.getJdbcUrl(),
-                                    POSTGRES.getUsername(),
-                                    POSTGRES.getPassword()));
-                    sourceOutputs.put(name, output);
-                    outputs.put(name, output);
-                }
-                case TargetStep step -> {
-                    var name = step.name();
-                    PCollection<Row> targetOutput = sourceOutputs
-                            .get(step.sourceName())
-                            .apply(
-                                    "[Target %s] Wait for dependencies".formatted(name),
-                                    Wait.on(dependencyOutputs(step.dependencies(), outputs)))
-                            .setCoder(SchemaCoder.of(
-                                    sourceOutputs.get(step.sourceName()).getSchema()))
-                            .apply(
-                                    "[Target %s] Perform import to Neo4j".formatted(name),
-                                    TargetIO.writeAll(neo4jUrl, neo4jPassword, step));
-                    outputs.put(name, targetOutput);
-                }
-                case ActionStep step -> {
-                    var name = step.name();
-                    var action = step.action();
-                    assertThat(action).isInstanceOf(CypherAction.class);
-                    var cypherAction = (CypherAction) action;
-                    PCollection<Integer> output = pipeline.apply(
-                                    "[Action %s] Create single input".formatted(name), Create.of(1))
-                            .apply(
-                                    "[Action %s] Wait for dependencies".formatted(name),
-                                    Wait.on(dependencyOutputs(step.dependencies(), outputs)))
-                            .setCoder(VarIntCoder.of())
-                            .apply(
-                                    "[action %s] Run".formatted(name),
-                                    ParDo.of(CypherActionFn.of(cypherAction, neo4jUrl, neo4jPassword)));
-                    outputs.put(name, output);
-                }
-                default -> Assertions.fail("Unsupported step type: %s".formatted(importStep.getClass()));
+            if (importStep instanceof SourceStep) {
+                var step = (SourceStep) importStep;
+                var name = step.name();
+                PCollection<Row> output = pipeline.apply(
+                        String.format("[Source %s] Read rows", name),
+                        SourceIO.readAll(
+                                step.source(), POSTGRES.getJdbcUrl(), POSTGRES.getUsername(), POSTGRES.getPassword()));
+                sourceOutputs.put(name, output);
+                outputs.put(name, output);
+            } else if (importStep instanceof TargetStep) {
+                var step = (TargetStep) importStep;
+                var name = step.name();
+                PCollection<Row> targetOutput = sourceOutputs
+                        .get(step.sourceName())
+                        .apply(
+                                String.format("[Target %s] Wait for dependencies", name),
+                                Wait.on(dependencyOutputs(step.dependencies(), outputs)))
+                        .setCoder(SchemaCoder.of(
+                                sourceOutputs.get(step.sourceName()).getSchema()))
+                        .apply(
+                                String.format("[Target %s] Perform import to Neo4j", name),
+                                TargetIO.writeAll(neo4jUrl, neo4jPassword, step));
+                outputs.put(name, targetOutput);
+            } else if (importStep instanceof ActionStep) {
+                var step = (ActionStep) importStep;
+                var name = step.name();
+                var action = step.action();
+                assertThat(action).isInstanceOf(CypherAction.class);
+                var cypherAction = (CypherAction) action;
+                PCollection<Integer> output = pipeline.apply(
+                                String.format("[Action %s] Create single input", name), Create.of(1))
+                        .apply(
+                                String.format("[Action %s] Wait for dependencies", name),
+                                Wait.on(dependencyOutputs(step.dependencies(), outputs)))
+                        .setCoder(VarIntCoder.of())
+                        .apply(
+                                String.format("[action %s] Run", name),
+                                ParDo.of(CypherActionFn.of(cypherAction, neo4jUrl, neo4jPassword)));
+                outputs.put(name, output);
+            } else {
+                Assertions.fail(String.format("Unsupported step type: %s", importStep.getClass()));
             }
         });
 
@@ -180,40 +177,41 @@ public class BeamIT {
                 .execute()
                 .records();
         assertThat(productCount).hasSize(1);
-        assertThat(productCount.getFirst().get("count").asLong()).isEqualTo(77L);
+        assertThat(productCount.get(0).get("count").asLong()).isEqualTo(77L);
         var categoryCount = neo4jDriver
                 .executableQuery("MATCH (c:Category) RETURN count(c) AS count")
                 .execute()
                 .records();
         assertThat(categoryCount).hasSize(1);
-        assertThat(categoryCount.getFirst().get("count").asLong()).isEqualTo(8L);
+        assertThat(categoryCount.get(0).get("count").asLong()).isEqualTo(8L);
         var productInCategoryCount = neo4jDriver
                 .executableQuery("MATCH (:Product)-[btc:BELONGS_TO_CATEGORY]->(:Category) RETURN count(btc) AS count")
                 .execute()
                 .records();
         assertThat(productInCategoryCount).hasSize(1);
-        assertThat(productInCategoryCount.getFirst().get("count").asLong()).isEqualTo(77L);
-        var countRows = neo4jDriver.executableQuery("""
-                                 MATCH (post_s:Count {stage: 'post_sources'})
-                                 MATCH  (pre_n:Count {stage: 'pre_nodes'})
-                                 MATCH (post_n:Count {stage: 'post_nodes'})
-                                 MATCH  (pre_r:Count {stage: 'pre_relationships'})
-                                 MATCH (post_r:Count {stage: 'post_relationships'})
-                                 MATCH  (pre_q:Count {stage: 'pre_queries'})
-                                 MATCH (post_q:Count {stage: 'post_queries'})
-                                 MATCH    (end:Count {stage: 'end'})
-                                 RETURN
-                                    post_s.count AS post_s_count,
-                                    pre_n.count  AS pre_n_count,
-                                    post_n.count AS post_n_count,
-                                    pre_r.count  AS pre_r_count,
-                                    post_r.count AS post_r_count,
-                                    pre_q.count  AS pre_q_count,
-                                    post_q.count AS post_q_count,
-                                    end.count    AS end_count
-                                 """.stripIndent()).execute().records();
+        assertThat(productInCategoryCount.get(0).get("count").asLong()).isEqualTo(77L);
+        var countRows = neo4jDriver
+                .executableQuery(
+                        "MATCH (post_s:Count {stage: 'post_sources'})\n" + "MATCH (pre_n:Count {stage: 'pre_nodes'})\n"
+                                + "MATCH (post_n:Count {stage: 'post_nodes'})\n"
+                                + "MATCH (pre_r:Count {stage: 'pre_relationships'})\n"
+                                + "MATCH (post_r:Count {stage: 'post_relationships'})\n"
+                                + "MATCH (pre_q:Count {stage: 'pre_queries'})\n"
+                                + "MATCH (post_q:Count {stage: 'post_queries'})\n"
+                                + "MATCH (end:Count {stage: 'end'})\n"
+                                + "RETURN\n"
+                                + "    post_s.count AS post_s_count,\n"
+                                + "    pre_n.count  AS pre_n_count,\n"
+                                + "    post_n.count AS post_n_count,\n"
+                                + "    pre_r.count  AS pre_r_count,\n"
+                                + "    post_r.count AS post_r_count,\n"
+                                + "    pre_q.count  AS pre_q_count,\n"
+                                + "    post_q.count AS post_q_count,\n"
+                                + "    end.count    AS end_count")
+                .execute()
+                .records();
         assertThat(countRows).hasSize(1);
-        Record counts = countRows.getFirst();
+        Record counts = countRows.get(0);
         assertThat(counts.get("post_s_count").asLong())
                 .isGreaterThanOrEqualTo(0); // targets have likely already started
         assertThat(counts.get("pre_n_count").asLong()).isEqualTo(0);
@@ -264,7 +262,7 @@ class SourceIO extends PTransform<@NotNull PBegin, @NotNull PCollection<Row>> {
     @Override
     public @NotNull PCollection<Row> expand(@NotNull PBegin input) {
         return input.apply(
-                "Fetching rows of JDBC source %s".formatted(source.getName()),
+                String.format("Fetching rows of JDBC source %s", source.getName()),
                 JdbcIO.readRows()
                         .withDataSourceConfiguration(DataSourceConfiguration.create("org.postgresql.Driver", jdbcUrl)
                                 .withUsername(username)
@@ -328,11 +326,14 @@ class CypherActionFn extends DoFn<Integer, Integer> {
         }
         var query = action.getQuery();
         switch (action.getExecutionMode()) {
-            case TRANSACTION -> driver.executableQuery(query).execute();
-            case AUTOCOMMIT -> {
+            case TRANSACTION:
+                driver.executableQuery(query).execute();
+                break;
+            case AUTOCOMMIT: {
                 try (Session session = driver.session()) {
                     session.run(query).consume();
                 }
+                break;
             }
         }
         context.output(context.element());
@@ -372,47 +373,49 @@ class TargetWriteRowFn extends DoFn<Row, Row> {
     @ProcessElement
     public void processElement(ProcessContext context) {
         Row row = context.element();
-        switch (step) {
-            case CustomQueryTargetStep step ->
-                driver.executableQuery(step.query())
-                        .withParameters(Map.of("rows", List.of(properties(row))))
-                        .execute();
-            case NodeTargetStep step -> {
-                var keys = step.keyProperties();
-                var nonKeys = step.nonKeyProperties();
-                driver.executableQuery("%s (n:%s%s) %s"
-                                .formatted(
-                                        step.writeMode(),
-                                        String.join(":", step.labels()),
-                                        entityPattern("row", keys),
-                                        setClause("n", "row", nonKeys)))
-                        .withParameters(Map.of("row", rowValues(keys, nonKeys, row)))
-                        .execute();
-            }
-            case RelationshipTargetStep step -> {
-                var start = step.startNode();
-                var end = step.endNode();
-                var keys = step.keyProperties();
-                var nonKeys = step.nonKeyProperties();
-                driver.executableQuery("%s (start:%s%s) %s (end:%s%s) %s (start)-[r:%s%s]->(end) %s"
-                                .formatted(
-                                        step.nodeMatchMode(),
-                                        String.join(":", start.labels()),
-                                        entityPattern("start", start.keyProperties()),
-                                        step.nodeMatchMode(),
-                                        String.join(":", end.labels()),
-                                        entityPattern("end", end.keyProperties()),
-                                        step.writeMode(),
-                                        step.type(),
-                                        entityPattern("row", keys),
-                                        setClause("r", "row", nonKeys)))
-                        .withParameters(Map.of(
-                                "start", nodeKeyValues(start, row),
-                                "end", nodeKeyValues(end, row),
-                                "row", rowValues(keys, nonKeys, row)))
-                        .execute();
-            }
-            default -> Assertions.fail("unsupported target type: %s", step.getClass());
+        assertThat(row).isNotNull();
+        if (step instanceof CustomQueryTargetStep) {
+            var queryStep = (CustomQueryTargetStep) step;
+            driver.executableQuery(queryStep.query())
+                    .withParameters(Map.of("rows", List.of(properties(row))))
+                    .execute();
+        } else if (step instanceof NodeTargetStep) {
+            var nodeStep = (NodeTargetStep) step;
+            var keys = nodeStep.keyProperties();
+            var nonKeys = nodeStep.nonKeyProperties();
+            driver.executableQuery(String.format(
+                            "%s (n:%s%s) %s",
+                            nodeStep.writeMode(),
+                            String.join(":", nodeStep.labels()),
+                            entityPattern("row", keys),
+                            setClause("n", "row", nonKeys)))
+                    .withParameters(Map.of("row", rowValues(keys, nonKeys, row)))
+                    .execute();
+        } else if (step instanceof RelationshipTargetStep) {
+            var relationshipStep = (RelationshipTargetStep) step;
+            var start = relationshipStep.startNode();
+            var end = relationshipStep.endNode();
+            var keys = relationshipStep.keyProperties();
+            var nonKeys = relationshipStep.nonKeyProperties();
+            driver.executableQuery(String.format(
+                            "%s (start:%s%s) %s (end:%s%s) %s (start)-[r:%s%s]->(end) %s",
+                            relationshipStep.nodeMatchMode(),
+                            String.join(":", start.labels()),
+                            entityPattern("start", start.keyProperties()),
+                            relationshipStep.nodeMatchMode(),
+                            String.join(":", end.labels()),
+                            entityPattern("end", end.keyProperties()),
+                            relationshipStep.writeMode(),
+                            relationshipStep.type(),
+                            entityPattern("row", keys),
+                            setClause("r", "row", nonKeys)))
+                    .withParameters(Map.of(
+                            "start", nodeKeyValues(start, row),
+                            "end", nodeKeyValues(end, row),
+                            "row", rowValues(keys, nonKeys, row)))
+                    .execute();
+        } else {
+            Assertions.fail("unsupported target type: %s", step.getClass());
         }
         context.output(row);
     }
@@ -422,8 +425,8 @@ class TargetWriteRowFn extends DoFn<Row, Row> {
         builder.append(" {");
         for (int i = 0; i < keyProperties.size(); i++) {
             PropertyMapping mapping = keyProperties.get(i);
-            builder.append(
-                    "`%s`:$%s.`%s`".formatted(mapping.getTargetProperty(), parameterName, mapping.getSourceField()));
+            builder.append(String.format(
+                    "`%s`:$%s.`%s`", mapping.getTargetProperty(), parameterName, mapping.getSourceField()));
             if (i != keyProperties.size() - 1) {
                 builder.append(",");
             }
@@ -440,8 +443,9 @@ class TargetWriteRowFn extends DoFn<Row, Row> {
         builder.append("SET ");
         for (int i = 0; i < nonKeyProperties.size(); i++) {
             PropertyMapping mapping = nonKeyProperties.get(i);
-            builder.append("%s.`%s` = $%s.`%s`"
-                    .formatted(nodeVariableName, mapping.getTargetProperty(), parameterName, mapping.getSourceField()));
+            builder.append(String.format(
+                    "%s.`%s` = $%s.`%s`",
+                    nodeVariableName, mapping.getTargetProperty(), parameterName, mapping.getSourceField()));
             if (i != nonKeyProperties.size() - 1) {
                 builder.append(",");
             }
@@ -457,18 +461,18 @@ class TargetWriteRowFn extends DoFn<Row, Row> {
     private Map<String, Object> rowValues(
             List<PropertyMapping> keyMappings, List<PropertyMapping> nonKeyMappings, Row row) {
         var result = new HashMap<String, Object>(keyMappings.size() + nonKeyMappings.size());
-        keyMappings.forEach(mapping -> {
-            result.put(mapping.getSourceField(), propertyValue(mapping, row));
-        });
-        nonKeyMappings.forEach(mapping -> {
-            result.put(mapping.getSourceField(), propertyValue(mapping, row));
-        });
+        keyMappings.forEach(mapping -> result.put(mapping.getSourceField(), propertyValue(mapping, row)));
+        nonKeyMappings.forEach(mapping -> result.put(mapping.getSourceField(), propertyValue(mapping, row)));
         return result;
     }
 
     private Map<String, Object> properties(Row row) {
         return row.getSchema().getFieldNames().stream()
-                .map(name -> Map.entry(name, row.getValue(name)))
+                .map(name -> {
+                    var value = row.getValue(name);
+                    assertThat(value).isNotNull();
+                    return Map.entry(name, value);
+                })
                 .collect(Collectors.toMap(Entry::getKey, Entry::getValue));
     }
 

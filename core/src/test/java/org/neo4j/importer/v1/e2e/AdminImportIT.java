@@ -76,9 +76,8 @@ public class AdminImportIT {
                     BindMode.READ_ONLY);
 
     private static final String TARGET_DATABASE = "northwind";
-    private static final String JDBC_POSTGRES_URL =
-            "jdbc:tc:postgresql:15.5-alpine:///%s?TC_INITSCRIPT=e2e/postgres-dump/northwind.sql"
-                    .formatted(TARGET_DATABASE);
+    private static final String JDBC_POSTGRES_URL = String.format(
+            "jdbc:tc:postgresql:15.5-alpine:///%s?TC_INITSCRIPT=e2e/postgres-dump/northwind.sql", TARGET_DATABASE);
 
     private Driver neo4jDriver;
 
@@ -101,8 +100,8 @@ public class AdminImportIT {
     @ParameterizedTest
     @ValueSource(strings = {"json", "yaml"})
     void runs_import(String extension) throws Exception {
-        var importSpec =
-                read("/e2e/admin-import/spec.%s".formatted(extension), ImportSpecificationDeserializer::deserialize);
+        var importSpec = read(
+                String.format("/e2e/admin-import/spec.%s", extension), ImportSpecificationDeserializer::deserialize);
         Map<String, Source> sources =
                 importSpec.getSources().stream().collect(toMap(Source::getName, Function.identity()));
         File csvFolder = csvFolderPathFor("/e2e/admin-import");
@@ -125,7 +124,7 @@ public class AdminImportIT {
             Neo4jAdmin.writeData(csvFolder, relationshipTarget, nodeTargets, SourceExecutor.read(source));
         }
         // note: custom query targets are ignored for now
-        var targetNeo4jDatabase = "%s-from-%s".formatted(TARGET_DATABASE, extension);
+        var targetNeo4jDatabase = String.format("%s-from-%s", TARGET_DATABASE, extension);
 
         Neo4jAdmin.executeImport(NEO4J, neo4jDriver, importSpec, targetNeo4jDatabase);
 
@@ -136,7 +135,7 @@ public class AdminImportIT {
                 .execute()
                 .records();
         assertThat(productCount).hasSize(1);
-        assertThat(productCount.getFirst().get("count").asLong()).isEqualTo(77L);
+        assertThat(productCount.get(0).get("count").asLong()).isEqualTo(77L);
         var categoryCount = neo4jDriver
                 .executableQuery("MATCH (c:Category) RETURN count(c) AS count")
                 .withConfig(
@@ -144,7 +143,7 @@ public class AdminImportIT {
                 .execute()
                 .records();
         assertThat(categoryCount).hasSize(1);
-        assertThat(categoryCount.getFirst().get("count").asLong()).isEqualTo(8L);
+        assertThat(categoryCount.get(0).get("count").asLong()).isEqualTo(8L);
         var productInCategoryCount = neo4jDriver
                 .executableQuery("MATCH (:Product)-[btc:BELONGS_TO_CATEGORY]->(:Category) RETURN count(btc) AS count")
                 .withConfig(
@@ -152,7 +151,7 @@ public class AdminImportIT {
                 .execute()
                 .records();
         assertThat(productInCategoryCount).hasSize(1);
-        assertThat(productInCategoryCount.getFirst().get("count").asLong()).isEqualTo(77L);
+        assertThat(productInCategoryCount.get(0).get("count").asLong()).isEqualTo(77L);
     }
 
     private File csvFolderPathFor(String classpath) throws Exception {
@@ -182,11 +181,11 @@ public class AdminImportIT {
                     // note: this is quite inefficient
                     var matchingKeys = nodeKeys.stream()
                             .filter(key -> key.getProperties().contains(property))
-                            .toList();
+                            .collect(Collectors.toList());
                     assertThat(matchingKeys).hasSizeLessThanOrEqualTo(1);
                     if (matchingKeys.size() == 1) {
-                        NodeKeyConstraint key = matchingKeys.getFirst();
-                        writer.append(":ID(%s)".formatted(idSpaceFor(key)));
+                        NodeKeyConstraint key = matchingKeys.get(0);
+                        writer.append(String.format(":ID(%s)", idSpaceFor(key)));
                     }
                     if (i < properties.size() - 1) {
                         writer.append(",");
@@ -208,7 +207,7 @@ public class AdminImportIT {
                         assertThat(field).isNotNull();
                         Object value = row.get(field);
                         assertThat(value).isNotNull();
-                        writer.append("\"%s\"".formatted(value.toString()));
+                        writer.append(String.format("\"%s\"", value));
                         if (i < properties.size() - 1) {
                             writer.append(",");
                         }
@@ -226,7 +225,8 @@ public class AdminImportIT {
                 // note: this does not support standalone start/end node spec yet
                 var startNodeRef = relationshipTarget.getStartNodeReference();
                 assertThat(startNodeRef.getName()).isNotEmpty();
-                writer.write(":START_ID(%s),".formatted(idSpaceFor(findNodeKey(nodeTargets, startNodeRef.getName()))));
+                writer.write(
+                        String.format(":START_ID(%s),", idSpaceFor(findNodeKey(nodeTargets, startNodeRef.getName()))));
                 var properties = sortedProperties(relationshipTarget.getProperties());
                 for (int i = 0; i < properties.size(); i++) {
                     String property = properties.get(i);
@@ -239,7 +239,7 @@ public class AdminImportIT {
                 }
                 var endNodeRef = relationshipTarget.getEndNodeReference();
                 assertThat(endNodeRef.getName()).isNotEmpty();
-                writer.write(":END_ID(%s)".formatted(idSpaceFor(findNodeKey(nodeTargets, endNodeRef.getName()))));
+                writer.write(String.format(":END_ID(%s)", idSpaceFor(findNodeKey(nodeTargets, endNodeRef.getName()))));
             }
         }
 
@@ -256,7 +256,7 @@ public class AdminImportIT {
                         nodeTargets, relationshipTarget.getStartNodeReference().getName());
                 var startNodeProperties = singleNodeKey(startNode).getProperties().stream()
                         .sorted()
-                        .toList();
+                        .collect(Collectors.toList());
                 var startNodePropertiesToFields = startNodeProperties.stream()
                         .collect(toMap(Function.identity(), keyProperty -> findMappedField(startNode, keyProperty)));
                 // rel properties
@@ -267,7 +267,7 @@ public class AdminImportIT {
                 var endNode = findTargetByName(
                         nodeTargets, relationshipTarget.getEndNodeReference().getName());
                 var endNodeProperties =
-                        singleNodeKey(endNode).getProperties().stream().sorted().toList();
+                        singleNodeKey(endNode).getProperties().stream().sorted().collect(Collectors.toList());
                 var endNodePropertiesToFields = endNodeProperties.stream()
                         .collect(toMap(Function.identity(), keyProperty -> findMappedField(endNode, keyProperty)));
 
@@ -307,7 +307,7 @@ public class AdminImportIT {
         }
 
         private static String idSpaceFor(NodeKeyConstraint key) {
-            return "%s-ID".formatted(key.getLabel());
+            return String.format("%s-ID", key.getLabel());
         }
 
         private static NodeKeyConstraint findNodeKey(List<NodeTarget> nodeTargets, String targetName) {
@@ -318,13 +318,13 @@ public class AdminImportIT {
         private static String serializeValue(Map<String, Object> row, String field) {
             Object value = row.get(field);
             assertThat(value).isNotNull();
-            return "\"%s\"".formatted(value.toString());
+            return String.format("\"%s\"", value);
         }
 
         private static NodeKeyConstraint singleNodeKey(NodeTarget nodeTarget) {
             var nodeKeys = nodeTarget.getSchema().getKeyConstraints();
             assertThat(nodeKeys).hasSize(1);
-            return nodeKeys.getFirst();
+            return nodeKeys.get(0);
         }
 
         public static void executeImport(
@@ -351,27 +351,27 @@ public class AdminImportIT {
                 command.append(" --nodes=");
                 command.append(String.join(":", nodeTarget.getLabels()));
                 command.append("=");
-                command.append("/import/%s".formatted(headerFileName(nodeTarget)));
+                command.append(String.format("/import/%s", headerFileName(nodeTarget)));
                 command.append(",");
-                command.append("/import/%s".formatted(dataFileName(nodeTarget)));
+                command.append(String.format("/import/%s", dataFileName(nodeTarget)));
             }
             for (RelationshipTarget relationshipTarget : targets.getRelationships()) {
                 command.append(" --relationships=");
                 command.append(relationshipTarget.getType());
                 command.append("=");
-                command.append("/import/%s".formatted(headerFileName(relationshipTarget)));
+                command.append(String.format("/import/%s", headerFileName(relationshipTarget)));
                 command.append(",");
-                command.append("/import/%s".formatted(dataFileName(relationshipTarget)));
+                command.append(String.format("/import/%s", dataFileName(relationshipTarget)));
             }
             return command.toString().split(" ");
         }
 
         private static String headerFileName(Target target) {
-            return "%s.header.csv".formatted(target.getName());
+            return String.format("%s.header.csv", target.getName());
         }
 
         private static String dataFileName(Target target) {
-            return "%s.csv".formatted(target.getName());
+            return String.format("%s.csv", target.getName());
         }
 
         private static NodeTarget findTargetByName(List<NodeTarget> nodeTargets, String name) {
@@ -386,7 +386,7 @@ public class AdminImportIT {
             return mappings.stream()
                     .map(PropertyMapping::getTargetProperty)
                     .sorted()
-                    .toList();
+                    .collect(Collectors.toList());
         }
     }
 
@@ -395,15 +395,16 @@ public class AdminImportIT {
         public static List<Map<String, Object>> read(Source source) throws Exception {
             String sourceType = source.getType();
             switch (sourceType.toLowerCase(Locale.ROOT)) {
-                case "jdbc" -> {
+                case "jdbc": {
                     var jdbcSource = (JdbcSource) source;
                     var connectionSupplier = JdbcContext.connectionSupplier(jdbcSource.getDataSource());
                     return JdbcExecutor.execute(connectionSupplier, jdbcSource.getSql());
                 }
-                case "bigquery", "text" ->
-                    throw new RuntimeException("TODO: %s unsupported for now".formatted(sourceType));
+                case "bigquery":
+                case "text":
+                    throw new RuntimeException(String.format("TODO: %s unsupported for now", sourceType));
             }
-            throw new RuntimeException("unrecognized type %s".formatted(sourceType));
+            throw new RuntimeException(String.format("unrecognized type %s", sourceType));
         }
     }
 
@@ -444,11 +445,11 @@ public class AdminImportIT {
 
     @FunctionalInterface
     interface ThrowingFunction<I, O> {
-        public O apply(I input) throws Exception;
+        O apply(I input) throws Exception;
     }
 
     @FunctionalInterface
     interface ThrowingSupplier<T> {
-        public T get() throws Exception;
+        T get() throws Exception;
     }
 }

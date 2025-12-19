@@ -1,0 +1,42 @@
+---
+version: '1'
+sources:
+- name: a-source
+  type: jdbc
+  data_source: a-data-source
+  sql: SELECT id, name FROM my.table
+targets:
+  nodes:
+  - name: a-node-target
+    source: a-source
+    labels:
+    - Label
+    properties:
+    - source_field: id
+      target_property: id
+    schema:
+      key_constraints:
+      - name: a-key-constraint
+        label: Label
+        properties:
+        - id
+  relationships:
+  - name: a-relationship-target
+    source: a-source
+    type: TYPE
+    start_node_reference: a-node-target
+    end_node_reference: a-node-target
+    properties:
+    - source_field: id
+      target_property: property1
+    - source_field: name
+      target_property: property2
+    schema:
+      key_constraints:
+      - name: a key constraint
+        properties:
+        - property1
+      range_indexes:
+      - name: a range index
+        properties:
+        - property2

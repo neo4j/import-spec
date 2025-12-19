@@ -1,0 +1,9 @@
+name: "my-minimal-relationship-target"
+source: "a-source"
+type: "TYPE"
+start_node_reference: "a-node-target"
+end_node_reference:
+  name: "another-node-target"
+  key_mappings:
+    - source_field: "source_id"
+      node_property: "target_id"

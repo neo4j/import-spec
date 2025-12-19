@@ -1,0 +1,31 @@
+---
+version: '1'
+sources:
+- name: a-source
+  type: text
+  header:
+  - column1
+  - column2
+  data:
+  - - value1
+    - value2
+targets:
+  nodes:
+  - name: a-node-target
+    source: a-source
+    labels:
+    - Label1
+    - Label2
+    depends_on:
+    - a-query-target
+    - a-query-target
+    write_mode: create
+    properties:
+    - source_field: column1
+      target_property: property1
+    - source_field: column2
+      target_property: property2
+  queries:
+  - name: a-query-target
+    source: a-source
+    query: UNWIND $rows AS row CREATE (n:ANode) SET n = row

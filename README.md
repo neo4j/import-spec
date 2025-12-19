@@ -90,4 +90,4 @@ class GettingStarted {
 ## Prerequisites
 
 - Maven
-- JDK 21 (21 is used for tests, 11 and 17 for production sources)
+- JDK 21+ (21 is used for examples, 11 and 17 for core)

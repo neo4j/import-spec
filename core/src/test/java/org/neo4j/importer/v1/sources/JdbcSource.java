@@ -51,7 +51,8 @@ public class JdbcSource implements Source {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof JdbcSource that)) return false;
+        if (!(o instanceof JdbcSource)) return false;
+        var that = (JdbcSource) o;
         return Objects.equals(name, that.name)
                 && Objects.equals(dataSource, that.dataSource)
                 && Objects.equals(sql, that.sql);

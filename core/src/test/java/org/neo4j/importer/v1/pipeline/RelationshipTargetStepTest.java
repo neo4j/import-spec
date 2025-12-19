@@ -154,19 +154,19 @@ class RelationshipTargetStepTest {
     }
 
     private RelationshipKeyConstraint key(List<String> properties) {
-        return new RelationshipKeyConstraint("key-%d".formatted(random.nextInt()), properties, null);
+        return new RelationshipKeyConstraint(String.format("key-%d", random.nextInt()), properties, null);
     }
 
     private RelationshipUniqueConstraint unique(List<String> properties) {
-        return new RelationshipUniqueConstraint("unique-%d".formatted(random.nextInt()), properties, null);
+        return new RelationshipUniqueConstraint(String.format("unique-%d", random.nextInt()), properties, null);
     }
 
     private RelationshipExistenceConstraint notNull(String property) {
-        return new RelationshipExistenceConstraint("not-null-%d".formatted(random.nextInt()), property);
+        return new RelationshipExistenceConstraint(String.format("not-null-%d", random.nextInt()), property);
     }
 
     private PropertyMapping mappingTo(String name) {
-        return new PropertyMapping("a-column-%d".formatted(random.nextInt()), name, null);
+        return new PropertyMapping(String.format("a-column-%d", random.nextInt()), name, null);
     }
 
     private static RelationshipSchema schemaFor(List<RelationshipKeyConstraint> keys) {

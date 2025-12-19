@@ -1,0 +1,11 @@
+---
+version: '1'
+sources:
+- type: bigquery
+  name: a-source
+  query: SELECT id, name FROM my.table
+targets:
+  queries:
+  - name: a-target
+    source: incorrect-source-name
+    query: UNWIND $rows AS row CREATE (n:ANode) SET n = row

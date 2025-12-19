@@ -1,0 +1,16 @@
+---
+version: '1'
+sources:
+- name: a-source
+  type: bigquery
+  query: SELECT id, name FROM my.table
+targets:
+  queries:
+  - name: a-target
+    source: a-source
+    query: UNWIND $rows AS row CREATE (n:ANode) SET n = row
+actions:
+- name: an-action
+  type: cypher
+  stage: 42
+  query: CREATE INDEX FOR (n:ANode) ON n.name

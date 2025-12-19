@@ -47,7 +47,8 @@ public abstract class TextSource implements Source {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof TextSource that)) return false;
+        if (!(o instanceof TextSource)) return false;
+        var that = (TextSource) o;
         return Objects.equals(name, that.name) && Objects.equals(header, that.header);
     }
 

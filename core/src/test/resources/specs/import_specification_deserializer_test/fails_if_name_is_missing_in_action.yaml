@@ -1,0 +1,16 @@
+---
+version: '1'
+sources:
+- type: bigquery
+  name: a-source
+  query: SELECT id, name FROM my.table
+targets:
+  queries:
+  - name: a-target
+    source: a-source
+    query: UNWIND $rows AS row CREATE (n:ANode) SET n = row
+actions:
+- type: http
+  method: get
+  stage: start
+  url: https://example.com

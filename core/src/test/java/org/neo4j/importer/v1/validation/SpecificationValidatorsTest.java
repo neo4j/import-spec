@@ -64,18 +64,16 @@ class SpecificationValidatorsTest {
 
         assertThatThrownBy(() -> wrapper.validate(aSpec()))
                 .isInstanceOf(InvalidSpecificationException.class)
-                .hasMessage("""
-Import specification is invalid, see report below:
-===============================================================================
-Summary
-===============================================================================
-	- 1 error(s)
-	- 0 warning(s)
-
-=== Errors ===
-	- [C/code][C/path] C/error message
-===============================================================================
-""".trim());
+                .hasMessage("Import specification is invalid, see report below:\n"
+                        + "===============================================================================\n"
+                        + "Summary\n"
+                        + "===============================================================================\n"
+                        + "\t- 1 error(s)\n"
+                        + "\t- 0 warning(s)\n"
+                        + "\n"
+                        + "=== Errors ===\n"
+                        + "\t- [C/code][C/path] C/error message\n"
+                        + "===============================================================================");
     }
 
     @Test
@@ -90,18 +88,16 @@ Summary
 
         assertThatThrownBy(() -> wrapper.validate(aSpec()))
                 .isInstanceOf(InvalidSpecificationException.class)
-                .hasMessage("""
-Import specification is invalid, see report below:
-===============================================================================
-Summary
-===============================================================================
-	- 1 error(s)
-	- 0 warning(s)
-
-=== Errors ===
-	- [C/code][C/path] C/error message
-===============================================================================
-""".trim());
+                .hasMessage("Import specification is invalid, see report below:\n"
+                        + "===============================================================================\n"
+                        + "Summary\n"
+                        + "===============================================================================\n"
+                        + "\t- 1 error(s)\n"
+                        + "\t- 0 warning(s)\n"
+                        + "\n"
+                        + "=== Errors ===\n"
+                        + "\t- [C/code][C/path] C/error message\n"
+                        + "===============================================================================");
     }
 
     @Test
@@ -119,18 +115,16 @@ Summary
 
         assertThatThrownBy(() -> wrapper.validate(aSpec()))
                 .isInstanceOf(InvalidSpecificationException.class)
-                .hasMessage("""
-Import specification is invalid, see report below:
-===============================================================================
-Summary
-===============================================================================
-	- 1 error(s)
-	- 0 warning(s)
-
-=== Errors ===
-	- [C/code][C/path] C/error message
-===============================================================================
-""".trim());
+                .hasMessage("Import specification is invalid, see report below:\n"
+                        + "===============================================================================\n"
+                        + "Summary\n"
+                        + "===============================================================================\n"
+                        + "\t- 1 error(s)\n"
+                        + "\t- 0 warning(s)\n"
+                        + "\n"
+                        + "=== Errors ===\n"
+                        + "\t- [C/code][C/path] C/error message\n"
+                        + "===============================================================================");
     }
 
     static class A implements SpecificationValidator {

@@ -1,0 +1,45 @@
+
+{
+    "version": "1",
+    "sources": [{
+        "type": "bigquery",
+        "name": "a-source",
+        "query": "SELECT id, name, description FROM my.table"
+    }],
+    "targets": {
+        "nodes": [{
+            "name": "a-node-target",
+            "source": "a-source",
+            "depends_on": ["a-relationship-target"],
+            "labels": ["Label1"],
+            "write_mode": "create",
+            "properties": [
+                {"source_field": "id", "target_property": "property1"},
+                {"source_field": "name", "target_property": "property2"}
+            ],
+            "schema": {
+                "key_constraints": [{
+                   "name": "a-key-constraint",
+                   "label": "Label1",
+                   "properties": ["property1"]
+                }]
+            }
+        },{
+            "name": "another-node-target",
+            "source": "a-source",
+            "labels": ["Label2"],
+            "write_mode": "create",
+            "properties": [
+                {"source_field": "id", "target_property": "property1"},
+                {"source_field": "name", "target_property": "property2"}
+            ]
+        }],
+        "relationships": [{
+            "name": "a-relationship-target",
+            "source": "a-source",
+            "type": "TYPE",
+            "start_node_reference": "a-node-target",
+            "end_node_reference": "a-node-target"
+        }]
+    }
+}

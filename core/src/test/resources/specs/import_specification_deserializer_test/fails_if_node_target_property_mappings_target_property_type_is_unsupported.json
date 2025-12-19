@@ -1,0 +1,21 @@
+
+{
+"version": "1",
+"sources": [{
+"name": "a-source",
+"type": "jdbc",
+"data_source": "a-data-source",
+"sql": "SELECT id, name FROM my.table"
+}],
+"targets": {
+"nodes": [{
+    "active": true,
+    "name": "a-target",
+    "source": "a-source",
+    "labels": ["Label"],
+    "properties": [
+        {"source_field": "id", "target_property": "property", "target_property_type": "blackhole"}
+    ]
+}]
+}
+}

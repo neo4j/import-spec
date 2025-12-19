@@ -47,7 +47,7 @@ class ImportExecutionPlanIT {
 
                 var groups = executionPlan.getGroups();
                 assertThat(groups).hasSize(1);
-                var group = groups.getFirst();
+                var group = groups.get(0);
                 var stages = group.getStages();
                 assertThat(stages).hasSize(3);
                 var productSource = new SourceStep(new JdbcSource(
@@ -130,7 +130,7 @@ class ImportExecutionPlanIT {
 
                 var groups = executionPlan.getGroups();
                 assertThat(groups).hasSize(1);
-                var group = groups.getFirst();
+                var group = groups.get(0);
                 var stages = group.getStages();
                 assertThat(stages).hasSize(4);
                 assertThat(stages.get(0).getSteps()).hasSize(5);
@@ -260,7 +260,7 @@ class ImportExecutionPlanIT {
 
                 var groups = executionPlan.getGroups();
                 assertThat(groups).hasSize(1);
-                var group = groups.getFirst();
+                var group = groups.get(0);
                 var stages = group.getStages();
                 assertThat(stages).hasSize(4);
                 var productNodeStep = new NodeTargetStep(

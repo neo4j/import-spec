@@ -1,0 +1,28 @@
+
+{
+    "version": "1",
+    "sources": [
+        {
+            "name": "a-source",
+            "type": "bigquery",
+            "query": "SELECT id, name FROM my.table"
+        }
+    ],
+    "targets": {
+        "nodes": [
+            {
+                "name": "a-node-target",
+                "source": "a-source",
+                "labels": ["Label1"],
+                "properties": [
+                    {"source_field": "field_1", "target_property": "property1", "target_property_type": "integer"}
+                ],
+                "schema": {
+                    "type_constraints": [
+                        {"name": "type_constraint_1", "label": "Label1", "property": "property1"}
+                    ]
+                }
+            }
+        ]
+    }
+}

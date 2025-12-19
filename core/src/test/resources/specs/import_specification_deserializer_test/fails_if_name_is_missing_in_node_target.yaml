@@ -1,0 +1,18 @@
+---
+version: '1'
+sources:
+- type: bigquery
+  name: a-source
+  query: SELECT id, name FROM my.table
+targets:
+  nodes:
+  - source: a-source
+    write_mode: merge
+    labels:
+    - Label1
+    - Label2
+    properties:
+    - source_field: field_1
+      target_property: property1
+    - source_field: field_2
+      target_property: property2

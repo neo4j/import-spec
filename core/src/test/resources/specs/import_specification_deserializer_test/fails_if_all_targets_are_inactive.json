@@ -1,0 +1,25 @@
+
+{
+    "version": "1",
+    "sources": [{
+      "name": "a-source",
+      "type": "text",
+      "header": [
+        "column1",
+        "column2"
+      ],
+      "data": [
+        [
+          "value1", "value2"
+        ]
+      ]
+    }],
+    "targets": {
+        "queries": [{
+            "active": false,
+            "name": "a-target",
+            "source": "a-source",
+            "query": "UNWIND $rows AS row CREATE (n:ANode) SET n = row"
+      }]
+    }
+}

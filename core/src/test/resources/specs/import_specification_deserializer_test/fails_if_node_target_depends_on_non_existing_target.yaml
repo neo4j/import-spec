@@ -1,0 +1,21 @@
+---
+version: '1'
+sources:
+- type: bigquery
+  name: a-source
+  query: SELECT id, name FROM my.table
+targets:
+  nodes:
+  - name: a-target
+    source: a-source
+    depends_on:
+    - invalid
+    labels:
+    - Label1
+    - Label2
+    write_mode: create
+    properties:
+    - source_field: field_1
+      target_property: property1
+    - source_field: field_2
+      target_property: property2

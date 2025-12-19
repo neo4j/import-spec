@@ -1,0 +1,23 @@
+
+{
+    "version": "1",
+    "sources": [{
+        "type": "bigquery",
+        "name": "a-source",
+        "query": "SELECT id, name FROM my.table"
+    }],
+    "targets": {
+        "queries": [{
+            "name": "a-target",
+            "source": "a-source",
+            "query": "UNWIND $rows AS row CREATE (n:ANode) SET n = row"
+        }]
+    },
+    "actions": [{
+        "name": "   ",
+        "type": "http",
+        "method": "get",
+        "stage": "post_nodes",
+        "url": "https://example.com"
+    }]
+}

@@ -1,0 +1,16 @@
+
+{
+    "version": [],
+    "sources": [{
+        "name": "a-source",
+        "type": "bigquery",
+        "query": "SELECT id, name FROM my.table"
+    }],
+    "targets": {
+        "queries": [{
+            "name": "a-target",
+            "source": "a-source",
+            "query": "UNWIND $rows AS row CREATE (n:ANode) SET n = row"
+        }]
+    }
+}
