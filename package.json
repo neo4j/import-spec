@@ -1,13 +1,13 @@
 {
   "devDependencies": {
-    "@commitlint/cli": "^17.0.3",
-    "@commitlint/config-conventional": "^17.0.3",
-    "@commitlint/lint": "^17.0.3",
-    "@commitlint/load": "^17.0.3",
-    "danger": "^13.0.4",
-    "husky": "^8.0.3"
+    "@commitlint/cli": "^20.2.0",
+    "@commitlint/config-conventional": "^20.2.0",
+    "@commitlint/lint": "^20.2.0",
+    "@commitlint/load": "^20.2.0",
+    "danger": "^13.0.5",
+    "husky": "^9.1.7"
   },
   "scripts": {
-    "prepare": "husky install"
+    "prepare": "husky"
   }
 }

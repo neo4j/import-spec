@@ -1,4 +1,4 @@
 #!/usr/bin/env sh
-. "$(dirname -- "$0")/_/husky.sh"
 
 ./mvnw sortpom:sort spotless:apply -DspotlessFiles=src/main/java/.*.java
+git update-index --again
