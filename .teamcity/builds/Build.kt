@@ -22,6 +22,8 @@ class Build(
             buildType(WhiteListCheck("${name}-whitelist-check", "white-list check"))
         if (forPullRequests) dependentBuildType(PRCheck("${name}-pr-check", "pr check"))
         parallel {
+          dependentBuildType(SemgrepCheck("${name}-semgrep-check", "semgrep check"))
+
           listOf("17", "21").forEach { java ->
             dependentBuildType(
                 Maven(

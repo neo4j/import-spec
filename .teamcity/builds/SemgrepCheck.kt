@@ -1,0 +1,28 @@
+package builds
+
+import jetbrains.buildServer.configs.kotlin.buildSteps.ScriptBuildStep
+
+class SemgrepCheck(
+    id: String,
+    name: String
+): Maven(
+    id,
+    name,
+    "dependency:tree",
+    "-DoutputFile=maven_dep_tree.txt"
+) {
+
+    init {
+
+        params.password("env.SEMGREP_APP_TOKEN", "%semgrep-app-token%")
+
+        steps.step(ScriptBuildStep {
+            scriptContent="semgrep ci --no-git-ignore"
+            dockerImagePlatform = ScriptBuildStep.ImagePlatform.Linux
+            dockerImage = "semgrep/semgrep:1.146.0"
+            dockerRunParameters =
+                "--volume /var/run/docker.sock:/var/run/docker.sock --volume %teamcity.build.checkoutDir%/signingkeysandbox:/root/.gnupg"
+        })
+    }
+
+}
