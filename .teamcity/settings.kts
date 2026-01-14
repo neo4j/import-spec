@@ -39,5 +39,5 @@ project {
               """
                   .trimIndent(),
           forPullRequests = true))
-  subProject { NightlyBuild("nightly") }
+  subProject(NightlyBuild("nightly"))
 }

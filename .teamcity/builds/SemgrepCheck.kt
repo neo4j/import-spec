@@ -1,5 +1,6 @@
 package builds
 
+import jetbrains.buildServer.configs.kotlin.buildSteps.MavenBuildStep
 import jetbrains.buildServer.configs.kotlin.buildSteps.ScriptBuildStep
 
 class SemgrepCheck(
@@ -9,12 +10,18 @@ class SemgrepCheck(
     id,
     name,
     "dependency:tree",
-    "-DoutputFile=maven_dep_tree.txt"
+    "-DoutputFile=maven_dep_tree.txt",
+    mavenVersion = MavenBuildStep.MavenVersion.Bundled_3_9()
 ) {
 
     init {
 
         params.password("env.SEMGREP_APP_TOKEN", "%semgrep-app-token%")
+        params.text("env.SEMGREP_REPO_NAME", FULL_GITHUB_REPOSITORY)
+        params.text("env.SEMGREP_REPO_URL", GITHUB_URL)
+        params.text("env.SEMGREP_BRANCH", "%teamcity.build.branch%")
+        params.text("env.SEMGREP_JOB_URL", "%env.BUILD_URL%")
+        params.text("env.SEMGREP_COMMIT", "%env.BUILD_VCS_NUMBER%")
 
         steps.step(ScriptBuildStep {
             scriptContent="semgrep ci --no-git-ignore"
