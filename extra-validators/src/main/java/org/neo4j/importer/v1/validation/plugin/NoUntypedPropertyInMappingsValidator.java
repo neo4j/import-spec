@@ -24,6 +24,9 @@ import org.neo4j.importer.v1.targets.RelationshipTarget;
 import org.neo4j.importer.v1.validation.SpecificationValidationResult.Builder;
 import org.neo4j.importer.v1.validation.SpecificationValidator;
 
+/**
+ * For <code>data-importer</code> graph models converted to import-spec we have a requirement that all mapping targets must contain types.
+ */
 public class NoUntypedPropertyInMappingsValidator implements SpecificationValidator {
 
     private static final String ERROR_CODE = "TYPE-002";
