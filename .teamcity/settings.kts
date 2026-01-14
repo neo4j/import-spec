@@ -1,4 +1,5 @@
 import builds.Build
+import builds.NightlyBuild
 import jetbrains.buildServer.configs.kotlin.project
 import jetbrains.buildServer.configs.kotlin.version
 
@@ -11,6 +12,7 @@ project {
     password("signing-key-passphrase", "%publish-signing-key-password%")
     password("github-commit-status-token", "%github-token%")
     password("github-pull-request-token", "%github-token%")
+    password("semgrep-app-token", "%semgrep-token%")
   }
 
   subProject(
@@ -37,4 +39,5 @@ project {
               """
                   .trimIndent(),
           forPullRequests = true))
+  subProject(NightlyBuild("nightly"))
 }

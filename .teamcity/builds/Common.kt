@@ -16,6 +16,11 @@ const val MAVEN_DEFAULT_ARGS = "--no-transfer-progress --batch-mode --show-versi
 const val DEFAULT_JAVA_VERSION = "17"
 const val LTS_JAVA_VERSION = "21"
 
+const val SEMGREP_DOCKER_IMAGE = "semgrep/semgrep:1.146.0"
+
+const val FULL_GITHUB_REPOSITORY = "$GITHUB_OWNER/$GITHUB_REPOSITORY"
+const val GITHUB_URL = "https://github.com/$FULL_GITHUB_REPOSITORY"
+
 enum class LinuxSize(val value: String) {
   SMALL("small"),
   LARGE("large")
