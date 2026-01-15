@@ -32,6 +32,7 @@
     <modules>
         <module>core</module>
         <module>examples</module>
+        <module>extra-validators</module>
     </modules>
     <scm>
         <connection>scm:git:git://github.com/neo4j/import-spec.git</connection>
@@ -75,6 +76,11 @@
                 <version>2.0.3</version>
                 <type>pom</type>
                 <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>import-spec</artifactId>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.assertj</groupId>
