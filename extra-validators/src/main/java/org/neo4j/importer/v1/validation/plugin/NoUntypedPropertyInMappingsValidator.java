@@ -18,7 +18,6 @@ package org.neo4j.importer.v1.validation.plugin;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
-
 import org.neo4j.importer.v1.targets.EntityTarget;
 import org.neo4j.importer.v1.targets.NodeTarget;
 import org.neo4j.importer.v1.targets.RelationshipTarget;
@@ -26,7 +25,7 @@ import org.neo4j.importer.v1.validation.SpecificationValidationResult.Builder;
 import org.neo4j.importer.v1.validation.SpecificationValidator;
 
 /**
- * For <code>data-importer</code> graph models converted to import-spec we have a requirement that all mapping targets must contain types.
+ * For <code>data-importer</code> import-spec documents (either converted from graph models, or specified directly) we have a requirement that all mapping targets must contain types.
  */
 public class NoUntypedPropertyInMappingsValidator implements SpecificationValidator {
 
