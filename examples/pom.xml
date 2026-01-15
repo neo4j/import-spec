@@ -21,11 +21,6 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>${project.groupId}</groupId>
-                <artifactId>import-spec</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
                 <groupId>org.neo4j</groupId>
                 <artifactId>neo4j-cypher-dsl</artifactId>
                 <version>2025.2.2</version>
