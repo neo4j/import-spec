@@ -19,19 +19,16 @@ package org.neo4j.importer.v1.validation.plugin;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.neo4j.importer.v1.targets.PropertyType.STRING;
 
-import java.util.List;
-
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.neo4j.importer.v1.targets.*;
 import org.neo4j.importer.v1.validation.SpecificationValidationResult;
 
 class NoUntypedPropertyInMappingsValidatorTest {
 
-
-
     @Test
-    void reports_validation_failure_for_untyped_node_target_property_mapping() {
+    void fails_validation_for_untyped_node_target_property_mapping() {
         // Given a node target with untyped property mapping
         var nodeTarget = new NodeTarget(
                 true,
@@ -44,7 +41,6 @@ class NoUntypedPropertyInMappingsValidatorTest {
                 List.of(new PropertyMapping("id", "id", null)),
                 null);
 
-
         // When the node is validated
         var builder = new SpecificationValidationResult.Builder();
         var validator = new NoUntypedPropertyInMappingsValidator();
@@ -53,46 +49,15 @@ class NoUntypedPropertyInMappingsValidatorTest {
         var validationResult = builder.build();
 
         // Then
-        assertThat(validationResult.getErrors())
-                .hasSize(1);
+        assertThat(validationResult.getErrors()).hasSize(1);
 
         var error = validationResult.getErrors().iterator().next();
 
-        assertThat(error.getCode())
-                .isEqualTo("TYPE-002");
-        assertThat(error.getElementPath())
-                .isEqualTo("$.targets.nodes[0].properties[0].target_property_type");
+        assertThat(error.getCode()).isEqualTo("TYPE-002");
+        assertThat(error.getElementPath()).isEqualTo("$.targets.nodes[0].properties[0].target_property_type");
         assertThat(error.getMessage())
-                .isEqualTo("$.targets.nodes[0].properties[0].target_property_type \"id\" refers to an untyped property");
-    }
-
-    @Test
-    void succeeds_validation_for_typed_node_target_property_mapping() {
-        // Given a node target with typed property mapping
-        var nodeTarget = new NodeTarget(
-                true,
-                "a-node-target",
-                "my-bigquery-source",
-                null,
-                WriteMode.CREATE,
-                (ObjectNode) null,
-                List.of("L1"),
-                List.of(new PropertyMapping("id", "id", STRING)),
-                null);
-
-        // When the node is validated
-        var builder = new SpecificationValidationResult.Builder();
-        var validator = new NoUntypedPropertyInMappingsValidator();
-        validator.visitNodeTarget(0, nodeTarget);
-        validator.report(builder);
-        var validationResult = builder.build();
-
-        // Then
-        assertThat(validationResult.getErrors())
-                .isEmpty();
-
-        assertThat(validationResult.passes())
-                .isTrue();
+                .isEqualTo(
+                        "$.targets.nodes[0].properties[0].target_property_type \"id\" refers to an untyped property");
     }
 
     @Test
@@ -120,17 +85,42 @@ class NoUntypedPropertyInMappingsValidatorTest {
         var validationResult = builder.build();
 
         // Then
-        assertThat(validationResult.getErrors())
-                .hasSize(1);
+        assertThat(validationResult.getErrors()).hasSize(1);
 
         var error = validationResult.getErrors().iterator().next();
 
-        assertThat(error.getCode())
-                .isEqualTo("TYPE-002");
-        assertThat(error.getElementPath())
-                .isEqualTo("$.targets.relationships[0].properties[0].target_property_type");
+        assertThat(error.getCode()).isEqualTo("TYPE-002");
+        assertThat(error.getElementPath()).isEqualTo("$.targets.relationships[0].properties[0].target_property_type");
         assertThat(error.getMessage())
-                .isEqualTo("$.targets.relationships[0].properties[0].target_property_type \"property1\" refers to an untyped property");
+                .isEqualTo(
+                        "$.targets.relationships[0].properties[0].target_property_type \"property1\" refers to an untyped property");
+    }
+
+    @Test
+    void succeeds_validation_for_typed_node_target_property_mapping() {
+        // Given a node target with typed property mapping
+        var nodeTarget = new NodeTarget(
+                true,
+                "a-node-target",
+                "my-bigquery-source",
+                null,
+                WriteMode.CREATE,
+                (ObjectNode) null,
+                List.of("L1"),
+                List.of(new PropertyMapping("id", "id", STRING)),
+                null);
+
+        // When the node is validated
+        var builder = new SpecificationValidationResult.Builder();
+        var validator = new NoUntypedPropertyInMappingsValidator();
+        validator.visitNodeTarget(0, nodeTarget);
+        validator.report(builder);
+        var validationResult = builder.build();
+
+        // Then
+        assertThat(validationResult.getErrors()).isEmpty();
+
+        assertThat(validationResult.passes()).isTrue();
     }
 
     @Test
@@ -158,9 +148,7 @@ class NoUntypedPropertyInMappingsValidatorTest {
         var validationResult = builder.build();
 
         // Then
-        assertThat(validationResult.getErrors())
-                .isEmpty();
-        assertThat(validationResult.passes())
-                .isTrue();
+        assertThat(validationResult.getErrors()).isEmpty();
+        assertThat(validationResult.passes()).isTrue();
     }
 }
