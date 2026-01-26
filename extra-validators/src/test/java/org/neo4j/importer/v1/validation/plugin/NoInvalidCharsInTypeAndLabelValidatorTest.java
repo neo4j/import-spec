@@ -1,16 +1,15 @@
 package org.neo4j.importer.v1.validation.plugin;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.neo4j.importer.v1.targets.NodeReference;
 import org.neo4j.importer.v1.targets.NodeTarget;
 import org.neo4j.importer.v1.targets.RelationshipTarget;
 import org.neo4j.importer.v1.targets.WriteMode;
 import org.neo4j.importer.v1.validation.SpecificationValidationResult;
-
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 class NoInvalidCharsInTypeAndLabelValidatorTest {
 
@@ -43,15 +42,13 @@ class NoInvalidCharsInTypeAndLabelValidatorTest {
         assertThat(firstError.getCode()).isEqualTo("CHAR-001");
         assertThat(firstError.getElementPath()).isEqualTo("$.targets.nodes[0].labels[1]");
         assertThat(firstError.getMessage())
-                .isEqualTo(
-                        "$.targets.nodes[0].labels[1] \"LabelWith:Colon\" contains invalid character");
+                .isEqualTo("$.targets.nodes[0].labels[1] \"LabelWith:Colon\" contains invalid character");
 
         var secondError = errors.next();
         assertThat(secondError.getCode()).isEqualTo("CHAR-001");
         assertThat(secondError.getElementPath()).isEqualTo("$.targets.nodes[0].labels[2]");
         assertThat(secondError.getMessage())
-                .isEqualTo(
-                        "$.targets.nodes[0].labels[2] \"LabelWith=Sign\" contains invalid character");
+                .isEqualTo("$.targets.nodes[0].labels[2] \"LabelWith=Sign\" contains invalid character");
     }
 
     @Test
@@ -85,7 +82,6 @@ class NoInvalidCharsInTypeAndLabelValidatorTest {
         assertThat(error.getCode()).isEqualTo("CHAR-001");
         assertThat(error.getElementPath()).isEqualTo("$.targets.relationships[0].type");
         assertThat(error.getMessage())
-                .isEqualTo(
-                        "$.targets.relationships[0].type \"TypeWith=Sign\" contains invalid character");
+                .isEqualTo("$.targets.relationships[0].type \"TypeWith=Sign\" contains invalid character");
     }
 }
