@@ -33,13 +33,6 @@ public class NoInvalidCharsInTypeAndLabelValidator implements SpecificationValid
     private final Map<String, String> invalidLabelsAndType = new LinkedHashMap<>();
 
     @Override
-    public boolean report(SpecificationValidationResult.Builder builder) {
-        invalidLabelsAndType.forEach((path, labelOrType) -> builder.addError(
-                path, ERROR_CODE, String.format("%s \"%s\" contains invalid character", path, labelOrType)));
-        return !invalidLabelsAndType.isEmpty();
-    }
-
-    @Override
     public void visitNodeTarget(int index, NodeTarget target) {
         for (int labelInd = 0; labelInd < target.getLabels().size(); labelInd++) {
             var label = target.getLabels().get(labelInd);
@@ -54,5 +47,12 @@ public class NoInvalidCharsInTypeAndLabelValidator implements SpecificationValid
         if (target.getType().chars().anyMatch(c -> c == EQUAL_SIGN)) {
             invalidLabelsAndType.put(String.format("$.targets.relationships[%d].type", index), target.getType());
         }
+    }
+
+    @Override
+    public boolean report(SpecificationValidationResult.Builder builder) {
+        invalidLabelsAndType.forEach((path, labelOrType) -> builder.addError(
+                path, ERROR_CODE, String.format("%s \"%s\" contains invalid character", path, labelOrType)));
+        return !invalidLabelsAndType.isEmpty();
     }
 }
