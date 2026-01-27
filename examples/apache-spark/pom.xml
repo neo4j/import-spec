@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.neo4j.importer</groupId>
         <artifactId>import-spec-examples-parent</artifactId>
-        <version>1.0.0-rc11</version>
+        <version>1.0-SNAPSHOT</version>
     </parent>
     <artifactId>apache-spark-example</artifactId>
     <name>apache-spark-example</name>
