@@ -7,7 +7,8 @@
         <artifactId>import-spec-parent</artifactId>
         <version>1.0.0-rc11</version>
     </parent>
-    <artifactId>extra-validators</artifactId>
+    <artifactId>import-spec-extra-validators</artifactId>
+    <name>import-spec-extra-validators</name>
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
