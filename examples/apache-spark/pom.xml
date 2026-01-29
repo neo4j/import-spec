@@ -43,7 +43,7 @@
         <dependency>
             <groupId>org.neo4j</groupId>
             <artifactId>neo4j-connector-apache-spark_${scala.version}</artifactId>
-            <version>5.3.10_for_spark_3</version>
+            <version>5.4.0_for_spark_3</version>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
