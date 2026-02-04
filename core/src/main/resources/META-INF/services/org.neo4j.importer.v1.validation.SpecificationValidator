@@ -1,5 +1,6 @@
 # keep this alphabetically sorted
 org.neo4j.importer.v1.validation.plugin.AtLeastOneActiveTargetValidator
+org.neo4j.importer.v1.validation.plugin.NoBlankCypherActionQueryValidator
 org.neo4j.importer.v1.validation.plugin.NoDanglingActiveNodeReferenceValidator
 org.neo4j.importer.v1.validation.plugin.NoDanglingDependsOnValidator
 org.neo4j.importer.v1.validation.plugin.NoDanglingKeyInNodeReferenceKeyMappingsValidator
@@ -33,6 +34,7 @@ org.neo4j.importer.v1.validation.plugin.NoDuplicatedSchemaNameValidator
 org.neo4j.importer.v1.validation.plugin.NoDuplicatedTargetPropertyValidator
 org.neo4j.importer.v1.validation.plugin.NoIncompleteNodeReferenceKeyMatchValidator
 org.neo4j.importer.v1.validation.plugin.NoKeylessRelationshipNodeValidator
+org.neo4j.importer.v1.validation.plugin.NoNullCypherActionExecutionModeValidator
 org.neo4j.importer.v1.validation.plugin.NoRedundantKeyAndExistenceConstraintsValidator
 org.neo4j.importer.v1.validation.plugin.NoRedundantKeyAndUniqueConstraintsValidator
 org.neo4j.importer.v1.validation.plugin.NoRedundantKeyConstraintAndRangeIndexValidator
