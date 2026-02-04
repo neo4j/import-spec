@@ -1,0 +1,16 @@
+---
+version: '1'
+sources:
+  - name: my-bigquery-source
+    type: bigquery
+    query: SELECT id, name FROM my.table
+targets:
+  queries:
+    - name: my-query
+      source: my-bigquery-source
+      query: UNWIND $rows AS row CREATE (n:ANode) SET n = row
+actions:
+  - type: cypher
+    name: count
+    stage: POST_NODES
+    query: "   "

@@ -33,14 +33,23 @@ public class CypherActionProvider implements ActionProvider<CypherAction> {
     @Override
     public CypherAction apply(ObjectNode node) {
         JsonNode active = node.get("active");
-        JsonNode executionMode = node.get("execution_mode");
         return new CypherAction(
                 active == null ? Action.DEFAULT_ACTIVE : Boolean.parseBoolean(active.textValue()),
                 node.get("name").textValue(),
                 ActionStage.valueOf(node.get("stage").textValue().toUpperCase(Locale.ROOT)),
-                node.get("query").textValue(),
-                executionMode == null
-                        ? CypherAction.DEFAULT_CYPHER_EXECUTION_MODE
-                        : CypherExecutionMode.valueOf(executionMode.textValue().toUpperCase(Locale.ROOT)));
+                node.get("query").asText(""), // "" will trigger a downstream validation error
+                parseExecutionModeLeniently(node));
+    }
+
+    private static CypherExecutionMode parseExecutionModeLeniently(ObjectNode node) {
+        if (!node.has("execution_mode")) {
+            return CypherAction.DEFAULT_CYPHER_EXECUTION_MODE;
+        }
+        try {
+            return CypherExecutionMode.valueOf(
+                    node.get("execution_mode").asText().toUpperCase(Locale.ROOT));
+        } catch (IllegalArgumentException e) {
+            return null; // null will trigger a downstream validation error
+        }
     }
 }

@@ -595,23 +595,8 @@ class ImportSpecificationDeserializerTest {
                         deserialize(reader);
                     }
                 })
-                .isInstanceOf(UndeserializableActionException.class)
-                .hasMessageContaining(
-                        "Action provider org.neo4j.importer.v1.actions.plugin.CypherActionProvider failed to deserialize");
-    }
-
-    @ParameterizedTest
-    @EnumSource(SpecFormat.class)
-    void fails_if_cypher_action_execution_mode_is_unsupported(SpecFormat format, TestInfo testInfo) {
-
-        assertThatThrownBy(() -> {
-                    try (var reader = specReader(format, testInfo)) {
-                        deserialize(reader);
-                    }
-                })
-                .isInstanceOf(UndeserializableActionException.class)
-                .hasMessageContaining(
-                        "Action provider org.neo4j.importer.v1.actions.plugin.CypherActionProvider failed to deserialize");
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContaining("$.actions[0].execution_mode must be one of: TRANSACTION, AUTOCOMMIT");
     }
 
     @ParameterizedTest
@@ -8065,6 +8050,32 @@ class ImportSpecificationDeserializerTest {
                 .isInstanceOf(UndeserializableSourceException.class)
                 .hasMessageContainingAll(
                         "Source provider org.neo4j.importer.v1.sources.JdbcSourceProvider failed to deserialize the following source definition");
+    }
+
+    @ParameterizedTest
+    @EnumSource(SpecFormat.class)
+    void fails_if_cypher_action_has_blank_query(SpecFormat format, TestInfo testInfo) {
+
+        assertThatThrownBy(() -> {
+                    try (var reader = specReader(format, testInfo)) {
+                        deserialize(reader);
+                    }
+                })
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContaining("$.actions[0].query must not be blank");
+    }
+
+    @ParameterizedTest
+    @EnumSource(SpecFormat.class)
+    void fails_if_cypher_action_execution_mode_is_invalid(SpecFormat format, TestInfo testInfo) {
+
+        assertThatThrownBy(() -> {
+                    try (var reader = specReader(format, testInfo)) {
+                        deserialize(reader);
+                    }
+                })
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContaining("$.actions[0].execution_mode must be one of: TRANSACTION, AUTOCOMMIT");
     }
 
     private static FileReader specReader(SpecFormat format, TestInfo testInfo) {
