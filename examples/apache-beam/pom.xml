@@ -10,7 +10,7 @@
     <artifactId>apache-beam-example</artifactId>
     <name>apache-beam-example</name>
     <properties>
-        <hadoop.version>3.4.2</hadoop.version>
+        <hadoop.version>3.4.3</hadoop.version>
     </properties>
     <dependencies>
         <dependency>
