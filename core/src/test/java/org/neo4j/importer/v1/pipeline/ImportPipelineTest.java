@@ -60,10 +60,11 @@ class ImportPipelineTest {
                                         List.of(),
                                         WriteMode.MERGE,
                                         (ObjectNode) null,
-                                        List.of("Movie"),
+                                        "Movie",
+                                        null,
                                         List.of(new PropertyMapping("id", "movie_id", PropertyType.STRING)),
-                                        schemaFor(new NodeKeyConstraint(
-                                                "movie_id-key", "Movie", List.of("movie_id"), Map.of()))),
+                                        schemaFor(
+                                                new NodeKeyConstraint("movie_id-key", List.of("movie_id"), Map.of()))),
                                 new NodeTarget(
                                         true,
                                         "actor-nodes",
@@ -71,10 +72,11 @@ class ImportPipelineTest {
                                         List.of(),
                                         WriteMode.MERGE,
                                         (ObjectNode) null,
-                                        List.of("Actor"),
+                                        "Actor",
+                                        null,
                                         List.of(new PropertyMapping("id", "actor_id", PropertyType.INTEGER)),
-                                        schemaFor(new NodeKeyConstraint(
-                                                "actor_id-key", "Actor", List.of("actor_id"), Map.of())))),
+                                        schemaFor(
+                                                new NodeKeyConstraint("actor_id-key", List.of("actor_id"), Map.of())))),
                         List.of(new RelationshipTarget(
                                 true,
                                 "played-relationships",
@@ -124,10 +126,11 @@ class ImportPipelineTest {
                                         List.of(),
                                         WriteMode.MERGE,
                                         (ObjectNode) null,
-                                        List.of("Movie"),
+                                        "Movie",
+                                        null,
                                         List.of(new PropertyMapping("id", "movie_id", PropertyType.STRING)),
-                                        schemaFor(new NodeKeyConstraint(
-                                                "movie_id-key", "Movie", List.of("movie_id"), Map.of()))),
+                                        schemaFor(
+                                                new NodeKeyConstraint("movie_id-key", List.of("movie_id"), Map.of()))),
                                 new NodeTarget(
                                         true,
                                         "actor-nodes",
@@ -135,10 +138,11 @@ class ImportPipelineTest {
                                         List.of(),
                                         WriteMode.MERGE,
                                         (ObjectNode) null,
-                                        List.of("Actor"),
+                                        "Actor",
+                                        null,
                                         List.of(new PropertyMapping("id", "actor_id", PropertyType.INTEGER)),
-                                        schemaFor(new NodeKeyConstraint(
-                                                "actor_id-key", "Actor", List.of("actor_id"), Map.of())))),
+                                        schemaFor(
+                                                new NodeKeyConstraint("actor_id-key", List.of("actor_id"), Map.of())))),
                         List.of(new RelationshipTarget(
                                 true,
                                 "played-relationships",
@@ -186,10 +190,11 @@ class ImportPipelineTest {
                                         List.of(),
                                         WriteMode.MERGE,
                                         (ObjectNode) null,
-                                        List.of("Movie"),
+                                        "Movie",
+                                        null,
                                         List.of(new PropertyMapping("id", "movie_id", PropertyType.STRING)),
-                                        schemaFor(new NodeKeyConstraint(
-                                                "movie_id-key", "Movie", List.of("movie_id"), Map.of()))),
+                                        schemaFor(
+                                                new NodeKeyConstraint("movie_id-key", List.of("movie_id"), Map.of()))),
                                 new NodeTarget(
                                         true,
                                         "actor-nodes",
@@ -197,10 +202,11 @@ class ImportPipelineTest {
                                         List.of(),
                                         WriteMode.MERGE,
                                         (ObjectNode) null,
-                                        List.of("Actor"),
+                                        "Actor",
+                                        null,
                                         List.of(new PropertyMapping("id", "actor_id", PropertyType.INTEGER)),
-                                        schemaFor(new NodeKeyConstraint(
-                                                "actor_id-key", "Actor", List.of("actor_id"), Map.of())))),
+                                        schemaFor(
+                                                new NodeKeyConstraint("actor_id-key", List.of("actor_id"), Map.of())))),
                         List.of(new RelationshipTarget(
                                 true,
                                 "played-relationships",

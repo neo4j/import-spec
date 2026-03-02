@@ -16,6 +16,7 @@
  */
 package org.neo4j.importer.v1.validation.plugin;
 
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import org.neo4j.importer.v1.targets.NodeTarget;
@@ -35,7 +36,9 @@ public class NoDanglingLabelInFullTextIndexValidator implements SpecificationVal
     @Override
     public void visitNodeTarget(int index, NodeTarget target) {
         var basePath = String.format("$.targets.nodes[%d].schema.fulltext_indexes", index);
-        var labels = target.getLabels();
+        var labels = new HashSet<>();
+        labels.add(target.getIdentifyingLabel());
+        labels.addAll(target.getImpliedLabels());
         var fullTextIndexes = target.getSchema().getFullTextIndexes();
         for (int i = 0; i < fullTextIndexes.size(); i++) {
             var indexLabels = fullTextIndexes.get(i).getLabels();

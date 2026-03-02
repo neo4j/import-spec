@@ -34,10 +34,16 @@ public class NoInvalidCharsInTypeAndLabelValidator implements SpecificationValid
 
     @Override
     public void visitNodeTarget(int index, NodeTarget target) {
-        for (int labelInd = 0; labelInd < target.getLabels().size(); labelInd++) {
-            var label = target.getLabels().get(labelInd);
+        var identifyingLabel = target.getIdentifyingLabel();
+        if (identifyingLabel.chars().anyMatch(c -> c == COLON || c == EQUAL_SIGN)) {
+            invalidLabelsAndType.put(String.format("$.targets.nodes[%d].identifying_label", index), identifyingLabel);
+        }
+        var impliedLabels = target.getImpliedLabels();
+        for (int labelInd = 0; labelInd < impliedLabels.size(); labelInd++) {
+            var label = impliedLabels.get(labelInd);
             if (label.chars().anyMatch(c -> c == COLON || c == EQUAL_SIGN)) {
-                invalidLabelsAndType.put(String.format("$.targets.nodes[%d].labels[%d]", index, labelInd), label);
+                invalidLabelsAndType.put(
+                        String.format("$.targets.nodes[%d].implied_labels[%d]", index, labelInd), label);
             }
         }
     }

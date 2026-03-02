@@ -386,8 +386,11 @@ public class Neo4jAdminExampleIT {
 
             Targets targets = specification.getTargets();
             for (NodeTarget nodeTarget : targets.getNodes()) {
+                var labels = new ArrayList<String>();
+                labels.add(nodeTarget.getIdentifyingLabel());
+                labels.addAll(nodeTarget.getImpliedLabels());
                 command.append(" --nodes=");
-                command.append(String.join(":", nodeTarget.getLabels()));
+                command.append(String.join(":", labels));
                 command.append("=");
                 command.append("/import/%s,".formatted(headerFileName(nodeTarget)));
                 command.append("%s".formatted(sourceUri(specification, nodeTarget)));
@@ -507,7 +510,10 @@ public class Neo4jAdminExampleIT {
         }
 
         private static String idSpaceFor(String id, NodeTarget nodeTarget) {
-            return ":%s(%s-%s)".formatted(id, nodeTarget.getName(), String.join("|", nodeTarget.getLabels()));
+            var labels = new ArrayList<String>();
+            labels.add(nodeTarget.getIdentifyingLabel());
+            labels.addAll(nodeTarget.getImpliedLabels());
+            return ":%s(%s-%s)".formatted(id, nodeTarget.getName(), String.join("|", labels));
         }
 
         private static List<String> generateSchemaStatements(List<? extends Target> targets) {
@@ -530,10 +536,10 @@ public class Neo4jAdminExampleIT {
                                     generateName(
                                             nodeTarget,
                                             "key",
-                                            entry.getValue().getLabel(),
+                                            nodeTarget.getIdentifyingLabel(),
                                             entry.getValue().getProperties()),
                                     entry.getKey(),
-                                    sanitize(entry.getValue().getLabel()),
+                                    sanitize(nodeTarget.getIdentifyingLabel()),
                                     entry.getValue().getProperties().stream()
                                             .map(Neo4jAdmin::sanitize)
                                             .map(prop -> propertyOf(entry.getKey(), prop))
@@ -546,10 +552,10 @@ public class Neo4jAdminExampleIT {
                                     generateName(
                                             nodeTarget,
                                             "unique",
-                                            entry.getValue().getLabel(),
+                                            nodeTarget.getIdentifyingLabel(),
                                             entry.getValue().getProperties()),
                                     entry.getKey(),
-                                    sanitize(entry.getValue().getLabel()),
+                                    sanitize(nodeTarget.getIdentifyingLabel()),
                                     entry.getValue().getProperties().stream()
                                             .map(Neo4jAdmin::sanitize)
                                             .map(prop -> propertyOf(entry.getKey(), prop))
@@ -562,10 +568,10 @@ public class Neo4jAdminExampleIT {
                                     generateName(
                                             nodeTarget,
                                             "type",
-                                            entry.getValue().getLabel(),
+                                            nodeTarget.getIdentifyingLabel(),
                                             List.of(entry.getValue().getProperty())),
                                     entry.getKey(),
-                                    sanitize(entry.getValue().getLabel()),
+                                    sanitize(nodeTarget.getIdentifyingLabel()),
                                     propertyOf(entry.getKey(), entry.getValue().getProperty()),
                                     propertyType(findPropertyType(
                                             nodeTarget.getProperties(),

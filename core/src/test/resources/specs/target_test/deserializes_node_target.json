@@ -18,7 +18,8 @@
         ],
         "limit": 42
     },
-    "labels": ["Label1", "Label2"],
+    "identifying_label": "Label1",
+    "implied_labels": ["Label2"],
     "properties": [
         {"source_field": "field_1", "target_property": "property1", "target_property_type": "integer"},
         {
@@ -30,13 +31,12 @@
     ],
     "schema": {
         "type_constraints": [
-            {"name": "type_constraint_1", "label": "Label1", "property": "property1"}
+            {"name": "type_constraint_1", "property": "property1"}
         ],
         "key_constraints": [
-            {"name": "key_constraint_1", "label": "Label1", "properties": ["property1"]},
+            {"name": "key_constraint_1", "properties": ["property1"]},
             {
                 "name": "key_constraint_2",
-                "label": "Label2",
                 "properties": ["property2"],
                 "options": {"indexProvider": "range-1.0"}
             }
@@ -44,31 +44,28 @@
         "unique_constraints": [
             {
                 "name": "unique_constraint_1",
-                "label": "Label1",
                 "properties": ["property3"],
                 "options": {"indexProvider": "range-1.0"}
             }
         ],
         "existence_constraints": [
-            {"name": "existence_constraint_1", "label": "Label2", "property": "property3"}
+            {"name": "existence_constraint_1", "property": "property3"}
         ],
         "range_indexes": [
-            {"name": "range_index_1", "label": "Label1", "properties": ["property1", "property3"]},
-            {"name": "range_index_2", "label": "Label2", "properties": ["property2"]}
+            {"name": "range_index_1", "properties": ["property1", "property3"]},
+            {"name": "range_index_2", "properties": ["property2"]}
         ],
         "text_indexes": [
             {
                 "name": "text_index_1",
-                "label": "Label1",
                 "property": "property1",
                 "options": {"indexProvider": "text-2.0"}
             },
-            {"name": "text_index_2", "label": "Label2", "property": "property2"}
+            {"name": "text_index_2", "property": "property2"}
         ],
         "point_indexes": [
             {
                 "name": "point_index_1",
-                "label": "Label1",
                 "property": "property1",
                 "options": {
                     "indexConfig": {
@@ -77,7 +74,7 @@
                     }
                 }
             },
-            {"name": "point_index_2", "label": "Label2", "property": "property2"}
+            {"name": "point_index_2", "property": "property2"}
         ],
         "fulltext_indexes": [
             {
@@ -95,7 +92,6 @@
         "vector_indexes": [
             {
                 "name": "vector_index_1",
-                "label": "Label1",
                 "property": "property1",
                 "options": {"vector.dimensions": 1536, "vector.similarity_function": "cosine"}
             }

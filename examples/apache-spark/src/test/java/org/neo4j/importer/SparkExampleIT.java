@@ -284,7 +284,10 @@ public class SparkExampleIT {
     }
 
     private String labels(NodeTargetStep target) {
-        return target.labels().stream()
+        var labels = new ArrayList<String>();
+        labels.add(target.identifyingLabel());
+        labels.addAll(target.impliedLabels());
+        return labels.stream()
                 .map(label -> {
                     Optional<String> result = SchemaNames.sanitize(label);
                     assertThat(result)
@@ -313,7 +316,7 @@ public class SparkExampleIT {
                 .map(constraint -> "CREATE CONSTRAINT %s FOR (n:%s) REQUIRE (%s) IS NODE KEY"
                         .formatted(
                                 constraint.getName(),
-                                sanitize(constraint.getLabel()),
+                                sanitize(step.identifyingLabel()),
                                 constraint.getProperties().stream()
                                         .map(SparkExampleIT::sanitize)
                                         .map(prop -> "%s.%s".formatted("n", prop))
@@ -323,7 +326,7 @@ public class SparkExampleIT {
                 .map(constraint -> "CREATE CONSTRAINT %s FOR (n:%s) REQUIRE (%s) IS UNIQUE"
                         .formatted(
                                 constraint.getName(),
-                                sanitize(constraint.getLabel()),
+                                sanitize(step.identifyingLabel()),
                                 constraint.getProperties().stream()
                                         .map(SparkExampleIT::sanitize)
                                         .map(prop -> "%s.%s".formatted("n", prop))
@@ -334,7 +337,7 @@ public class SparkExampleIT {
                 .map(constraint -> "CREATE CONSTRAINT %s FOR (n:%s) REQUIRE n.%s IS :: %s"
                         .formatted(
                                 constraint.getName(),
-                                sanitize(constraint.getLabel()),
+                                sanitize(step.identifyingLabel()),
                                 sanitize(constraint.getProperty()),
                                 propertyType(propertyTypes.get(constraint.getProperty()))))
                 .toList());

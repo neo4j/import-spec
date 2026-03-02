@@ -43,8 +43,7 @@ class NodeTargetStepTest {
 
     @Test
     void returns_key_and_non_key_properties() {
-        var schema =
-                schemaFor(List.of(key("Label", List.of("prop1", "prop2")), key("Label", List.of("prop2", "prop4"))));
+        var schema = schemaFor(List.of(key(List.of("prop1", "prop2")), key(List.of("prop2", "prop4"))));
 
         var task = new NodeTargetStep(
                 new NodeTarget(
@@ -54,7 +53,8 @@ class NodeTargetStepTest {
                         null,
                         WriteMode.CREATE,
                         (ObjectNode) null,
-                        List.of("Label"),
+                        "Label",
+                        null,
                         properties,
                         schema),
                 Set.of());
@@ -66,8 +66,8 @@ class NodeTargetStepTest {
     @Test
     void returns_unique_properties_as_keys_when_no_key_constraints_are_defined() {
         var schema = schemaFor(
-                List.of(unique("Label", List.of("prop1", "prop2")), unique("Label", List.of("prop2", "prop4"))),
-                List.of(notNull("Label", "prop2"), notNull("Label", "prop3"), notNull("Label", "prop4")));
+                List.of(unique(List.of("prop1", "prop2")), unique(List.of("prop2", "prop4"))),
+                List.of(notNull("prop2"), notNull("prop3"), notNull("prop4")));
 
         var task = new NodeTargetStep(
                 new NodeTarget(
@@ -77,7 +77,8 @@ class NodeTargetStepTest {
                         null,
                         WriteMode.CREATE,
                         (ObjectNode) null,
-                        List.of("Label"),
+                        "Label",
+                        null,
                         properties,
                         schema),
                 Set.of());
@@ -89,9 +90,9 @@ class NodeTargetStepTest {
     @Test
     void returns_key_over_unique_properties() {
         var schema = schemaFor(
-                List.of(key("Label", List.of("prop1", "prop2"))),
-                List.of(unique("Label", List.of("prop3"))),
-                List.of(notNull("Label", "prop3"), notNull("Label", "prop4")));
+                List.of(key(List.of("prop1", "prop2"))),
+                List.of(unique(List.of("prop3"))),
+                List.of(notNull("prop3"), notNull("prop4")));
 
         var task = new NodeTargetStep(
                 new NodeTarget(
@@ -101,7 +102,8 @@ class NodeTargetStepTest {
                         null,
                         WriteMode.CREATE,
                         (ObjectNode) null,
-                        List.of("Label"),
+                        "Label",
+                        null,
                         properties,
                         schema),
                 Set.of());
@@ -110,16 +112,16 @@ class NodeTargetStepTest {
         assertThat(task.nonKeyProperties()).containsExactly(prop3, prop4);
     }
 
-    private NodeKeyConstraint key(String label, List<String> properties) {
-        return new NodeKeyConstraint(String.format("key-%d", random.nextInt()), label, properties, null);
+    private NodeKeyConstraint key(List<String> properties) {
+        return new NodeKeyConstraint(String.format("key-%d", random.nextInt()), properties, null);
     }
 
-    private NodeUniqueConstraint unique(String label, List<String> properties) {
-        return new NodeUniqueConstraint(String.format("unique-%d", random.nextInt()), label, properties, null);
+    private NodeUniqueConstraint unique(List<String> properties) {
+        return new NodeUniqueConstraint(String.format("unique-%d", random.nextInt()), properties, null);
     }
 
-    private NodeExistenceConstraint notNull(String label, String property) {
-        return new NodeExistenceConstraint(String.format("not-null-%d", random.nextInt()), label, property);
+    private NodeExistenceConstraint notNull(String property) {
+        return new NodeExistenceConstraint(String.format("not-null-%d", random.nextInt()), property);
     }
 
     private PropertyMapping mappingTo(String name) {

@@ -39,8 +39,12 @@ public class NodeTargetStep extends EntityTargetStep {
         return target.getWriteMode();
     }
 
-    public List<String> labels() {
-        return target.getLabels();
+    public String identifyingLabel() {
+        return target.getIdentifyingLabel();
+    }
+
+    public List<String> impliedLabels() {
+        return target.getImpliedLabels();
     }
 
     @Override

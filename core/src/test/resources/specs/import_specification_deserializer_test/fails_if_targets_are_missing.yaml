@@ -1,6 +1,6 @@
 ---
 version: '1'
 sources:
-- name: a-source
-  type: bigquery
-  query: SELECT id, name FROM my.table
+  - name: a-source
+    type: bigquery
+    query: SELECT id, name FROM my.table

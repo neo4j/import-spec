@@ -73,12 +73,13 @@ class ImportExecutionPlanIT {
                                 null,
                                 null,
                                 (ObjectNode) null,
-                                List.of("Product"),
+                                "Product",
+                                null,
                                 List.of(
                                         new PropertyMapping("productname", "name", null),
                                         new PropertyMapping("unitprice", "unitPrice", null)),
-                                nodeSchema(new NodeKeyConstraint(
-                                        "product_name_key_constraint", "Product", List.of("name"), null))),
+                                nodeSchema(
+                                        new NodeKeyConstraint("product_name_key_constraint", List.of("name"), null))),
                         Set.of(productSource));
                 var categoryNodeStep = new NodeTargetStep(
                         new NodeTarget(
@@ -88,12 +89,13 @@ class ImportExecutionPlanIT {
                                 null,
                                 null,
                                 (ObjectNode) null,
-                                List.of("Category"),
+                                "Category",
+                                null,
                                 List.of(
                                         new PropertyMapping("categoryname", "name", null),
                                         new PropertyMapping("description", "description", null)),
-                                nodeSchema(new NodeKeyConstraint(
-                                        "category_name_key_constraint", "Category", List.of("name"), null))),
+                                nodeSchema(
+                                        new NodeKeyConstraint("category_name_key_constraint", List.of("name"), null))),
                         Set.of(categorySource));
                 assertThat(stages.get(1)).isEqualTo(new ImportStepStage(Set.of(productNodeStep, categoryNodeStep)));
                 assertThat(stages.get(2))
@@ -147,13 +149,13 @@ class ImportExecutionPlanIT {
                                 null,
                                 null,
                                 (ObjectNode) null,
-                                List.of("Customer"),
+                                "Customer",
+                                null,
                                 List.of(
                                         new PropertyMapping("customer_id", "id", null),
                                         new PropertyMapping("first_name", "first_name", null),
                                         new PropertyMapping("last_name", "last_name", null)),
-                                nodeSchema(new NodeKeyConstraint(
-                                        "customer_id_key_constraint", "Customer", List.of("id"), null))),
+                                nodeSchema(new NodeKeyConstraint("customer_id_key_constraint", List.of("id"), null))),
                         Set.of(customerSource));
                 assertThat(stages.get(1).getSteps()).hasSize(3).contains(customerNodeStep);
                 var customerBoughtProductSource = new SourceStep(
@@ -169,12 +171,13 @@ class ImportExecutionPlanIT {
                                 null,
                                 null,
                                 (ObjectNode) null,
-                                List.of("Product"),
+                                "Product",
+                                null,
                                 List.of(
                                         new PropertyMapping("productname", "name", null),
                                         new PropertyMapping("unitprice", "unitPrice", null)),
-                                nodeSchema(new NodeKeyConstraint(
-                                        "product_name_key_constraint", "Product", List.of("name"), null))),
+                                nodeSchema(
+                                        new NodeKeyConstraint("product_name_key_constraint", List.of("name"), null))),
                         Set.of(new SourceStep(new JdbcSource(
                                 "products",
                                 "northwind",
@@ -187,12 +190,13 @@ class ImportExecutionPlanIT {
                                 null,
                                 null,
                                 (ObjectNode) null,
-                                List.of("Category"),
+                                "Category",
+                                null,
                                 List.of(
                                         new PropertyMapping("categoryname", "name", null),
                                         new PropertyMapping("description", "description", null)),
-                                nodeSchema(new NodeKeyConstraint(
-                                        "category_name_key_constraint", "Category", List.of("name"), null))),
+                                nodeSchema(
+                                        new NodeKeyConstraint("category_name_key_constraint", List.of("name"), null))),
                         Set.of(new SourceStep(new JdbcSource(
                                 "categories",
                                 "northwind",
@@ -271,12 +275,13 @@ class ImportExecutionPlanIT {
                                 null,
                                 null,
                                 (ObjectNode) null,
-                                List.of("Product"),
+                                "Product",
+                                null,
                                 List.of(
                                         new PropertyMapping("productname", "name", null),
                                         new PropertyMapping("unitprice", "unitPrice", null)),
-                                nodeSchema(new NodeKeyConstraint(
-                                        "product_name_key_constraint", "Product", List.of("name"), null))),
+                                nodeSchema(
+                                        new NodeKeyConstraint("product_name_key_constraint", List.of("name"), null))),
                         Set.of(new SourceStep(new JdbcSource(
                                 "products",
                                 "northwind",
@@ -289,12 +294,13 @@ class ImportExecutionPlanIT {
                                 null,
                                 null,
                                 (ObjectNode) null,
-                                List.of("Category"),
+                                "Category",
+                                null,
                                 List.of(
                                         new PropertyMapping("categoryname", "name", null),
                                         new PropertyMapping("description", "description", null)),
-                                nodeSchema(new NodeKeyConstraint(
-                                        "category_name_key_constraint", "Category", List.of("name"), null))),
+                                nodeSchema(
+                                        new NodeKeyConstraint("category_name_key_constraint", List.of("name"), null))),
                         Set.of(new SourceStep(new JdbcSource(
                                 "categories",
                                 "northwind",

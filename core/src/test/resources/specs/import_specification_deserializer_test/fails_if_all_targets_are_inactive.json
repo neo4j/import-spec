@@ -1,7 +1,7 @@
-
 {
-    "version": "1",
-    "sources": [{
+  "version": "1",
+  "sources": [
+    {
       "name": "a-source",
       "type": "text",
       "header": [
@@ -10,16 +10,20 @@
       ],
       "data": [
         [
-          "value1", "value2"
+          "value1",
+          "value2"
         ]
       ]
-    }],
-    "targets": {
-        "queries": [{
-            "active": false,
-            "name": "a-target",
-            "source": "a-source",
-            "query": "UNWIND $rows AS row CREATE (n:ANode) SET n = row"
-      }]
     }
+  ],
+  "targets": {
+    "queries": [
+      {
+        "active": false,
+        "name": "a-target",
+        "source": "a-source",
+        "query": "UNWIND $rows AS row CREATE (n:ANode) SET n = row"
+      }
+    ]
+  }
 }

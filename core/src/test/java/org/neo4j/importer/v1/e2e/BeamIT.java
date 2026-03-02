@@ -384,11 +384,12 @@ class TargetWriteRowFn extends DoFn<Row, Row> {
             var keys = nodeStep.keyProperties();
             var nonKeys = nodeStep.nonKeyProperties();
             driver.executableQuery(String.format(
-                            "%s (n:%s%s) %s",
+                            "%s (n:%s%s)%s%s",
                             nodeStep.writeMode(),
-                            String.join(":", nodeStep.labels()),
+                            nodeStep.identifyingLabel(),
                             entityPattern("row", keys),
-                            setClause("n", "row", nonKeys)))
+                            impliedLabelSetClause("n", nodeStep.impliedLabels()),
+                            propertySetClause("n", "row", nonKeys)))
                     .withParameters(Map.of("row", rowValues(keys, nonKeys, row)))
                     .execute();
         } else if (step instanceof RelationshipTargetStep) {
@@ -400,15 +401,15 @@ class TargetWriteRowFn extends DoFn<Row, Row> {
             driver.executableQuery(String.format(
                             "%s (start:%s%s) %s (end:%s%s) %s (start)-[r:%s%s]->(end) %s",
                             relationshipStep.nodeMatchMode(),
-                            String.join(":", start.labels()),
+                            start.identifyingLabel(),
                             entityPattern("start", start.keyProperties()),
                             relationshipStep.nodeMatchMode(),
-                            String.join(":", end.labels()),
+                            end.identifyingLabel(),
                             entityPattern("end", end.keyProperties()),
                             relationshipStep.writeMode(),
                             relationshipStep.type(),
                             entityPattern("row", keys),
-                            setClause("r", "row", nonKeys)))
+                            propertySetClause("r", "row", nonKeys)))
                     .withParameters(Map.of(
                             "start", nodeKeyValues(start, row),
                             "end", nodeKeyValues(end, row),
@@ -435,12 +436,13 @@ class TargetWriteRowFn extends DoFn<Row, Row> {
         return builder.toString();
     }
 
-    private String setClause(String nodeVariableName, String parameterName, List<PropertyMapping> nonKeyProperties) {
+    private String propertySetClause(
+            String nodeVariableName, String parameterName, List<PropertyMapping> nonKeyProperties) {
         if (nonKeyProperties.isEmpty()) {
             return "";
         }
         StringBuilder builder = new StringBuilder();
-        builder.append("SET ");
+        builder.append(" SET ");
         for (int i = 0; i < nonKeyProperties.size(); i++) {
             PropertyMapping mapping = nonKeyProperties.get(i);
             builder.append(String.format(
@@ -451,6 +453,13 @@ class TargetWriteRowFn extends DoFn<Row, Row> {
             }
         }
         return builder.toString();
+    }
+
+    private String impliedLabelSetClause(String variable, List<String> labels) {
+        if (labels.isEmpty()) {
+            return "";
+        }
+        return " SET %s:%s".formatted(variable, String.join(":", labels));
     }
 
     private Map<String, Object> nodeKeyValues(NodeTargetStep node, Row row) {

@@ -22,22 +22,15 @@ import java.util.List;
 import java.util.Objects;
 
 public class NodeRangeIndex extends Index {
-    private final String label;
     private final List<String> properties;
 
     @JsonCreator
     public NodeRangeIndex(
             @JsonProperty(value = "name", required = true) String name,
-            @JsonProperty(value = "label", required = true) String label,
             @JsonProperty(value = "properties", required = true) List<String> properties) {
 
         super(name);
-        this.label = label;
         this.properties = properties;
-    }
-
-    public String getLabel() {
-        return label;
     }
 
     public List<String> getProperties() {
@@ -50,16 +43,16 @@ public class NodeRangeIndex extends Index {
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
         NodeRangeIndex that = (NodeRangeIndex) o;
-        return Objects.equals(label, that.label) && Objects.equals(properties, that.properties);
+        return Objects.equals(properties, that.properties);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), label, properties);
+        return Objects.hash(super.hashCode(), properties);
     }
 
     @Override
     public String toString() {
-        return "NodeRangeIndex{" + "label='" + label + '\'' + ", properties=" + properties + "} " + super.toString();
+        return "NodeRangeIndex{" + "properties=" + properties + "} " + super.toString();
     }
 }

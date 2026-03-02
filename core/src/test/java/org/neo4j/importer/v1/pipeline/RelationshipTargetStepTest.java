@@ -194,7 +194,8 @@ class RelationshipTargetStepTest {
                         null,
                         WriteMode.CREATE,
                         (ObjectNode) null,
-                        List.of("Label"),
+                        "Label",
+                        null,
                         List.of(new PropertyMapping("a-field", "a-property", null)),
                         null),
                 Set.of());

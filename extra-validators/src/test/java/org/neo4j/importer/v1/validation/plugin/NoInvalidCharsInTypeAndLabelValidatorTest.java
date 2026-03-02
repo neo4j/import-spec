@@ -30,7 +30,7 @@ import org.neo4j.importer.v1.validation.SpecificationValidationResult;
 class NoInvalidCharsInTypeAndLabelValidatorTest {
 
     @Test
-    void fails_validation_for_invalid_label_chars() {
+    void fails_validation_for_invalid_identifying_label_chars() {
         // Given a node with labels few one that contains invalid char
         var nodeTarget = new NodeTarget(
                 true,
@@ -39,7 +39,41 @@ class NoInvalidCharsInTypeAndLabelValidatorTest {
                 null,
                 WriteMode.CREATE,
                 (ObjectNode) null,
-                List.of("OrdinaryLabel", "LabelWith:Colon", "LabelWith=Sign", "AnotherValidLabel"),
+                "LabelWith:Colon",
+                List.of("AnotherValidLabel"),
+                List.of(),
+                null);
+
+        // When the node is validated
+        var builder = new SpecificationValidationResult.Builder();
+        var validator = new NoInvalidCharsInTypeAndLabelValidator();
+        validator.visitNodeTarget(0, nodeTarget);
+        validator.report(builder);
+        var validationResult = builder.build();
+
+        // Then
+        assertThat(validationResult.getErrors()).hasSize(1);
+
+        var errors = validationResult.getErrors().iterator();
+        var firstError = errors.next();
+        assertThat(firstError.getCode()).isEqualTo("CHAR-001");
+        assertThat(firstError.getElementPath()).isEqualTo("$.targets.nodes[0].identifying_label");
+        assertThat(firstError.getMessage())
+                .isEqualTo("$.targets.nodes[0].identifying_label \"LabelWith:Colon\" contains invalid character");
+    }
+
+    @Test
+    void fails_validation_for_invalid_implied_label_chars() {
+        // Given a node with labels few one that contains invalid char
+        var nodeTarget = new NodeTarget(
+                true,
+                "a-node-target",
+                "my-bigquery-source",
+                null,
+                WriteMode.CREATE,
+                (ObjectNode) null,
+                "OrdinaryLabel",
+                List.of("LabelWith:Colon", "LabelWith=Sign", "AnotherValidLabel"),
                 List.of(),
                 null);
 
@@ -56,15 +90,15 @@ class NoInvalidCharsInTypeAndLabelValidatorTest {
         var errors = validationResult.getErrors().iterator();
         var firstError = errors.next();
         assertThat(firstError.getCode()).isEqualTo("CHAR-001");
-        assertThat(firstError.getElementPath()).isEqualTo("$.targets.nodes[0].labels[1]");
+        assertThat(firstError.getElementPath()).isEqualTo("$.targets.nodes[0].implied_labels[0]");
         assertThat(firstError.getMessage())
-                .isEqualTo("$.targets.nodes[0].labels[1] \"LabelWith:Colon\" contains invalid character");
+                .isEqualTo("$.targets.nodes[0].implied_labels[0] \"LabelWith:Colon\" contains invalid character");
 
         var secondError = errors.next();
         assertThat(secondError.getCode()).isEqualTo("CHAR-001");
-        assertThat(secondError.getElementPath()).isEqualTo("$.targets.nodes[0].labels[2]");
+        assertThat(secondError.getElementPath()).isEqualTo("$.targets.nodes[0].implied_labels[1]");
         assertThat(secondError.getMessage())
-                .isEqualTo("$.targets.nodes[0].labels[2] \"LabelWith=Sign\" contains invalid character");
+                .isEqualTo("$.targets.nodes[0].implied_labels[1] \"LabelWith=Sign\" contains invalid character");
     }
 
     @Test

@@ -16,6 +16,7 @@
  */
 package org.neo4j.importer.v1.validation.plugin;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import org.neo4j.importer.v1.targets.NodeTarget;
@@ -34,7 +35,9 @@ public class NoDuplicatedLabelValidator implements SpecificationValidator {
 
     @Override
     public void visitNodeTarget(int index, NodeTarget target) {
-        var labels = target.getLabels();
+        var labels = new ArrayList<String>();
+        labels.add(target.getIdentifyingLabel());
+        labels.addAll(target.getImpliedLabels());
         Duplicate.findDuplicates(labels).forEach(duplicate -> {
             var i = labels.indexOf(duplicate.getValue());
             var path = String.format("$.targets.nodes[%d].labels[%d]", index, i);

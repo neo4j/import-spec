@@ -76,7 +76,8 @@ class TargetTest {
             assertThat(target.getName()).isEqualTo("my-minimal-node-target");
             assertThat(target.isActive()).isTrue();
             assertThat(target.getSource()).isEqualTo("a-source");
-            assertThat(target.getLabels()).isEqualTo(List.of("Label1", "Label2"));
+            assertThat(target.getIdentifyingLabel()).isEqualTo("Label1");
+            assertThat(target.getImpliedLabels()).isEqualTo(List.of("Label2"));
             assertThat(target.getProperties())
                     .isEqualTo(List.of(
                             new PropertyMapping("field_1", "property1", null),
@@ -110,7 +111,8 @@ class TargetTest {
                                     new OrderBy("column_2", Order.ASC),
                                     new OrderBy("column_3", Order.DESC)),
                             42));
-            assertThat(target.getLabels()).isEqualTo(List.of("Label1", "Label2"));
+            assertThat(target.getIdentifyingLabel()).isEqualTo("Label1");
+            assertThat(target.getImpliedLabels()).isEqualTo(List.of("Label2"));
             assertThat(target.getProperties())
                     .isEqualTo(List.of(
                             new PropertyMapping("field_1", "property1", PropertyType.INTEGER),
@@ -118,31 +120,25 @@ class TargetTest {
                             new PropertyMapping("field_3", "property3", PropertyType.BOOLEAN)));
             assertThat(target.getSchema())
                     .isEqualTo(new NodeSchema(
-                            List.of(new NodeTypeConstraint("type_constraint_1", "Label1", "property1")),
+                            List.of(new NodeTypeConstraint("type_constraint_1", "property1")),
                             List.of(
-                                    new NodeKeyConstraint("key_constraint_1", "Label1", List.of("property1"), null),
+                                    new NodeKeyConstraint("key_constraint_1", List.of("property1"), null),
                                     new NodeKeyConstraint(
                                             "key_constraint_2",
-                                            "Label2",
                                             List.of("property2"),
                                             Map.of("indexProvider", "range-1.0"))),
                             List.of(new NodeUniqueConstraint(
-                                    "unique_constraint_1",
-                                    "Label1",
-                                    List.of("property3"),
-                                    Map.of("indexProvider", "range-1.0"))),
-                            List.of(new NodeExistenceConstraint("existence_constraint_1", "Label2", "property3")),
+                                    "unique_constraint_1", List.of("property3"), Map.of("indexProvider", "range-1.0"))),
+                            List.of(new NodeExistenceConstraint("existence_constraint_1", "property3")),
                             List.of(
-                                    new NodeRangeIndex("range_index_1", "Label1", List.of("property1", "property3")),
-                                    new NodeRangeIndex("range_index_2", "Label2", List.of("property2"))),
+                                    new NodeRangeIndex("range_index_1", List.of("property1", "property3")),
+                                    new NodeRangeIndex("range_index_2", List.of("property2"))),
                             List.of(
-                                    new NodeTextIndex(
-                                            "text_index_1", "Label1", "property1", Map.of("indexProvider", "text-2.0")),
-                                    new NodeTextIndex("text_index_2", "Label2", "property2", null)),
+                                    new NodeTextIndex("text_index_1", "property1", Map.of("indexProvider", "text-2.0")),
+                                    new NodeTextIndex("text_index_2", "property2", null)),
                             List.of(
                                     new NodePointIndex(
                                             "point_index_1",
-                                            "Label1",
                                             "property1",
                                             Map.of(
                                                     "indexConfig",
@@ -151,7 +147,7 @@ class TargetTest {
                                                             List.of(-100.0, -100.0),
                                                             "spatial.cartesian.max",
                                                             List.of(100.0, 100.0)))),
-                                    new NodePointIndex("point_index_2", "Label2", "property2", null)),
+                                    new NodePointIndex("point_index_2", "property2", null)),
                             List.of(
                                     new NodeFullTextIndex(
                                             "fulltext_index_1",
@@ -165,7 +161,6 @@ class TargetTest {
                                             null)),
                             List.of(new NodeVectorIndex(
                                     "vector_index_1",
-                                    "Label1",
                                     "property1",
                                     Map.of("vector.dimensions", 1536, "vector.similarity_function", "cosine")))));
         }

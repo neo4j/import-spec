@@ -185,7 +185,7 @@ public class AdminImportIT {
                     assertThat(matchingKeys).hasSizeLessThanOrEqualTo(1);
                     if (matchingKeys.size() == 1) {
                         NodeKeyConstraint key = matchingKeys.get(0);
-                        writer.append(String.format(":ID(%s)", idSpaceFor(key)));
+                        writer.append(String.format(":ID(%s)", idSpaceFor(nodeTarget)));
                     }
                     if (i < properties.size() - 1) {
                         writer.append(",");
@@ -225,8 +225,8 @@ public class AdminImportIT {
                 // note: this does not support standalone start/end node spec yet
                 var startNodeRef = relationshipTarget.getStartNodeReference();
                 assertThat(startNodeRef.getName()).isNotEmpty();
-                writer.write(
-                        String.format(":START_ID(%s),", idSpaceFor(findNodeKey(nodeTargets, startNodeRef.getName()))));
+                writer.write(String.format(
+                        ":START_ID(%s),", idSpaceFor(findNodeTarget(nodeTargets, startNodeRef.getName()))));
                 var properties = sortedProperties(relationshipTarget.getProperties());
                 for (int i = 0; i < properties.size(); i++) {
                     String property = properties.get(i);
@@ -239,7 +239,8 @@ public class AdminImportIT {
                 }
                 var endNodeRef = relationshipTarget.getEndNodeReference();
                 assertThat(endNodeRef.getName()).isNotEmpty();
-                writer.write(String.format(":END_ID(%s)", idSpaceFor(findNodeKey(nodeTargets, endNodeRef.getName()))));
+                writer.write(
+                        String.format(":END_ID(%s)", idSpaceFor(findNodeTarget(nodeTargets, endNodeRef.getName()))));
             }
         }
 
@@ -306,13 +307,12 @@ public class AdminImportIT {
             return maybeField.get();
         }
 
-        private static String idSpaceFor(NodeKeyConstraint key) {
-            return String.format("%s-ID", key.getLabel());
+        private static String idSpaceFor(NodeTarget key) {
+            return String.format("%s-ID", key.getIdentifyingLabel());
         }
 
-        private static NodeKeyConstraint findNodeKey(List<NodeTarget> nodeTargets, String targetName) {
-            var nodeTarget = findTargetByName(nodeTargets, targetName);
-            return singleNodeKey(nodeTarget);
+        private static NodeTarget findNodeTarget(List<NodeTarget> nodeTargets, String targetName) {
+            return findTargetByName(nodeTargets, targetName);
         }
 
         private static String serializeValue(Map<String, Object> row, String field) {
@@ -348,8 +348,11 @@ public class AdminImportIT {
             command.append(database);
             Targets targets = importSpec.getTargets();
             for (NodeTarget nodeTarget : targets.getNodes()) {
+                var labels = new ArrayList<String>();
+                labels.add(nodeTarget.getIdentifyingLabel());
+                labels.addAll(nodeTarget.getImpliedLabels());
                 command.append(" --nodes=");
-                command.append(String.join(":", nodeTarget.getLabels()));
+                command.append(String.join(":", labels));
                 command.append("=");
                 command.append(String.format("/import/%s", headerFileName(nodeTarget)));
                 command.append(",");

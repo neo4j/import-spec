@@ -347,7 +347,8 @@ public class ImportPipeline implements Iterable<ImportStep>, Serializable {
                         target.getDependencies(),
                         target.getWriteMode(),
                         target.getExtensions(),
-                        target.getLabels(),
+                        target.getIdentifyingLabel(),
+                        target.getImpliedLabels(),
                         mappings,
                         target.getSchema()),
                 nodeTarget.dependencies());

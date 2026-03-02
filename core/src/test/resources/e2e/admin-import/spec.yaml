@@ -16,8 +16,7 @@ targets:
   nodes:
     - source: "products"
       name: "product_nodes"
-      labels:
-        - "Product"
+      identifying_label: "Product"
       properties:
         - source_field: "productname"
           target_property: "name"
@@ -26,13 +25,11 @@ targets:
       schema:
         key_constraints:
           - name: "product_name_key_constraint"
-            label: "Product"
             properties:
               - "name"
     - source: "categories"
       name: "category_nodes"
-      labels:
-        - "Category"
+      identifying_label: "Category"
       properties:
         - source_field: "categoryname"
           target_property: "name"
@@ -41,7 +38,6 @@ targets:
       schema:
         key_constraints:
           - name: "category_name_key_constraint"
-            label: "Category"
             properties:
               - "name"
 

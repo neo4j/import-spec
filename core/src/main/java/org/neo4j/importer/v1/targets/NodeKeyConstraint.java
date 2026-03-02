@@ -22,17 +22,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-public class NodeKeyConstraint extends NodeConstraint {
+public class NodeKeyConstraint extends Constraint {
     private final List<String> properties;
     private final Map<String, Object> options;
 
     @JsonCreator
     public NodeKeyConstraint(
             @JsonProperty(value = "name", required = true) String name,
-            @JsonProperty(value = "label", required = true) String label,
             @JsonProperty(value = "properties", required = true) List<String> properties,
             @JsonProperty("options") Map<String, Object> options) {
-        super(name, label);
+        super(name);
         this.properties = properties;
         this.options = options;
     }

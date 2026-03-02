@@ -1,21 +1,20 @@
 ---
 version: '1'
 sources:
-- name: a-source
-  type: jdbc
-  data_source: a-data-source
-  sql: SELECT id, name FROM my.table
+  - name: a-source
+    type: jdbc
+    data_source: a-data-source
+    sql: SELECT id, name FROM my.table
 targets:
   nodes:
-  - name: a-node-target
-    source: a-source
-    labels:
-    - Label
-    properties:
-    - source_field: id
-      target_property: id
-    schema:
-      text_indexes:
-      - name: a text index
-        label: Label
-        property: invalid
+    - name: a-node-target
+      source: a-source
+      identifying_label: Label
+      properties:
+        - source_field: id
+          target_property: id
+      schema:
+        text_indexes:
+          - name: a text index
+            property: invalid
+

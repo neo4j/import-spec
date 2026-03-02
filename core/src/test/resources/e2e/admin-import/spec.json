@@ -25,9 +25,7 @@
       {
         "source": "products",
         "name": "product_nodes",
-        "labels": [
-          "Product"
-        ],
+        "identifying_label": "Product",
         "properties": [
           {
             "source_field": "productname",
@@ -42,7 +40,6 @@
           "key_constraints": [
             {
               "name": "products_name_key_constraint",
-              "label": "Product",
               "properties": [
                 "name"
               ]
@@ -53,9 +50,7 @@
       {
         "source": "categories",
         "name": "category_nodes",
-        "labels": [
-          "Category"
-        ],
+        "identifying_label": "Category",
         "properties": [
           {
             "source_field": "categoryname",
@@ -70,7 +65,6 @@
           "key_constraints": [
             {
               "name": "category_name_key_constraint",
-              "label": "Category",
               "properties": [
                 "name"
               ]

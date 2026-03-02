@@ -43,8 +43,6 @@ public class NoRedundantKeyAndExistenceConstraintsValidator implements Specifica
     @Override
     public Set<Class<? extends SpecificationValidator>> requires() {
         return Set.of(
-                NoDanglingLabelInExistenceConstraintValidator.class,
-                NoDanglingLabelInKeyConstraintValidator.class,
                 NoDanglingPropertyInExistenceConstraintValidator.class,
                 NoDanglingPropertyInKeyConstraintValidator.class);
     }
@@ -57,7 +55,7 @@ public class NoRedundantKeyAndExistenceConstraintsValidator implements Specifica
         var existenceConstraints = schema.getExistenceConstraints();
         for (int i = 0; i < existenceConstraints.size(); i++) {
             var constraint = existenceConstraints.get(i);
-            var labelAndProp = new SchemaNodePattern(constraint.getLabel(), constraint.getProperty());
+            var labelAndProp = new SchemaNodePattern(target.getIdentifyingLabel(), constraint.getProperty());
             paths.computeIfAbsent(labelAndProp, (key) -> new ArrayList<>(1))
                     .add(String.format("%s[%d]", existenceBasePath, i));
         }
@@ -66,7 +64,7 @@ public class NoRedundantKeyAndExistenceConstraintsValidator implements Specifica
         for (int i = 0; i < keyConstraints.size(); i++) {
             var constraint = keyConstraints.get(i);
             for (String property : constraint.getProperties()) {
-                var labelAndProp = new SchemaNodePattern(constraint.getLabel(), property);
+                var labelAndProp = new SchemaNodePattern(target.getIdentifyingLabel(), property);
                 paths.computeIfAbsent(labelAndProp, (key) -> new ArrayList<>(1))
                         .add(String.format("%s[%d]", keyBasePath, i));
             }

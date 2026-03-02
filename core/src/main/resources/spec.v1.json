@@ -164,14 +164,18 @@
         }
       ],
       "properties": {
-        "labels": {
+        "identifying_label": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "\\S+"
+        },
+        "implied_labels": {
           "type": "array",
           "items": {
             "type": "string",
             "minLength": 1,
             "pattern": "\\S+"
-          },
-          "minItems": 1
+          }
         },
         "schema": {
           "type": "object",
@@ -234,7 +238,7 @@
         }
       },
       "required": [
-        "labels",
+        "identifying_label",
         "properties"
       ]
     },
@@ -494,11 +498,6 @@
           "minLength": 1,
           "pattern": "\\S+"
         },
-        "label": {
-          "type": "string",
-          "minLength": 1,
-          "pattern": "\\S+"
-        },
         "property": {
           "type": "string",
           "minLength": 1,
@@ -507,7 +506,6 @@
       },
       "required": [
         "name",
-        "label",
         "property"
       ],
       "additionalProperties": false
@@ -520,11 +518,6 @@
           "minLength": 1,
           "pattern": "\\S+"
         },
-        "label": {
-          "type": "string",
-          "minLength": 1,
-          "pattern": "\\S+"
-        },
         "properties": {
           "type": "array",
           "items": {
@@ -540,7 +533,6 @@
       },
       "required": [
         "name",
-        "label",
         "properties"
       ],
       "additionalProperties": false
@@ -553,11 +545,6 @@
           "minLength": 1,
           "pattern": "\\S+"
         },
-        "label": {
-          "type": "string",
-          "minLength": 1,
-          "pattern": "\\S+"
-        },
         "properties": {
           "type": "array",
           "items": {
@@ -573,7 +560,6 @@
       },
       "required": [
         "name",
-        "label",
         "properties"
       ],
       "additionalProperties": false
@@ -586,11 +572,6 @@
           "minLength": 1,
           "pattern": "\\S+"
         },
-        "label": {
-          "type": "string",
-          "minLength": 1,
-          "pattern": "\\S+"
-        },
         "property": {
           "type": "string",
           "minLength": 1,
@@ -599,7 +580,6 @@
       },
       "required": [
         "name",
-        "label",
         "property"
       ],
       "additionalProperties": false
@@ -608,11 +588,6 @@
       "type": "object",
       "properties": {
         "name": {
-          "type": "string",
-          "minLength": 1,
-          "pattern": "\\S+"
-        },
-        "label": {
           "type": "string",
           "minLength": 1,
           "pattern": "\\S+"
@@ -629,7 +604,6 @@
       },
       "required": [
         "name",
-        "label",
         "properties"
       ],
       "additionalProperties": false
@@ -642,11 +616,6 @@
           "minLength": 1,
           "pattern": "\\S+"
         },
-        "label": {
-          "type": "string",
-          "minLength": 1,
-          "pattern": "\\S+"
-        },
         "property": {
           "type": "string",
           "minLength": 1,
@@ -658,7 +627,6 @@
       },
       "required": [
         "name",
-        "label",
         "property"
       ],
       "additionalProperties": false
@@ -671,11 +639,6 @@
           "minLength": 1,
           "pattern": "\\S+"
         },
-        "label": {
-          "type": "string",
-          "minLength": 1,
-          "pattern": "\\S+"
-        },
         "property": {
           "type": "string",
           "minLength": 1,
@@ -687,7 +650,6 @@
       },
       "required": [
         "name",
-        "label",
         "property"
       ],
       "additionalProperties": false
@@ -737,11 +699,6 @@
           "minLength": 1,
           "pattern": "\\S+"
         },
-        "label": {
-          "type": "string",
-          "minLength": 1,
-          "pattern": "\\S+"
-        },
         "property": {
           "type": "string",
           "minLength": 1,
@@ -753,7 +710,6 @@
       },
       "required": [
         "name",
-        "label",
         "property",
         "options"
       ],

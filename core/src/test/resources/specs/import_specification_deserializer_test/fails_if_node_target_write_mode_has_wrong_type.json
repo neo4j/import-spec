@@ -1,22 +1,28 @@
-
 {
-    "version": "1",
-    "sources": [{
-        "name": "a-source",
-        "type": "jdbc",
-        "data_source": "a-data-source",
-        "sql": "SELECT id, name FROM my.table"
-    }],
-    "targets": {
-        "nodes": [{
-            "active": true,
-            "name": "a-target",
-            "source": "a-source",
-            "write_mode": 42,
-            "labels": ["Label"],
-            "properties": [
-                {"source_field": "field", "target_property": "property"}
-            ]
-        }]
+  "version": "1",
+  "sources": [
+    {
+      "name": "a-source",
+      "type": "jdbc",
+      "data_source": "a-data-source",
+      "sql": "SELECT id, name FROM my.table"
     }
+  ],
+  "targets": {
+    "nodes": [
+      {
+        "active": true,
+        "name": "a-target",
+        "source": "a-source",
+        "write_mode": 42,
+        "identifying_label": "Label",
+        "properties": [
+          {
+            "source_field": "field",
+            "target_property": "property"
+          }
+        ]
+      }
+    ]
+  }
 }

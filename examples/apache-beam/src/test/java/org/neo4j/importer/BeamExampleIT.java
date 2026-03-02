@@ -435,8 +435,8 @@ public class BeamExampleIT {
                 statements.addAll(schema.getKeyConstraints().stream()
                         .map(constraint -> "CREATE CONSTRAINT %s FOR (n:%s) REQUIRE (%s) IS NODE KEY"
                                 .formatted(
-                                        generateName(step, "key", constraint.getLabel(), constraint.getProperties()),
-                                        sanitize(constraint.getLabel()),
+                                        generateName(step, "key", step.identifyingLabel(), constraint.getProperties()),
+                                        sanitize(step.identifyingLabel()),
                                         constraint.getProperties().stream()
                                                 .map(TargetSchemaWriteFn::sanitize)
                                                 .map(prop -> propertyOf("n", prop))
@@ -445,8 +445,9 @@ public class BeamExampleIT {
                 statements.addAll(schema.getUniqueConstraints().stream()
                         .map(constraint -> "CREATE CONSTRAINT %s FOR (n:%s) REQUIRE (%s) IS UNIQUE"
                                 .formatted(
-                                        generateName(step, "unique", constraint.getLabel(), constraint.getProperties()),
-                                        sanitize(constraint.getLabel()),
+                                        generateName(
+                                                step, "unique", step.identifyingLabel(), constraint.getProperties()),
+                                        sanitize(step.identifyingLabel()),
                                         constraint.getProperties().stream()
                                                 .map(TargetSchemaWriteFn::sanitize)
                                                 .map(prop -> propertyOf("n", prop))
@@ -457,8 +458,11 @@ public class BeamExampleIT {
                         .map(constraint -> "CREATE CONSTRAINT %s FOR (n:%s) REQUIRE n.%s IS :: %s"
                                 .formatted(
                                         generateName(
-                                                step, "type", constraint.getLabel(), List.of(constraint.getProperty())),
-                                        sanitize(constraint.getLabel()),
+                                                step,
+                                                "type",
+                                                step.identifyingLabel(),
+                                                List.of(constraint.getProperty())),
+                                        sanitize(step.identifyingLabel()),
                                         sanitize(constraint.getProperty()),
                                         propertyType(propertyTypes.get(constraint.getProperty()))))
                         .toList());
@@ -699,8 +703,7 @@ public class BeamExampleIT {
             }
 
             private static Node cypherNode(NodeTargetStep nodeTarget, SymbolicName row, String variableName) {
-                List<String> labels = nodeTarget.labels();
-                return Cypher.node(labels.getFirst(), labels.subList(1, labels.size()))
+                return Cypher.node(nodeTarget.identifyingLabel(), nodeTarget.impliedLabels())
                         .named(variableName)
                         .withProperties(keyPropertiesOf(nodeTarget, row));
             }

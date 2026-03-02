@@ -188,7 +188,8 @@ class NoIncompleteNodeReferenceKeyMatchValidatorTest {
                 null,
                 WriteMode.CREATE,
                 (ObjectNode) null,
-                List.of(NODE_LABEL),
+                NODE_LABEL,
+                null,
                 imagineMappingsFor(properties),
                 new NodeSchema(null, keys, uniques, null, null, null, null, null, null));
     }
@@ -213,7 +214,7 @@ class NoIncompleteNodeReferenceKeyMatchValidatorTest {
     private List<NodeKeyConstraint> keyProperties(List<String>... keyProps) {
         return Arrays.stream(keyProps)
                 .map(props -> new NodeKeyConstraint(
-                        String.format("key-constraint-%d", Math.abs(RAND.nextInt()) % 2048), NODE_LABEL, props, null))
+                        String.format("key-constraint-%d", Math.abs(RAND.nextInt()) % 2048), props, null))
                 .collect(Collectors.toList());
     }
 
@@ -221,10 +222,7 @@ class NoIncompleteNodeReferenceKeyMatchValidatorTest {
     private List<NodeUniqueConstraint> uniqueProperties(List<String>... uniqueProps) {
         return Arrays.stream(uniqueProps)
                 .map(props -> new NodeUniqueConstraint(
-                        String.format("unique-constraint-%d", Math.abs(RAND.nextInt()) % 2048),
-                        NODE_LABEL,
-                        props,
-                        null))
+                        String.format("unique-constraint-%d", Math.abs(RAND.nextInt()) % 2048), props, null))
                 .collect(Collectors.toList());
     }
 

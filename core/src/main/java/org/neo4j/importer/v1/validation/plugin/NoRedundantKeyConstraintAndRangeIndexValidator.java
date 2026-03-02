@@ -39,11 +39,7 @@ public class NoRedundantKeyConstraintAndRangeIndexValidator implements Specifica
 
     @Override
     public Set<Class<? extends SpecificationValidator>> requires() {
-        return Set.of(
-                NoDanglingLabelInRangeIndexValidator.class,
-                NoDanglingLabelInKeyConstraintValidator.class,
-                NoDanglingPropertyInRangeIndexValidator.class,
-                NoDanglingPropertyInKeyConstraintValidator.class);
+        return Set.of(NoDanglingPropertyInRangeIndexValidator.class, NoDanglingPropertyInKeyConstraintValidator.class);
     }
 
     @Override
@@ -54,7 +50,7 @@ public class NoRedundantKeyConstraintAndRangeIndexValidator implements Specifica
         var rangeIndexes = schema.getRangeIndexes();
         for (int i = 0; i < rangeIndexes.size(); i++) {
             var rangeIndex = rangeIndexes.get(i);
-            var labelAndProps = new SchemaNodePattern(rangeIndex.getLabel(), rangeIndex.getProperties());
+            var labelAndProps = new SchemaNodePattern(target.getIdentifyingLabel(), rangeIndex.getProperties());
             paths.computeIfAbsent(labelAndProps, (key) -> new ArrayList<>(1))
                     .add(String.format("%s[%d]", rangeIndexBasePath, i));
         }
@@ -62,7 +58,7 @@ public class NoRedundantKeyConstraintAndRangeIndexValidator implements Specifica
         var keyConstraints = schema.getKeyConstraints();
         for (int i = 0; i < keyConstraints.size(); i++) {
             var constraint = keyConstraints.get(i);
-            var labelAndProp = new SchemaNodePattern(constraint.getLabel(), constraint.getProperties());
+            var labelAndProp = new SchemaNodePattern(target.getIdentifyingLabel(), constraint.getProperties());
             paths.computeIfAbsent(labelAndProp, (key) -> new ArrayList<>(1))
                     .add(String.format("%s[%d]", keyBasePath, i));
         }

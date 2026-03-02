@@ -29,7 +29,7 @@ targets:
     - source: actor
       name: actor_nodes
       write_mode: merge
-      labels: [ Actor ]
+      identifying_label: Actor
       properties:
         - source_field: actor_id
           target_property: id
@@ -43,23 +43,19 @@ targets:
       schema:
         key_constraints:
           - name: actor_id_key
-            label: Actor
             properties: [ id ]
         type_constraints:
           - name: actor_id_type
-            label: Actor
             property: id
           - name: actor_first_name_type
-            label: Actor
             property: first_name
           - name: actor_last_name_type
-            label: Actor
             property: last_name
 
     - source: category
       name: category_nodes
       write_mode: merge
-      labels: [ Category ]
+      identifying_label: Category
       properties:
         - source_field: category_id
           target_property: id
@@ -70,24 +66,20 @@ targets:
       schema:
         key_constraints:
           - name: category_id_key
-            label: Category
             properties: [ id ]
         unique_constraints:
           - name: category_name_key
-            label: Category
             properties: [ name ]
         type_constraints:
           - name: category_id_type
-            label: Category
             property: id
           - name: category_name_type
-            label: Category
             property: name
 
     - source: customer
       name: customer_nodes
       write_mode: merge
-      labels: [ Customer ]
+      identifying_label: Customer
       properties:
         - source_field: customer_id
           target_property: id
@@ -107,33 +99,26 @@ targets:
       schema:
         key_constraints:
           - name: customer_id_key
-            label: Customer
             properties: [ id ]
         unique_constraints:
           - name: customer_email_unique
-            label: Customer
             properties: [ email ]
         type_constraints:
           - name: customer_id_type
-            label: Customer
             property: id
           - name: customer_first_name_type
-            label: Customer
             property: first_name
           - name: customer_last_name_type
-            label: Customer
             property: last_name
           - name: customer_email_type
-            label: Customer
             property: email
           - name: customer_creation_date_type
-            label: Customer
             property: creation_date
 
     - source: film
       name: movie_nodes
       write_mode: merge
-      labels: [ Movie ]
+      identifying_label: Movie
       properties:
         - source_field: film_id
           target_property: id
@@ -149,23 +134,19 @@ targets:
       schema:
         key_constraints:
           - name: movie_id_key
-            label: Movie
             properties: [ id ]
         type_constraints:
           - name: movie_id_type
-            label: Movie
             property: id
           - name: movie_title_type
-            label: Movie
             property: title
           - name: movie_description_type
-            label: Movie
             property: description
 
     - source: inventory
       name: inventory_nodes
       write_mode: merge
-      labels: [ Inventory ]
+      identifying_label: Inventory
       properties:
         - source_field: inventory_id
           target_property: id
@@ -176,14 +157,11 @@ targets:
       schema:
         key_constraints:
           - name: inventory_id_key
-            label: Inventory
             properties: [ id ]
         type_constraints:
           - name: inventory_id_type
-            label: Inventory
             property: id
           - name: inventory_film_id_type
-            label: Inventory
             property: movie_id
 
   relationships:

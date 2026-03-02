@@ -24,7 +24,7 @@ import org.neo4j.importer.v1.validation.SpecificationValidator;
 
 public class NoDuplicatedSchemaNameValidator implements SpecificationValidator {
     private static final String ERROR_CODE = "DUPL-011";
-    private final Set<SchemaElement> elements = new LinkedHashSet<>();
+    private final Map<String, List<String>> pathsPerName = new LinkedHashMap<>();
 
     @Override
     public Set<Class<? extends SpecificationValidator>> requires() {
@@ -38,25 +38,25 @@ public class NoDuplicatedSchemaNameValidator implements SpecificationValidator {
     @Override
     public void visitNodeTarget(int index, NodeTarget target) {
         String basePath = String.format("$.targets.nodes[%d].schema", index);
-        addConstraints(basePath, target, target.getSchema());
-        addIndexes(basePath, target, target.getSchema());
+        addConstraints(basePath, target.getSchema());
+        addIndexes(basePath, target.getSchema());
     }
 
     @Override
     public void visitRelationshipTarget(int index, RelationshipTarget target) {
         String basePath = String.format("$.targets.relationships[%d].schema", index);
-        addConstraints(basePath, target, target.getSchema());
-        addIndexes(basePath, target, target.getSchema());
+        addConstraints(basePath, target.getSchema());
+        addIndexes(basePath, target.getSchema());
     }
 
     @Override
     public boolean report(Builder builder) {
-        var duplicates = elements.stream().collect(Collectors.groupingBy(SchemaElement::getName)).entrySet().stream()
-                .filter(e -> e.getValue().size() > 1)
-                .collect(Collectors.toCollection(LinkedHashSet::new));
+        var duplicates = pathsPerName.entrySet().stream()
+                .filter(entry -> entry.getValue().size() > 1)
+                .collect(Collectors.toList());
 
         duplicates.forEach(dup -> builder.addError(
-                dup.getValue().get(0).getPath(),
+                dup.getValue().get(0),
                 ERROR_CODE,
                 String.format(
                         "Constraint or index name \"%s\" must be defined at most once but %d occurrences were found.",
@@ -64,100 +64,38 @@ public class NoDuplicatedSchemaNameValidator implements SpecificationValidator {
         return !duplicates.isEmpty();
     }
 
-    private void addConstraints(String basePath, EntityTarget target, Schema schema) {
-        addElements(basePath, target, schema.getKeyConstraints(), "key_constraints");
-        addElements(basePath, target, schema.getUniqueConstraints(), "unique_constraints");
-        addElements(basePath, target, schema.getExistenceConstraints(), "existence_constraints");
-        addElements(basePath, target, schema.getTypeConstraints(), "type_constraints");
+    private void addConstraints(String basePath, Schema schema) {
+        addConstraintPaths(basePath, "key_constraints", schema.getKeyConstraints());
+        addConstraintPaths(basePath, "unique_constraints", schema.getUniqueConstraints());
+        addConstraintPaths(basePath, "existence_constraints", schema.getExistenceConstraints());
+        addConstraintPaths(basePath, "type_constraints", schema.getTypeConstraints());
     }
 
-    private void addIndexes(String basePath, EntityTarget target, Schema schema) {
-        addElements(basePath, target, schema.getRangeIndexes(), "range_indexes");
-        addElements(basePath, target, schema.getTextIndexes(), "text_indexes");
-        addElements(basePath, target, schema.getPointIndexes(), "point_indexes");
-        addElements(basePath, target, schema.getFullTextIndexes(), "fulltext_indexes");
-        addElements(basePath, target, schema.getVectorIndexes(), "vector_indexes");
+    private void addIndexes(String basePath, Schema schema) {
+        addIndexPaths(basePath, "range_indexes", schema.getRangeIndexes());
+        addIndexPaths(basePath, "text_indexes", schema.getTextIndexes());
+        addIndexPaths(basePath, "point_indexes", schema.getPointIndexes());
+        addIndexPaths(basePath, "fulltext_indexes", schema.getFullTextIndexes());
+        addIndexPaths(basePath, "vector_indexes", schema.getVectorIndexes());
     }
 
-    private <T> void addElements(String basePath, EntityTarget target, List<? extends T> list, String type) {
-        for (int i = 0; i < list.size(); i++) {
-            T item = list.get(i);
+    private void addConstraintPaths(String basePath, String type, List<? extends Constraint> constraints) {
+        for (int i = 0; i < constraints.size(); i++) {
+            var item = constraints.get(i);
             String path = String.format("%s.%s[%d]", basePath, type, i);
-            if (item instanceof Constraint) {
-                elements.add(new ConstraintElement(path, (Constraint) item));
-            } else if (item instanceof Index) {
-                elements.add(new IndexElement(path, (Index) item));
-            } else {
-                throw new IllegalArgumentException("Unknown schema item type: " + item.getClass());
-            }
+            pathsPerName
+                    .computeIfAbsent(item.getName(), (key) -> new ArrayList<>())
+                    .add(path);
         }
     }
 
-    private interface SchemaElement {
-        String getPath();
-
-        String getName();
-    }
-
-    private static class ConstraintElement implements SchemaElement {
-        private final String path;
-        private final Constraint constraint;
-
-        ConstraintElement(String path, Constraint constraint) {
-            this.path = path;
-            this.constraint = constraint;
-        }
-
-        public String getName() {
-            return constraint.getName();
-        }
-
-        public String getPath() {
-            return path;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-            ConstraintElement that = (ConstraintElement) o;
-            return Objects.equals(constraint, that.constraint);
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(constraint);
-        }
-    }
-
-    private static class IndexElement implements SchemaElement {
-        private final String path;
-        private final Index index;
-
-        IndexElement(String path, Index index) {
-            this.path = path;
-            this.index = index;
-        }
-
-        public String getName() {
-            return index.getName();
-        }
-
-        public String getPath() {
-            return path;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-            IndexElement that = (IndexElement) o;
-            return Objects.equals(index, that.index);
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(index);
+    private void addIndexPaths(String basePath, String type, List<? extends Index> constraints) {
+        for (int i = 0; i < constraints.size(); i++) {
+            var item = constraints.get(i);
+            String path = String.format("%s.%s[%d]", basePath, type, i);
+            pathsPerName
+                    .computeIfAbsent(item.getName(), (key) -> new ArrayList<>())
+                    .add(path);
         }
     }
 }

@@ -22,25 +22,18 @@ import java.util.Map;
 import java.util.Objects;
 
 public class NodePointIndex extends Index {
-    private final String label;
     private final String property;
     private final Map<String, Object> options;
 
     @JsonCreator
     public NodePointIndex(
             @JsonProperty(value = "name", required = true) String name,
-            @JsonProperty(value = "label", required = true) String label,
             @JsonProperty(value = "property", required = true) String property,
             @JsonProperty("options") Map<String, Object> options) {
 
         super(name);
-        this.label = label;
         this.property = property;
         this.options = options;
-    }
-
-    public String getLabel() {
-        return label;
     }
 
     public String getProperty() {
@@ -57,22 +50,16 @@ public class NodePointIndex extends Index {
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
         NodePointIndex that = (NodePointIndex) o;
-        return Objects.equals(label, that.label)
-                && Objects.equals(property, that.property)
-                && Objects.equals(options, that.options);
+        return Objects.equals(property, that.property) && Objects.equals(options, that.options);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), label, property, options);
+        return Objects.hash(super.hashCode(), property, options);
     }
 
     @Override
     public String toString() {
-        return "NodePointIndex{" + "label='"
-                + label + '\'' + ", property='"
-                + property + '\'' + ", options="
-                + options + "} "
-                + super.toString();
+        return "NodePointIndex{" + "property='" + property + '\'' + ", options=" + options + "} " + super.toString();
     }
 }

@@ -47,7 +47,7 @@ public class NoDuplicatedLabelInFullTextIndexValidator implements SpecificationV
 
             int arrayIndex = i;
             Duplicate.findDuplicates(textIndex.getLabels()).forEach(duplicate -> {
-                var path = String.format("%s[%d].label", basePath, arrayIndex);
+                var path = String.format("%s[%d].labels", basePath, arrayIndex);
                 duplicateLabels.put(path, duplicate);
             });
         }
@@ -59,8 +59,8 @@ public class NoDuplicatedLabelInFullTextIndexValidator implements SpecificationV
                 path,
                 ERROR_CODE,
                 String.format(
-                        "%s \"%s\" must be defined at most once but %d occurrences were found",
-                        path, duplicate.getValue(), duplicate.getCount())));
+                        "\"%s\" must be defined at most once but %d occurrences were found",
+                        duplicate.getValue(), duplicate.getCount())));
         return !duplicateLabels.isEmpty();
     }
 }

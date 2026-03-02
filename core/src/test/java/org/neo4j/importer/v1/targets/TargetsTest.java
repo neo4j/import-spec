@@ -50,7 +50,8 @@ class TargetsTest {
                             null,
                             WriteMode.CREATE,
                             (ObjectNode) null,
-                            List.of("Label1", "Label2"),
+                            "Label1",
+                            List.of("Label2"),
                             List.of(
                                     new PropertyMapping("field_1", "property1", null),
                                     new PropertyMapping("field_2", "property2", null)),

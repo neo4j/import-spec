@@ -37,7 +37,8 @@ class NoUntypedPropertyInMappingsValidatorTest {
                 null,
                 WriteMode.CREATE,
                 (ObjectNode) null,
-                List.of("L1"),
+                "L1",
+                null,
                 List.of(new PropertyMapping("id", "id", null)),
                 null);
 
@@ -106,7 +107,8 @@ class NoUntypedPropertyInMappingsValidatorTest {
                 null,
                 WriteMode.CREATE,
                 (ObjectNode) null,
-                List.of("L1"),
+                "L1",
+                null,
                 List.of(new PropertyMapping("id", "id", STRING)),
                 null);
 

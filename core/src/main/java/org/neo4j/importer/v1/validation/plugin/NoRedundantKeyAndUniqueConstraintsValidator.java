@@ -45,10 +45,7 @@ public class NoRedundantKeyAndUniqueConstraintsValidator implements Specificatio
     @Override
     public Set<Class<? extends SpecificationValidator>> requires() {
         return Set.of(
-                NoDanglingLabelInUniqueConstraintValidator.class,
-                NoDanglingLabelInKeyConstraintValidator.class,
-                NoDanglingPropertyInUniqueConstraintValidator.class,
-                NoDanglingPropertyInKeyConstraintValidator.class);
+                NoDanglingPropertyInUniqueConstraintValidator.class, NoDanglingPropertyInKeyConstraintValidator.class);
     }
 
     @Override
@@ -59,7 +56,7 @@ public class NoRedundantKeyAndUniqueConstraintsValidator implements Specificatio
         var uniqueConstraints = schema.getUniqueConstraints();
         for (int i = 0; i < uniqueConstraints.size(); i++) {
             var constraint = uniqueConstraints.get(i);
-            var labelAndProps = new SchemaNodePattern(constraint.getLabel(), constraint.getProperties());
+            var labelAndProps = new SchemaNodePattern(target.getIdentifyingLabel(), constraint.getProperties());
             paths.computeIfAbsent(labelAndProps, (key) -> new ArrayList<>(1))
                     .add(String.format("%s[%d]", uniqueBasePath, i));
         }
@@ -67,7 +64,7 @@ public class NoRedundantKeyAndUniqueConstraintsValidator implements Specificatio
         var keyConstraints = schema.getKeyConstraints();
         for (int i = 0; i < keyConstraints.size(); i++) {
             var constraint = keyConstraints.get(i);
-            var labelAndProp = new SchemaNodePattern(constraint.getLabel(), constraint.getProperties());
+            var labelAndProp = new SchemaNodePattern(target.getIdentifyingLabel(), constraint.getProperties());
             paths.computeIfAbsent(labelAndProp, (key) -> new ArrayList<>(1))
                     .add(String.format("%s[%d]", keyBasePath, i));
         }

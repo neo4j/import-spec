@@ -27,7 +27,7 @@ import java.util.Objects;
  * {@link NodeTarget} defines one kind of node to import.<br>
  * In particular, {@link NodeTarget} defines these mandatory attributes:
  * <ul>
- *     <li>the resulting node labels ({@link NodeTarget#getLabels()})</li>
+ *     <li>the identifying node label ({@link NodeTarget#getIdentifyingLabel()})</li>
  *     <li>the name of the source is maps data from ({@link NodeTarget#getSource()})</li>
  *     <li>how source fields are mapped to node properties via {@link NodeTarget#getProperties()}</li>
  * </ul>
@@ -44,8 +44,12 @@ import java.util.Objects;
  * @see <a href="https://neo4j.com/docs/getting-started/appendix/graphdb-concepts">Graph database concepts</a>
  */
 public class NodeTarget extends EntityTarget {
-    private final List<String> labels;
+
     private final NodeSchema schema;
+
+    private final String identifyingLabel;
+
+    private final List<String> impliedLabels;
 
     @JsonCreator
     public NodeTarget(
@@ -55,7 +59,8 @@ public class NodeTarget extends EntityTarget {
             @JsonProperty("depends_on") List<String> dependencies,
             @JsonProperty("write_mode") WriteMode writeMode,
             @JsonAnySetter ObjectNode rawExtensionData,
-            @JsonProperty(value = "labels", required = true) List<String> labels,
+            @JsonProperty(value = "identifying_label", required = true) String identifyingLabel,
+            @JsonProperty(value = "implied_labels") List<String> impliedLabels,
             @JsonProperty(value = "properties", required = true) List<PropertyMapping> properties,
             @JsonProperty("schema") NodeSchema schema) {
         this(
@@ -65,7 +70,8 @@ public class NodeTarget extends EntityTarget {
                 dependencies,
                 writeMode,
                 mapExtensions(rawExtensionData),
-                labels,
+                identifyingLabel,
+                impliedLabels,
                 properties,
                 schema);
     }
@@ -77,17 +83,23 @@ public class NodeTarget extends EntityTarget {
             List<String> dependencies,
             WriteMode writeMode,
             List<EntityTargetExtension> extensions,
-            List<String> labels,
+            String identifyingLabel,
+            List<String> impliedLabels,
             List<PropertyMapping> properties,
             NodeSchema schema) {
 
         super(TargetType.NODE, active, name, source, dependencies, writeMode, extensions, properties);
-        this.labels = labels;
+        this.identifyingLabel = identifyingLabel;
+        this.impliedLabels = impliedLabels;
         this.schema = schema;
     }
 
-    public List<String> getLabels() {
-        return labels;
+    public String getIdentifyingLabel() {
+        return identifyingLabel;
+    }
+
+    public List<String> getImpliedLabels() {
+        return impliedLabels == null ? List.of() : impliedLabels;
     }
 
     public NodeSchema getSchema() {
@@ -96,20 +108,25 @@ public class NodeTarget extends EntityTarget {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (!(o instanceof NodeTarget)) return false;
         if (!super.equals(o)) return false;
         NodeTarget that = (NodeTarget) o;
-        return Objects.equals(labels, that.labels) && Objects.equals(schema, that.schema);
+        return Objects.equals(schema, that.schema)
+                && Objects.equals(identifyingLabel, that.identifyingLabel)
+                && Objects.equals(impliedLabels, that.impliedLabels);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), labels, schema);
+        return Objects.hash(super.hashCode(), schema, identifyingLabel, impliedLabels);
     }
 
     @Override
     public String toString() {
-        return "NodeTarget{" + "labels=" + labels + ", schema=" + schema + "} " + super.toString();
+        return "NodeTarget{" + "schema="
+                + schema + ", identifyingLabel='"
+                + identifyingLabel + '\'' + ", impliedLabels="
+                + impliedLabels + "} "
+                + super.toString();
     }
 }

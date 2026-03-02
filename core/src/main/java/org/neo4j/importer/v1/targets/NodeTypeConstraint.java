@@ -20,17 +20,16 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Objects;
 
-public class NodeTypeConstraint extends NodeConstraint {
+public class NodeTypeConstraint extends Constraint {
 
     private final String property;
 
     @JsonCreator
     public NodeTypeConstraint(
             @JsonProperty(value = "name", required = true) String name,
-            @JsonProperty(value = "label", required = true) String label,
             @JsonProperty(value = "property", required = true) String property) {
 
-        super(name, label);
+        super(name);
         this.property = property;
     }
 

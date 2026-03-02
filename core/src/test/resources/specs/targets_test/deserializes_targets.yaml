@@ -3,8 +3,8 @@ nodes:
   - name: my-minimal-node-target
     source: a-source
     write_mode: create
-    labels:
-      - Label1
+    identifying_label: Label1
+    implied_labels:
       - Label2
     properties:
       - source_field: field_1
