@@ -1,0 +1,21 @@
+[versions]
+kotlin = "2.2.0"
+kotlinx-serialization = "1.9.0"
+spotless = "7.0.4"
+axion = "1.18.17"
+
+[libraries]
+spotless = { module = "com.diffplug.spotless:spotless-plugin-gradle", version.ref = "spotless" }
+kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
+kotlinx-serializer-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
+kotlin-js-plain-objects = { module = "org.jetbrains.kotlin:kotlin-js-plain-objects", version.ref = "kotlin" }
+slf4jnop = { module = "org.slf4j:slf4j-nop", version = "2.0.17" }
+kotlinx-yamlkt = { module = "net.mamoe.yamlkt:yamlkt", version = "0.13.0" }
+
+[plugins]
+kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
+kotlin-js-plain-objects = { id = "org.jetbrains.kotlin.plugin.js-plain-objects", version.ref = "kotlin" }
+kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
+axion-release = { id = "pl.allegro.tech.build.axion-release", version.ref = "axion" }
