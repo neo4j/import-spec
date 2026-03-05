@@ -1,3 +1,0 @@
-org.neo4j.importer.v1.sources.BigQuerySourceProvider
-org.neo4j.importer.v1.sources.JdbcSourceProvider
-org.neo4j.importer.v1.sources.TextSourceProvider

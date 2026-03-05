@@ -1,4 +1,0 @@
-#!/usr/bin/env sh
-
-./mvnw sortpom:sort spotless:apply -DspotlessFiles=src/main/java/.*.java
-git update-index --again
