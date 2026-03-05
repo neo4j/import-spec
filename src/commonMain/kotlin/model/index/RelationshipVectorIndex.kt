@@ -24,5 +24,5 @@ import kotlinx.serialization.Serializable
 @SerialName(IndexType.VECTOR)
 data class RelationshipVectorIndex(
     override val properties: Set<String>, // TODO singular
-    val options: Map<String, @Contextual Any>,
+    val options: Map<String, @Contextual Any>
 ) : RelationshipIndex

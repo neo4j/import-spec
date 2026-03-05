@@ -14,13 +14,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package model.index
+package model
 
+import js.core.JsPrimitives.toKotlinString
+import js.objects.Object
 import js.objects.ReadonlyRecord
-import kotlinx.js.JsPlainObject
+import kotlin.collections.set
 
-@JsExport
-@JsPlainObject
-external interface RelationshipTextIndexJs : RelationshipIndexJs {
-    val options: ReadonlyRecord<String, Any>
+fun <T> ReadonlyRecord<String, T>.toMap(): Map<String, T> = buildMap {
+    for (key in Object.keys(this)) {
+        val value = this@toMap[key] ?: continue
+        set(key.toKotlinString(), value)
+    }
+}
+
+fun <T, R> ReadonlyRecord<String, T>.associateBy(block: (String, T) -> R): Map<String, R> = buildMap {
+    for (key in Object.keys(this)) {
+        val value = this@associateBy[key] ?: continue
+        val result = block(key, value)
+        set(key.toKotlinString(), result)
+    }
 }

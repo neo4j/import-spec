@@ -16,10 +16,11 @@
  */
 package model
 
-import kotlin.js.JsExport
+import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
 import model.constraint.NodeConstraint
 import model.index.NodeIndex
+import kotlin.js.JsExport
 
 @JsExport
 @Serializable
@@ -28,4 +29,5 @@ data class Node(
     val properties: Map<String, Property>,
     val constraints: Map<String, NodeConstraint>,
     val indexes: Map<String, NodeIndex>,
+    val extensions: Map<String, @Contextual Any>
 )

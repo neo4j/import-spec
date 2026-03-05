@@ -25,5 +25,5 @@ import kotlinx.serialization.Serializable
 data class NodeKeyConstraint(
     override val label: String,
     override val properties: Set<String> = emptySet(),
-    val options: Map<String, @Contextual Any> = emptyMap(),
+    val options: Map<String, @Contextual Any> = emptyMap()
 ) : NodeConstraint

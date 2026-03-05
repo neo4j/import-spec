@@ -25,5 +25,5 @@ import model.Neo4jType
 data class NodeTypeConstraint(
     val dataType: Neo4jType,
     override val label: String,
-    override val properties: Set<String> = emptySet(),
+    override val properties: Set<String> = emptySet()
 ) : NodeConstraint

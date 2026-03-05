@@ -14,10 +14,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-@file:OptIn(ExperimentalJsExport::class)
-
 package migrate
 
-import kotlin.js.ExperimentalJsExport
+import kotlin.js.JsExport
 
-@ExperimentalJsExport abstract class Migration(val from: String, val to: String) {}
+@JsExport abstract class Migration(val from: String, val to: String)

@@ -19,6 +19,5 @@ package model.constraint
 import kotlinx.serialization.Serializable
 import kotlin.js.JsExport
 
-@JsExport
-@Serializable
+@JsExport @Serializable
 sealed interface RelationshipConstraint : Constraint

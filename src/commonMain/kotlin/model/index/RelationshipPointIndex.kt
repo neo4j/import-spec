@@ -22,7 +22,5 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 @SerialName(IndexType.POINT)
-data class RelationshipPointIndex(
-    override val properties: Set<String>,
-    val options: Map<String, @Contextual Any>,
-) : RelationshipIndex
+data class RelationshipPointIndex(override val properties: Set<String>, val options: Map<String, @Contextual Any>) :
+    RelationshipIndex

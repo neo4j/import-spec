@@ -4,8 +4,8 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 plugins {
     alias(libs.plugins.spotless)
     alias(libs.plugins.kotlin.multiplatform)
-    alias(libs.plugins.kotlin.js.plain.objects)
     alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.kotlin.js.plain.objects)
     id("maven-publish")
     alias(libs.plugins.axion.release)
 }
@@ -17,7 +17,7 @@ version = scmVersion.version
 repositories { mavenCentral() }
 
 kotlin {
-    /* Override target source sets for KMP */
+    // Override target source sets for KMP
     sourceSets {
         commonMain.dependencies {
             implementation(libs.kotlinx.serializer.json)
@@ -39,6 +39,7 @@ kotlin {
         compilerOptions {
             sourceMap = true
             moduleKind = JsModuleKind.MODULE_ES
+            freeCompilerArgs.add("-opt-in=kotlin.js.ExperimentalWasmJsInterop")
         }
         generateTypeScriptDefinitions()
     }
@@ -47,7 +48,10 @@ kotlin {
     linuxX64 { binaries.sharedLib() }
     linuxArm64 { binaries.sharedLib() }
 
-    compilerOptions { freeCompilerArgs.add("-opt-in=kotlin.js.ExperimentalJsExport") }
+    compilerOptions {
+        freeCompilerArgs.add("-opt-in=kotlin.js.ExperimentalJsExport")
+        freeCompilerArgs.add("-opt-in=kotlin.js.ExperimentalJsStatic")
+    }
 }
 
 scmVersion {
@@ -100,14 +104,22 @@ publishing {
 
 configure<com.diffplug.gradle.spotless.SpotlessExtension> {
     kotlin {
-        ktfmt().kotlinlangStyle()
+        ktlint().editorConfigOverride(
+            mapOf("code_style" to "intellij_idea")
+        )
+        endWithNewline()
         licenseHeaderFile(rootProject.file("license-header.txt"))
     }
     kotlinGradle {
         target("*.gradle.kts")
-        ktfmt().kotlinlangStyle()
+        ktlint()
+        endWithNewline()
     }
     kotlin {
-        target(project.fileTree("src/commonMain/kotlin"), project.fileTree("src/commonTest/kotlin"))
+        target(
+            project.fileTree("src/commonMain/kotlin"),
+            project.fileTree("src/commonTest/kotlin"),
+            project.fileTree("src/jsMain/kotlin")
+        )
     }
 }

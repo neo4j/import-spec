@@ -22,7 +22,5 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 @SerialName(IndexType.FULLTEXT)
-data class RelationshipFullTextIndex(
-    override val properties: Set<String>,
-    val options: Map<String, @Contextual Any>,
-) : RelationshipIndex
+data class RelationshipFullTextIndex(override val properties: Set<String>, val options: Map<String, @Contextual Any>) :
+    RelationshipIndex

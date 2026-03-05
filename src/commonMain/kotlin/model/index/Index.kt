@@ -16,7 +16,8 @@
  */
 package model.index
 
-import kotlin.js.JsExport
 import kotlinx.serialization.Serializable
+import kotlin.js.JsExport
 
-@JsExport @Serializable sealed interface Index {}
+@JsExport @Serializable
+sealed interface Index

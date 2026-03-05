@@ -16,11 +16,10 @@
  */
 package model
 
-import kotlin.js.JsExport
 import kotlinx.serialization.Serializable
 import validate.Issue
 import validate.Validation
-import kotlin.js.ExperimentalJsStatic
+import kotlin.js.JsExport
 import kotlin.js.JsStatic
 
 @JsExport
@@ -28,7 +27,7 @@ import kotlin.js.JsStatic
 data class GraphModel(
     val version: String = Version.LATEST,
     val nodes: Map<String, Node> = emptyMap(),
-    val relationships: Map<String, Relationship> = emptyMap(),
+    val relationships: Map<String, Relationship> = emptyMap()
 ) {
     @JsExport.Ignore
     fun validate(validators: List<Validation>): List<Issue> {
@@ -40,7 +39,6 @@ data class GraphModel(
     }
 
     companion object {
-        @OptIn(ExperimentalJsStatic::class)
         @JsStatic
         fun validate(model: GraphModel, validators: List<Validation>) = model.validate(validators)
     }

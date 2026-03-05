@@ -16,8 +16,8 @@
  */
 package validate
 
-import kotlin.js.JsExport
 import kotlinx.serialization.Serializable
+import kotlin.js.JsExport
 
 @Serializable
 @JsExport
@@ -25,5 +25,5 @@ data class Issue(
     val code: String,
     val message: String,
     val path: String? = null, // e.g. "nodes.Person.labels"
-    val details: Map<String, String> = emptyMap(),
+    val details: Map<String, String> = emptyMap()
 )

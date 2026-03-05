@@ -14,16 +14,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import kotlin.js.JsExport
-import kotlin.js.JsName
 import migrate.Migration
 import validate.Validation
+import kotlin.js.JsExport
+import kotlin.js.JsName
 
 @JsExport
-class GraphSpecConfig(
-    val validators: List<Validation>,
-    val migrations: Map<String, List<Migration>>,
-) {
+class GraphSpecConfig(val validators: List<Validation>, val migrations: Map<String, List<Migration>>) {
     class Builder() {
         val validators = mutableListOf<Validation>()
         val migrations = mutableMapOf<String, MutableList<Migration>>()
@@ -42,7 +39,6 @@ class GraphSpecConfig(
             migrations.getOrPut(migration.from) { mutableListOf() }.add(migration)
         }
 
-        fun build(): GraphSpecConfig =
-            GraphSpecConfig(validators = validators, migrations = migrations)
+        fun build(): GraphSpecConfig = GraphSpecConfig(validators = validators, migrations = migrations)
     }
 }

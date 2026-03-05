@@ -25,5 +25,5 @@ import kotlinx.serialization.Serializable
 data class NodePointIndex(
     override val labels: Set<String>,
     override val properties: Set<String>,
-    val options: Map<String, @Contextual Any>,
+    val options: Map<String, @Contextual Any>
 ) : NodeIndex

@@ -16,4 +16,4 @@
  */
 import kotlin.js.JsExport
 
-@JsExport sealed class GraphSpec(val configuration: GraphSpecConfig) {}
+@JsExport sealed class GraphSpec(val configuration: GraphSpecConfig)

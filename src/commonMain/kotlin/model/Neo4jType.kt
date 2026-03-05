@@ -16,8 +16,8 @@
  */
 package model
 
-import kotlin.js.JsExport
 import kotlinx.serialization.Serializable
+import kotlin.js.JsExport
 
 @JsExport
 @Serializable
@@ -45,5 +45,5 @@ enum class Neo4jType {
     ZONED_DATETIME_ARRAY,
     ZONED_TIME,
     ZONED_TIME_ARRAY,
-    VECTOR,
+    VECTOR
 }

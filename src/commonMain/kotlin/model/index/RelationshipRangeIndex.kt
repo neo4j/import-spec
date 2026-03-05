@@ -22,7 +22,5 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 @SerialName(IndexType.RANGE)
-data class RelationshipRangeIndex(
-    override val properties: Set<String>,
-    val options: Map<String, @Contextual Any>,
-) : RelationshipIndex
+data class RelationshipRangeIndex(override val properties: Set<String>, val options: Map<String, @Contextual Any>) :
+    RelationshipIndex

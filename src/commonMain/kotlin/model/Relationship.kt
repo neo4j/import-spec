@@ -16,11 +16,11 @@
  */
 package model
 
-import kotlin.js.JsExport
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
 import model.constraint.RelationshipConstraint
 import model.index.RelationshipIndex
+import kotlin.js.JsExport
 
 @JsExport
 @Serializable
@@ -31,5 +31,5 @@ data class Relationship(
     val properties: Map<String, Property> = emptyMap(),
     val constraints: Map<String, RelationshipConstraint> = emptyMap(),
     val indexes: Map<String, RelationshipIndex> = emptyMap(),
-    val extensions: Map<String, @Contextual Any> = emptyMap(),
+    val extensions: Map<String, @Contextual Any> = emptyMap()
 )

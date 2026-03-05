@@ -22,5 +22,6 @@ import kotlinx.serialization.Serializable
 @Serializable
 @SerialName(ConstraintType.EXISTS)
 data class RelationshipExistConstraint(
-    override val properties: Set<String> = emptySet() // TODO: validate singular
+    // TODO: validate singular
+    override val properties: Set<String> = emptySet()
 ) : RelationshipConstraint

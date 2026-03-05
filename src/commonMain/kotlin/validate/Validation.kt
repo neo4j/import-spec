@@ -16,8 +16,8 @@
  */
 package validate
 
-import kotlin.js.JsExport
 import model.GraphModel
+import kotlin.js.JsExport
 
 @JsExport
 interface Validation {

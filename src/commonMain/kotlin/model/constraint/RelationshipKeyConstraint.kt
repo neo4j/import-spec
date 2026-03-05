@@ -24,5 +24,5 @@ import kotlinx.serialization.Serializable
 @SerialName(ConstraintType.KEY)
 data class RelationshipKeyConstraint(
     override val properties: Set<String> = emptySet(),
-    val options: Map<String, @Contextual Any> = emptyMap(),
+    val options: Map<String, @Contextual Any> = emptyMap()
 ) : RelationshipConstraint

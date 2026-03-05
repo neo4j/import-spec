@@ -21,5 +21,4 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 @SerialName(IndexType.RANGE)
-data class NodeRangeIndex(override val labels: Set<String>, override val properties: Set<String>) :
-    NodeIndex
+data class NodeRangeIndex(override val labels: Set<String>, override val properties: Set<String>) : NodeIndex

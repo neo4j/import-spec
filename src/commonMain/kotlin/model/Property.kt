@@ -16,13 +16,9 @@
  */
 package model
 
-import kotlin.js.JsExport
 import kotlinx.serialization.Serializable
+import kotlin.js.JsExport
 
 @JsExport
 @Serializable
-data class Property(
-    val type: Neo4jType? = null,
-    val nullable: Boolean = false,
-    val unique: Boolean = false,
-)
+data class Property(val type: Neo4jType? = null, val nullable: Boolean = false, val unique: Boolean = false)
