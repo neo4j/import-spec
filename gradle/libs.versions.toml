@@ -11,6 +11,7 @@ kotlinx-serializer-json = { module = "org.jetbrains.kotlinx:kotlinx-serializatio
 kotlin-js-plain-objects = { module = "org.jetbrains.kotlin:kotlin-js-plain-objects", version.ref = "kotlin" }
 slf4jnop = { module = "org.slf4j:slf4j-nop", version = "2.0.17" }
 kotlinx-yamlkt = { module = "net.mamoe.yamlkt:yamlkt", version = "0.13.0" }
+kotlin-wrappers-js = { module = "org.jetbrains.kotlin-wrappers:kotlin-js", version = "2026.3.4" }
 
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }

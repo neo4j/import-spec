@@ -23,7 +23,10 @@ kotlin {
             implementation(libs.kotlinx.serializer.json)
             implementation(libs.kotlinx.yamlkt)
         }
-        jsMain.dependencies { implementation(libs.kotlin.js.plain.objects) }
+        jsMain.dependencies {
+            implementation(libs.kotlin.js.plain.objects)
+            implementation(libs.kotlin.wrappers.js)
+        }
         commonTest.dependencies { implementation(libs.kotlin.test) }
     }
     jvm {
@@ -43,6 +46,8 @@ kotlin {
     macosArm64 { binaries.sharedLib() }
     linuxX64 { binaries.sharedLib() }
     linuxArm64 { binaries.sharedLib() }
+
+    compilerOptions { freeCompilerArgs.add("-opt-in=kotlin.js.ExperimentalJsExport") }
 }
 
 scmVersion {
