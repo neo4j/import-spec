@@ -115,7 +115,8 @@ class TargetTest {
                     .isEqualTo(List.of(
                             new PropertyMapping("field_1", "property1", PropertyType.INTEGER),
                             new PropertyMapping("field_2", "property2", PropertyType.ZONED_DATETIME_ARRAY),
-                            new PropertyMapping("field_3", "property3", PropertyType.BOOLEAN)));
+                            new PropertyMapping("field_3", "property3", PropertyType.BOOLEAN),
+                            new PropertyMapping("field_4", "property4", PropertyType.FLOAT_VECTOR)));
             assertThat(target.getSchema())
                     .isEqualTo(new NodeSchema(
                             List.of(new NodeTypeConstraint("type_constraint_1", "Label1", "property1")),
