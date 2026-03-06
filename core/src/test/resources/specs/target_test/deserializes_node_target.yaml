@@ -32,6 +32,9 @@ properties:
   - source_field: "field_3"
     target_property: "property3"
     target_property_type: "boolean"
+  - source_field: "field_4"
+    target_property: "property4"
+    target_property_type: "float_vector"
 schema:
   type_constraints:
     - name: "type_constraint_1"
