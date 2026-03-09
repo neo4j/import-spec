@@ -65,7 +65,6 @@ class YamlFormat(private val yaml: Yaml, private val json: JsonFormat) : Format 
             YamlFormat(
                 Yaml {
                     encodeDefaultValues = false
-                    listSerialization = YamlBuilder.ListSerialization.FLOW_SEQUENCE
                 },
                 JsonFormat.build(),
             )

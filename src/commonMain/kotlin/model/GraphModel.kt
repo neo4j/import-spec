@@ -17,6 +17,8 @@
 package model
 
 import kotlinx.serialization.Serializable
+import model.mapping.Mapping
+import model.source.Table
 import validate.Issue
 import validate.Validation
 import kotlin.js.JsExport
@@ -27,7 +29,9 @@ import kotlin.js.JsStatic
 data class GraphModel(
     val version: String = Version.LATEST,
     val nodes: Map<String, Node> = emptyMap(),
-    val relationships: Map<String, Relationship> = emptyMap()
+    val relationships: Map<String, Relationship> = emptyMap(),
+    val tables: Map<String, Table> = emptyMap(),
+    val mappings: List<Mapping> = emptyList(),
 ) {
     @JsExport.Ignore
     fun validate(validators: List<Validation>): List<Issue> {
