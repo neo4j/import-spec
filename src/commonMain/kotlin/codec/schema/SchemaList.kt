@@ -14,3 +14,11 @@ class SchemaList(val content: MutableList<SchemaElement>) :
     override fun toString(): String =
         content.joinToString(prefix = "[", postfix = "]", separator = ",")
 }
+
+fun schemaListOf(vararg elements: SchemaElement): SchemaList {
+    return SchemaList(elements.toMutableList())
+}
+
+fun schemaListOf(vararg elements: String): SchemaList {
+    return SchemaList(elements.map { SchemaLiteral(it) }.toMutableList())
+}

@@ -11,7 +11,4 @@ package codec.schema
  * @see [codec.format.Format] for conversions
  * @see [migrate.Migration] for usages
  */
-sealed interface SchemaElement {
-    val map: SchemaMap
-        get() = this as SchemaMap
-}
+sealed interface SchemaElement

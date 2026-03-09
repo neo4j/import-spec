@@ -29,9 +29,29 @@ data class SchemaMap(val content: MutableMap<String, SchemaElement>) :
         content[key] = SchemaLiteral(value)
     }
 
-    fun string(key: String) = strOrNull(key) ?: error("Expected key '$key'")
+    operator fun set(key: String, value: SchemaElement) {
+        content[key] = value
+    }
 
-    fun strOrNull(key: String) = content[key]?.let { (it as? SchemaLiteral)?.string }
+    fun list(key: String) = listOrNull(key) ?: error("Expected list '$key'")
 
-    fun intOrNull(key: String) = strOrNull(key)?.toIntOrNull()
+    fun listOrNull(key: String): SchemaList? = content[key]?.let { (it as SchemaList) }
+
+    fun map(key: String) = mapOrNull(key) ?: error("Expected map for key '$key'")
+
+    fun mapOrNull(key: String): SchemaMap? = content[key]?.let { (it as SchemaMap) }
+
+    fun bool(key: String) = string(key).toBooleanStrict()
+
+    fun string(key: String) = stringOrNull(key) ?: error("Expected key '$key'")
+
+    fun stringOrNull(key: String) = literalOrNull(key)?.string
+
+    fun literal(key: String) = literalOrNull(key) ?: error("Expected key '$key'")
+
+    fun literalOrNull(key: String) = content[key]?.let { it as? SchemaLiteral }
+
+    fun intOrNull(key: String) = stringOrNull(key)?.toIntOrNull()
 }
+
+fun schemaMapOf(vararg pairs: Pair<String, SchemaElement>) = SchemaMap(pairs.toMap().toMutableMap())
