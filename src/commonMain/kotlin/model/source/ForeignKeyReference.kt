@@ -5,7 +5,7 @@ import kotlin.js.JsExport
 
 @JsExport
 @Serializable
-data class ForeignKey(
-    val fields: Set<String>,
-    val references: ForeignKeyReference,
+data class ForeignKeyReference(
+    val table: String,
+    val fields: Set<String> = emptySet(),
 )
