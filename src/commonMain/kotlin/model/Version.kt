@@ -17,9 +17,9 @@
 package model
 
 object Version {
-    const val DATA_MODEL_V23 = "data_model:2.3.0"
-    const val DATA_MODEL_V24 = "data_model:2.4.0"
-    const val DATA_MODEL_V30 = "data_model:3.0.0"
+    const val DATA_MODEL_V23 = "data_model:2.3"
+    const val DATA_MODEL_V24 = "data_model:2.4"
+    const val DATA_MODEL_V30 = "data_model:3.0"
 
     const val LATEST = "1.0.0"
 }

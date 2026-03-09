@@ -5,8 +5,8 @@ import codec.schema.SchemaMap
 class MigrationPath(val migrations: Map<String, List<Migration>>) {
 
     fun migrate(schema: SchemaMap, type: String, to: String): SchemaMap {
-        val from = schema.version
-        val path = findPath("$type${from}", to) ?: error("No migration path found between versions $from and $to")
+        val from = version(schema, type)
+        val path = findPath(from, to) ?: error("No migration path found between versions $from and $to")
         var map = schema
         for (migration in path) {
             map = migration.migrate(map)
@@ -15,8 +15,14 @@ class MigrationPath(val migrations: Map<String, List<Migration>>) {
         return map
     }
 
-    private val SchemaMap.version: String
-        get() = strOrNull("version") ?: error("Version must be specified")
+    private fun version(schema: SchemaMap, type: String): String {
+        val version = schema.stringOrNull("version") ?: error("Version must be specified")
+        var semver = version.substringBefore("-")
+        if (semver.count { it == '.' } > 1) {
+            semver = semver.substringBeforeLast(".") // 3.0, 2.4 etc..
+        }
+        return "$type:$semver"
+    }
 
     /**
      * Basic breath first search to find a migration path between [to] and [from] versions
