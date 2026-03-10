@@ -25,23 +25,62 @@ import codec.schema.schemaListOf
 import codec.schema.schemaMapOf
 import migrate.Migration
 import model.Version
+import model.constraint.ConstraintType
 
-// TODO supported nested "dataModel"'s
 class DataModelV3GraphSpecMigration : Migration(Version.DATA_MODEL_V30, Version.LATEST) {
 
     override fun migrate(schema: SchemaMap): SchemaMap {
+        if (schema.containsKey("dataModel")) {
+            val model = schema.map("dataModel")
+            schema.remove("dataModel")
+            schema.remove("version")
+            model.putAll(schema)
+            return migrate(model)
+        }
         val graphSchema = schema.map("graphSchemaRepresentation").map("graphSchema")
         val nodes = migrateNodes(graphSchema)
         val relationships = migrateRelationships(graphSchema)
-        val mappings = migrateMappings(schema) // TODO: Are mappings required in data model?
+        val mappings = migrateMappings(schema)
         val tables = migrateTables(schema)
-        return schemaMapOf(
+        val output = schemaMapOf(
             "version" to schema.literal("version"),
             "nodes" to SchemaMap(nodes),
-            "relationships" to SchemaMap(relationships),
-            "tables" to SchemaMap(tables),
-            "mappings" to SchemaList(mappings)
+            "relationships" to SchemaMap(relationships)
         )
+        if (tables.isNotEmpty()) {
+            output["tables"] = SchemaMap(tables)
+        }
+        if (mappings.isNotEmpty()) {
+            output["mappings"] = SchemaList(mappings)
+        }
+        return output
+    }
+
+    private fun constraints(schema: SchemaMap): MutableMap<String, SchemaElement> {
+        val nodeConstraints = mutableMapOf<String, SchemaElement>()
+        val constraints = schema.listOfMapsOrNull("constraints") ?: return mutableMapOf()
+        for (constraint in constraints) {
+            constraint.string("\$id")
+            val name = constraint.string("name")
+            val type = constraint.string("constraintType")
+            val properties = constraint.mapOrNull("properties")
+            val entity = constraint.string("entityType")
+            if (entity == "node") {
+                val nodeLabel = constraint.map("nodeLabel").string("\$ref").removePrefix("#")
+                val constraintType = when (type) {
+                    // TODO correct values for these
+                    "uniqueness" -> ConstraintType.UNIQUE
+                    "propertyExistence" -> ConstraintType.EXISTS
+                    else -> error("Unknown constraint type: $type at ${constraint.path}.$name")
+                }
+                nodeConstraints[nodeLabel] = schemaMapOf(
+                    "type" to SchemaLiteral(constraintType)
+                )
+            } else if (entity == "relationship") {
+                val relationship = constraint.string("relationship")
+            }
+        }
+        return mutableMapOf()
     }
 
     private fun migrateNodes(schema: SchemaMap): MutableMap<String, SchemaElement> {
@@ -170,29 +209,18 @@ class DataModelV3GraphSpecMigration : Migration(Version.DATA_MODEL_V30, Version.
 
     private fun migrateMappings(schema: SchemaMap): MutableList<SchemaElement> {
         val list = mutableListOf<SchemaElement>()
-        // Node mappings
-        for (nodeMapping in schema
-            .map("graphMappingRepresentation")
-            .listOfMaps("nodeMappings")) {
-            val ref = nodeMapping.map("node").string("\$ref").removePrefix("#")
-            val tableName = nodeMapping.literal("tableName")
+        nodeMappings(schema, list)
+        relationshipMappings(schema, list)
+        return list
+    }
 
-            val properties = migratePropertyMappings(nodeMapping.listOfMaps("propertyMappings"))
-            list.add(
-                schemaMapOf(
-                    "node" to SchemaLiteral(ref),
-                    "table" to tableName,
-                    "properties" to SchemaMap(properties)
-                )
-            )
-        }
-
-        // Relationship mappings
+    private fun relationshipMappings(schema: SchemaMap, list: MutableList<SchemaElement>) {
         val relationships = mutableMapOf<String, Triple<String, String, String>>()
-        for (objectType in schema
+        val objectTypes = schema
             .map("graphSchemaRepresentation")
             .map("graphSchema")
-            .listOfMaps("relationshipObjectTypes")) {
+            .listOfMapsOrNull("relationshipObjectTypes") ?: return
+        for (objectType in objectTypes) {
             val ref = objectType.string("\$id")
             val typeRef = objectType.map("type").string("\$ref").removePrefix("#")
             val fromRef = objectType.map("from").string("\$ref").removePrefix("#")
@@ -203,10 +231,11 @@ class DataModelV3GraphSpecMigration : Migration(Version.DATA_MODEL_V30, Version.
         val relationshipTypes = schema
             .map("graphSchemaRepresentation")
             .map("graphSchema")
-            .listOfMaps("relationshipTypes")
-        for (relationshipMapping in schema
+            .listOfMapsOrNull("relationshipTypes") ?: return
+        val relationshipMappings = schema
             .map("graphMappingRepresentation")
-            .listOfMaps("relationshipMappings")) {
+            .listOfMapsOrNull("relationshipMappings") ?: return
+        for (relationshipMapping in relationshipMappings) {
             val ref = relationshipMapping.map("relationship").string("\$ref").removePrefix("#")
             val (fromRef, typeRef, toRef) = relationships[ref] ?: error("Relationship $ref not found")
 
@@ -223,7 +252,8 @@ class DataModelV3GraphSpecMigration : Migration(Version.DATA_MODEL_V30, Version.
                 .firstOrNull { it.string("\$id") == typeRef }
                 ?: error("Relationship type $typeRef not found")
             val token = type.string("token")
-            val properties = migratePropertyMappings(relationshipMapping.listOfMaps("propertyMappings"))
+            val propertyMappings = relationshipMapping.listOfMaps("propertyMappings")
+            val properties = migratePropertyMappings(propertyMappings)
             // ref is lost, and we know type isn't unique; so we are assuming type + property id are unique
             list.add(
                 schemaMapOf(
@@ -241,7 +271,25 @@ class DataModelV3GraphSpecMigration : Migration(Version.DATA_MODEL_V30, Version.
                 )
             )
         }
-        return list
+    }
+
+    private fun nodeMappings(schema: SchemaMap, list: MutableList<SchemaElement>) {
+        val nodeMappings = schema
+            .map("graphMappingRepresentation")
+            .listOfMapsOrNull("nodeMappings") ?: return
+        for (nodeMapping in nodeMappings) {
+            val ref = nodeMapping.map("node").string("\$ref").removePrefix("#")
+            val tableName = nodeMapping.literal("tableName")
+            val propertyMappings = nodeMapping.listOfMaps("propertyMappings")
+            val properties = migratePropertyMappings(propertyMappings)
+            list.add(
+                schemaMapOf(
+                    "node" to SchemaLiteral(ref),
+                    "table" to tableName,
+                    "properties" to SchemaMap(properties)
+                )
+            )
+        }
     }
 
     private fun migratePropertyMappings(elements: List<SchemaMap>): MutableMap<String, SchemaElement> {

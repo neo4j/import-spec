@@ -27,6 +27,13 @@ import model.Version
  */
 class DataModelV2V3Migration(version: String) : Migration(version, Version.DATA_MODEL_V30) {
     override fun migrate(schema: SchemaMap): SchemaMap {
+        if (schema.containsKey("dataModel")) {
+            val model = schema.map("dataModel")
+            schema.remove("dataModel")
+            schema.remove("version")
+            model.putAll(schema)
+            return migrate(model)
+        }
         // Replace singular keyProperty with a list keyProperties
         val extensions = schema.map("graphSchemaExtensionsRepresentation")
         val nodeKeyProperties = extensions.listOfMaps("nodeKeyProperties")

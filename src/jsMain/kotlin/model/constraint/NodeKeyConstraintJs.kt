@@ -25,14 +25,10 @@ external interface NodeKeyConstraintJs : NodeConstraintJs {
     val options: ReadonlyRecord<String, Any>
 }
 
-fun nodeKeyConstraintJs(
-    type: ConstraintTypeJs,
-    label: String,
-    properties: Array<String>,
-    options: ReadonlyRecord<String, Any>
-) = object : NodeKeyConstraintJs {
-    override val type = type
-    override val label = label
-    override val properties = properties
-    override val options = options
-}
+fun nodeKeyConstraintJs(type: String, label: String, properties: Array<String>, options: ReadonlyRecord<String, Any>) =
+    object : NodeKeyConstraintJs {
+        override val type = type
+        override val label = label
+        override val properties = properties
+        override val options = options
+    }

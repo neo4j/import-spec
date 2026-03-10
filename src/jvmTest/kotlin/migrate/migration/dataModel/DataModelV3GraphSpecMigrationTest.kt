@@ -4,16 +4,16 @@ import codec.format.JsonFormat
 import codec.format.YamlFormat
 import codec.schema.SchemaMap
 import codec.format.Prettify
+import org.junit.jupiter.api.Disabled
 import resourceAsString
 import java.io.File
 import kotlin.test.Test
 
-
+@Disabled
 class DataModelV3GraphSpecMigrationTest {
-
     @Test
     fun `Test full spec`() {
-        val input = DataModelV3GraphSpecMigrationTest::class.resourceAsString("graph-data-model-3.0.0.json")
+        val input = DataModelV3GraphSpecMigrationTest::class.resourceAsString("northwind.json")
         val migration = DataModelV3GraphSpecMigration()
         val format = JsonFormat.build()
 

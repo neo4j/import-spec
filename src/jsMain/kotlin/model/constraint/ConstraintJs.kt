@@ -21,6 +21,6 @@ import kotlinx.js.JsPlainObject
 @JsExport
 @JsPlainObject
 external interface ConstraintJs {
-    val type: ConstraintTypeJs
+    val type: String
     val properties: Array<String>
 }

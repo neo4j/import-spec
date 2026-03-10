@@ -54,6 +54,43 @@ kotlin {
     }
 }
 
+tasks.named("jsBrowserProductionLibraryDistribution") {
+    finalizedBy("generateTsUnions")
+}
+
+tasks.register("generateTsUnions") {
+    doLast {
+        val mtsFile = file("./build/dist/js/productionLibrary/graph-spec.d.mts")
+        if (!mtsFile.exists()) {
+            println("No definitions file found")
+            return@doLast
+        }
+        var content = mtsFile.readText()
+        val start = content.indexOf("export declare interface NodeConstraintJs extends ConstraintJs {")
+        if (start == -1) {
+            println("No node constraint interface found")
+            return@doLast
+        }
+        content =
+            content
+                .replaceRange(
+                    start - 1..start - 1,
+                    "\nexport type ConstraintTypeJs = \"EXISTS\" | \"KEY\" | \"TYPE\" | \"UNIQUE\";\n"
+                )
+        val index = content.indexOf("label: string", start + 64)
+        if (index == -1) {
+            println("No node constraint label found")
+            return@doLast
+        }
+        content =
+            content.replaceRange(
+                index..index + 13,
+                "label: ConstraintTypeJs"
+            )
+        mtsFile.writeText(content)
+    }
+}
+
 scmVersion {
     versionCreator("versionWithBranch")
     tag { prefix.set("graph-spec") }
