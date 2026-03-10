@@ -386,7 +386,7 @@ public class SparkExampleIT {
     }
 
     private static String propertyType(PropertyType propertyType) {
-        return switch (propertyType) {
+        return switch (propertyType.getName()) {
             case BOOLEAN -> "BOOLEAN";
             case BOOLEAN_ARRAY -> "LIST<BOOLEAN NOT NULL>";
             case DATE -> "DATE";
@@ -409,6 +409,12 @@ public class SparkExampleIT {
             case ZONED_DATETIME_ARRAY -> "LIST<ZONED DATETIME NOT NULL>";
             case ZONED_TIME -> "ZONED TIME";
             case ZONED_TIME_ARRAY -> "LIST<ZONED TIME NOT NULL>";
+            case INTEGER_VECTOR -> String.format("VECTOR<INTEGER>(%d)", propertyType.getDimension());
+            case FLOAT_VECTOR -> String.format("VECTOR<FLOAT>(%d)", propertyType.getDimension());
+            case INTEGER32_VECTOR -> String.format("VECTOR<INTEGER32>(%d)", propertyType.getDimension());
+            case FLOAT32_VECTOR -> String.format("VECTOR<FLOAT32>(%d)", propertyType.getDimension());
+            case INTEGER8_VECTOR -> String.format("VECTOR<INTEGER8>(%d)", propertyType.getDimension());
+            case INTEGER16_VECTOR -> String.format("VECTOR<INTEGER16>(%d)", propertyType.getDimension());
             default -> throw new IllegalArgumentException(String.format("Unsupported property type: %s", propertyType));
         };
     }

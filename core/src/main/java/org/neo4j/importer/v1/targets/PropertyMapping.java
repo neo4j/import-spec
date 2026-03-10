@@ -57,7 +57,7 @@ public class PropertyMapping implements Serializable {
         PropertyMapping that = (PropertyMapping) o;
         return Objects.equals(sourceField, that.sourceField)
                 && Objects.equals(targetProperty, that.targetProperty)
-                && targetPropertyType == that.targetPropertyType;
+                && Objects.equals(targetPropertyType, that.targetPropertyType);
     }
 
     @Override
