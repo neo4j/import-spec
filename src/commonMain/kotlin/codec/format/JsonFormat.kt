@@ -33,16 +33,21 @@ class JsonFormat(private val json: Json) : Format {
     override fun decodeFromSchema(element: SchemaElement) =
         json.decodeFromJsonElement<GraphModel>(element.toJson())
 
-    fun schemaElement(json: JsonElement): SchemaElement =
+    private fun schemaElement(json: JsonElement, parent: String = ""): SchemaElement =
         when (json) {
-            is JsonArray -> SchemaList(json.map { schemaElement(it) }.toMutableList())
-            is JsonObject ->
-                SchemaMap(json.mapValues { (_, value) -> schemaElement(value) }.toMutableMap())
-            is JsonPrimitive -> json.contentOrNull?.let { SchemaLiteral(it) } ?: SchemaNull
+            is JsonArray -> SchemaList(json.mapIndexed { index, element -> schemaElement(element, "$parent[$index]") }
+                .toMutableList(), parent)
+            is JsonObject -> SchemaMap(json.mapValues { (key, value) ->
+                schemaElement(
+                    value,
+                    if (parent == "") key else "$parent.$key"
+                )
+            }.toMutableMap(), parent)
+            is JsonPrimitive -> json.contentOrNull?.let { SchemaLiteral(it, parent) } ?: SchemaNull
             JsonNull -> SchemaNull
         }
 
-    fun SchemaElement.toJson(): JsonElement =
+    private fun SchemaElement.toJson(): JsonElement =
         when (this) {
             is SchemaList -> JsonArray(content.map { it.toJson() })
             is SchemaMap -> JsonObject(content.mapValues { (_, value) -> value.toJson() })

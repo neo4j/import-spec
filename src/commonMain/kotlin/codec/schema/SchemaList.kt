@@ -5,7 +5,7 @@
  */
 package codec.schema
 
-class SchemaList(val content: MutableList<SchemaElement>) :
+class SchemaList(val content: MutableList<SchemaElement>, val path: String = "") :
     SchemaElement, MutableList<SchemaElement> by content {
     override fun equals(other: Any?): Boolean = content == other
 

@@ -10,12 +10,9 @@ class DataModelV2V3Migration(version: String) : Migration(version, Version.DATA_
     override fun migrate(schema: SchemaMap): SchemaMap {
         // Replace singular keyProperty with a list keyProperties
         val extensions = schema.map("graphSchemaExtensionsRepresentation")
-        val nodeKeyProperties = extensions.list("nodeKeyProperties")
+        val nodeKeyProperties = extensions.mapList("nodeKeyProperties")
         val references = mutableMapOf<String, String>()
         for (property in nodeKeyProperties) {
-            if (property !is SchemaMap) {
-                error("Property $property must be a Map")
-            }
             val key = property.map("keyProperty")
             property.remove("keyProperty")
             property["keyProperties"] = schemaListOf(key)
@@ -27,19 +24,17 @@ class DataModelV2V3Migration(version: String) : Migration(version, Version.DATA_
 
         // Replace from/toMapping with from/toMappings
         val mappings = schema.map("graphMappingRepresentation")
-        val relationshipMappings = mappings.list("relationshipMappings")
+        val relationshipMappings = mappings.mapList("relationshipMappings")
         val relationshipObjectTypes = schema
             .map("graphSchemaRepresentation")
             .map("graphSchema")
-            .list("relationshipObjectTypes")
+            .mapList("relationshipObjectTypes")
         for (mapping in relationshipMappings) {
-            if (mapping !is SchemaMap) {
-                error("Relationship $mapping must be a Map")
-            }
             // Find relationship object and it's node refs
             val relationshipRef = mapping.map("relationship").string("\$ref").removePrefix("#")
             val objectType = relationshipObjectTypes
-                .first { it is SchemaMap && it.string("\$id") == relationshipRef } as SchemaMap
+                .firstOrNull { it.string("\$id") == relationshipRef }
+                ?: error("Could not find relationship object $relationshipRef")
             val fromNodeRef = objectType.map("from").string("\$ref")
             val toNodeRef = objectType.map("to").string("\$ref")
 

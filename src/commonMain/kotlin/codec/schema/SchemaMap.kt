@@ -5,7 +5,7 @@
  */
 package codec.schema
 
-data class SchemaMap(val content: MutableMap<String, SchemaElement>) :
+data class SchemaMap(val content: MutableMap<String, SchemaElement>, val path: String = "") :
     SchemaElement, MutableMap<String, SchemaElement> by content {
     override fun equals(other: Any?): Boolean = content == other
 
@@ -33,25 +33,57 @@ data class SchemaMap(val content: MutableMap<String, SchemaElement>) :
         content[key] = value
     }
 
-    fun list(key: String) = listOrNull(key) ?: error("Expected list '$key'")
+    fun list(key: String): SchemaList {
+        val list = content[key] ?: error("Missing required list at $path.$key")
+        return list as? SchemaList ?: error("Expected list, found invalid type ${list::class.simpleName} at $path.$key")
+    }
 
-    fun listOrNull(key: String): SchemaList? = content[key]?.let { (it as SchemaList) }
+    fun listOrNull(key: String): SchemaList? = content[key]?.let { it as? SchemaList }
 
-    fun map(key: String) = mapOrNull(key) ?: error("Expected map for key '$key'")
+    fun map(key: String): SchemaMap {
+        val map = content[key] ?: error("Missing required map at $path.$key")
+        return map as? SchemaMap ?: error("Expected map, found invalid type ${map::class.simpleName} at $path.$key")
+    }
 
-    fun mapOrNull(key: String): SchemaMap? = content[key]?.let { (it as SchemaMap) }
+    fun mapOrNull(key: String): SchemaMap? = content[key]?.let { it as? SchemaMap }
 
-    fun bool(key: String) = string(key).toBooleanStrict()
-
-    fun string(key: String) = stringOrNull(key) ?: error("Expected key '$key'")
-
-    fun stringOrNull(key: String) = literalOrNull(key)?.string
-
-    fun literal(key: String) = literalOrNull(key) ?: error("Expected key '$key'")
+    fun literal(key: String): SchemaLiteral {
+        val literal = content[key] ?: error("Missing required literal at $path.$key")
+        return literal as? SchemaLiteral
+            ?: error("Expected literal, found invalid type ${literal::class.simpleName} at $path.$key")
+    }
 
     fun literalOrNull(key: String) = content[key]?.let { it as? SchemaLiteral }
 
+    fun bool(key: String) = string(key).toBooleanStrict()
+
+    fun boolOrNull(key: String) = string(key).toBooleanStrictOrNull()
+
+    fun string(key: String) = literal(key).string
+
+    fun stringOrNull(key: String) = literalOrNull(key)?.string
+
+    fun int(key: String) = stringOrNull(key)?.toInt()
+
     fun intOrNull(key: String) = stringOrNull(key)?.toIntOrNull()
+
+    fun mapList(key: String): List<SchemaMap> {
+        val list = content[key] ?: error("Missing required list at $path.$key")
+        val schemaList =
+            list as? SchemaList ?: error("Expected list, found invalid type ${list::class.simpleName} at $path.$key")
+        return schemaList.content.mapIndexed { index, element ->
+            element as? SchemaMap
+                ?: error("Expected map, found invalid type ${list::class.simpleName} at $path[$index].$key")
+        }
+    }
+
+    fun mapListOrNull(key: String): List<SchemaMap>? {
+        val list = mutableListOf<SchemaMap>()
+        for (element in listOrNull(key)?.content ?: return null) {
+            list.add(element as? SchemaMap ?: return null)
+        }
+        return list
+    }
 }
 
 fun schemaMapOf(vararg pairs: Pair<String, SchemaElement>) = SchemaMap(pairs.toMap().toMutableMap())

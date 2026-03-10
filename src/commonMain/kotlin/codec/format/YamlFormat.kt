@@ -32,9 +32,10 @@ class YamlFormat(private val yaml: Yaml, private val json: JsonFormat) : Format 
     /** [Yaml] library doesn't have proper AST -> Generic type support so we fall back to [json] */
     override fun decodeFromSchema(element: SchemaElement) = json.decodeFromSchema(element)
 
-    fun schemaElement(yaml: YamlElement): SchemaElement =
+    fun schemaElement(yaml: YamlElement, parent: String = ""): SchemaElement =
         when (yaml) {
-            is YamlList -> SchemaList(yaml.map { schemaElement(it) }.toMutableList())
+            is YamlList -> SchemaList(yaml.mapIndexed { index, element -> schemaElement(element, "$parent[$index]") }
+                .toMutableList())
             is YamlMap -> {
                 val content =
                     yaml.content
@@ -42,13 +43,15 @@ class YamlFormat(private val yaml: Yaml, private val json: JsonFormat) : Format 
                             if (key !is YamlLiteral) {
                                 error("Failed to parse yaml: non-string key not supported: $key")
                             }
-                            Pair(key.content, schemaElement(value))
+                            val element =
+                                schemaElement(value, if (parent == "") key.content else "$parent.${key.content}")
+                            Pair(key.content, element)
                         }
                         .toMap()
                         .toMutableMap()
                 SchemaMap(content)
             }
-            is YamlLiteral -> SchemaLiteral(yaml.content)
+            is YamlLiteral -> SchemaLiteral(yaml.content, parent)
             YamlNull -> SchemaNull
         }
 

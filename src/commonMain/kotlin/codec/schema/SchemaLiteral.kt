@@ -5,7 +5,7 @@
  */
 package codec.schema
 
-class SchemaLiteral(override val string: String) : SchemaPrimitive() {
+class SchemaLiteral(override val string: String, val path: String = "") : SchemaPrimitive() {
     override val isString: Boolean
         get() = true
 
