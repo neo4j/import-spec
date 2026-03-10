@@ -157,9 +157,7 @@ class ImportSpecificationDeserializerTest {
                                     List.of(
                                             new PropertyMapping("id", "id", PropertyType.STRING),
                                             new PropertyMapping(
-                                                    "vec",
-                                                    "vec",
-                                                    new PropertyType(PropertyTypeName.FLOAT_VECTOR, 128)),
+                                                    "vec", "vec", new PropertyType(PropertyTypeName.FLOAT_VECTOR, 128)),
                                             new PropertyMapping("array", "array", PropertyType.BOOLEAN_ARRAY)),
                                     null)),
                             null,
@@ -2336,8 +2334,7 @@ class ImportSpecificationDeserializerTest {
                         "0 warning(s)",
                         "$.targets.nodes[0].properties[0].target_property_type: must be valid to one and only one schema, but 0 are valid",
                         "$.targets.nodes[0].properties[0].target_property_type: does not have a value in the enumeration",
-                        "$.targets.nodes[0].properties[0].target_property_type: string found, object expected"
-                );
+                        "$.targets.nodes[0].properties[0].target_property_type: string found, object expected");
     }
 
     @ParameterizedTest
@@ -2356,8 +2353,7 @@ class ImportSpecificationDeserializerTest {
                         "$.targets.nodes[0].properties[0].target_property_type: must be valid to one and only one schema, but 0 are valid",
                         "$.targets.nodes[0].properties[0].target_property_type: object found, string expected",
                         "$.targets.nodes[0].properties[0].target_property_type.name: does not have a value in the enumeration",
-                        "$.targets.nodes[0].properties[0].target_property_type: does not have a value in the enumeration"
-                );
+                        "$.targets.nodes[0].properties[0].target_property_type: does not have a value in the enumeration");
     }
 
     @ParameterizedTest
@@ -6036,8 +6032,7 @@ class ImportSpecificationDeserializerTest {
                         "0 warning(s)",
                         "$.targets.relationships[0].properties[0].target_property_type: must be valid to one and only one schema, but 0 are valid",
                         "$.targets.relationships[0].properties[0].target_property_type: does not have a value in the enumeration",
-                        "$.targets.relationships[0].properties[0].target_property_type: string found, object expected"
-                );
+                        "$.targets.relationships[0].properties[0].target_property_type: string found, object expected");
     }
 
     @ParameterizedTest
