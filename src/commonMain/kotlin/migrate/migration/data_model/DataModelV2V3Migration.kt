@@ -6,11 +6,14 @@ import codec.schema.schemaMapOf
 import migrate.Migration
 import model.Version
 
+/**
+ * 2.0 -> 3.0 adds support for multiple keys properties
+ */
 class DataModelV2V3Migration(version: String) : Migration(version, Version.DATA_MODEL_V30) {
     override fun migrate(schema: SchemaMap): SchemaMap {
         // Replace singular keyProperty with a list keyProperties
         val extensions = schema.map("graphSchemaExtensionsRepresentation")
-        val nodeKeyProperties = extensions.mapList("nodeKeyProperties")
+        val nodeKeyProperties = extensions.listOfMaps("nodeKeyProperties")
         val references = mutableMapOf<String, String>()
         for (property in nodeKeyProperties) {
             val key = property.map("keyProperty")
@@ -24,11 +27,11 @@ class DataModelV2V3Migration(version: String) : Migration(version, Version.DATA_
 
         // Replace from/toMapping with from/toMappings
         val mappings = schema.map("graphMappingRepresentation")
-        val relationshipMappings = mappings.mapList("relationshipMappings")
+        val relationshipMappings = mappings.listOfMaps("relationshipMappings")
         val relationshipObjectTypes = schema
             .map("graphSchemaRepresentation")
             .map("graphSchema")
-            .mapList("relationshipObjectTypes")
+            .listOfMaps("relationshipObjectTypes")
         for (mapping in relationshipMappings) {
             // Find relationship object and it's node refs
             val relationshipRef = mapping.map("relationship").string("\$ref").removePrefix("#")
@@ -39,18 +42,22 @@ class DataModelV2V3Migration(version: String) : Migration(version, Version.DATA_
             val toNodeRef = objectType.map("to").string("\$ref")
 
             // Resolve nodeKeyProperties and convert mapping into mappings
-            val fromPropertyRef =
-                references[fromNodeRef] ?: error("Unable to resolve nodeKeyProperties from node ref $fromNodeRef")
-            val fromFieldName = mapping.map("fromMapping").literal("fieldName")
-            mapping["fromMappings"] = schemaListOf(schemaMapOf(fromPropertyRef to fromFieldName))
-            mapping.remove("fromMapping")
-
-            val toPropertyRef =
-                references[toNodeRef] ?: error("Unable to resolve nodeKeyProperties to node ref $toNodeRef")
-            val toFieldName = mapping.map("toMapping").literal("fieldName")
-            mapping["toMappings"] = schemaListOf(schemaMapOf(toPropertyRef to toFieldName))
-            mapping.remove("toMapping")
+            updateMapping(references, mapping, fromNodeRef, "fromMapping")
+            updateMapping(references, mapping, toNodeRef, "toMapping")
         }
         return schema
+    }
+
+    private fun updateMapping(
+        references: MutableMap<String, String>,
+        mapping: SchemaMap,
+        nodeRef: String,
+        key: String
+    ) {
+        val toPropertyRef =
+            references[nodeRef] ?: error("Unable to resolve nodeKeyProperties to node ref $nodeRef")
+        val toFieldName = mapping.map(key).literal("fieldName")
+        mapping["${key}s"] = schemaListOf(schemaMapOf(toPropertyRef to toFieldName))
+        mapping.remove(key)
     }
 }

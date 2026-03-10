@@ -20,6 +20,7 @@ import codec.format.YamlFormat
 import codec.schema.SchemaMap
 import migrate.MigrationPath
 import migrate.migration.data_model.DataModelV2V3Migration
+import codec.format.Prettify
 import model.GraphModel
 import model.Type
 import model.Version
@@ -33,10 +34,13 @@ sealed class GraphSpec(
     private val path = MigrationPath(configuration.migrations)
     private val format = builder.build()
 
-    fun encodeToString(model: GraphModel, targetVersion: String = Version.LATEST): String {
+    fun encodeToString(model: GraphModel, targetVersion: String = Version.LATEST, pretty: Boolean = true): String {
         val schema = format.encodeToSchema(model)
         var map = schema as? SchemaMap ?: error("Schema format expected")
         map = path.migrate(map, Type.GRAPH_SPEC, targetVersion)
+        if (pretty) {
+            map = Prettify.transform(map)
+        }
         return format.encodeToString(map)
     }
 
