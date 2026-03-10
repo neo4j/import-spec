@@ -40,10 +40,24 @@ public enum PropertyTypeName {
     ZONED_DATETIME_ARRAY,
     ZONED_TIME,
     ZONED_TIME_ARRAY,
-    INTEGER_VECTOR,
-    FLOAT_VECTOR,
-    FLOAT32_VECTOR,
-    INTEGER8_VECTOR,
-    INTEGER16_VECTOR,
-    INTEGER32_VECTOR,
+    INTEGER_VECTOR(true),
+    FLOAT_VECTOR(true),
+    FLOAT32_VECTOR(true),
+    INTEGER8_VECTOR(true),
+    INTEGER16_VECTOR(true),
+    INTEGER32_VECTOR(true);
+
+    private final boolean isVector;
+
+    PropertyTypeName() {
+        this(false);
+    }
+
+    PropertyTypeName(boolean isVector) {
+        this.isVector = isVector;
+    }
+
+    public boolean isVector() {
+        return isVector;
+    }
 }

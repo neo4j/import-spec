@@ -2332,7 +2332,7 @@ class ImportSpecificationDeserializerTest {
                 .hasMessageContainingAll(
                         "1 error(s)",
                         "0 warning(s)",
-                         "$.targets.nodes[0].properties[0].target_property_type: does not have a value in the enumeration");
+                        "$.targets.nodes[0].properties[0].target_property_type: does not have a value in the enumeration");
     }
 
     @ParameterizedTest
@@ -2349,6 +2349,22 @@ class ImportSpecificationDeserializerTest {
                         "1 error(s)",
                         "0 warning(s)",
                         "$.targets.nodes[0].properties[0].target_property_type.name: does not have a value in the enumeration");
+    }
+
+    @ParameterizedTest
+    @EnumSource(SpecFormat.class)
+    void fails_if_non_vector_type_has_dimension(SpecFormat format, TestInfo testInfo) {
+
+        assertThatThrownBy(() -> {
+                    try (var reader = specReader(format, testInfo)) {
+                        deserialize(reader);
+                    }
+                })
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "$.targets.nodes[0].properties[0].target_property_type.dimension \"STRING\" is non vector type and cannot have dimension");
     }
 
     @ParameterizedTest
