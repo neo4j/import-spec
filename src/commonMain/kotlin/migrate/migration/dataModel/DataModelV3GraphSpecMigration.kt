@@ -1,4 +1,20 @@
-package migrate.migration.data_model
+/*
+ * Copyright (c) "Neo4j"
+ * Neo4j Sweden AB [https://neo4j.com]
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package migrate.migration.dataModel
 
 import codec.schema.SchemaElement
 import codec.schema.SchemaList
@@ -24,7 +40,7 @@ class DataModelV3GraphSpecMigration : Migration(Version.DATA_MODEL_V30, Version.
             "nodes" to SchemaMap(nodes),
             "relationships" to SchemaMap(relationships),
             "tables" to SchemaMap(tables),
-            "mappings" to SchemaList(mappings),
+            "mappings" to SchemaList(mappings)
         )
     }
 
@@ -82,10 +98,7 @@ class DataModelV3GraphSpecMigration : Migration(Version.DATA_MODEL_V30, Version.
         return relationships
     }
 
-    private fun convertProperties(
-        label: SchemaMap,
-        properties: MutableMap<String, SchemaElement>
-    ) {
+    private fun convertProperties(label: SchemaMap, properties: MutableMap<String, SchemaElement>) {
         for (property in label.listOfMaps("properties")) {
             val ref = property.string("\$id")
             val token = property.literalOrNull("token")
@@ -94,7 +107,7 @@ class DataModelV3GraphSpecMigration : Migration(Version.DATA_MODEL_V30, Version.
             // TODO constraints
             val map = schemaMapOf(
                 "name" to (token ?: SchemaNull),
-                "type" to SchemaLiteral(type),
+                "type" to SchemaLiteral(type)
             )
             val nullable = typeObj.literalOrNull("nullable")
             if (nullable != null) {
@@ -117,7 +130,8 @@ class DataModelV3GraphSpecMigration : Migration(Version.DATA_MODEL_V30, Version.
                 val size = field.literal("size")
                 val recommendedObject = field.map("recommendedType")
                 val recommendedType = recommendedObject.string("type")
-                val supportedTypes = field.listOfMaps("supportedTypes").map { it.string("type").uppercase() } // FIXME array types
+                val supportedTypes = field.listOfMaps("supportedTypes")
+                    .map { it.string("type").uppercase() } // FIXME array types
                 fields[name.string] = schemaMapOf(
                     "name" to name,
                     "rawType" to rawType,
@@ -140,7 +154,7 @@ class DataModelV3GraphSpecMigration : Migration(Version.DATA_MODEL_V30, Version.
                     "fields" to SchemaList(fields),
                     "references" to schemaMapOf(
                         "table" to tableRef,
-                        "fields" to SchemaList(referencedFields),
+                        "fields" to SchemaList(referencedFields)
                     )
                 )
             }
@@ -148,7 +162,7 @@ class DataModelV3GraphSpecMigration : Migration(Version.DATA_MODEL_V30, Version.
                 "source" to (sourceType ?: SchemaNull),
                 "fields" to SchemaMap(fields),
                 "primaryKeys" to primaryKeys,
-                "foreignKeys" to SchemaMap(foreignKeys),
+                "foreignKeys" to SchemaMap(foreignKeys)
             )
         }
         return tables
@@ -168,7 +182,7 @@ class DataModelV3GraphSpecMigration : Migration(Version.DATA_MODEL_V30, Version.
                 schemaMapOf(
                     "node" to SchemaLiteral(ref),
                     "table" to tableName,
-                    "properties" to SchemaMap(properties),
+                    "properties" to SchemaMap(properties)
                 )
             )
         }
@@ -216,14 +230,14 @@ class DataModelV3GraphSpecMigration : Migration(Version.DATA_MODEL_V30, Version.
                     "type" to SchemaLiteral(token),
                     "from" to schemaMapOf(
                         "node" to SchemaLiteral(fromRef),
-                        "properties" to SchemaMap(fromMappings),
+                        "properties" to SchemaMap(fromMappings)
                     ),
                     "to" to schemaMapOf(
                         "node" to SchemaLiteral(toRef),
-                        "properties" to SchemaMap(toMappings),
+                        "properties" to SchemaMap(toMappings)
                     ),
                     "table" to tableName,
-                    "properties" to SchemaMap(properties),
+                    "properties" to SchemaMap(properties)
                 )
             )
         }
@@ -236,7 +250,7 @@ class DataModelV3GraphSpecMigration : Migration(Version.DATA_MODEL_V30, Version.
             val propertyRef = propertyMapping.map("property").string("\$ref").removePrefix("#")
             val fieldName = propertyMapping.literal("fieldName")
             properties[propertyRef] = schemaMapOf(
-                "field" to fieldName,
+                "field" to fieldName
             )
         }
         return properties

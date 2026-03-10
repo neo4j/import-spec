@@ -1,4 +1,4 @@
-package migrate.migration.data_model
+package migrate.migration.dataModel
 
 import codec.format.JsonFormat
 import codec.format.YamlFormat

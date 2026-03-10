@@ -14,11 +14,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package model.mapping
+package codec.schema
 
-import kotlinx.serialization.Serializable
-import kotlin.js.JsExport
-
-@JsExport
-@Serializable
-data class PropertyMapping(val field: String)
+sealed class SchemaPrimitive : SchemaElement {
+    abstract val isString: Boolean
+    abstract val string: String
+}

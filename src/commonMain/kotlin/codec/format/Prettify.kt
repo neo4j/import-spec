@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) "Neo4j"
+ * Neo4j Sweden AB [https://neo4j.com]
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package codec.format
 
 import codec.schema.SchemaElement
@@ -11,7 +27,8 @@ object Prettify {
     fun transform(schema: SchemaMap): SchemaMap {
         val nodePropertyIds = mutableMapOf<String, String>()
         val (nodes, nodeIds) = prettify(
-            schema, "nodes",
+            schema,
+            "nodes",
             name = { it.stringOrNull("name") ?: (it.listOrNull("labels")?.firstOrNull() as? SchemaLiteral)?.string }
         ) { id, node ->
             val (properties, ids) = prettify(node, "properties")
@@ -21,7 +38,8 @@ object Prettify {
         schema["nodes"] = SchemaMap(nodes)
         val relationshipPropertyIds = mutableMapOf<String, String>()
         val (relationships, relationshipIds) = prettify(
-            schema, "relationships",
+            schema,
+            "relationships",
             name = { it.stringOrNull("type") }
         ) { _, relationship ->
             val type = relationship.string("type")
@@ -73,7 +91,7 @@ object Prettify {
     private fun updateProperties(mapping: SchemaMap, propertyIds: MutableMap<String, String>, parent: String) {
         val properties = mutableMapOf<String, SchemaElement>()
         for ((id, property) in mapping.mapOrNull("properties") ?: return) {
-            val propertyId = propertyIds.getOrElse("$parent|${id}") { id }
+            val propertyId = propertyIds.getOrElse("$parent|$id") { id }
             properties[propertyId] = property
         }
         mapping["properties"] = SchemaMap(properties)

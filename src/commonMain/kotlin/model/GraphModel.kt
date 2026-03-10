@@ -31,7 +31,7 @@ data class GraphModel(
     val nodes: Map<String, Node> = emptyMap(),
     val relationships: Map<String, Relationship> = emptyMap(),
     val tables: Map<String, Table> = emptyMap(),
-    val mappings: List<Mapping> = emptyList(),
+    val mappings: List<Mapping> = emptyList()
 ) {
     @JsExport.Ignore
     fun validate(validators: List<Validation>): List<Issue> {

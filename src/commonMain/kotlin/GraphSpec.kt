@@ -16,21 +16,18 @@
  */
 import codec.format.Format
 import codec.format.JsonFormat
+import codec.format.Prettify
 import codec.format.YamlFormat
 import codec.schema.SchemaMap
 import migrate.MigrationPath
-import migrate.migration.data_model.DataModelV2V3Migration
-import codec.format.Prettify
+import migrate.migration.dataModel.DataModelV2V3Migration
 import model.GraphModel
 import model.Type
 import model.Version
 import kotlin.js.JsExport
 
 @JsExport
-sealed class GraphSpec(
-    val configuration: GraphSpecConfig,
-    val builder: Format.Builder
-) {
+sealed class GraphSpec(val configuration: GraphSpecConfig, val builder: Format.Builder) {
     private val path = MigrationPath(configuration.migrations)
     private val format = builder.build()
 
@@ -63,17 +60,12 @@ private fun defaultConfig(): GraphSpecConfig {
     return builder.build()
 }
 
-
 private class GraphSpecImpl(configuration: GraphSpecConfig, format: Format.Builder) :
     GraphSpec(configuration, format)
 
-fun GraphSpec(
-    from: GraphSpec = GraphSpec.Json,
-    builderAction: GraphSpecConfig.Builder.() -> Unit,
-): GraphSpec {
+fun GraphSpec(from: GraphSpec = GraphSpec.Json, builderAction: GraphSpecConfig.Builder.() -> Unit): GraphSpec {
     val builder = GraphSpecConfig.Builder(from.configuration)
     builder.builderAction()
     val conf = builder.build()
     return GraphSpecImpl(conf, from.builder)
 }
-
