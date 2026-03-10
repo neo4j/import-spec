@@ -40,6 +40,7 @@ import org.neo4j.importer.v1.targets.CustomQueryTarget;
 import org.neo4j.importer.v1.targets.NodeTarget;
 import org.neo4j.importer.v1.targets.PropertyMapping;
 import org.neo4j.importer.v1.targets.PropertyType;
+import org.neo4j.importer.v1.targets.PropertyTypeName;
 import org.neo4j.importer.v1.targets.Targets;
 import org.neo4j.importer.v1.targets.WriteMode;
 import org.neo4j.importer.v1.validation.InvalidSpecificationException;
@@ -130,6 +131,39 @@ class ImportSpecificationDeserializerTest {
                             null,
                             null));
             assertThat(spec.getActions()).isEmpty();
+        }
+    }
+
+    @ParameterizedTest
+    @EnumSource(SpecFormat.class)
+    void deserializes_job_spec_with_vector_and_primitive_as_objects(SpecFormat format, TestInfo testInfo)
+            throws Exception {
+
+        try (var reader = specReader(format, testInfo)) {
+            var spec = deserialize(reader);
+
+            assertThat(spec.getSources())
+                    .isEqualTo(List.of(new BigQuerySource("my-bigquery-source", "SELECT id, name FROM my.table")));
+            assertThat(spec.getTargets())
+                    .isEqualTo(new Targets(
+                            List.of(new NodeTarget(
+                                    true,
+                                    "my-node",
+                                    "my-bigquery-source",
+                                    null,
+                                    WriteMode.CREATE,
+                                    (ObjectNode) null,
+                                    List.of("ALabel"),
+                                    List.of(
+                                            new PropertyMapping("id", "id", PropertyType.STRING),
+                                            new PropertyMapping(
+                                                    "vec",
+                                                    "vec",
+                                                    new PropertyType(PropertyTypeName.FLOAT_VECTOR, 128)),
+                                            new PropertyMapping("array", "array", PropertyType.BOOLEAN_ARRAY)),
+                                    null)),
+                            null,
+                            null));
         }
     }
 
@@ -2303,6 +2337,26 @@ class ImportSpecificationDeserializerTest {
                         "$.targets.nodes[0].properties[0].target_property_type: must be valid to one and only one schema, but 0 are valid",
                         "$.targets.nodes[0].properties[0].target_property_type: does not have a value in the enumeration",
                         "$.targets.nodes[0].properties[0].target_property_type: string found, object expected"
+                );
+    }
+
+    @ParameterizedTest
+    @EnumSource(SpecFormat.class)
+    void fails_if_property_type_object_has_invalid_name(SpecFormat format, TestInfo testInfo) {
+
+        assertThatThrownBy(() -> {
+                    try (var reader = specReader(format, testInfo)) {
+                        deserialize(reader);
+                    }
+                })
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "4 error(s)",
+                        "0 warning(s)",
+                        "$.targets.nodes[0].properties[0].target_property_type: must be valid to one and only one schema, but 0 are valid",
+                        "$.targets.nodes[0].properties[0].target_property_type: object found, string expected",
+                        "$.targets.nodes[0].properties[0].target_property_type.name: does not have a value in the enumeration",
+                        "$.targets.nodes[0].properties[0].target_property_type: does not have a value in the enumeration"
                 );
     }
 
