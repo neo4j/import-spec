@@ -51,9 +51,7 @@ public class NoDimensionOnNonVectorTargetTypesValidator implements Specification
         invalidDimensionPropertyNames.forEach((path, typeName) -> builder.addError(
                 path,
                 ERROR_CODE,
-                String.format(
-                        "%s \"%s\" is non vector type and cannot have dimension",
-                        path, typeName)));
+                String.format("%s \"%s\" is non vector type and cannot have dimension", path, typeName)));
         return !invalidDimensionPropertyNames.isEmpty();
     }
 
