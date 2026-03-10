@@ -116,4 +116,8 @@ data class SchemaMap(val content: MutableMap<String, SchemaElement>, val path: S
     }
 }
 
-fun schemaMapOf(vararg pairs: Pair<String, SchemaElement>) = SchemaMap(pairs.toMap().toMutableMap())
+fun schemaMapOf(vararg pairs: Pair<String, SchemaElement?>) = SchemaMap(
+    pairs
+        .filter { it.second != null }
+        .associate { it.first to it.second!! }.toMutableMap()
+)

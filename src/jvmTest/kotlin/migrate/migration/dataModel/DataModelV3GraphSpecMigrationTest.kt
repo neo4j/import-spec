@@ -37,8 +37,7 @@ class DataModelV3GraphSpecMigrationTest {
             val migration = DataModelV3GraphSpecMigration()
             val format = JsonFormat.build()
 
-            var schema = format.decodeFromString(input.readText()) as SchemaMap
-            schema = schema.map("dataModel")
+            val schema = format.decodeFromString(input.readText()) as SchemaMap
             println(schema)
             var output = migration.migrate(schema)
 

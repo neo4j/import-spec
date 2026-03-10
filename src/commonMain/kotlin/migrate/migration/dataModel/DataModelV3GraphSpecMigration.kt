@@ -38,7 +38,8 @@ class DataModelV3GraphSpecMigration : Migration(Version.DATA_MODEL_V30, Version.
             return migrate(model)
         }
         val graphSchema = schema.map("graphSchemaRepresentation").map("graphSchema")
-        val nodes = migrateNodes(graphSchema)
+        val (nodeConstraints, relationshipConstraints) = constraints(graphSchema)
+        val nodes = migrateNodes(graphSchema, nodeConstraints)
         val relationships = migrateRelationships(graphSchema)
         val mappings = migrateMappings(schema)
         val tables = migrateTables(schema)
@@ -56,34 +57,45 @@ class DataModelV3GraphSpecMigration : Migration(Version.DATA_MODEL_V30, Version.
         return output
     }
 
-    private fun constraints(schema: SchemaMap): MutableMap<String, SchemaElement> {
-        val nodeConstraints = mutableMapOf<String, SchemaElement>()
-        val constraints = schema.listOfMapsOrNull("constraints") ?: return mutableMapOf()
+    private fun constraints(schema: SchemaMap): Pair<Map<String, List<SchemaMap>>, Map<String, SchemaMap>> {
+        val nodeConstraints = mutableMapOf<String, MutableList<SchemaMap>>()
+        val constraints = schema.listOfMapsOrNull("constraints") ?: return Pair(emptyMap(), emptyMap())
         for (constraint in constraints) {
-            constraint.string("\$id")
+            val id = constraint.string("\$id")
             val name = constraint.string("name")
             val type = constraint.string("constraintType")
-            val properties = constraint.mapOrNull("properties")
+            val properties = constraint.listOfMapsOrNull("properties")
             val entity = constraint.string("entityType")
             if (entity == "node") {
+                // TODO do this inside node creation so have access to property lookup
+                //      instead just store SchemaMap
                 val nodeLabel = constraint.map("nodeLabel").string("\$ref").removePrefix("#")
                 val constraintType = when (type) {
                     // TODO correct values for these
                     "uniqueness" -> ConstraintType.UNIQUE
                     "propertyExistence" -> ConstraintType.EXISTS
+                    "type" -> error("Type constraints not supported on multiple properties.") // TODO
                     else -> error("Unknown constraint type: $type at ${constraint.path}.$name")
                 }
-                nodeConstraints[nodeLabel] = schemaMapOf(
-                    "type" to SchemaLiteral(constraintType)
+                val constr = schemaMapOf(
+                    "type" to SchemaLiteral(constraintType),
+                    "label" to SchemaLiteral(nodeLabel)
                 )
+                if (properties != null) {
+                    constr["properties"] = SchemaList(properties.map { it.literal("\$ref") }.toMutableList())
+                }
+                nodeConstraints.getOrPut(nodeLabel) { mutableListOf() }.add(constr)
             } else if (entity == "relationship") {
                 val relationship = constraint.string("relationship")
             }
         }
-        return mutableMapOf()
+        return Pair(nodeConstraints, emptyMap())
     }
 
-    private fun migrateNodes(schema: SchemaMap): MutableMap<String, SchemaElement> {
+    private fun migrateNodes(
+        schema: SchemaMap,
+        constraints: Map<String, List<SchemaMap>>
+    ): MutableMap<String, SchemaElement> {
         val nodes = mutableMapOf<String, SchemaElement>()
         val nodeLabels = schema.listOfMaps("nodeLabels")
         for (nodeObject in schema.listOfMaps("nodeObjectTypes")) {
@@ -101,6 +113,19 @@ class DataModelV3GraphSpecMigration : Migration(Version.DATA_MODEL_V30, Version.
                 "labels" to schemaListOf(*labelTokens.toTypedArray()),
                 "properties" to SchemaMap(properties)
             )
+
+            val labelRef = labelRefs.firstOrNull()
+            if (labelRef != null) {
+                val constraints = constraints[labelRef]
+                if (constraints != null) {
+                    val all = schemaMapOf()
+                    var i = 1
+                    for (map in constraints) {
+                        all["constraint${i++}"] = map
+                    }
+                    node["constraints"] = all
+                }
+            }
             val primaryLabel = labelTokens.firstOrNull()
             if (primaryLabel != null) {
                 node["name"] = SchemaLiteral(primaryLabel)
@@ -166,7 +191,7 @@ class DataModelV3GraphSpecMigration : Migration(Version.DATA_MODEL_V30, Version.
             for (field in table.listOfMaps("fields")) {
                 val name = field.literal("name")
                 val rawType = field.literal("rawType")
-                val size = field.literal("size")
+                val size = field.literalOrNull("size")
                 val recommendedObject = field.map("recommendedType")
                 val recommendedType = recommendedObject.string("type")
                 val supportedTypes = field.listOfMaps("supportedTypes")
