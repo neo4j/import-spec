@@ -29,11 +29,12 @@ object Prettify {
         val (nodes, nodeIds) = prettify(
             schema,
             "nodes",
-            name = { it.stringOrNull("name") ?: (it.listOrNull("labels")?.firstOrNull() as? SchemaLiteral)?.string }
+            name = {
+                it.stringOrNull("name")
+                    ?: (it.listOrNull("labels")?.firstOrNull() as? SchemaLiteral)?.string
+            }
         ) { id, node ->
-            val (properties, ids) = prettify(node, "properties")
-            nodePropertyIds.putAll(ids.map { "$id|${it.key}" to it.value })
-            node["properties"] = SchemaMap(properties)
+            prettifyProperties(node, nodePropertyIds, id)
         }
         schema["nodes"] = SchemaMap(nodes)
         val relationshipPropertyIds = mutableMapOf<String, String>()
@@ -47,9 +48,7 @@ object Prettify {
             relationship["from"] = nodeIds.getOrElse(from) { from }
             val to = relationship.string("to")
             relationship["to"] = nodeIds.getOrElse(to) { to }
-            val (properties, ids) = prettify(relationship, "properties")
-            relationshipPropertyIds.putAll(ids.map { "$type|${it.key}" to it.value })
-            relationship["properties"] = SchemaMap(properties)
+            prettifyProperties(relationship, relationshipPropertyIds, type)
         }
         schema["relationships"] = SchemaMap(relationships)
         val mappings = schema.listOfMapsOrNull("mappings")
@@ -63,8 +62,6 @@ object Prettify {
                     updateProperties(mapping, nodePropertyIds, node)
                 } else if (type != null) {
                     mapping["type"] = SchemaLiteral(relationshipIds.getOrElse(type) { type })
-                    println(relationshipPropertyIds)
-                    println("Type $type")
                     updateProperties(mapping, relationshipPropertyIds, type)
                     val from = mapping.map("from")
                     val fromNode = from.string("node")
@@ -88,6 +85,15 @@ object Prettify {
         return schema
     }
 
+    private fun prettifyProperties(node: SchemaMap, nodePropertyIds: MutableMap<String, String>, id: String) {
+        val (properties, ids) = prettify(node, "properties")
+        nodePropertyIds.putAll(ids.map { "$id|${it.key}" to it.value })
+        node["properties"] = SchemaMap(properties)
+        if (properties.isEmpty()) {
+            node.remove("properties")
+        }
+    }
+
     private fun updateProperties(mapping: SchemaMap, propertyIds: MutableMap<String, String>, parent: String) {
         val properties = mutableMapOf<String, SchemaElement>()
         for ((id, property) in mapping.mapOrNull("properties") ?: return) {
@@ -107,10 +113,24 @@ object Prettify {
         val ids = mutableMapOf<String, String>()
         for ((id, element) in schema.mapOfMaps(key)) {
             transform(id, element)
-            val name = name(element)
-            if (name == null || elements.containsKey(name)) {
+            var name = name(element)
+            if (name == null) {
                 elements[id] = element
                 continue
+            }
+            if (elements.containsKey(name)) {
+                // Attempt name with number suffix
+                for (i in 1 until 10) {
+                    if (!elements.containsKey("${name}$i")) {
+                        name = "${name}$i"
+                        break
+                    }
+                }
+                // Otherwise fall back to id
+                if (name == null || elements.containsKey(name)) {
+                    elements[id] = element
+                    continue
+                }
             }
             element.remove("name")
             elements[name] = element

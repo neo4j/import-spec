@@ -24,7 +24,7 @@ external interface NodeTypeConstraintJs : NodeConstraintJs {
     val dataType: String
 }
 
-fun nodeTypeConstraintJs(dataType: String, type: String, label: String, properties: Array<String>) =
+fun nodeTypeConstraintJs(dataType: String, type: ConstraintTypeJs, label: String, properties: Array<String>) =
     object : NodeTypeConstraintJs {
         override val dataType = dataType
         override val type = type

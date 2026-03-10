@@ -26,7 +26,7 @@ external interface NodeUniqueConstraintJs : NodeConstraintJs {
 }
 
 fun nodeUniqueConstraintJs(
-    type: String,
+    type: ConstraintTypeJs,
     label: String,
     properties: Array<String>,
     options: ReadonlyRecord<String, Any>

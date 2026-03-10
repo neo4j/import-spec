@@ -26,7 +26,7 @@ external interface NodeExistConstraintJs : NodeConstraintJs {
 }
 
 fun nodeExistConstraintJs(
-    type: String,
+    type: ConstraintTypeJs,
     label: String,
     properties: Array<String>,
     options: ReadonlyRecord<String, Any>

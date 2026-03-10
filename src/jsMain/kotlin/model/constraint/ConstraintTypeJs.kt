@@ -16,23 +16,12 @@
  */
 package model.constraint
 
-import js.objects.ReadonlyRecord
-import kotlinx.js.JsPlainObject
+import kotlin.js.JsExport
 
 @JsExport
-@JsPlainObject
-external interface NodeKeyConstraintJs : NodeConstraintJs {
-    val options: ReadonlyRecord<String, Any>
-}
-
-fun nodeKeyConstraintJs(
-    type: ConstraintTypeJs,
-    label: String,
-    properties: Array<String>,
-    options: ReadonlyRecord<String, Any>
-) = object : NodeKeyConstraintJs {
-    override val type = type
-    override val label = label
-    override val properties = properties
-    override val options = options
+enum class ConstraintTypeJs {
+    EXISTS,
+    KEY,
+    TYPE,
+    UNIQUE
 }

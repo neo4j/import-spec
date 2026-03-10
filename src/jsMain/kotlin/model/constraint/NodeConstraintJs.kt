@@ -29,25 +29,25 @@ external interface NodeConstraintJs : ConstraintJs {
 
 fun NodeConstraint.toJs(): NodeConstraintJs = when (this) {
     is NodeExistConstraint -> nodeExistConstraintJs(
-        type = ConstraintType.EXISTS,
+        type = ConstraintTypeJs.EXISTS,
         label = label,
         properties = properties.toTypedArray(),
         options = options.toReadonlyRecord()
     )
     is NodeKeyConstraint -> nodeKeyConstraintJs(
-        type = ConstraintType.KEY,
+        type = ConstraintTypeJs.KEY,
         label = label,
         properties = properties.toTypedArray(),
         options = options.toReadonlyRecord()
     )
     is NodeTypeConstraint -> nodeTypeConstraintJs(
-        type = ConstraintType.TYPE,
+        type = ConstraintTypeJs.TYPE,
         dataType = dataType.name,
         label = label,
         properties = properties.toTypedArray()
     )
     is NodeUniqueConstraint -> nodeUniqueConstraintJs(
-        type = ConstraintType.UNIQUE,
+        type = ConstraintTypeJs.UNIQUE,
         label = label,
         properties = properties.toTypedArray(),
         options = options.toReadonlyRecord()
@@ -56,22 +56,22 @@ fun NodeConstraint.toJs(): NodeConstraintJs = when (this) {
 
 @Suppress("UNCHECKED_CAST_TO_EXTERNAL_INTERFACE")
 fun NodeConstraintJs.toClass(node: String, constraint: String): NodeConstraint = when (type) {
-    ConstraintType.EXISTS -> NodeExistConstraint(
+    ConstraintTypeJs.EXISTS -> NodeExistConstraint(
         label = label,
         properties = properties.toSet(),
         options = (this as NodeExistConstraintJs).options.toMap()
     )
-    ConstraintType.KEY -> NodeKeyConstraint(
+    ConstraintTypeJs.KEY -> NodeKeyConstraint(
         label = label,
         properties = properties.toSet(),
         options = (this as NodeKeyConstraintJs).options.toMap()
     )
-    ConstraintType.TYPE -> NodeTypeConstraint(
+    ConstraintTypeJs.TYPE -> NodeTypeConstraint(
         Neo4jType.valueOf((this as NodeTypeConstraintJs).dataType),
         label = label,
         properties = properties.toSet()
     )
-    ConstraintType.UNIQUE -> NodeUniqueConstraint(
+    ConstraintTypeJs.UNIQUE -> NodeUniqueConstraint(
         label = label,
         properties = properties.toSet(),
         options = (this as NodeUniqueConstraintJs).options.toMap()
