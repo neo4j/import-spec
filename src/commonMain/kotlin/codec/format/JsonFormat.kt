@@ -33,7 +33,7 @@ import kotlinx.serialization.json.encodeToJsonElement
 import model.GraphModel
 
 class JsonFormat(private val json: Json) : Format {
-    override fun encodeToString(element: SchemaElement) = json.decodeFromJsonElement<String>(element.toJson())
+    override fun encodeToString(element: SchemaElement) = json.encodeToString(element.toJson())
 
     override fun decodeFromString(string: String) = schemaElement(json.parseToJsonElement(string))
 
