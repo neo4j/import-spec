@@ -22,4 +22,7 @@ package codec.schema
  * @see [codec.format.Format] for conversions
  * @see [migrate.Migration] for usages
  */
-sealed interface SchemaElement
+sealed interface SchemaElement {
+    val path: String
+    fun repath(newPath: String): SchemaElement
+}

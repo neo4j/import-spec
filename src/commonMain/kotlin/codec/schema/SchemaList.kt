@@ -16,9 +16,15 @@
  */
 package codec.schema
 
-class SchemaList(val content: MutableList<SchemaElement>, val path: String = "") :
+data class SchemaList(val content: MutableList<SchemaElement>, override val path: String = "") :
     SchemaElement,
     MutableList<SchemaElement> by content {
+
+    override fun repath(newPath: String) = SchemaList(
+        content.mapIndexed { index, element -> element.repath("$newPath[$index]") }.toMutableList(),
+        newPath
+    )
+
     override fun equals(other: Any?): Boolean = content == other
 
     override fun hashCode(): Int = content.hashCode()

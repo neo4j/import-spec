@@ -29,6 +29,36 @@ class DataModelV3GraphSpecMigrationTest {
     }
 
     @Test
+    fun `Test adventureworks`() {
+        val input = DataModelV3GraphSpecMigrationTest::class.resourceAsString("adventureworks-sales.json")
+        val migration = DataModelV3GraphSpecMigration()
+        val format = JsonFormat.build()
+
+        val schema = format.decodeFromString(input) as SchemaMap
+        var output = migration.migrate(schema)
+
+        output = Prettify.transform(output)
+
+        val yaml = YamlFormat.build()
+        println(yaml.encodeToString(output))
+    }
+
+    @Test
+    fun `Test chinook`() {
+        val input = DataModelV3GraphSpecMigrationTest::class.resourceAsString("chinook.json")
+        val migration = DataModelV3GraphSpecMigration()
+        val format = JsonFormat.build()
+
+        val schema = format.decodeFromString(input) as SchemaMap
+        var output = migration.migrate(schema)
+
+        output = Prettify.transform(output)
+
+        val yaml = YamlFormat.build()
+        println(yaml.encodeToString(output))
+    }
+
+    @Test
     fun `Convert full spec`() {
         for (input in File("/home/greg/Downloads/examples/").listFiles()!!) {
             if (input.extension != "json") {

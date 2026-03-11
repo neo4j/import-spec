@@ -1,0 +1,2883 @@
+{
+  "version": "3.0.0",
+  "graphSchemaRepresentation": {
+    "version": "1.0.0",
+    "graphSchema": {
+      "nodeLabels": [
+        {
+          "$id": "nl:0",
+          "token": "album",
+          "properties": [
+            {
+              "$id": "p:0_0",
+              "token": "album_id",
+              "type": {
+                "type": "integer"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:0_1",
+              "token": "title",
+              "type": {
+                "type": "string"
+              },
+              "nullable": false
+            }
+          ]
+        },
+        {
+          "$id": "nl:1",
+          "token": "artist",
+          "properties": [
+            {
+              "$id": "p:1_0",
+              "token": "artist_id",
+              "type": {
+                "type": "integer"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:1_1",
+              "token": "name",
+              "type": {
+                "type": "string"
+              },
+              "nullable": false
+            }
+          ]
+        },
+        {
+          "$id": "nl:2",
+          "token": "customer",
+          "properties": [
+            {
+              "$id": "p:2_0",
+              "token": "customer_id",
+              "type": {
+                "type": "integer"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:2_1",
+              "token": "first_name",
+              "type": {
+                "type": "string"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:2_2",
+              "token": "last_name",
+              "type": {
+                "type": "string"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:2_3",
+              "token": "company",
+              "type": {
+                "type": "string"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:2_4",
+              "token": "address",
+              "type": {
+                "type": "string"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:2_5",
+              "token": "city",
+              "type": {
+                "type": "string"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:2_6",
+              "token": "state",
+              "type": {
+                "type": "string"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:2_7",
+              "token": "country",
+              "type": {
+                "type": "string"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:2_8",
+              "token": "postal_code",
+              "type": {
+                "type": "string"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:2_9",
+              "token": "phone",
+              "type": {
+                "type": "string"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:2_10",
+              "token": "fax",
+              "type": {
+                "type": "string"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:2_11",
+              "token": "email",
+              "type": {
+                "type": "string"
+              },
+              "nullable": false
+            }
+          ]
+        },
+        {
+          "$id": "nl:3",
+          "token": "employee",
+          "properties": [
+            {
+              "$id": "p:3_0",
+              "token": "employee_id",
+              "type": {
+                "type": "integer"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:3_1",
+              "token": "last_name",
+              "type": {
+                "type": "string"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:3_2",
+              "token": "first_name",
+              "type": {
+                "type": "string"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:3_3",
+              "token": "title",
+              "type": {
+                "type": "string"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:3_5",
+              "token": "birth_date",
+              "type": {
+                "type": "datetime"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:3_6",
+              "token": "hire_date",
+              "type": {
+                "type": "datetime"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:3_7",
+              "token": "address",
+              "type": {
+                "type": "string"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:3_8",
+              "token": "city",
+              "type": {
+                "type": "string"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:3_9",
+              "token": "state",
+              "type": {
+                "type": "string"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:3_10",
+              "token": "country",
+              "type": {
+                "type": "string"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:3_11",
+              "token": "postal_code",
+              "type": {
+                "type": "string"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:3_12",
+              "token": "phone",
+              "type": {
+                "type": "string"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:3_13",
+              "token": "fax",
+              "type": {
+                "type": "string"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:3_14",
+              "token": "email",
+              "type": {
+                "type": "string"
+              },
+              "nullable": false
+            }
+          ]
+        },
+        {
+          "$id": "nl:4",
+          "token": "genre",
+          "properties": [
+            {
+              "$id": "p:4_0",
+              "token": "genre_id",
+              "type": {
+                "type": "integer"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:4_1",
+              "token": "name",
+              "type": {
+                "type": "string"
+              },
+              "nullable": false
+            }
+          ]
+        },
+        {
+          "$id": "nl:5",
+          "token": "invoice",
+          "properties": [
+            {
+              "$id": "p:5_0",
+              "token": "invoice_id",
+              "type": {
+                "type": "integer"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:5_2",
+              "token": "invoice_date",
+              "type": {
+                "type": "datetime"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:5_3",
+              "token": "billing_address",
+              "type": {
+                "type": "string"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:5_4",
+              "token": "billing_city",
+              "type": {
+                "type": "string"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:5_5",
+              "token": "billing_state",
+              "type": {
+                "type": "string"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:5_6",
+              "token": "billing_country",
+              "type": {
+                "type": "string"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:5_7",
+              "token": "billing_postal_code",
+              "type": {
+                "type": "string"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:5_8",
+              "token": "total",
+              "type": {
+                "type": "float"
+              },
+              "nullable": false
+            }
+          ]
+        },
+        {
+          "$id": "nl:6",
+          "token": "invoice_line",
+          "properties": [
+            {
+              "$id": "p:6_0",
+              "token": "invoice_line_id",
+              "type": {
+                "type": "integer"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:6_3",
+              "token": "unit_price",
+              "type": {
+                "type": "float"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:6_4",
+              "token": "quantity",
+              "type": {
+                "type": "integer"
+              },
+              "nullable": false
+            }
+          ]
+        },
+        {
+          "$id": "nl:7",
+          "token": "media_type",
+          "properties": [
+            {
+              "$id": "p:7_0",
+              "token": "media_type_id",
+              "type": {
+                "type": "integer"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:7_1",
+              "token": "name",
+              "type": {
+                "type": "string"
+              },
+              "nullable": false
+            }
+          ]
+        },
+        {
+          "$id": "nl:8",
+          "token": "playlist",
+          "properties": [
+            {
+              "$id": "p:8_0",
+              "token": "playlist_id",
+              "type": {
+                "type": "integer"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:8_1",
+              "token": "name",
+              "type": {
+                "type": "string"
+              },
+              "nullable": false
+            }
+          ]
+        },
+        {
+          "$id": "nl:9",
+          "token": "track",
+          "properties": [
+            {
+              "$id": "p:9_0",
+              "token": "track_id",
+              "type": {
+                "type": "integer"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:9_1",
+              "token": "name",
+              "type": {
+                "type": "string"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:9_5",
+              "token": "composer",
+              "type": {
+                "type": "string"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:9_6",
+              "token": "milliseconds",
+              "type": {
+                "type": "integer"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:9_7",
+              "token": "bytes",
+              "type": {
+                "type": "integer"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:9_8",
+              "token": "unit_price",
+              "type": {
+                "type": "float"
+              },
+              "nullable": false
+            }
+          ]
+        }
+      ],
+      "relationshipTypes": [
+        {
+          "$id": "rt:0",
+          "token": "ARTIST",
+          "properties": []
+        },
+        {
+          "$id": "rt:1",
+          "token": "EMPLOYEE",
+          "properties": []
+        },
+        {
+          "$id": "rt:2",
+          "token": "EMPLOYEE",
+          "properties": []
+        },
+        {
+          "$id": "rt:3",
+          "token": "CUSTOMER",
+          "properties": []
+        },
+        {
+          "$id": "rt:4",
+          "token": "INVOICE",
+          "properties": []
+        },
+        {
+          "$id": "rt:5",
+          "token": "TRACK",
+          "properties": []
+        },
+        {
+          "$id": "rt:6",
+          "token": "TRACK",
+          "properties": []
+        },
+        {
+          "$id": "rt:7",
+          "token": "ALBUM",
+          "properties": []
+        },
+        {
+          "$id": "rt:8",
+          "token": "GENRE",
+          "properties": []
+        },
+        {
+          "$id": "rt:9",
+          "token": "MEDIA_TYPE",
+          "properties": []
+        }
+      ],
+      "nodeObjectTypes": [
+        {
+          "$id": "n:0",
+          "labels": [
+            {
+              "$ref": "#nl:0"
+            }
+          ]
+        },
+        {
+          "$id": "n:1",
+          "labels": [
+            {
+              "$ref": "#nl:1"
+            }
+          ]
+        },
+        {
+          "$id": "n:2",
+          "labels": [
+            {
+              "$ref": "#nl:2"
+            }
+          ]
+        },
+        {
+          "$id": "n:3",
+          "labels": [
+            {
+              "$ref": "#nl:3"
+            }
+          ]
+        },
+        {
+          "$id": "n:4",
+          "labels": [
+            {
+              "$ref": "#nl:4"
+            }
+          ]
+        },
+        {
+          "$id": "n:5",
+          "labels": [
+            {
+              "$ref": "#nl:5"
+            }
+          ]
+        },
+        {
+          "$id": "n:6",
+          "labels": [
+            {
+              "$ref": "#nl:6"
+            }
+          ]
+        },
+        {
+          "$id": "n:7",
+          "labels": [
+            {
+              "$ref": "#nl:7"
+            }
+          ]
+        },
+        {
+          "$id": "n:8",
+          "labels": [
+            {
+              "$ref": "#nl:8"
+            }
+          ]
+        },
+        {
+          "$id": "n:9",
+          "labels": [
+            {
+              "$ref": "#nl:9"
+            }
+          ]
+        }
+      ],
+      "relationshipObjectTypes": [
+        {
+          "$id": "r:0",
+          "type": {
+            "$ref": "#rt:0"
+          },
+          "from": {
+            "$ref": "#n:0"
+          },
+          "to": {
+            "$ref": "#n:1"
+          }
+        },
+        {
+          "$id": "r:1",
+          "type": {
+            "$ref": "#rt:1"
+          },
+          "from": {
+            "$ref": "#n:2"
+          },
+          "to": {
+            "$ref": "#n:3"
+          }
+        },
+        {
+          "$id": "r:2",
+          "type": {
+            "$ref": "#rt:2"
+          },
+          "from": {
+            "$ref": "#n:3"
+          },
+          "to": {
+            "$ref": "#n:3"
+          }
+        },
+        {
+          "$id": "r:3",
+          "type": {
+            "$ref": "#rt:3"
+          },
+          "from": {
+            "$ref": "#n:5"
+          },
+          "to": {
+            "$ref": "#n:2"
+          }
+        },
+        {
+          "$id": "r:4",
+          "type": {
+            "$ref": "#rt:4"
+          },
+          "from": {
+            "$ref": "#n:6"
+          },
+          "to": {
+            "$ref": "#n:5"
+          }
+        },
+        {
+          "$id": "r:5",
+          "type": {
+            "$ref": "#rt:5"
+          },
+          "from": {
+            "$ref": "#n:6"
+          },
+          "to": {
+            "$ref": "#n:9"
+          }
+        },
+        {
+          "$id": "r:6",
+          "type": {
+            "$ref": "#rt:6"
+          },
+          "from": {
+            "$ref": "#n:8"
+          },
+          "to": {
+            "$ref": "#n:9"
+          }
+        },
+        {
+          "$id": "r:7",
+          "type": {
+            "$ref": "#rt:7"
+          },
+          "from": {
+            "$ref": "#n:9"
+          },
+          "to": {
+            "$ref": "#n:0"
+          }
+        },
+        {
+          "$id": "r:8",
+          "type": {
+            "$ref": "#rt:8"
+          },
+          "from": {
+            "$ref": "#n:9"
+          },
+          "to": {
+            "$ref": "#n:4"
+          }
+        },
+        {
+          "$id": "r:9",
+          "type": {
+            "$ref": "#rt:9"
+          },
+          "from": {
+            "$ref": "#n:9"
+          },
+          "to": {
+            "$ref": "#n:7"
+          }
+        }
+      ],
+      "constraints": [
+        {
+          "$id": "c:0",
+          "name": "album",
+          "constraintType": "uniqueness",
+          "entityType": "node",
+          "nodeLabel": {
+            "$ref": "#nl:0"
+          },
+          "relationshipType": null,
+          "properties": [
+            {
+              "$ref": "#p:0_0"
+            }
+          ]
+        },
+        {
+          "$id": "c:1",
+          "name": "artist",
+          "constraintType": "uniqueness",
+          "entityType": "node",
+          "nodeLabel": {
+            "$ref": "#nl:1"
+          },
+          "relationshipType": null,
+          "properties": [
+            {
+              "$ref": "#p:1_0"
+            }
+          ]
+        },
+        {
+          "$id": "c:2",
+          "name": "customer",
+          "constraintType": "uniqueness",
+          "entityType": "node",
+          "nodeLabel": {
+            "$ref": "#nl:2"
+          },
+          "relationshipType": null,
+          "properties": [
+            {
+              "$ref": "#p:2_0"
+            }
+          ]
+        },
+        {
+          "$id": "c:3",
+          "name": "employee",
+          "constraintType": "uniqueness",
+          "entityType": "node",
+          "nodeLabel": {
+            "$ref": "#nl:3"
+          },
+          "relationshipType": null,
+          "properties": [
+            {
+              "$ref": "#p:3_0"
+            }
+          ]
+        },
+        {
+          "$id": "c:4",
+          "name": "genre",
+          "constraintType": "uniqueness",
+          "entityType": "node",
+          "nodeLabel": {
+            "$ref": "#nl:4"
+          },
+          "relationshipType": null,
+          "properties": [
+            {
+              "$ref": "#p:4_0"
+            }
+          ]
+        },
+        {
+          "$id": "c:5",
+          "name": "invoice",
+          "constraintType": "uniqueness",
+          "entityType": "node",
+          "nodeLabel": {
+            "$ref": "#nl:5"
+          },
+          "relationshipType": null,
+          "properties": [
+            {
+              "$ref": "#p:5_0"
+            }
+          ]
+        },
+        {
+          "$id": "c:6",
+          "name": "invoice_line",
+          "constraintType": "uniqueness",
+          "entityType": "node",
+          "nodeLabel": {
+            "$ref": "#nl:6"
+          },
+          "relationshipType": null,
+          "properties": [
+            {
+              "$ref": "#p:6_0"
+            }
+          ]
+        },
+        {
+          "$id": "c:7",
+          "name": "media_type",
+          "constraintType": "uniqueness",
+          "entityType": "node",
+          "nodeLabel": {
+            "$ref": "#nl:7"
+          },
+          "relationshipType": null,
+          "properties": [
+            {
+              "$ref": "#p:7_0"
+            }
+          ]
+        },
+        {
+          "$id": "c:8",
+          "name": "playlist",
+          "constraintType": "uniqueness",
+          "entityType": "node",
+          "nodeLabel": {
+            "$ref": "#nl:8"
+          },
+          "relationshipType": null,
+          "properties": [
+            {
+              "$ref": "#p:8_0"
+            }
+          ]
+        },
+        {
+          "$id": "c:9",
+          "name": "track",
+          "constraintType": "uniqueness",
+          "entityType": "node",
+          "nodeLabel": {
+            "$ref": "#nl:9"
+          },
+          "relationshipType": null,
+          "properties": [
+            {
+              "$ref": "#p:9_0"
+            }
+          ]
+        }
+      ],
+      "indexes": [
+        {
+          "$id": "i:0",
+          "name": "album",
+          "indexType": "default",
+          "entityType": "node",
+          "nodeLabel": {
+            "$ref": "#nl:0"
+          },
+          "relationshipType": null,
+          "properties": [
+            {
+              "$ref": "#p:0_0"
+            }
+          ]
+        },
+        {
+          "$id": "i:1",
+          "name": "artist",
+          "indexType": "default",
+          "entityType": "node",
+          "nodeLabel": {
+            "$ref": "#nl:1"
+          },
+          "relationshipType": null,
+          "properties": [
+            {
+              "$ref": "#p:1_0"
+            }
+          ]
+        },
+        {
+          "$id": "i:2",
+          "name": "customer",
+          "indexType": "default",
+          "entityType": "node",
+          "nodeLabel": {
+            "$ref": "#nl:2"
+          },
+          "relationshipType": null,
+          "properties": [
+            {
+              "$ref": "#p:2_0"
+            }
+          ]
+        },
+        {
+          "$id": "i:3",
+          "name": "employee",
+          "indexType": "default",
+          "entityType": "node",
+          "nodeLabel": {
+            "$ref": "#nl:3"
+          },
+          "relationshipType": null,
+          "properties": [
+            {
+              "$ref": "#p:3_0"
+            }
+          ]
+        },
+        {
+          "$id": "i:4",
+          "name": "genre",
+          "indexType": "default",
+          "entityType": "node",
+          "nodeLabel": {
+            "$ref": "#nl:4"
+          },
+          "relationshipType": null,
+          "properties": [
+            {
+              "$ref": "#p:4_0"
+            }
+          ]
+        },
+        {
+          "$id": "i:5",
+          "name": "invoice",
+          "indexType": "default",
+          "entityType": "node",
+          "nodeLabel": {
+            "$ref": "#nl:5"
+          },
+          "relationshipType": null,
+          "properties": [
+            {
+              "$ref": "#p:5_0"
+            }
+          ]
+        },
+        {
+          "$id": "i:6",
+          "name": "invoice_line",
+          "indexType": "default",
+          "entityType": "node",
+          "nodeLabel": {
+            "$ref": "#nl:6"
+          },
+          "relationshipType": null,
+          "properties": [
+            {
+              "$ref": "#p:6_0"
+            }
+          ]
+        },
+        {
+          "$id": "i:7",
+          "name": "media_type",
+          "indexType": "default",
+          "entityType": "node",
+          "nodeLabel": {
+            "$ref": "#nl:7"
+          },
+          "relationshipType": null,
+          "properties": [
+            {
+              "$ref": "#p:7_0"
+            }
+          ]
+        },
+        {
+          "$id": "i:8",
+          "name": "playlist",
+          "indexType": "default",
+          "entityType": "node",
+          "nodeLabel": {
+            "$ref": "#nl:8"
+          },
+          "relationshipType": null,
+          "properties": [
+            {
+              "$ref": "#p:8_0"
+            }
+          ]
+        },
+        {
+          "$id": "i:9",
+          "name": "track",
+          "indexType": "default",
+          "entityType": "node",
+          "nodeLabel": {
+            "$ref": "#nl:9"
+          },
+          "relationshipType": null,
+          "properties": [
+            {
+              "$ref": "#p:9_0"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "graphSchemaExtensionsRepresentation": {
+    "nodeKeyProperties": [
+      {
+        "node": {
+          "$ref": "#n:0"
+        },
+        "keyProperties": [
+          {
+            "$ref": "#p:0_0"
+          }
+        ]
+      },
+      {
+        "node": {
+          "$ref": "#n:1"
+        },
+        "keyProperties": [
+          {
+            "$ref": "#p:1_0"
+          }
+        ]
+      },
+      {
+        "node": {
+          "$ref": "#n:2"
+        },
+        "keyProperties": [
+          {
+            "$ref": "#p:2_0"
+          }
+        ]
+      },
+      {
+        "node": {
+          "$ref": "#n:3"
+        },
+        "keyProperties": [
+          {
+            "$ref": "#p:3_0"
+          }
+        ]
+      },
+      {
+        "node": {
+          "$ref": "#n:4"
+        },
+        "keyProperties": [
+          {
+            "$ref": "#p:4_0"
+          }
+        ]
+      },
+      {
+        "node": {
+          "$ref": "#n:5"
+        },
+        "keyProperties": [
+          {
+            "$ref": "#p:5_0"
+          }
+        ]
+      },
+      {
+        "node": {
+          "$ref": "#n:6"
+        },
+        "keyProperties": [
+          {
+            "$ref": "#p:6_0"
+          }
+        ]
+      },
+      {
+        "node": {
+          "$ref": "#n:7"
+        },
+        "keyProperties": [
+          {
+            "$ref": "#p:7_0"
+          }
+        ]
+      },
+      {
+        "node": {
+          "$ref": "#n:8"
+        },
+        "keyProperties": [
+          {
+            "$ref": "#p:8_0"
+          }
+        ]
+      },
+      {
+        "node": {
+          "$ref": "#n:9"
+        },
+        "keyProperties": [
+          {
+            "$ref": "#p:9_0"
+          }
+        ]
+      }
+    ]
+  },
+  "graphMappingRepresentation": {
+    "dataSourceSchema": {
+      "type": "cloud",
+      "tableSchemas": [
+        {
+          "name": "album",
+          "fields": [
+            {
+              "name": "album_id",
+              "rawType": "INT",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "title",
+              "rawType": "VARCHAR",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "artist_id",
+              "rawType": "INT",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            }
+          ],
+          "primaryKeys": [
+            "album_id"
+          ],
+          "foreignKeys": [
+            {
+              "referencedTable": "artist",
+              "fields": [
+                {
+                  "field": "artist_id",
+                  "referencedField": "artist_id"
+                }
+              ]
+            }
+          ],
+          "expanded": true
+        },
+        {
+          "name": "artist",
+          "fields": [
+            {
+              "name": "artist_id",
+              "rawType": "INT",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "name",
+              "rawType": "VARCHAR",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            }
+          ],
+          "primaryKeys": [
+            "artist_id"
+          ],
+          "foreignKeys": [],
+          "expanded": true
+        },
+        {
+          "name": "customer",
+          "fields": [
+            {
+              "name": "customer_id",
+              "rawType": "INT",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "first_name",
+              "rawType": "VARCHAR",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "last_name",
+              "rawType": "VARCHAR",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "company",
+              "rawType": "VARCHAR",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "address",
+              "rawType": "VARCHAR",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "city",
+              "rawType": "VARCHAR",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "state",
+              "rawType": "VARCHAR",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "country",
+              "rawType": "VARCHAR",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "postal_code",
+              "rawType": "VARCHAR",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "phone",
+              "rawType": "VARCHAR",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "fax",
+              "rawType": "VARCHAR",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "email",
+              "rawType": "VARCHAR",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "support_rep_id",
+              "rawType": "INT",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            }
+          ],
+          "primaryKeys": [
+            "customer_id"
+          ],
+          "foreignKeys": [
+            {
+              "referencedTable": "employee",
+              "fields": [
+                {
+                  "field": "support_rep_id",
+                  "referencedField": "employee_id"
+                }
+              ]
+            }
+          ],
+          "expanded": true
+        },
+        {
+          "name": "employee",
+          "fields": [
+            {
+              "name": "employee_id",
+              "rawType": "INT",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "last_name",
+              "rawType": "VARCHAR",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "first_name",
+              "rawType": "VARCHAR",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "title",
+              "rawType": "VARCHAR",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "reports_to",
+              "rawType": "INT",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "birth_date",
+              "rawType": "DATETIME",
+              "recommendedType": {
+                "type": "datetime"
+              },
+              "supportedTypes": [
+                {
+                  "type": "date"
+                },
+                {
+                  "type": "datetime"
+                },
+                {
+                  "type": "time"
+                },
+                {
+                  "type": "localtime"
+                },
+                {
+                  "type": "localdatetime"
+                }
+              ]
+            },
+            {
+              "name": "hire_date",
+              "rawType": "DATETIME",
+              "recommendedType": {
+                "type": "datetime"
+              },
+              "supportedTypes": [
+                {
+                  "type": "date"
+                },
+                {
+                  "type": "datetime"
+                },
+                {
+                  "type": "time"
+                },
+                {
+                  "type": "localtime"
+                },
+                {
+                  "type": "localdatetime"
+                }
+              ]
+            },
+            {
+              "name": "address",
+              "rawType": "VARCHAR",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "city",
+              "rawType": "VARCHAR",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "state",
+              "rawType": "VARCHAR",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "country",
+              "rawType": "VARCHAR",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "postal_code",
+              "rawType": "VARCHAR",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "phone",
+              "rawType": "VARCHAR",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "fax",
+              "rawType": "VARCHAR",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "email",
+              "rawType": "VARCHAR",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            }
+          ],
+          "primaryKeys": [
+            "employee_id"
+          ],
+          "foreignKeys": [
+            {
+              "referencedTable": "employee",
+              "fields": [
+                {
+                  "field": "reports_to",
+                  "referencedField": "employee_id"
+                }
+              ]
+            }
+          ],
+          "expanded": true
+        },
+        {
+          "name": "genre",
+          "fields": [
+            {
+              "name": "genre_id",
+              "rawType": "INT",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "name",
+              "rawType": "VARCHAR",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            }
+          ],
+          "primaryKeys": [
+            "genre_id"
+          ],
+          "foreignKeys": [],
+          "expanded": true
+        },
+        {
+          "name": "invoice",
+          "fields": [
+            {
+              "name": "invoice_id",
+              "rawType": "INT",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "customer_id",
+              "rawType": "INT",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "invoice_date",
+              "rawType": "TIMESTAMP",
+              "recommendedType": {
+                "type": "datetime"
+              },
+              "supportedTypes": [
+                {
+                  "type": "date"
+                },
+                {
+                  "type": "datetime"
+                },
+                {
+                  "type": "time"
+                },
+                {
+                  "type": "localtime"
+                },
+                {
+                  "type": "localdatetime"
+                }
+              ]
+            },
+            {
+              "name": "billing_address",
+              "rawType": "VARCHAR",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "billing_city",
+              "rawType": "VARCHAR",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "billing_state",
+              "rawType": "VARCHAR",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "billing_country",
+              "rawType": "VARCHAR",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "billing_postal_code",
+              "rawType": "VARCHAR",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "total",
+              "rawType": "DECIMAL",
+              "recommendedType": {
+                "type": "float"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            }
+          ],
+          "primaryKeys": [
+            "invoice_id"
+          ],
+          "foreignKeys": [
+            {
+              "referencedTable": "customer",
+              "fields": [
+                {
+                  "field": "customer_id",
+                  "referencedField": "customer_id"
+                }
+              ]
+            }
+          ],
+          "expanded": true
+        },
+        {
+          "name": "invoice_line",
+          "fields": [
+            {
+              "name": "invoice_line_id",
+              "rawType": "INT",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "invoice_id",
+              "rawType": "INT",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "track_id",
+              "rawType": "INT",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "unit_price",
+              "rawType": "DECIMAL",
+              "recommendedType": {
+                "type": "float"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "quantity",
+              "rawType": "INT",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            }
+          ],
+          "primaryKeys": [
+            "invoice_line_id"
+          ],
+          "foreignKeys": [
+            {
+              "referencedTable": "invoice",
+              "fields": [
+                {
+                  "field": "invoice_id",
+                  "referencedField": "invoice_id"
+                }
+              ]
+            },
+            {
+              "referencedTable": "track",
+              "fields": [
+                {
+                  "field": "track_id",
+                  "referencedField": "track_id"
+                }
+              ]
+            }
+          ],
+          "expanded": true
+        },
+        {
+          "name": "media_type",
+          "fields": [
+            {
+              "name": "media_type_id",
+              "rawType": "INT",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "name",
+              "rawType": "VARCHAR",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            }
+          ],
+          "primaryKeys": [
+            "media_type_id"
+          ],
+          "foreignKeys": [],
+          "expanded": true
+        },
+        {
+          "name": "playlist",
+          "fields": [
+            {
+              "name": "playlist_id",
+              "rawType": "INT",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "name",
+              "rawType": "VARCHAR",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            }
+          ],
+          "primaryKeys": [
+            "playlist_id"
+          ],
+          "foreignKeys": [],
+          "expanded": true
+        },
+        {
+          "name": "playlist_track",
+          "fields": [
+            {
+              "name": "playlist_id",
+              "rawType": "INT",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "track_id",
+              "rawType": "INT",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            }
+          ],
+          "primaryKeys": [
+            "playlist_id",
+            "track_id"
+          ],
+          "foreignKeys": [
+            {
+              "referencedTable": "playlist",
+              "fields": [
+                {
+                  "field": "playlist_id",
+                  "referencedField": "playlist_id"
+                }
+              ]
+            },
+            {
+              "referencedTable": "track",
+              "fields": [
+                {
+                  "field": "track_id",
+                  "referencedField": "track_id"
+                }
+              ]
+            }
+          ],
+          "expanded": true
+        },
+        {
+          "name": "track",
+          "fields": [
+            {
+              "name": "track_id",
+              "rawType": "INT",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "name",
+              "rawType": "VARCHAR",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "album_id",
+              "rawType": "INT",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "media_type_id",
+              "rawType": "INT",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "genre_id",
+              "rawType": "INT",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "composer",
+              "rawType": "VARCHAR",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "milliseconds",
+              "rawType": "INT",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "bytes",
+              "rawType": "INT",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "unit_price",
+              "rawType": "DECIMAL",
+              "recommendedType": {
+                "type": "float"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            }
+          ],
+          "primaryKeys": [
+            "track_id"
+          ],
+          "foreignKeys": [
+            {
+              "referencedTable": "album",
+              "fields": [
+                {
+                  "field": "album_id",
+                  "referencedField": "album_id"
+                }
+              ]
+            },
+            {
+              "referencedTable": "genre",
+              "fields": [
+                {
+                  "field": "genre_id",
+                  "referencedField": "genre_id"
+                }
+              ]
+            },
+            {
+              "referencedTable": "media_type",
+              "fields": [
+                {
+                  "field": "media_type_id",
+                  "referencedField": "media_type_id"
+                }
+              ]
+            }
+          ],
+          "expanded": true
+        }
+      ]
+    },
+    "nodeMappings": [
+      {
+        "node": {
+          "$ref": "#n:0"
+        },
+        "tableName": "album",
+        "propertyMappings": [
+          {
+            "property": {
+              "$ref": "#p:0_0"
+            },
+            "fieldName": "album_id"
+          },
+          {
+            "property": {
+              "$ref": "#p:0_1"
+            },
+            "fieldName": "title"
+          }
+        ]
+      },
+      {
+        "node": {
+          "$ref": "#n:1"
+        },
+        "tableName": "artist",
+        "propertyMappings": [
+          {
+            "property": {
+              "$ref": "#p:1_0"
+            },
+            "fieldName": "artist_id"
+          },
+          {
+            "property": {
+              "$ref": "#p:1_1"
+            },
+            "fieldName": "name"
+          }
+        ]
+      },
+      {
+        "node": {
+          "$ref": "#n:2"
+        },
+        "tableName": "customer",
+        "propertyMappings": [
+          {
+            "property": {
+              "$ref": "#p:2_0"
+            },
+            "fieldName": "customer_id"
+          },
+          {
+            "property": {
+              "$ref": "#p:2_1"
+            },
+            "fieldName": "first_name"
+          },
+          {
+            "property": {
+              "$ref": "#p:2_2"
+            },
+            "fieldName": "last_name"
+          },
+          {
+            "property": {
+              "$ref": "#p:2_3"
+            },
+            "fieldName": "company"
+          },
+          {
+            "property": {
+              "$ref": "#p:2_4"
+            },
+            "fieldName": "address"
+          },
+          {
+            "property": {
+              "$ref": "#p:2_5"
+            },
+            "fieldName": "city"
+          },
+          {
+            "property": {
+              "$ref": "#p:2_6"
+            },
+            "fieldName": "state"
+          },
+          {
+            "property": {
+              "$ref": "#p:2_7"
+            },
+            "fieldName": "country"
+          },
+          {
+            "property": {
+              "$ref": "#p:2_8"
+            },
+            "fieldName": "postal_code"
+          },
+          {
+            "property": {
+              "$ref": "#p:2_9"
+            },
+            "fieldName": "phone"
+          },
+          {
+            "property": {
+              "$ref": "#p:2_10"
+            },
+            "fieldName": "fax"
+          },
+          {
+            "property": {
+              "$ref": "#p:2_11"
+            },
+            "fieldName": "email"
+          }
+        ]
+      },
+      {
+        "node": {
+          "$ref": "#n:3"
+        },
+        "tableName": "employee",
+        "propertyMappings": [
+          {
+            "property": {
+              "$ref": "#p:3_0"
+            },
+            "fieldName": "employee_id"
+          },
+          {
+            "property": {
+              "$ref": "#p:3_1"
+            },
+            "fieldName": "last_name"
+          },
+          {
+            "property": {
+              "$ref": "#p:3_2"
+            },
+            "fieldName": "first_name"
+          },
+          {
+            "property": {
+              "$ref": "#p:3_3"
+            },
+            "fieldName": "title"
+          },
+          {
+            "property": {
+              "$ref": "#p:3_5"
+            },
+            "fieldName": "birth_date"
+          },
+          {
+            "property": {
+              "$ref": "#p:3_6"
+            },
+            "fieldName": "hire_date"
+          },
+          {
+            "property": {
+              "$ref": "#p:3_7"
+            },
+            "fieldName": "address"
+          },
+          {
+            "property": {
+              "$ref": "#p:3_8"
+            },
+            "fieldName": "city"
+          },
+          {
+            "property": {
+              "$ref": "#p:3_9"
+            },
+            "fieldName": "state"
+          },
+          {
+            "property": {
+              "$ref": "#p:3_10"
+            },
+            "fieldName": "country"
+          },
+          {
+            "property": {
+              "$ref": "#p:3_11"
+            },
+            "fieldName": "postal_code"
+          },
+          {
+            "property": {
+              "$ref": "#p:3_12"
+            },
+            "fieldName": "phone"
+          },
+          {
+            "property": {
+              "$ref": "#p:3_13"
+            },
+            "fieldName": "fax"
+          },
+          {
+            "property": {
+              "$ref": "#p:3_14"
+            },
+            "fieldName": "email"
+          }
+        ]
+      },
+      {
+        "node": {
+          "$ref": "#n:4"
+        },
+        "tableName": "genre",
+        "propertyMappings": [
+          {
+            "property": {
+              "$ref": "#p:4_0"
+            },
+            "fieldName": "genre_id"
+          },
+          {
+            "property": {
+              "$ref": "#p:4_1"
+            },
+            "fieldName": "name"
+          }
+        ]
+      },
+      {
+        "node": {
+          "$ref": "#n:5"
+        },
+        "tableName": "invoice",
+        "propertyMappings": [
+          {
+            "property": {
+              "$ref": "#p:5_0"
+            },
+            "fieldName": "invoice_id"
+          },
+          {
+            "property": {
+              "$ref": "#p:5_2"
+            },
+            "fieldName": "invoice_date"
+          },
+          {
+            "property": {
+              "$ref": "#p:5_3"
+            },
+            "fieldName": "billing_address"
+          },
+          {
+            "property": {
+              "$ref": "#p:5_4"
+            },
+            "fieldName": "billing_city"
+          },
+          {
+            "property": {
+              "$ref": "#p:5_5"
+            },
+            "fieldName": "billing_state"
+          },
+          {
+            "property": {
+              "$ref": "#p:5_6"
+            },
+            "fieldName": "billing_country"
+          },
+          {
+            "property": {
+              "$ref": "#p:5_7"
+            },
+            "fieldName": "billing_postal_code"
+          },
+          {
+            "property": {
+              "$ref": "#p:5_8"
+            },
+            "fieldName": "total"
+          }
+        ]
+      },
+      {
+        "node": {
+          "$ref": "#n:6"
+        },
+        "tableName": "invoice_line",
+        "propertyMappings": [
+          {
+            "property": {
+              "$ref": "#p:6_0"
+            },
+            "fieldName": "invoice_line_id"
+          },
+          {
+            "property": {
+              "$ref": "#p:6_3"
+            },
+            "fieldName": "unit_price"
+          },
+          {
+            "property": {
+              "$ref": "#p:6_4"
+            },
+            "fieldName": "quantity"
+          }
+        ]
+      },
+      {
+        "node": {
+          "$ref": "#n:7"
+        },
+        "tableName": "media_type",
+        "propertyMappings": [
+          {
+            "property": {
+              "$ref": "#p:7_0"
+            },
+            "fieldName": "media_type_id"
+          },
+          {
+            "property": {
+              "$ref": "#p:7_1"
+            },
+            "fieldName": "name"
+          }
+        ]
+      },
+      {
+        "node": {
+          "$ref": "#n:8"
+        },
+        "tableName": "playlist",
+        "propertyMappings": [
+          {
+            "property": {
+              "$ref": "#p:8_0"
+            },
+            "fieldName": "playlist_id"
+          },
+          {
+            "property": {
+              "$ref": "#p:8_1"
+            },
+            "fieldName": "name"
+          }
+        ]
+      },
+      {
+        "node": {
+          "$ref": "#n:9"
+        },
+        "tableName": "track",
+        "propertyMappings": [
+          {
+            "property": {
+              "$ref": "#p:9_0"
+            },
+            "fieldName": "track_id"
+          },
+          {
+            "property": {
+              "$ref": "#p:9_1"
+            },
+            "fieldName": "name"
+          },
+          {
+            "property": {
+              "$ref": "#p:9_5"
+            },
+            "fieldName": "composer"
+          },
+          {
+            "property": {
+              "$ref": "#p:9_6"
+            },
+            "fieldName": "milliseconds"
+          },
+          {
+            "property": {
+              "$ref": "#p:9_7"
+            },
+            "fieldName": "bytes"
+          },
+          {
+            "property": {
+              "$ref": "#p:9_8"
+            },
+            "fieldName": "unit_price"
+          }
+        ]
+      }
+    ],
+    "relationshipMappings": [
+      {
+        "relationship": {
+          "$ref": "#r:0"
+        },
+        "tableName": "album",
+        "fromMappings": {
+          "#p:0_0": "album_id"
+        },
+        "toMappings": {
+          "#p:1_0": "artist_id"
+        },
+        "propertyMappings": []
+      },
+      {
+        "relationship": {
+          "$ref": "#r:1"
+        },
+        "tableName": "customer",
+        "fromMappings": {
+          "#p:2_0": "customer_id"
+        },
+        "toMappings": {
+          "#p:3_0": "support_rep_id"
+        },
+        "propertyMappings": []
+      },
+      {
+        "relationship": {
+          "$ref": "#r:2"
+        },
+        "tableName": "employee",
+        "fromMappings": {
+          "#p:3_0": "employee_id"
+        },
+        "toMappings": {
+          "#p:3_0": "reports_to"
+        },
+        "propertyMappings": []
+      },
+      {
+        "relationship": {
+          "$ref": "#r:3"
+        },
+        "tableName": "invoice",
+        "fromMappings": {
+          "#p:5_0": "invoice_id"
+        },
+        "toMappings": {
+          "#p:2_0": "customer_id"
+        },
+        "propertyMappings": []
+      },
+      {
+        "relationship": {
+          "$ref": "#r:4"
+        },
+        "tableName": "invoice_line",
+        "fromMappings": {
+          "#p:6_0": "invoice_line_id"
+        },
+        "toMappings": {
+          "#p:5_0": "invoice_id"
+        },
+        "propertyMappings": []
+      },
+      {
+        "relationship": {
+          "$ref": "#r:5"
+        },
+        "tableName": "invoice_line",
+        "fromMappings": {
+          "#p:6_0": "invoice_line_id"
+        },
+        "toMappings": {
+          "#p:9_0": "track_id"
+        },
+        "propertyMappings": []
+      },
+      {
+        "relationship": {
+          "$ref": "#r:6"
+        },
+        "tableName": "playlist_track",
+        "fromMappings": {
+          "#p:8_0": "playlist_id"
+        },
+        "toMappings": {
+          "#p:9_0": "track_id"
+        },
+        "propertyMappings": []
+      },
+      {
+        "relationship": {
+          "$ref": "#r:7"
+        },
+        "tableName": "track",
+        "fromMappings": {
+          "#p:9_0": "track_id"
+        },
+        "toMappings": {
+          "#p:0_0": "album_id"
+        },
+        "propertyMappings": []
+      },
+      {
+        "relationship": {
+          "$ref": "#r:8"
+        },
+        "tableName": "track",
+        "fromMappings": {
+          "#p:9_0": "track_id"
+        },
+        "toMappings": {
+          "#p:4_0": "genre_id"
+        },
+        "propertyMappings": []
+      },
+      {
+        "relationship": {
+          "$ref": "#r:9"
+        },
+        "tableName": "track",
+        "fromMappings": {
+          "#p:9_0": "track_id"
+        },
+        "toMappings": {
+          "#p:7_0": "media_type_id"
+        },
+        "propertyMappings": []
+      }
+    ]
+  },
+  "configurations": {
+    "idsToIgnore": []
+  }
+}

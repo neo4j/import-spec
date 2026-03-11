@@ -25,4 +25,5 @@ object IndexType {
     const val RANGE = "RANGE"
     const val TEXT = "TEXT"
     const val VECTOR = "VECTOR"
+    const val LOOKUP = "LOOKUP"
 }

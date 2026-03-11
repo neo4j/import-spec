@@ -16,10 +16,21 @@
  */
 package codec.schema
 
-data class SchemaMap(val content: MutableMap<String, SchemaElement>, val path: String = "") :
+import kotlin.collections.component1
+import kotlin.collections.component2
+import kotlin.collections.iterator
+
+data class SchemaMap(val content: MutableMap<String, SchemaElement> = mutableMapOf(), override val path: String = "") :
     SchemaElement,
-    MutableMap<String, SchemaElement> by content {
+    Map<String, SchemaElement> by content {
     override fun equals(other: Any?): Boolean = content == other
+
+    override fun repath(newPath: String) = SchemaMap(
+        content.map { (key, element) -> key to element.repath("$newPath.$key") }.toMap().toMutableMap(),
+        newPath
+    )
+
+    constructor(content: MutableMap<String, out SchemaElement>) : this(content as MutableMap<String, SchemaElement>)
 
     override fun hashCode(): Int = content.hashCode()
 
@@ -36,32 +47,74 @@ data class SchemaMap(val content: MutableMap<String, SchemaElement>, val path: S
         }
     )
 
+    operator fun set(key: String, value: Boolean) {
+        content[key] = SchemaLiteral(value.toString(), path(key))
+    }
+
     operator fun set(key: String, value: String) {
-        content[key] = SchemaLiteral(value)
+        content[key] = SchemaLiteral(value, path(key))
+    }
+
+    operator fun set(key: String, value: Map<String, SchemaElement>) {
+        put(key, SchemaMap(value.toMutableMap()))
+    }
+
+    operator fun set(key: String, value: List<SchemaElement>) {
+        put(key, SchemaList(value.toMutableList()))
     }
 
     operator fun set(key: String, value: SchemaElement) {
-        content[key] = value
+        put(key, value)
+    }
+
+    operator fun set(key: String, value: SchemaMap) {
+        put(key, value)
+    }
+
+    operator fun set(key: String, value: SchemaList) {
+        put(key, value)
+    }
+
+    operator fun set(key: String, value: SchemaLiteral) {
+        put(key, value)
+    }
+
+    fun remove(key: String) = content.remove(key)
+
+    fun removeMap(key: String): SchemaMap {
+        val map = content.remove(key) ?: error("Expected map, found nothing at ${path(key)}")
+        return map as? SchemaMap ?: error("Expected map, found invalid type ${map::class.simpleName} at ${path(key)}")
+    }
+
+    fun put(key: String, value: SchemaElement): SchemaElement? = content.put(key, value.repath(path(key)))
+
+    fun putAll(from: Map<out String, SchemaElement>) {
+        for ((key, value) in from) {
+            put(key, value)
+        }
     }
 
     fun list(key: String): SchemaList {
-        val list = content[key] ?: error("Missing required list at $path.$key")
-        return list as? SchemaList ?: error("Expected list, found invalid type ${list::class.simpleName} at $path.$key")
+        val list = content[key] ?: error("Missing required list at ${path(key)}")
+        return list as? SchemaList
+            ?: error("Expected list, found invalid type ${list::class.simpleName} at ${path(key)}")
     }
 
     fun listOrNull(key: String): SchemaList? = content[key]?.let { it as? SchemaList }
 
     fun map(key: String): SchemaMap {
-        val map = content[key] ?: error("Missing required map at $path.$key")
-        return map as? SchemaMap ?: error("Expected map, found invalid type ${map::class.simpleName} at $path.$key")
+        val map = content[key] ?: error("Missing required map at ${path(key)}")
+        return map as? SchemaMap ?: error("Expected map, found invalid type ${map::class.simpleName} at ${path(key)}")
     }
 
     fun mapOrNull(key: String): SchemaMap? = content[key]?.let { it as? SchemaMap }
 
+    fun mapOrPut(key: String): SchemaMap = content.getOrPut(key) { SchemaMap(path = path(key)) } as SchemaMap
+
     fun literal(key: String): SchemaLiteral {
-        val literal = content[key] ?: error("Missing required literal at $path.$key")
+        val literal = content[key] ?: error("Missing required literal at ${path(key)}")
         return literal as? SchemaLiteral
-            ?: error("Expected literal, found invalid type ${literal::class.simpleName} at $path.$key")
+            ?: error("Expected literal, found invalid type ${literal::class.simpleName} at ${path(key)}")
     }
 
     fun literalOrNull(key: String) = content[key]?.let { it as? SchemaLiteral }
@@ -79,12 +132,12 @@ data class SchemaMap(val content: MutableMap<String, SchemaElement>, val path: S
     fun intOrNull(key: String) = stringOrNull(key)?.toIntOrNull()
 
     fun mapOfMaps(key: String): Map<String, SchemaMap> {
-        val map = content[key] ?: error("Missing required map at $path.$key")
+        val map = content[key] ?: error("Missing required map at ${path(key)}")
         val schemaMap =
-            map as? SchemaMap ?: error("Expected map, found invalid type ${map::class.simpleName} at $path.$key")
+            map as? SchemaMap ?: error("Expected map, found invalid type ${map::class.simpleName} at ${path(key)}")
         return schemaMap.content.map { (key, element) ->
             val child = element as? SchemaMap
-                ?: error("Expected map, found invalid type ${map::class.simpleName} at $path.$key")
+                ?: error("Expected map, found invalid type ${map::class.simpleName} at ${path(key)}")
             key to child
         }.toMap()
     }
@@ -98,9 +151,9 @@ data class SchemaMap(val content: MutableMap<String, SchemaElement>, val path: S
     }
 
     fun listOfMaps(key: String): List<SchemaMap> {
-        val list = content[key] ?: error("Missing required list at $path.$key")
+        val list = content[key] ?: error("Missing required list at ${path(key)}")
         val schemaList =
-            list as? SchemaList ?: error("Expected list, found invalid type ${list::class.simpleName} at $path.$key")
+            list as? SchemaList ?: error("Expected list, found invalid type ${list::class.simpleName} at ${path(key)}")
         return schemaList.content.mapIndexed { index, element ->
             element as? SchemaMap
                 ?: error("Expected map, found invalid type ${list::class.simpleName} at $path[$index].$key")
@@ -114,10 +167,12 @@ data class SchemaMap(val content: MutableMap<String, SchemaElement>, val path: S
         }
         return list
     }
+
+    private fun path(key: String): String = if (path.isEmpty()) key else "$path.$key"
 }
 
 fun schemaMapOf(vararg pairs: Pair<String, SchemaElement?>) = SchemaMap(
     pairs
         .filter { it.second != null }
-        .associate { it.first to it.second!! }.toMutableMap()
+        .associate { it.first to it.second!!.repath(it.first) }.toMutableMap()
 )

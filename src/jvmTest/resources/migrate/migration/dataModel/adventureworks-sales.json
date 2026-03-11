@@ -1,0 +1,5983 @@
+{
+  "version": "3.0.0",
+  "graphSchemaRepresentation": {
+    "version": "1.0.0",
+    "graphSchema": {
+      "nodeLabels": [
+        {
+          "$id": "nl:0",
+          "token": "creditcard",
+          "properties": [
+            {
+              "$id": "p:0_0",
+              "token": "creditcardid",
+              "type": {
+                "type": "integer"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:0_1",
+              "token": "cardtype",
+              "type": {
+                "type": "string"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:0_2",
+              "token": "cardnumber",
+              "type": {
+                "type": "string"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:0_3",
+              "token": "expmonth",
+              "type": {
+                "type": "integer"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:0_4",
+              "token": "expyear",
+              "type": {
+                "type": "integer"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:0_5",
+              "token": "modifieddate",
+              "type": {
+                "type": "datetime"
+              },
+              "nullable": false
+            }
+          ]
+        },
+        {
+          "$id": "nl:1",
+          "token": "currency",
+          "properties": [
+            {
+              "$id": "p:1_0",
+              "token": "currencycode",
+              "type": {
+                "type": "string"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:1_2",
+              "token": "modifieddate",
+              "type": {
+                "type": "datetime"
+              },
+              "nullable": false
+            }
+          ]
+        },
+        {
+          "$id": "nl:2",
+          "token": "currencyrate",
+          "properties": [
+            {
+              "$id": "p:2_0",
+              "token": "currencyrateid",
+              "type": {
+                "type": "integer"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:2_1",
+              "token": "currencyratedate",
+              "type": {
+                "type": "datetime"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:2_4",
+              "token": "averagerate",
+              "type": {
+                "type": "float"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:2_5",
+              "token": "endofdayrate",
+              "type": {
+                "type": "float"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:2_6",
+              "token": "modifieddate",
+              "type": {
+                "type": "datetime"
+              },
+              "nullable": false
+            }
+          ]
+        },
+        {
+          "$id": "nl:3",
+          "token": "customer",
+          "properties": [
+            {
+              "$id": "p:3_0",
+              "token": "customerid",
+              "type": {
+                "type": "integer"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:3_4",
+              "token": "rowguid",
+              "type": {
+                "type": "string"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:3_5",
+              "token": "modifieddate",
+              "type": {
+                "type": "datetime"
+              },
+              "nullable": false
+            }
+          ]
+        },
+        {
+          "$id": "nl:4",
+          "token": "salesorderheader",
+          "properties": [
+            {
+              "$id": "p:4_0",
+              "token": "salesorderid",
+              "type": {
+                "type": "integer"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:4_1",
+              "token": "revisionnumber",
+              "type": {
+                "type": "integer"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:4_2",
+              "token": "orderdate",
+              "type": {
+                "type": "datetime"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:4_3",
+              "token": "duedate",
+              "type": {
+                "type": "datetime"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:4_4",
+              "token": "shipdate",
+              "type": {
+                "type": "datetime"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:4_5",
+              "token": "status",
+              "type": {
+                "type": "integer"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:4_16",
+              "token": "creditcardapprovalcode",
+              "type": {
+                "type": "string"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:4_18",
+              "token": "subtotal",
+              "type": {
+                "type": "float"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:4_19",
+              "token": "taxamt",
+              "type": {
+                "type": "float"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:4_20",
+              "token": "freight",
+              "type": {
+                "type": "float"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:4_21",
+              "token": "totaldue",
+              "type": {
+                "type": "float"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:4_22",
+              "token": "comment",
+              "type": {
+                "type": "string"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:4_23",
+              "token": "rowguid",
+              "type": {
+                "type": "string"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:4_24",
+              "token": "modifieddate",
+              "type": {
+                "type": "datetime"
+              },
+              "nullable": false
+            }
+          ]
+        },
+        {
+          "$id": "nl:5",
+          "token": "salesperson",
+          "properties": [
+            {
+              "$id": "p:5_0",
+              "token": "businessentityid",
+              "type": {
+                "type": "integer"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:5_2",
+              "token": "salesquota",
+              "type": {
+                "type": "float"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:5_3",
+              "token": "bonus",
+              "type": {
+                "type": "float"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:5_4",
+              "token": "commissionpct",
+              "type": {
+                "type": "float"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:5_5",
+              "token": "salesytd",
+              "type": {
+                "type": "float"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:5_6",
+              "token": "saleslastyear",
+              "type": {
+                "type": "float"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:5_7",
+              "token": "rowguid",
+              "type": {
+                "type": "string"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:5_8",
+              "token": "modifieddate",
+              "type": {
+                "type": "datetime"
+              },
+              "nullable": false
+            }
+          ]
+        },
+        {
+          "$id": "nl:6",
+          "token": "salesreason",
+          "properties": [
+            {
+              "$id": "p:6_0",
+              "token": "salesreasonid",
+              "type": {
+                "type": "integer"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:6_3",
+              "token": "modifieddate",
+              "type": {
+                "type": "datetime"
+              },
+              "nullable": false
+            }
+          ]
+        },
+        {
+          "$id": "nl:7",
+          "token": "salestaxrate",
+          "properties": [
+            {
+              "$id": "p:7_0",
+              "token": "salestaxrateid",
+              "type": {
+                "type": "integer"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:7_2",
+              "token": "taxtype",
+              "type": {
+                "type": "integer"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:7_3",
+              "token": "taxrate",
+              "type": {
+                "type": "float"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:7_5",
+              "token": "rowguid",
+              "type": {
+                "type": "string"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:7_6",
+              "token": "modifieddate",
+              "type": {
+                "type": "datetime"
+              },
+              "nullable": false
+            }
+          ]
+        },
+        {
+          "$id": "nl:8",
+          "token": "salesterritory",
+          "properties": [
+            {
+              "$id": "p:8_0",
+              "token": "territoryid",
+              "type": {
+                "type": "integer"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:8_3",
+              "token": "group",
+              "type": {
+                "type": "string"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:8_4",
+              "token": "salesytd",
+              "type": {
+                "type": "float"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:8_5",
+              "token": "saleslastyear",
+              "type": {
+                "type": "float"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:8_6",
+              "token": "costytd",
+              "type": {
+                "type": "float"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:8_7",
+              "token": "costlastyear",
+              "type": {
+                "type": "float"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:8_8",
+              "token": "rowguid",
+              "type": {
+                "type": "string"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:8_9",
+              "token": "modifieddate",
+              "type": {
+                "type": "datetime"
+              },
+              "nullable": false
+            }
+          ]
+        },
+        {
+          "$id": "nl:9",
+          "token": "shoppingcartitem",
+          "properties": [
+            {
+              "$id": "p:9_0",
+              "token": "shoppingcartitemid",
+              "type": {
+                "type": "integer"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:9_1",
+              "token": "shoppingcartid",
+              "type": {
+                "type": "string"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:9_2",
+              "token": "quantity",
+              "type": {
+                "type": "integer"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:9_4",
+              "token": "datecreated",
+              "type": {
+                "type": "datetime"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:9_5",
+              "token": "modifieddate",
+              "type": {
+                "type": "datetime"
+              },
+              "nullable": false
+            }
+          ]
+        },
+        {
+          "$id": "nl:10",
+          "token": "specialoffer",
+          "properties": [
+            {
+              "$id": "p:10_0",
+              "token": "specialofferid",
+              "type": {
+                "type": "integer"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:10_1",
+              "token": "description",
+              "type": {
+                "type": "string"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:10_2",
+              "token": "discountpct",
+              "type": {
+                "type": "float"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:10_3",
+              "token": "type",
+              "type": {
+                "type": "string"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:10_4",
+              "token": "category",
+              "type": {
+                "type": "string"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:10_5",
+              "token": "startdate",
+              "type": {
+                "type": "datetime"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:10_6",
+              "token": "enddate",
+              "type": {
+                "type": "datetime"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:10_7",
+              "token": "minqty",
+              "type": {
+                "type": "integer"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:10_8",
+              "token": "maxqty",
+              "type": {
+                "type": "integer"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:10_9",
+              "token": "rowguid",
+              "type": {
+                "type": "string"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:10_10",
+              "token": "modifieddate",
+              "type": {
+                "type": "datetime"
+              },
+              "nullable": false
+            }
+          ]
+        },
+        {
+          "$id": "nl:11",
+          "token": "store",
+          "properties": [
+            {
+              "$id": "p:11_0",
+              "token": "businessentityid",
+              "type": {
+                "type": "integer"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:11_4",
+              "token": "rowguid",
+              "type": {
+                "type": "string"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:11_5",
+              "token": "modifieddate",
+              "type": {
+                "type": "datetime"
+              },
+              "nullable": false
+            }
+          ]
+        }
+      ],
+      "relationshipTypes": [
+        {
+          "$id": "rt:0",
+          "token": "SALESTERRITORY",
+          "properties": []
+        },
+        {
+          "$id": "rt:1",
+          "token": "STORE",
+          "properties": []
+        },
+        {
+          "$id": "rt:2",
+          "token": "CREDITCARD",
+          "properties": []
+        },
+        {
+          "$id": "rt:3",
+          "token": "CURRENCYRATE",
+          "properties": []
+        },
+        {
+          "$id": "rt:4",
+          "token": "CUSTOMER",
+          "properties": []
+        },
+        {
+          "$id": "rt:5",
+          "token": "SALESPERSON",
+          "properties": []
+        },
+        {
+          "$id": "rt:6",
+          "token": "SALESTERRITORY",
+          "properties": []
+        },
+        {
+          "$id": "rt:7",
+          "token": "SALESREASON",
+          "properties": [
+            {
+              "$id": "p:7_0",
+              "token": "modifieddate",
+              "type": {
+                "type": "datetime"
+              },
+              "nullable": false
+            }
+          ]
+        },
+        {
+          "$id": "rt:8",
+          "token": "SALESTERRITORY",
+          "properties": []
+        },
+        {
+          "$id": "rt:9",
+          "token": "SALESPERSON",
+          "properties": []
+        }
+      ],
+      "nodeObjectTypes": [
+        {
+          "$id": "n:0",
+          "labels": [
+            {
+              "$ref": "#nl:0"
+            }
+          ]
+        },
+        {
+          "$id": "n:1",
+          "labels": [
+            {
+              "$ref": "#nl:1"
+            }
+          ]
+        },
+        {
+          "$id": "n:2",
+          "labels": [
+            {
+              "$ref": "#nl:2"
+            }
+          ]
+        },
+        {
+          "$id": "n:3",
+          "labels": [
+            {
+              "$ref": "#nl:3"
+            }
+          ]
+        },
+        {
+          "$id": "n:4",
+          "labels": [
+            {
+              "$ref": "#nl:4"
+            }
+          ]
+        },
+        {
+          "$id": "n:5",
+          "labels": [
+            {
+              "$ref": "#nl:5"
+            }
+          ]
+        },
+        {
+          "$id": "n:6",
+          "labels": [
+            {
+              "$ref": "#nl:6"
+            }
+          ]
+        },
+        {
+          "$id": "n:7",
+          "labels": [
+            {
+              "$ref": "#nl:7"
+            }
+          ]
+        },
+        {
+          "$id": "n:8",
+          "labels": [
+            {
+              "$ref": "#nl:8"
+            }
+          ]
+        },
+        {
+          "$id": "n:9",
+          "labels": [
+            {
+              "$ref": "#nl:9"
+            }
+          ]
+        },
+        {
+          "$id": "n:10",
+          "labels": [
+            {
+              "$ref": "#nl:10"
+            }
+          ]
+        },
+        {
+          "$id": "n:11",
+          "labels": [
+            {
+              "$ref": "#nl:11"
+            }
+          ]
+        }
+      ],
+      "relationshipObjectTypes": [
+        {
+          "$id": "r:0",
+          "type": {
+            "$ref": "#rt:0"
+          },
+          "from": {
+            "$ref": "#n:3"
+          },
+          "to": {
+            "$ref": "#n:8"
+          }
+        },
+        {
+          "$id": "r:1",
+          "type": {
+            "$ref": "#rt:1"
+          },
+          "from": {
+            "$ref": "#n:3"
+          },
+          "to": {
+            "$ref": "#n:11"
+          }
+        },
+        {
+          "$id": "r:2",
+          "type": {
+            "$ref": "#rt:2"
+          },
+          "from": {
+            "$ref": "#n:4"
+          },
+          "to": {
+            "$ref": "#n:0"
+          }
+        },
+        {
+          "$id": "r:3",
+          "type": {
+            "$ref": "#rt:3"
+          },
+          "from": {
+            "$ref": "#n:4"
+          },
+          "to": {
+            "$ref": "#n:2"
+          }
+        },
+        {
+          "$id": "r:4",
+          "type": {
+            "$ref": "#rt:4"
+          },
+          "from": {
+            "$ref": "#n:4"
+          },
+          "to": {
+            "$ref": "#n:3"
+          }
+        },
+        {
+          "$id": "r:5",
+          "type": {
+            "$ref": "#rt:5"
+          },
+          "from": {
+            "$ref": "#n:4"
+          },
+          "to": {
+            "$ref": "#n:5"
+          }
+        },
+        {
+          "$id": "r:6",
+          "type": {
+            "$ref": "#rt:6"
+          },
+          "from": {
+            "$ref": "#n:4"
+          },
+          "to": {
+            "$ref": "#n:8"
+          }
+        },
+        {
+          "$id": "r:7",
+          "type": {
+            "$ref": "#rt:7"
+          },
+          "from": {
+            "$ref": "#n:4"
+          },
+          "to": {
+            "$ref": "#n:6"
+          }
+        },
+        {
+          "$id": "r:8",
+          "type": {
+            "$ref": "#rt:8"
+          },
+          "from": {
+            "$ref": "#n:5"
+          },
+          "to": {
+            "$ref": "#n:8"
+          }
+        },
+        {
+          "$id": "r:9",
+          "type": {
+            "$ref": "#rt:9"
+          },
+          "from": {
+            "$ref": "#n:11"
+          },
+          "to": {
+            "$ref": "#n:5"
+          }
+        }
+      ],
+      "constraints": [
+        {
+          "$id": "c:0",
+          "name": "creditcard",
+          "constraintType": "uniqueness",
+          "entityType": "node",
+          "nodeLabel": {
+            "$ref": "#nl:0"
+          },
+          "relationshipType": null,
+          "properties": [
+            {
+              "$ref": "#p:0_0"
+            }
+          ]
+        },
+        {
+          "$id": "c:1",
+          "name": "currency",
+          "constraintType": "uniqueness",
+          "entityType": "node",
+          "nodeLabel": {
+            "$ref": "#nl:1"
+          },
+          "relationshipType": null,
+          "properties": [
+            {
+              "$ref": "#p:1_0"
+            }
+          ]
+        },
+        {
+          "$id": "c:2",
+          "name": "currencyrate",
+          "constraintType": "uniqueness",
+          "entityType": "node",
+          "nodeLabel": {
+            "$ref": "#nl:2"
+          },
+          "relationshipType": null,
+          "properties": [
+            {
+              "$ref": "#p:2_0"
+            }
+          ]
+        },
+        {
+          "$id": "c:3",
+          "name": "customer",
+          "constraintType": "uniqueness",
+          "entityType": "node",
+          "nodeLabel": {
+            "$ref": "#nl:3"
+          },
+          "relationshipType": null,
+          "properties": [
+            {
+              "$ref": "#p:3_0"
+            }
+          ]
+        },
+        {
+          "$id": "c:4",
+          "name": "salesorderheader",
+          "constraintType": "uniqueness",
+          "entityType": "node",
+          "nodeLabel": {
+            "$ref": "#nl:4"
+          },
+          "relationshipType": null,
+          "properties": [
+            {
+              "$ref": "#p:4_0"
+            }
+          ]
+        },
+        {
+          "$id": "c:5",
+          "name": "salesperson",
+          "constraintType": "uniqueness",
+          "entityType": "node",
+          "nodeLabel": {
+            "$ref": "#nl:5"
+          },
+          "relationshipType": null,
+          "properties": [
+            {
+              "$ref": "#p:5_0"
+            }
+          ]
+        },
+        {
+          "$id": "c:6",
+          "name": "salesreason",
+          "constraintType": "uniqueness",
+          "entityType": "node",
+          "nodeLabel": {
+            "$ref": "#nl:6"
+          },
+          "relationshipType": null,
+          "properties": [
+            {
+              "$ref": "#p:6_0"
+            }
+          ]
+        },
+        {
+          "$id": "c:7",
+          "name": "salestaxrate",
+          "constraintType": "uniqueness",
+          "entityType": "node",
+          "nodeLabel": {
+            "$ref": "#nl:7"
+          },
+          "relationshipType": null,
+          "properties": [
+            {
+              "$ref": "#p:7_0"
+            }
+          ]
+        },
+        {
+          "$id": "c:8",
+          "name": "salesterritory",
+          "constraintType": "uniqueness",
+          "entityType": "node",
+          "nodeLabel": {
+            "$ref": "#nl:8"
+          },
+          "relationshipType": null,
+          "properties": [
+            {
+              "$ref": "#p:8_0"
+            }
+          ]
+        },
+        {
+          "$id": "c:9",
+          "name": "shoppingcartitem",
+          "constraintType": "uniqueness",
+          "entityType": "node",
+          "nodeLabel": {
+            "$ref": "#nl:9"
+          },
+          "relationshipType": null,
+          "properties": [
+            {
+              "$ref": "#p:9_0"
+            }
+          ]
+        },
+        {
+          "$id": "c:10",
+          "name": "specialoffer",
+          "constraintType": "uniqueness",
+          "entityType": "node",
+          "nodeLabel": {
+            "$ref": "#nl:10"
+          },
+          "relationshipType": null,
+          "properties": [
+            {
+              "$ref": "#p:10_0"
+            }
+          ]
+        },
+        {
+          "$id": "c:11",
+          "name": "store",
+          "constraintType": "uniqueness",
+          "entityType": "node",
+          "nodeLabel": {
+            "$ref": "#nl:11"
+          },
+          "relationshipType": null,
+          "properties": [
+            {
+              "$ref": "#p:11_0"
+            }
+          ]
+        }
+      ],
+      "indexes": [
+        {
+          "$id": "i:0",
+          "name": "creditcard",
+          "indexType": "default",
+          "entityType": "node",
+          "nodeLabel": {
+            "$ref": "#nl:0"
+          },
+          "relationshipType": null,
+          "properties": [
+            {
+              "$ref": "#p:0_0"
+            }
+          ]
+        },
+        {
+          "$id": "i:1",
+          "name": "currency-text",
+          "indexType": "text",
+          "entityType": "node",
+          "nodeLabel": {
+            "$ref": "#nl:1"
+          },
+          "relationshipType": null,
+          "properties": [
+            {
+              "$ref": "#p:1_0"
+            }
+          ]
+        },
+        {
+          "$id": "i:2",
+          "name": "currencyrate",
+          "indexType": "default",
+          "entityType": "node",
+          "nodeLabel": {
+            "$ref": "#nl:2"
+          },
+          "relationshipType": null,
+          "properties": [
+            {
+              "$ref": "#p:2_0"
+            }
+          ]
+        },
+        {
+          "$id": "i:3",
+          "name": "customer",
+          "indexType": "default",
+          "entityType": "node",
+          "nodeLabel": {
+            "$ref": "#nl:3"
+          },
+          "relationshipType": null,
+          "properties": [
+            {
+              "$ref": "#p:3_0"
+            }
+          ]
+        },
+        {
+          "$id": "i:4",
+          "name": "salesorderheader",
+          "indexType": "default",
+          "entityType": "node",
+          "nodeLabel": {
+            "$ref": "#nl:4"
+          },
+          "relationshipType": null,
+          "properties": [
+            {
+              "$ref": "#p:4_0"
+            }
+          ]
+        },
+        {
+          "$id": "i:5",
+          "name": "salesperson",
+          "indexType": "default",
+          "entityType": "node",
+          "nodeLabel": {
+            "$ref": "#nl:5"
+          },
+          "relationshipType": null,
+          "properties": [
+            {
+              "$ref": "#p:5_0"
+            }
+          ]
+        },
+        {
+          "$id": "i:6",
+          "name": "salesreason",
+          "indexType": "default",
+          "entityType": "node",
+          "nodeLabel": {
+            "$ref": "#nl:6"
+          },
+          "relationshipType": null,
+          "properties": [
+            {
+              "$ref": "#p:6_0"
+            }
+          ]
+        },
+        {
+          "$id": "i:7",
+          "name": "salestaxrate",
+          "indexType": "default",
+          "entityType": "node",
+          "nodeLabel": {
+            "$ref": "#nl:7"
+          },
+          "relationshipType": null,
+          "properties": [
+            {
+              "$ref": "#p:7_0"
+            }
+          ]
+        },
+        {
+          "$id": "i:8",
+          "name": "salesterritory",
+          "indexType": "default",
+          "entityType": "node",
+          "nodeLabel": {
+            "$ref": "#nl:8"
+          },
+          "relationshipType": null,
+          "properties": [
+            {
+              "$ref": "#p:8_0"
+            }
+          ]
+        },
+        {
+          "$id": "i:9",
+          "name": "shoppingcartitem",
+          "indexType": "default",
+          "entityType": "node",
+          "nodeLabel": {
+            "$ref": "#nl:9"
+          },
+          "relationshipType": null,
+          "properties": [
+            {
+              "$ref": "#p:9_0"
+            }
+          ]
+        },
+        {
+          "$id": "i:10",
+          "name": "specialoffer",
+          "indexType": "default",
+          "entityType": "node",
+          "nodeLabel": {
+            "$ref": "#nl:10"
+          },
+          "relationshipType": null,
+          "properties": [
+            {
+              "$ref": "#p:10_0"
+            }
+          ]
+        },
+        {
+          "$id": "i:11",
+          "name": "store",
+          "indexType": "default",
+          "entityType": "node",
+          "nodeLabel": {
+            "$ref": "#nl:11"
+          },
+          "relationshipType": null,
+          "properties": [
+            {
+              "$ref": "#p:11_0"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "graphSchemaExtensionsRepresentation": {
+    "nodeKeyProperties": [
+      {
+        "node": {
+          "$ref": "#n:0"
+        },
+        "keyProperties": [
+          {
+            "$ref": "#p:0_0"
+          }
+        ]
+      },
+      {
+        "node": {
+          "$ref": "#n:1"
+        },
+        "keyProperties": [
+          {
+            "$ref": "#p:1_0"
+          }
+        ]
+      },
+      {
+        "node": {
+          "$ref": "#n:2"
+        },
+        "keyProperties": [
+          {
+            "$ref": "#p:2_0"
+          }
+        ]
+      },
+      {
+        "node": {
+          "$ref": "#n:3"
+        },
+        "keyProperties": [
+          {
+            "$ref": "#p:3_0"
+          }
+        ]
+      },
+      {
+        "node": {
+          "$ref": "#n:4"
+        },
+        "keyProperties": [
+          {
+            "$ref": "#p:4_0"
+          }
+        ]
+      },
+      {
+        "node": {
+          "$ref": "#n:5"
+        },
+        "keyProperties": [
+          {
+            "$ref": "#p:5_0"
+          }
+        ]
+      },
+      {
+        "node": {
+          "$ref": "#n:6"
+        },
+        "keyProperties": [
+          {
+            "$ref": "#p:6_0"
+          }
+        ]
+      },
+      {
+        "node": {
+          "$ref": "#n:7"
+        },
+        "keyProperties": [
+          {
+            "$ref": "#p:7_0"
+          }
+        ]
+      },
+      {
+        "node": {
+          "$ref": "#n:8"
+        },
+        "keyProperties": [
+          {
+            "$ref": "#p:8_0"
+          }
+        ]
+      },
+      {
+        "node": {
+          "$ref": "#n:9"
+        },
+        "keyProperties": [
+          {
+            "$ref": "#p:9_0"
+          }
+        ]
+      },
+      {
+        "node": {
+          "$ref": "#n:10"
+        },
+        "keyProperties": [
+          {
+            "$ref": "#p:10_0"
+          }
+        ]
+      },
+      {
+        "node": {
+          "$ref": "#n:11"
+        },
+        "keyProperties": [
+          {
+            "$ref": "#p:11_0"
+          }
+        ]
+      }
+    ]
+  },
+  "graphMappingRepresentation": {
+    "dataSourceSchema": {
+      "type": "cloud",
+      "tableSchemas": [
+        {
+          "name": "countryregioncurrency",
+          "fields": [
+            {
+              "name": "countryregioncode",
+              "rawType": "varchar",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "currencycode",
+              "rawType": "bpchar",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "modifieddate",
+              "rawType": "timestamp",
+              "recommendedType": {
+                "type": "datetime"
+              },
+              "supportedTypes": [
+                {
+                  "type": "date"
+                },
+                {
+                  "type": "datetime"
+                },
+                {
+                  "type": "localdatetime"
+                }
+              ]
+            }
+          ],
+          "primaryKeys": [
+            "countryregioncode",
+            "currencycode"
+          ],
+          "foreignKeys": [
+            {
+              "referencedTable": "countryregion",
+              "fields": [
+                {
+                  "field": "countryregioncode",
+                  "referencedField": "countryregioncode"
+                }
+              ]
+            },
+            {
+              "referencedTable": "currency",
+              "fields": [
+                {
+                  "field": "currencycode",
+                  "referencedField": "currencycode"
+                }
+              ]
+            }
+          ],
+          "expanded": true
+        },
+        {
+          "name": "creditcard",
+          "fields": [
+            {
+              "name": "creditcardid",
+              "rawType": "serial",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "cardtype",
+              "rawType": "varchar",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "cardnumber",
+              "rawType": "varchar",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "expmonth",
+              "rawType": "int2",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "expyear",
+              "rawType": "int2",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "modifieddate",
+              "rawType": "timestamp",
+              "recommendedType": {
+                "type": "datetime"
+              },
+              "supportedTypes": [
+                {
+                  "type": "date"
+                },
+                {
+                  "type": "datetime"
+                },
+                {
+                  "type": "localdatetime"
+                }
+              ]
+            }
+          ],
+          "primaryKeys": [
+            "creditcardid"
+          ],
+          "foreignKeys": [],
+          "expanded": true
+        },
+        {
+          "name": "currency",
+          "fields": [
+            {
+              "name": "currencycode",
+              "rawType": "bpchar",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "name",
+              "rawType": "Name",
+              "recommendedType": null,
+              "supportedTypes": []
+            },
+            {
+              "name": "modifieddate",
+              "rawType": "timestamp",
+              "recommendedType": {
+                "type": "datetime"
+              },
+              "supportedTypes": [
+                {
+                  "type": "date"
+                },
+                {
+                  "type": "datetime"
+                },
+                {
+                  "type": "localdatetime"
+                }
+              ]
+            }
+          ],
+          "primaryKeys": [
+            "currencycode"
+          ],
+          "foreignKeys": [],
+          "expanded": true
+        },
+        {
+          "name": "currencyrate",
+          "fields": [
+            {
+              "name": "currencyrateid",
+              "rawType": "serial",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "currencyratedate",
+              "rawType": "timestamp",
+              "recommendedType": {
+                "type": "datetime"
+              },
+              "supportedTypes": [
+                {
+                  "type": "date"
+                },
+                {
+                  "type": "datetime"
+                },
+                {
+                  "type": "localdatetime"
+                }
+              ]
+            },
+            {
+              "name": "fromcurrencycode",
+              "rawType": "bpchar",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "tocurrencycode",
+              "rawType": "bpchar",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "averagerate",
+              "rawType": "numeric",
+              "recommendedType": {
+                "type": "float"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "endofdayrate",
+              "rawType": "numeric",
+              "recommendedType": {
+                "type": "float"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "modifieddate",
+              "rawType": "timestamp",
+              "recommendedType": {
+                "type": "datetime"
+              },
+              "supportedTypes": [
+                {
+                  "type": "date"
+                },
+                {
+                  "type": "datetime"
+                },
+                {
+                  "type": "localdatetime"
+                }
+              ]
+            }
+          ],
+          "primaryKeys": [
+            "currencyrateid"
+          ],
+          "foreignKeys": [
+            {
+              "referencedTable": "currency",
+              "fields": [
+                {
+                  "field": "fromcurrencycode",
+                  "referencedField": "currencycode"
+                },
+                {
+                  "field": "tocurrencycode",
+                  "referencedField": "currencycode"
+                }
+              ]
+            }
+          ],
+          "expanded": true
+        },
+        {
+          "name": "customer",
+          "fields": [
+            {
+              "name": "customerid",
+              "rawType": "serial",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "personid",
+              "rawType": "int4",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "storeid",
+              "rawType": "int4",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "territoryid",
+              "rawType": "int4",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "rowguid",
+              "rawType": "uuid",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "modifieddate",
+              "rawType": "timestamp",
+              "recommendedType": {
+                "type": "datetime"
+              },
+              "supportedTypes": [
+                {
+                  "type": "date"
+                },
+                {
+                  "type": "datetime"
+                },
+                {
+                  "type": "localdatetime"
+                }
+              ]
+            }
+          ],
+          "primaryKeys": [
+            "customerid"
+          ],
+          "foreignKeys": [
+            {
+              "referencedTable": "person",
+              "fields": [
+                {
+                  "field": "personid",
+                  "referencedField": "businessentityid"
+                }
+              ]
+            },
+            {
+              "referencedTable": "salesterritory",
+              "fields": [
+                {
+                  "field": "territoryid",
+                  "referencedField": "territoryid"
+                }
+              ]
+            },
+            {
+              "referencedTable": "store",
+              "fields": [
+                {
+                  "field": "storeid",
+                  "referencedField": "businessentityid"
+                }
+              ]
+            }
+          ],
+          "expanded": true
+        },
+        {
+          "name": "personcreditcard",
+          "fields": [
+            {
+              "name": "businessentityid",
+              "rawType": "int4",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "creditcardid",
+              "rawType": "int4",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "modifieddate",
+              "rawType": "timestamp",
+              "recommendedType": {
+                "type": "datetime"
+              },
+              "supportedTypes": [
+                {
+                  "type": "date"
+                },
+                {
+                  "type": "datetime"
+                },
+                {
+                  "type": "localdatetime"
+                }
+              ]
+            }
+          ],
+          "primaryKeys": [
+            "businessentityid",
+            "creditcardid"
+          ],
+          "foreignKeys": [
+            {
+              "referencedTable": "person",
+              "fields": [
+                {
+                  "field": "businessentityid",
+                  "referencedField": "businessentityid"
+                }
+              ]
+            },
+            {
+              "referencedTable": "creditcard",
+              "fields": [
+                {
+                  "field": "creditcardid",
+                  "referencedField": "creditcardid"
+                }
+              ]
+            }
+          ],
+          "expanded": true
+        },
+        {
+          "name": "salesorderdetail",
+          "fields": [
+            {
+              "name": "salesorderid",
+              "rawType": "int4",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "salesorderdetailid",
+              "rawType": "serial",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "carriertrackingnumber",
+              "rawType": "varchar",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "orderqty",
+              "rawType": "int2",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "productid",
+              "rawType": "int4",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "specialofferid",
+              "rawType": "int4",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "unitprice",
+              "rawType": "numeric",
+              "recommendedType": {
+                "type": "float"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "unitpricediscount",
+              "rawType": "numeric",
+              "recommendedType": {
+                "type": "float"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "rowguid",
+              "rawType": "uuid",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "modifieddate",
+              "rawType": "timestamp",
+              "recommendedType": {
+                "type": "datetime"
+              },
+              "supportedTypes": [
+                {
+                  "type": "date"
+                },
+                {
+                  "type": "datetime"
+                },
+                {
+                  "type": "localdatetime"
+                }
+              ]
+            }
+          ],
+          "primaryKeys": [
+            "salesorderid",
+            "salesorderdetailid"
+          ],
+          "foreignKeys": [
+            {
+              "referencedTable": "salesorderheader",
+              "fields": [
+                {
+                  "field": "salesorderid",
+                  "referencedField": "salesorderid"
+                }
+              ]
+            },
+            {
+              "referencedTable": "specialofferproduct",
+              "fields": [
+                {
+                  "field": "specialofferid",
+                  "referencedField": "specialofferid"
+                },
+                {
+                  "field": "productid",
+                  "referencedField": "productid"
+                }
+              ]
+            }
+          ],
+          "expanded": true
+        },
+        {
+          "name": "salesorderheader",
+          "fields": [
+            {
+              "name": "salesorderid",
+              "rawType": "serial",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "revisionnumber",
+              "rawType": "int2",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "orderdate",
+              "rawType": "timestamp",
+              "recommendedType": {
+                "type": "datetime"
+              },
+              "supportedTypes": [
+                {
+                  "type": "date"
+                },
+                {
+                  "type": "datetime"
+                },
+                {
+                  "type": "localdatetime"
+                }
+              ]
+            },
+            {
+              "name": "duedate",
+              "rawType": "timestamp",
+              "recommendedType": {
+                "type": "datetime"
+              },
+              "supportedTypes": [
+                {
+                  "type": "date"
+                },
+                {
+                  "type": "datetime"
+                },
+                {
+                  "type": "localdatetime"
+                }
+              ]
+            },
+            {
+              "name": "shipdate",
+              "rawType": "timestamp",
+              "recommendedType": {
+                "type": "datetime"
+              },
+              "supportedTypes": [
+                {
+                  "type": "date"
+                },
+                {
+                  "type": "datetime"
+                },
+                {
+                  "type": "localdatetime"
+                }
+              ]
+            },
+            {
+              "name": "status",
+              "rawType": "int2",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "onlineorderflag",
+              "rawType": "Flag",
+              "recommendedType": null,
+              "supportedTypes": []
+            },
+            {
+              "name": "purchaseordernumber",
+              "rawType": "OrderNumber",
+              "recommendedType": null,
+              "supportedTypes": []
+            },
+            {
+              "name": "accountnumber",
+              "rawType": "AccountNumber",
+              "recommendedType": null,
+              "supportedTypes": []
+            },
+            {
+              "name": "customerid",
+              "rawType": "int4",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "salespersonid",
+              "rawType": "int4",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "territoryid",
+              "rawType": "int4",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "billtoaddressid",
+              "rawType": "int4",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "shiptoaddressid",
+              "rawType": "int4",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "shipmethodid",
+              "rawType": "int4",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "creditcardid",
+              "rawType": "int4",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "creditcardapprovalcode",
+              "rawType": "varchar",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "currencyrateid",
+              "rawType": "int4",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "subtotal",
+              "rawType": "numeric",
+              "recommendedType": {
+                "type": "float"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "taxamt",
+              "rawType": "numeric",
+              "recommendedType": {
+                "type": "float"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "freight",
+              "rawType": "numeric",
+              "recommendedType": {
+                "type": "float"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "totaldue",
+              "rawType": "numeric",
+              "recommendedType": {
+                "type": "float"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "comment",
+              "rawType": "varchar",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "rowguid",
+              "rawType": "uuid",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "modifieddate",
+              "rawType": "timestamp",
+              "recommendedType": {
+                "type": "datetime"
+              },
+              "supportedTypes": [
+                {
+                  "type": "date"
+                },
+                {
+                  "type": "datetime"
+                },
+                {
+                  "type": "localdatetime"
+                }
+              ]
+            }
+          ],
+          "primaryKeys": [
+            "salesorderid"
+          ],
+          "foreignKeys": [
+            {
+              "referencedTable": "address",
+              "fields": [
+                {
+                  "field": "billtoaddressid",
+                  "referencedField": "addressid"
+                },
+                {
+                  "field": "shiptoaddressid",
+                  "referencedField": "addressid"
+                }
+              ]
+            },
+            {
+              "referencedTable": "shipmethod",
+              "fields": [
+                {
+                  "field": "shipmethodid",
+                  "referencedField": "shipmethodid"
+                }
+              ]
+            },
+            {
+              "referencedTable": "creditcard",
+              "fields": [
+                {
+                  "field": "creditcardid",
+                  "referencedField": "creditcardid"
+                }
+              ]
+            },
+            {
+              "referencedTable": "currencyrate",
+              "fields": [
+                {
+                  "field": "currencyrateid",
+                  "referencedField": "currencyrateid"
+                }
+              ]
+            },
+            {
+              "referencedTable": "customer",
+              "fields": [
+                {
+                  "field": "customerid",
+                  "referencedField": "customerid"
+                }
+              ]
+            },
+            {
+              "referencedTable": "salesperson",
+              "fields": [
+                {
+                  "field": "salespersonid",
+                  "referencedField": "businessentityid"
+                }
+              ]
+            },
+            {
+              "referencedTable": "salesterritory",
+              "fields": [
+                {
+                  "field": "territoryid",
+                  "referencedField": "territoryid"
+                }
+              ]
+            }
+          ],
+          "expanded": true
+        },
+        {
+          "name": "salesorderheadersalesreason",
+          "fields": [
+            {
+              "name": "salesorderid",
+              "rawType": "int4",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "salesreasonid",
+              "rawType": "int4",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "modifieddate",
+              "rawType": "timestamp",
+              "recommendedType": {
+                "type": "datetime"
+              },
+              "supportedTypes": [
+                {
+                  "type": "date"
+                },
+                {
+                  "type": "datetime"
+                },
+                {
+                  "type": "localdatetime"
+                }
+              ]
+            }
+          ],
+          "primaryKeys": [
+            "salesorderid",
+            "salesreasonid"
+          ],
+          "foreignKeys": [
+            {
+              "referencedTable": "salesorderheader",
+              "fields": [
+                {
+                  "field": "salesorderid",
+                  "referencedField": "salesorderid"
+                }
+              ]
+            },
+            {
+              "referencedTable": "salesreason",
+              "fields": [
+                {
+                  "field": "salesreasonid",
+                  "referencedField": "salesreasonid"
+                }
+              ]
+            }
+          ],
+          "expanded": true
+        },
+        {
+          "name": "salesperson",
+          "fields": [
+            {
+              "name": "businessentityid",
+              "rawType": "int4",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "territoryid",
+              "rawType": "int4",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "salesquota",
+              "rawType": "numeric",
+              "recommendedType": {
+                "type": "float"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "bonus",
+              "rawType": "numeric",
+              "recommendedType": {
+                "type": "float"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "commissionpct",
+              "rawType": "numeric",
+              "recommendedType": {
+                "type": "float"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "salesytd",
+              "rawType": "numeric",
+              "recommendedType": {
+                "type": "float"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "saleslastyear",
+              "rawType": "numeric",
+              "recommendedType": {
+                "type": "float"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "rowguid",
+              "rawType": "uuid",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "modifieddate",
+              "rawType": "timestamp",
+              "recommendedType": {
+                "type": "datetime"
+              },
+              "supportedTypes": [
+                {
+                  "type": "date"
+                },
+                {
+                  "type": "datetime"
+                },
+                {
+                  "type": "localdatetime"
+                }
+              ]
+            }
+          ],
+          "primaryKeys": [
+            "businessentityid"
+          ],
+          "foreignKeys": [
+            {
+              "referencedTable": "employee",
+              "fields": [
+                {
+                  "field": "businessentityid",
+                  "referencedField": "businessentityid"
+                }
+              ]
+            },
+            {
+              "referencedTable": "salesterritory",
+              "fields": [
+                {
+                  "field": "territoryid",
+                  "referencedField": "territoryid"
+                }
+              ]
+            }
+          ],
+          "expanded": true
+        },
+        {
+          "name": "salespersonquotahistory",
+          "fields": [
+            {
+              "name": "businessentityid",
+              "rawType": "int4",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "quotadate",
+              "rawType": "timestamp",
+              "recommendedType": {
+                "type": "datetime"
+              },
+              "supportedTypes": [
+                {
+                  "type": "date"
+                },
+                {
+                  "type": "datetime"
+                },
+                {
+                  "type": "localdatetime"
+                }
+              ]
+            },
+            {
+              "name": "salesquota",
+              "rawType": "numeric",
+              "recommendedType": {
+                "type": "float"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "rowguid",
+              "rawType": "uuid",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "modifieddate",
+              "rawType": "timestamp",
+              "recommendedType": {
+                "type": "datetime"
+              },
+              "supportedTypes": [
+                {
+                  "type": "date"
+                },
+                {
+                  "type": "datetime"
+                },
+                {
+                  "type": "localdatetime"
+                }
+              ]
+            }
+          ],
+          "primaryKeys": [
+            "businessentityid",
+            "quotadate"
+          ],
+          "foreignKeys": [
+            {
+              "referencedTable": "salesperson",
+              "fields": [
+                {
+                  "field": "businessentityid",
+                  "referencedField": "businessentityid"
+                }
+              ]
+            }
+          ],
+          "expanded": true
+        },
+        {
+          "name": "salesreason",
+          "fields": [
+            {
+              "name": "salesreasonid",
+              "rawType": "serial",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "name",
+              "rawType": "Name",
+              "recommendedType": null,
+              "supportedTypes": []
+            },
+            {
+              "name": "reasontype",
+              "rawType": "Name",
+              "recommendedType": null,
+              "supportedTypes": []
+            },
+            {
+              "name": "modifieddate",
+              "rawType": "timestamp",
+              "recommendedType": {
+                "type": "datetime"
+              },
+              "supportedTypes": [
+                {
+                  "type": "date"
+                },
+                {
+                  "type": "datetime"
+                },
+                {
+                  "type": "localdatetime"
+                }
+              ]
+            }
+          ],
+          "primaryKeys": [
+            "salesreasonid"
+          ],
+          "foreignKeys": [],
+          "expanded": true
+        },
+        {
+          "name": "salestaxrate",
+          "fields": [
+            {
+              "name": "salestaxrateid",
+              "rawType": "serial",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "stateprovinceid",
+              "rawType": "int4",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "taxtype",
+              "rawType": "int2",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "taxrate",
+              "rawType": "numeric",
+              "recommendedType": {
+                "type": "float"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "name",
+              "rawType": "Name",
+              "recommendedType": null,
+              "supportedTypes": []
+            },
+            {
+              "name": "rowguid",
+              "rawType": "uuid",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "modifieddate",
+              "rawType": "timestamp",
+              "recommendedType": {
+                "type": "datetime"
+              },
+              "supportedTypes": [
+                {
+                  "type": "date"
+                },
+                {
+                  "type": "datetime"
+                },
+                {
+                  "type": "localdatetime"
+                }
+              ]
+            }
+          ],
+          "primaryKeys": [
+            "salestaxrateid"
+          ],
+          "foreignKeys": [
+            {
+              "referencedTable": "stateprovince",
+              "fields": [
+                {
+                  "field": "stateprovinceid",
+                  "referencedField": "stateprovinceid"
+                }
+              ]
+            }
+          ],
+          "expanded": true
+        },
+        {
+          "name": "salesterritory",
+          "fields": [
+            {
+              "name": "territoryid",
+              "rawType": "serial",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "name",
+              "rawType": "Name",
+              "recommendedType": null,
+              "supportedTypes": []
+            },
+            {
+              "name": "countryregioncode",
+              "rawType": "varchar",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "group",
+              "rawType": "varchar",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "salesytd",
+              "rawType": "numeric",
+              "recommendedType": {
+                "type": "float"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "saleslastyear",
+              "rawType": "numeric",
+              "recommendedType": {
+                "type": "float"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "costytd",
+              "rawType": "numeric",
+              "recommendedType": {
+                "type": "float"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "costlastyear",
+              "rawType": "numeric",
+              "recommendedType": {
+                "type": "float"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "rowguid",
+              "rawType": "uuid",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "modifieddate",
+              "rawType": "timestamp",
+              "recommendedType": {
+                "type": "datetime"
+              },
+              "supportedTypes": [
+                {
+                  "type": "date"
+                },
+                {
+                  "type": "datetime"
+                },
+                {
+                  "type": "localdatetime"
+                }
+              ]
+            }
+          ],
+          "primaryKeys": [
+            "territoryid"
+          ],
+          "foreignKeys": [
+            {
+              "referencedTable": "countryregion",
+              "fields": [
+                {
+                  "field": "countryregioncode",
+                  "referencedField": "countryregioncode"
+                }
+              ]
+            }
+          ],
+          "expanded": true
+        },
+        {
+          "name": "salesterritoryhistory",
+          "fields": [
+            {
+              "name": "businessentityid",
+              "rawType": "int4",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "territoryid",
+              "rawType": "int4",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "startdate",
+              "rawType": "timestamp",
+              "recommendedType": {
+                "type": "datetime"
+              },
+              "supportedTypes": [
+                {
+                  "type": "date"
+                },
+                {
+                  "type": "datetime"
+                },
+                {
+                  "type": "localdatetime"
+                }
+              ]
+            },
+            {
+              "name": "enddate",
+              "rawType": "timestamp",
+              "recommendedType": {
+                "type": "datetime"
+              },
+              "supportedTypes": [
+                {
+                  "type": "date"
+                },
+                {
+                  "type": "datetime"
+                },
+                {
+                  "type": "localdatetime"
+                }
+              ]
+            },
+            {
+              "name": "rowguid",
+              "rawType": "uuid",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "modifieddate",
+              "rawType": "timestamp",
+              "recommendedType": {
+                "type": "datetime"
+              },
+              "supportedTypes": [
+                {
+                  "type": "date"
+                },
+                {
+                  "type": "datetime"
+                },
+                {
+                  "type": "localdatetime"
+                }
+              ]
+            }
+          ],
+          "primaryKeys": [
+            "businessentityid",
+            "startdate",
+            "territoryid"
+          ],
+          "foreignKeys": [
+            {
+              "referencedTable": "salesperson",
+              "fields": [
+                {
+                  "field": "businessentityid",
+                  "referencedField": "businessentityid"
+                }
+              ]
+            },
+            {
+              "referencedTable": "salesterritory",
+              "fields": [
+                {
+                  "field": "territoryid",
+                  "referencedField": "territoryid"
+                }
+              ]
+            }
+          ],
+          "expanded": true
+        },
+        {
+          "name": "shoppingcartitem",
+          "fields": [
+            {
+              "name": "shoppingcartitemid",
+              "rawType": "serial",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "shoppingcartid",
+              "rawType": "varchar",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "quantity",
+              "rawType": "int4",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "productid",
+              "rawType": "int4",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "datecreated",
+              "rawType": "timestamp",
+              "recommendedType": {
+                "type": "datetime"
+              },
+              "supportedTypes": [
+                {
+                  "type": "date"
+                },
+                {
+                  "type": "datetime"
+                },
+                {
+                  "type": "localdatetime"
+                }
+              ]
+            },
+            {
+              "name": "modifieddate",
+              "rawType": "timestamp",
+              "recommendedType": {
+                "type": "datetime"
+              },
+              "supportedTypes": [
+                {
+                  "type": "date"
+                },
+                {
+                  "type": "datetime"
+                },
+                {
+                  "type": "localdatetime"
+                }
+              ]
+            }
+          ],
+          "primaryKeys": [
+            "shoppingcartitemid"
+          ],
+          "foreignKeys": [
+            {
+              "referencedTable": "product",
+              "fields": [
+                {
+                  "field": "productid",
+                  "referencedField": "productid"
+                }
+              ]
+            }
+          ],
+          "expanded": true
+        },
+        {
+          "name": "specialoffer",
+          "fields": [
+            {
+              "name": "specialofferid",
+              "rawType": "serial",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "description",
+              "rawType": "varchar",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "discountpct",
+              "rawType": "numeric",
+              "recommendedType": {
+                "type": "float"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "type",
+              "rawType": "varchar",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "category",
+              "rawType": "varchar",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "startdate",
+              "rawType": "timestamp",
+              "recommendedType": {
+                "type": "datetime"
+              },
+              "supportedTypes": [
+                {
+                  "type": "date"
+                },
+                {
+                  "type": "datetime"
+                },
+                {
+                  "type": "localdatetime"
+                }
+              ]
+            },
+            {
+              "name": "enddate",
+              "rawType": "timestamp",
+              "recommendedType": {
+                "type": "datetime"
+              },
+              "supportedTypes": [
+                {
+                  "type": "date"
+                },
+                {
+                  "type": "datetime"
+                },
+                {
+                  "type": "localdatetime"
+                }
+              ]
+            },
+            {
+              "name": "minqty",
+              "rawType": "int4",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "maxqty",
+              "rawType": "int4",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "rowguid",
+              "rawType": "uuid",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "modifieddate",
+              "rawType": "timestamp",
+              "recommendedType": {
+                "type": "datetime"
+              },
+              "supportedTypes": [
+                {
+                  "type": "date"
+                },
+                {
+                  "type": "datetime"
+                },
+                {
+                  "type": "localdatetime"
+                }
+              ]
+            }
+          ],
+          "primaryKeys": [
+            "specialofferid"
+          ],
+          "foreignKeys": [],
+          "expanded": true
+        },
+        {
+          "name": "specialofferproduct",
+          "fields": [
+            {
+              "name": "specialofferid",
+              "rawType": "int4",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "productid",
+              "rawType": "int4",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "rowguid",
+              "rawType": "uuid",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "modifieddate",
+              "rawType": "timestamp",
+              "recommendedType": {
+                "type": "datetime"
+              },
+              "supportedTypes": [
+                {
+                  "type": "date"
+                },
+                {
+                  "type": "datetime"
+                },
+                {
+                  "type": "localdatetime"
+                }
+              ]
+            }
+          ],
+          "primaryKeys": [
+            "specialofferid",
+            "productid"
+          ],
+          "foreignKeys": [
+            {
+              "referencedTable": "product",
+              "fields": [
+                {
+                  "field": "productid",
+                  "referencedField": "productid"
+                }
+              ]
+            },
+            {
+              "referencedTable": "specialoffer",
+              "fields": [
+                {
+                  "field": "specialofferid",
+                  "referencedField": "specialofferid"
+                }
+              ]
+            }
+          ],
+          "expanded": true
+        },
+        {
+          "name": "store",
+          "fields": [
+            {
+              "name": "businessentityid",
+              "rawType": "int4",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "name",
+              "rawType": "Name",
+              "recommendedType": null,
+              "supportedTypes": []
+            },
+            {
+              "name": "salespersonid",
+              "rawType": "int4",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "demographics",
+              "rawType": "xml",
+              "recommendedType": null,
+              "supportedTypes": []
+            },
+            {
+              "name": "rowguid",
+              "rawType": "uuid",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "modifieddate",
+              "rawType": "timestamp",
+              "recommendedType": {
+                "type": "datetime"
+              },
+              "supportedTypes": [
+                {
+                  "type": "date"
+                },
+                {
+                  "type": "datetime"
+                },
+                {
+                  "type": "localdatetime"
+                }
+              ]
+            }
+          ],
+          "primaryKeys": [
+            "businessentityid"
+          ],
+          "foreignKeys": [
+            {
+              "referencedTable": "businessentity",
+              "fields": [
+                {
+                  "field": "businessentityid",
+                  "referencedField": "businessentityid"
+                }
+              ]
+            },
+            {
+              "referencedTable": "salesperson",
+              "fields": [
+                {
+                  "field": "salespersonid",
+                  "referencedField": "businessentityid"
+                }
+              ]
+            }
+          ],
+          "expanded": true
+        },
+        {
+          "name": "vindividualcustomer",
+          "fields": [
+            {
+              "name": "businessentityid",
+              "rawType": "int4",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "title",
+              "rawType": "varchar",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "firstname",
+              "rawType": "Name",
+              "recommendedType": null,
+              "supportedTypes": []
+            },
+            {
+              "name": "middlename",
+              "rawType": "Name",
+              "recommendedType": null,
+              "supportedTypes": []
+            },
+            {
+              "name": "lastname",
+              "rawType": "Name",
+              "recommendedType": null,
+              "supportedTypes": []
+            },
+            {
+              "name": "suffix",
+              "rawType": "varchar",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "phonenumber",
+              "rawType": "Phone",
+              "recommendedType": null,
+              "supportedTypes": []
+            },
+            {
+              "name": "phonenumbertype",
+              "rawType": "Name",
+              "recommendedType": null,
+              "supportedTypes": []
+            },
+            {
+              "name": "emailaddress",
+              "rawType": "varchar",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "emailpromotion",
+              "rawType": "int4",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "addresstype",
+              "rawType": "Name",
+              "recommendedType": null,
+              "supportedTypes": []
+            },
+            {
+              "name": "addressline1",
+              "rawType": "varchar",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "addressline2",
+              "rawType": "varchar",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "city",
+              "rawType": "varchar",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "stateprovincename",
+              "rawType": "Name",
+              "recommendedType": null,
+              "supportedTypes": []
+            },
+            {
+              "name": "postalcode",
+              "rawType": "varchar",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "countryregionname",
+              "rawType": "Name",
+              "recommendedType": null,
+              "supportedTypes": []
+            },
+            {
+              "name": "demographics",
+              "rawType": "xml",
+              "recommendedType": null,
+              "supportedTypes": []
+            }
+          ],
+          "primaryKeys": [],
+          "foreignKeys": [],
+          "expanded": true
+        },
+        {
+          "name": "vpersondemographics",
+          "fields": [
+            {
+              "name": "businessentityid",
+              "rawType": "int4",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "totalpurchaseytd",
+              "rawType": "money",
+              "recommendedType": {
+                "type": "float"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "datefirstpurchase",
+              "rawType": "date",
+              "recommendedType": {
+                "type": "date"
+              },
+              "supportedTypes": [
+                {
+                  "type": "date"
+                }
+              ]
+            },
+            {
+              "name": "birthdate",
+              "rawType": "date",
+              "recommendedType": {
+                "type": "date"
+              },
+              "supportedTypes": [
+                {
+                  "type": "date"
+                }
+              ]
+            },
+            {
+              "name": "maritalstatus",
+              "rawType": "varchar",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "yearlyincome",
+              "rawType": "varchar",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "gender",
+              "rawType": "varchar",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "totalchildren",
+              "rawType": "int4",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "numberchildrenathome",
+              "rawType": "int4",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "education",
+              "rawType": "varchar",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "occupation",
+              "rawType": "varchar",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "homeownerflag",
+              "rawType": "bool",
+              "recommendedType": {
+                "type": "boolean"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "boolean"
+                }
+              ]
+            },
+            {
+              "name": "numbercarsowned",
+              "rawType": "int4",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            }
+          ],
+          "primaryKeys": [],
+          "foreignKeys": [],
+          "expanded": true
+        },
+        {
+          "name": "vsalesperson",
+          "fields": [
+            {
+              "name": "businessentityid",
+              "rawType": "int4",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "title",
+              "rawType": "varchar",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "firstname",
+              "rawType": "Name",
+              "recommendedType": null,
+              "supportedTypes": []
+            },
+            {
+              "name": "middlename",
+              "rawType": "Name",
+              "recommendedType": null,
+              "supportedTypes": []
+            },
+            {
+              "name": "lastname",
+              "rawType": "Name",
+              "recommendedType": null,
+              "supportedTypes": []
+            },
+            {
+              "name": "suffix",
+              "rawType": "varchar",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "jobtitle",
+              "rawType": "varchar",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "phonenumber",
+              "rawType": "Phone",
+              "recommendedType": null,
+              "supportedTypes": []
+            },
+            {
+              "name": "phonenumbertype",
+              "rawType": "Name",
+              "recommendedType": null,
+              "supportedTypes": []
+            },
+            {
+              "name": "emailaddress",
+              "rawType": "varchar",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "emailpromotion",
+              "rawType": "int4",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "addressline1",
+              "rawType": "varchar",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "addressline2",
+              "rawType": "varchar",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "city",
+              "rawType": "varchar",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "stateprovincename",
+              "rawType": "Name",
+              "recommendedType": null,
+              "supportedTypes": []
+            },
+            {
+              "name": "postalcode",
+              "rawType": "varchar",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "countryregionname",
+              "rawType": "Name",
+              "recommendedType": null,
+              "supportedTypes": []
+            },
+            {
+              "name": "territoryname",
+              "rawType": "Name",
+              "recommendedType": null,
+              "supportedTypes": []
+            },
+            {
+              "name": "territorygroup",
+              "rawType": "varchar",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "salesquota",
+              "rawType": "numeric",
+              "recommendedType": {
+                "type": "float"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "salesytd",
+              "rawType": "numeric",
+              "recommendedType": {
+                "type": "float"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "saleslastyear",
+              "rawType": "numeric",
+              "recommendedType": {
+                "type": "float"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            }
+          ],
+          "primaryKeys": [],
+          "foreignKeys": [],
+          "expanded": true
+        },
+        {
+          "name": "vsalespersonsalesbyfiscalyears",
+          "fields": [
+            {
+              "name": "SalesPersonID",
+              "rawType": "int4",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "FullName",
+              "rawType": "text",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "JobTitle",
+              "rawType": "text",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "SalesTerritory",
+              "rawType": "text",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "2012",
+              "rawType": "numeric",
+              "recommendedType": {
+                "type": "float"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "2013",
+              "rawType": "numeric",
+              "recommendedType": {
+                "type": "float"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "2014",
+              "rawType": "numeric",
+              "recommendedType": {
+                "type": "float"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            }
+          ],
+          "primaryKeys": [],
+          "foreignKeys": [],
+          "expanded": true
+        },
+        {
+          "name": "vsalespersonsalesbyfiscalyearsdata",
+          "fields": [
+            {
+              "name": "salespersonid",
+              "rawType": "int4",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "fullname",
+              "rawType": "text",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "jobtitle",
+              "rawType": "varchar",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "salesterritory",
+              "rawType": "Name",
+              "recommendedType": null,
+              "supportedTypes": []
+            },
+            {
+              "name": "salestotal",
+              "rawType": "numeric",
+              "recommendedType": {
+                "type": "float"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "fiscalyear",
+              "rawType": "numeric",
+              "recommendedType": {
+                "type": "float"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            }
+          ],
+          "primaryKeys": [],
+          "foreignKeys": [],
+          "expanded": true
+        },
+        {
+          "name": "vstorewithaddresses",
+          "fields": [
+            {
+              "name": "businessentityid",
+              "rawType": "int4",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "name",
+              "rawType": "Name",
+              "recommendedType": null,
+              "supportedTypes": []
+            },
+            {
+              "name": "addresstype",
+              "rawType": "Name",
+              "recommendedType": null,
+              "supportedTypes": []
+            },
+            {
+              "name": "addressline1",
+              "rawType": "varchar",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "addressline2",
+              "rawType": "varchar",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "city",
+              "rawType": "varchar",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "stateprovincename",
+              "rawType": "Name",
+              "recommendedType": null,
+              "supportedTypes": []
+            },
+            {
+              "name": "postalcode",
+              "rawType": "varchar",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "countryregionname",
+              "rawType": "Name",
+              "recommendedType": null,
+              "supportedTypes": []
+            }
+          ],
+          "primaryKeys": [],
+          "foreignKeys": [],
+          "expanded": true
+        },
+        {
+          "name": "vstorewithcontacts",
+          "fields": [
+            {
+              "name": "businessentityid",
+              "rawType": "int4",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "name",
+              "rawType": "Name",
+              "recommendedType": null,
+              "supportedTypes": []
+            },
+            {
+              "name": "contacttype",
+              "rawType": "Name",
+              "recommendedType": null,
+              "supportedTypes": []
+            },
+            {
+              "name": "title",
+              "rawType": "varchar",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "firstname",
+              "rawType": "Name",
+              "recommendedType": null,
+              "supportedTypes": []
+            },
+            {
+              "name": "middlename",
+              "rawType": "Name",
+              "recommendedType": null,
+              "supportedTypes": []
+            },
+            {
+              "name": "lastname",
+              "rawType": "Name",
+              "recommendedType": null,
+              "supportedTypes": []
+            },
+            {
+              "name": "suffix",
+              "rawType": "varchar",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "phonenumber",
+              "rawType": "Phone",
+              "recommendedType": null,
+              "supportedTypes": []
+            },
+            {
+              "name": "phonenumbertype",
+              "rawType": "Name",
+              "recommendedType": null,
+              "supportedTypes": []
+            },
+            {
+              "name": "emailaddress",
+              "rawType": "varchar",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "emailpromotion",
+              "rawType": "int4",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            }
+          ],
+          "primaryKeys": [],
+          "foreignKeys": [],
+          "expanded": true
+        },
+        {
+          "name": "vstorewithdemographics",
+          "fields": [
+            {
+              "name": "businessentityid",
+              "rawType": "int4",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "name",
+              "rawType": "Name",
+              "recommendedType": null,
+              "supportedTypes": []
+            },
+            {
+              "name": "AnnualSales",
+              "rawType": "money",
+              "recommendedType": {
+                "type": "float"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "AnnualRevenue",
+              "rawType": "money",
+              "recommendedType": {
+                "type": "float"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "BankName",
+              "rawType": "varchar",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "BusinessType",
+              "rawType": "varchar",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "YearOpened",
+              "rawType": "int4",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "Specialty",
+              "rawType": "varchar",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "SquareFeet",
+              "rawType": "int4",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "Brands",
+              "rawType": "varchar",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "Internet",
+              "rawType": "varchar",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "NumberEmployees",
+              "rawType": "int4",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            }
+          ],
+          "primaryKeys": [],
+          "foreignKeys": [],
+          "expanded": true
+        }
+      ]
+    },
+    "nodeMappings": [
+      {
+        "node": {
+          "$ref": "#n:0"
+        },
+        "tableName": "creditcard",
+        "propertyMappings": [
+          {
+            "property": {
+              "$ref": "#p:0_0"
+            },
+            "fieldName": "creditcardid"
+          },
+          {
+            "property": {
+              "$ref": "#p:0_1"
+            },
+            "fieldName": "cardtype"
+          },
+          {
+            "property": {
+              "$ref": "#p:0_2"
+            },
+            "fieldName": "cardnumber"
+          },
+          {
+            "property": {
+              "$ref": "#p:0_3"
+            },
+            "fieldName": "expmonth"
+          },
+          {
+            "property": {
+              "$ref": "#p:0_4"
+            },
+            "fieldName": "expyear"
+          },
+          {
+            "property": {
+              "$ref": "#p:0_5"
+            },
+            "fieldName": "modifieddate"
+          }
+        ]
+      },
+      {
+        "node": {
+          "$ref": "#n:1"
+        },
+        "tableName": "currency",
+        "propertyMappings": [
+          {
+            "property": {
+              "$ref": "#p:1_0"
+            },
+            "fieldName": "currencycode"
+          },
+          {
+            "property": {
+              "$ref": "#p:1_2"
+            },
+            "fieldName": "modifieddate"
+          }
+        ]
+      },
+      {
+        "node": {
+          "$ref": "#n:2"
+        },
+        "tableName": "currencyrate",
+        "propertyMappings": [
+          {
+            "property": {
+              "$ref": "#p:2_0"
+            },
+            "fieldName": "currencyrateid"
+          },
+          {
+            "property": {
+              "$ref": "#p:2_1"
+            },
+            "fieldName": "currencyratedate"
+          },
+          {
+            "property": {
+              "$ref": "#p:2_4"
+            },
+            "fieldName": "averagerate"
+          },
+          {
+            "property": {
+              "$ref": "#p:2_5"
+            },
+            "fieldName": "endofdayrate"
+          },
+          {
+            "property": {
+              "$ref": "#p:2_6"
+            },
+            "fieldName": "modifieddate"
+          }
+        ]
+      },
+      {
+        "node": {
+          "$ref": "#n:3"
+        },
+        "tableName": "customer",
+        "propertyMappings": [
+          {
+            "property": {
+              "$ref": "#p:3_0"
+            },
+            "fieldName": "customerid"
+          },
+          {
+            "property": {
+              "$ref": "#p:3_4"
+            },
+            "fieldName": "rowguid"
+          },
+          {
+            "property": {
+              "$ref": "#p:3_5"
+            },
+            "fieldName": "modifieddate"
+          }
+        ]
+      },
+      {
+        "node": {
+          "$ref": "#n:4"
+        },
+        "tableName": "salesorderheader",
+        "propertyMappings": [
+          {
+            "property": {
+              "$ref": "#p:4_0"
+            },
+            "fieldName": "salesorderid"
+          },
+          {
+            "property": {
+              "$ref": "#p:4_1"
+            },
+            "fieldName": "revisionnumber"
+          },
+          {
+            "property": {
+              "$ref": "#p:4_2"
+            },
+            "fieldName": "orderdate"
+          },
+          {
+            "property": {
+              "$ref": "#p:4_3"
+            },
+            "fieldName": "duedate"
+          },
+          {
+            "property": {
+              "$ref": "#p:4_4"
+            },
+            "fieldName": "shipdate"
+          },
+          {
+            "property": {
+              "$ref": "#p:4_5"
+            },
+            "fieldName": "status"
+          },
+          {
+            "property": {
+              "$ref": "#p:4_16"
+            },
+            "fieldName": "creditcardapprovalcode"
+          },
+          {
+            "property": {
+              "$ref": "#p:4_18"
+            },
+            "fieldName": "subtotal"
+          },
+          {
+            "property": {
+              "$ref": "#p:4_19"
+            },
+            "fieldName": "taxamt"
+          },
+          {
+            "property": {
+              "$ref": "#p:4_20"
+            },
+            "fieldName": "freight"
+          },
+          {
+            "property": {
+              "$ref": "#p:4_21"
+            },
+            "fieldName": "totaldue"
+          },
+          {
+            "property": {
+              "$ref": "#p:4_22"
+            },
+            "fieldName": "comment"
+          },
+          {
+            "property": {
+              "$ref": "#p:4_23"
+            },
+            "fieldName": "rowguid"
+          },
+          {
+            "property": {
+              "$ref": "#p:4_24"
+            },
+            "fieldName": "modifieddate"
+          }
+        ]
+      },
+      {
+        "node": {
+          "$ref": "#n:5"
+        },
+        "tableName": "salesperson",
+        "propertyMappings": [
+          {
+            "property": {
+              "$ref": "#p:5_0"
+            },
+            "fieldName": "businessentityid"
+          },
+          {
+            "property": {
+              "$ref": "#p:5_2"
+            },
+            "fieldName": "salesquota"
+          },
+          {
+            "property": {
+              "$ref": "#p:5_3"
+            },
+            "fieldName": "bonus"
+          },
+          {
+            "property": {
+              "$ref": "#p:5_4"
+            },
+            "fieldName": "commissionpct"
+          },
+          {
+            "property": {
+              "$ref": "#p:5_5"
+            },
+            "fieldName": "salesytd"
+          },
+          {
+            "property": {
+              "$ref": "#p:5_6"
+            },
+            "fieldName": "saleslastyear"
+          },
+          {
+            "property": {
+              "$ref": "#p:5_7"
+            },
+            "fieldName": "rowguid"
+          },
+          {
+            "property": {
+              "$ref": "#p:5_8"
+            },
+            "fieldName": "modifieddate"
+          }
+        ]
+      },
+      {
+        "node": {
+          "$ref": "#n:6"
+        },
+        "tableName": "salesreason",
+        "propertyMappings": [
+          {
+            "property": {
+              "$ref": "#p:6_0"
+            },
+            "fieldName": "salesreasonid"
+          },
+          {
+            "property": {
+              "$ref": "#p:6_3"
+            },
+            "fieldName": "modifieddate"
+          }
+        ]
+      },
+      {
+        "node": {
+          "$ref": "#n:7"
+        },
+        "tableName": "salestaxrate",
+        "propertyMappings": [
+          {
+            "property": {
+              "$ref": "#p:7_0"
+            },
+            "fieldName": "salestaxrateid"
+          },
+          {
+            "property": {
+              "$ref": "#p:7_2"
+            },
+            "fieldName": "taxtype"
+          },
+          {
+            "property": {
+              "$ref": "#p:7_3"
+            },
+            "fieldName": "taxrate"
+          },
+          {
+            "property": {
+              "$ref": "#p:7_5"
+            },
+            "fieldName": "rowguid"
+          },
+          {
+            "property": {
+              "$ref": "#p:7_6"
+            },
+            "fieldName": "modifieddate"
+          }
+        ]
+      },
+      {
+        "node": {
+          "$ref": "#n:8"
+        },
+        "tableName": "salesterritory",
+        "propertyMappings": [
+          {
+            "property": {
+              "$ref": "#p:8_0"
+            },
+            "fieldName": "territoryid"
+          },
+          {
+            "property": {
+              "$ref": "#p:8_3"
+            },
+            "fieldName": "group"
+          },
+          {
+            "property": {
+              "$ref": "#p:8_4"
+            },
+            "fieldName": "salesytd"
+          },
+          {
+            "property": {
+              "$ref": "#p:8_5"
+            },
+            "fieldName": "saleslastyear"
+          },
+          {
+            "property": {
+              "$ref": "#p:8_6"
+            },
+            "fieldName": "costytd"
+          },
+          {
+            "property": {
+              "$ref": "#p:8_7"
+            },
+            "fieldName": "costlastyear"
+          },
+          {
+            "property": {
+              "$ref": "#p:8_8"
+            },
+            "fieldName": "rowguid"
+          },
+          {
+            "property": {
+              "$ref": "#p:8_9"
+            },
+            "fieldName": "modifieddate"
+          }
+        ]
+      },
+      {
+        "node": {
+          "$ref": "#n:9"
+        },
+        "tableName": "shoppingcartitem",
+        "propertyMappings": [
+          {
+            "property": {
+              "$ref": "#p:9_0"
+            },
+            "fieldName": "shoppingcartitemid"
+          },
+          {
+            "property": {
+              "$ref": "#p:9_1"
+            },
+            "fieldName": "shoppingcartid"
+          },
+          {
+            "property": {
+              "$ref": "#p:9_2"
+            },
+            "fieldName": "quantity"
+          },
+          {
+            "property": {
+              "$ref": "#p:9_4"
+            },
+            "fieldName": "datecreated"
+          },
+          {
+            "property": {
+              "$ref": "#p:9_5"
+            },
+            "fieldName": "modifieddate"
+          }
+        ]
+      },
+      {
+        "node": {
+          "$ref": "#n:10"
+        },
+        "tableName": "specialoffer",
+        "propertyMappings": [
+          {
+            "property": {
+              "$ref": "#p:10_0"
+            },
+            "fieldName": "specialofferid"
+          },
+          {
+            "property": {
+              "$ref": "#p:10_1"
+            },
+            "fieldName": "description"
+          },
+          {
+            "property": {
+              "$ref": "#p:10_2"
+            },
+            "fieldName": "discountpct"
+          },
+          {
+            "property": {
+              "$ref": "#p:10_3"
+            },
+            "fieldName": "type"
+          },
+          {
+            "property": {
+              "$ref": "#p:10_4"
+            },
+            "fieldName": "category"
+          },
+          {
+            "property": {
+              "$ref": "#p:10_5"
+            },
+            "fieldName": "startdate"
+          },
+          {
+            "property": {
+              "$ref": "#p:10_6"
+            },
+            "fieldName": "enddate"
+          },
+          {
+            "property": {
+              "$ref": "#p:10_7"
+            },
+            "fieldName": "minqty"
+          },
+          {
+            "property": {
+              "$ref": "#p:10_8"
+            },
+            "fieldName": "maxqty"
+          },
+          {
+            "property": {
+              "$ref": "#p:10_9"
+            },
+            "fieldName": "rowguid"
+          },
+          {
+            "property": {
+              "$ref": "#p:10_10"
+            },
+            "fieldName": "modifieddate"
+          }
+        ]
+      },
+      {
+        "node": {
+          "$ref": "#n:11"
+        },
+        "tableName": "store",
+        "propertyMappings": [
+          {
+            "property": {
+              "$ref": "#p:11_0"
+            },
+            "fieldName": "businessentityid"
+          },
+          {
+            "property": {
+              "$ref": "#p:11_4"
+            },
+            "fieldName": "rowguid"
+          },
+          {
+            "property": {
+              "$ref": "#p:11_5"
+            },
+            "fieldName": "modifieddate"
+          }
+        ]
+      }
+    ],
+    "relationshipMappings": [
+      {
+        "relationship": {
+          "$ref": "#r:0"
+        },
+        "tableName": "customer",
+        "fromMappings": {
+          "#p:3_0": "customerid"
+        },
+        "toMappings": {
+          "#p:8_0": "territoryid"
+        },
+        "propertyMappings": []
+      },
+      {
+        "relationship": {
+          "$ref": "#r:1"
+        },
+        "tableName": "customer",
+        "fromMappings": {
+          "#p:3_0": "customerid"
+        },
+        "toMappings": {
+          "#p:11_0": "storeid"
+        },
+        "propertyMappings": []
+      },
+      {
+        "relationship": {
+          "$ref": "#r:2"
+        },
+        "tableName": "salesorderheader",
+        "fromMappings": {
+          "#p:4_0": "salesorderid"
+        },
+        "toMappings": {
+          "#p:0_0": "creditcardid"
+        },
+        "propertyMappings": []
+      },
+      {
+        "relationship": {
+          "$ref": "#r:3"
+        },
+        "tableName": "salesorderheader",
+        "fromMappings": {
+          "#p:4_0": "salesorderid"
+        },
+        "toMappings": {
+          "#p:2_0": "currencyrateid"
+        },
+        "propertyMappings": []
+      },
+      {
+        "relationship": {
+          "$ref": "#r:4"
+        },
+        "tableName": "salesorderheader",
+        "fromMappings": {
+          "#p:4_0": "salesorderid"
+        },
+        "toMappings": {
+          "#p:3_0": "customerid"
+        },
+        "propertyMappings": []
+      },
+      {
+        "relationship": {
+          "$ref": "#r:5"
+        },
+        "tableName": "salesorderheader",
+        "fromMappings": {
+          "#p:4_0": "salesorderid"
+        },
+        "toMappings": {
+          "#p:5_0": "salespersonid"
+        },
+        "propertyMappings": []
+      },
+      {
+        "relationship": {
+          "$ref": "#r:6"
+        },
+        "tableName": "salesorderheader",
+        "fromMappings": {
+          "#p:4_0": "salesorderid"
+        },
+        "toMappings": {
+          "#p:8_0": "territoryid"
+        },
+        "propertyMappings": []
+      },
+      {
+        "relationship": {
+          "$ref": "#r:7"
+        },
+        "tableName": "salesorderheadersalesreason",
+        "fromMappings": {
+          "#p:4_0": "salesorderid"
+        },
+        "toMappings": {
+          "#p:6_0": "salesreasonid"
+        },
+        "propertyMappings": [
+          {
+            "property": {
+              "$ref": "#p:7_0"
+            },
+            "fieldName": "modifieddate"
+          }
+        ]
+      },
+      {
+        "relationship": {
+          "$ref": "#r:8"
+        },
+        "tableName": "salesperson",
+        "fromMappings": {
+          "#p:5_0": "businessentityid"
+        },
+        "toMappings": {
+          "#p:8_0": "territoryid"
+        },
+        "propertyMappings": []
+      },
+      {
+        "relationship": {
+          "$ref": "#r:9"
+        },
+        "tableName": "store",
+        "fromMappings": {
+          "#p:11_0": "businessentityid"
+        },
+        "toMappings": {
+          "#p:5_0": "salespersonid"
+        },
+        "propertyMappings": []
+      }
+    ]
+  },
+  "configurations": {
+    "idsToIgnore": []
+  }
+}

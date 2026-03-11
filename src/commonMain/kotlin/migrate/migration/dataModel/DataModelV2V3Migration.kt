@@ -17,7 +17,6 @@
 package migrate.migration.dataModel
 
 import codec.schema.SchemaMap
-import codec.schema.schemaListOf
 import codec.schema.schemaMapOf
 import migrate.Migration
 import model.Version
@@ -27,21 +26,14 @@ import model.Version
  */
 class DataModelV2V3Migration(version: String) : Migration(version, Version.DATA_MODEL_V30) {
     override fun migrate(schema: SchemaMap): SchemaMap {
-        if (schema.containsKey("dataModel")) {
-            val model = schema.map("dataModel")
-            schema.remove("dataModel")
-            schema.remove("version")
-            model.putAll(schema)
-            return migrate(model)
-        }
+        val schema = unwrap(schema)
         // Replace singular keyProperty with a list keyProperties
         val extensions = schema.map("graphSchemaExtensionsRepresentation")
         val nodeKeyProperties = extensions.listOfMaps("nodeKeyProperties")
         val references = mutableMapOf<String, String>()
         for (property in nodeKeyProperties) {
-            val key = property.map("keyProperty")
-            property.remove("keyProperty")
-            property["keyProperties"] = schemaListOf(key)
+            val key = property.removeMap("keyProperty")
+            property["keyProperties"] = mutableListOf(key)
             // Store refs for node -> property
             val nodeRef = property.map("node").string("\$ref")
             val keyRef = key.string("\$ref")
@@ -80,7 +72,20 @@ class DataModelV2V3Migration(version: String) : Migration(version, Version.DATA_
         val toPropertyRef =
             references[nodeRef] ?: error("Unable to resolve nodeKeyProperties to node ref $nodeRef")
         val toFieldName = mapping.map(key).literal("fieldName")
-        mapping["${key}s"] = schemaListOf(schemaMapOf(toPropertyRef to toFieldName))
+        mapping["${key}s"] = mutableListOf(schemaMapOf(toPropertyRef to toFieldName))
         mapping.remove(key)
+    }
+
+    companion object {
+        fun unwrap(schema: SchemaMap): SchemaMap {
+            if (schema.containsKey("dataModel")) {
+                val model = schema.map("dataModel")
+                schema.remove("dataModel")
+                schema.remove("version")
+                model.putAll(schema)
+                return model
+            }
+            return schema
+        }
     }
 }
