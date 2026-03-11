@@ -26,7 +26,8 @@
             "target_property": "property2",
             "target_property_type": "ZONED_DATETIME_ARRAY"
         },
-        {"source_field": "field_3", "target_property": "property3", "target_property_type": "boolean"}
+        {"source_field": "field_3", "target_property": "property3", "target_property_type": "boolean"},
+        {"source_field": "field_4", "target_property": "property4", "target_property_type": "float_vector"}
     ],
     "schema": {
         "type_constraints": [

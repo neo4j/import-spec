@@ -1,0 +1,26 @@
+version: "1"
+sources:
+  - type: bigquery
+    name: my-bigquery-source
+    query: SELECT id, name FROM my.table
+targets:
+  nodes:
+    - name: my-node
+      source: my-bigquery-source
+      active: true
+      write_mode: CREATE
+      labels: [ALabel]
+      properties:
+        - source_field: id
+          target_property: id
+          target_property_type:
+            name: STRING
+        - source_field: vec
+          target_property: vec
+          target_property_type:
+            name: FLOAT_VECTOR
+            dimension: 128
+        - source_field: array
+          target_property: array
+          target_property_type:
+            name: BOOLEAN_ARRAY
