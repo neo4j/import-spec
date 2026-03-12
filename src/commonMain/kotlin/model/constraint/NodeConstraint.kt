@@ -16,11 +16,15 @@
  */
 package model.constraint
 
+import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
 import kotlin.js.JsExport
 
 @JsExport
 @Serializable
-sealed interface NodeConstraint : Constraint {
-    val label: String
-}
+data class NodeConstraint(
+    val kind: String,
+    val label: String,
+    override val properties: Set<String> = emptySet(),
+    val options: Map<String, @Contextual Any> = emptyMap()
+) : Constraint

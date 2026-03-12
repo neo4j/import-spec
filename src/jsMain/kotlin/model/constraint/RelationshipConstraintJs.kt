@@ -16,7 +16,31 @@
  */
 package model.constraint
 
+import js.objects.ReadonlyRecord
+import js.objects.toReadonlyRecord
 import kotlinx.js.JsPlainObject
+import model.toMap
 
 @JsExport @JsPlainObject
-external interface RelationshipConstraintJs : ConstraintJs
+external interface RelationshipConstraintJs : ConstraintJs {
+    val options: ReadonlyRecord<String, Any>
+}
+
+fun relationshipConstraintJs(kind: String, properties: Array<String>, options: ReadonlyRecord<String, Any>) =
+    object : RelationshipConstraintJs {
+        override val kind = kind
+        override val properties = properties
+        override val options = options
+    }
+
+fun RelationshipConstraint.toJs(): RelationshipConstraintJs = relationshipConstraintJs(
+    kind = kind,
+    properties = properties.toTypedArray(),
+    options = options.toReadonlyRecord()
+)
+
+fun RelationshipConstraintJs.toClass(): RelationshipConstraint = RelationshipConstraint(
+    kind = kind,
+    properties = properties.toSet(),
+    options = options.toMap()
+)

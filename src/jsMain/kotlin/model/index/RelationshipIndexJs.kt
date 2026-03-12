@@ -16,10 +16,33 @@
  */
 package model.index
 
+import js.objects.ReadonlyRecord
+import js.objects.toReadonlyRecord
 import kotlinx.js.JsPlainObject
+import model.toMap
 
 @JsExport
 @JsPlainObject
 external interface RelationshipIndexJs : IndexJs {
     val properties: Array<String>
+    val options: ReadonlyRecord<String, Any>
 }
+
+fun relationshipIndexJs(kind: String, properties: Array<String>, options: ReadonlyRecord<String, Any>) =
+    object : RelationshipIndexJs {
+        override val kind = kind
+        override val properties = properties
+        override val options = options
+    }
+
+fun RelationshipIndex.toJs(): RelationshipIndexJs = relationshipIndexJs(
+    kind = kind,
+    properties = properties.toTypedArray(),
+    options = options.toReadonlyRecord()
+)
+
+fun RelationshipIndexJs.toClass(): RelationshipIndex = RelationshipIndex(
+    kind = kind,
+    properties = properties.toSet(),
+    options = options.toMap()
+)

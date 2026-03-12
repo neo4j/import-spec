@@ -16,65 +16,36 @@
  */
 package model.constraint
 
+import js.objects.ReadonlyRecord
 import js.objects.toReadonlyRecord
 import kotlinx.js.JsPlainObject
-import model.Neo4jType
 import model.toMap
 
 @JsExport
 @JsPlainObject
 external interface NodeConstraintJs : ConstraintJs {
     val label: String
+    val options: ReadonlyRecord<String, Any>
 }
 
-fun NodeConstraint.toJs(): NodeConstraintJs = when (this) {
-    is NodeExistConstraint -> nodeExistConstraintJs(
-        type = ConstraintType.EXISTS,
-        label = label,
-        properties = properties.toTypedArray(),
-        options = options.toReadonlyRecord()
-    )
-    is NodeKeyConstraint -> nodeKeyConstraintJs(
-        type = ConstraintType.KEY,
-        label = label,
-        properties = properties.toTypedArray(),
-        options = options.toReadonlyRecord()
-    )
-    is NodeTypeConstraint -> nodeTypeConstraintJs(
-        type = ConstraintType.TYPE,
-        dataType = dataType.name,
-        label = label,
-        properties = properties.toTypedArray()
-    )
-    is NodeUniqueConstraint -> nodeUniqueConstraintJs(
-        type = ConstraintType.UNIQUE,
-        label = label,
-        properties = properties.toTypedArray(),
-        options = options.toReadonlyRecord()
-    )
-}
+fun nodeConstraintJs(kind: String, label: String, properties: Array<String>, options: ReadonlyRecord<String, Any>) =
+    object : NodeConstraintJs {
+        override val kind = kind
+        override val label = label
+        override val properties = properties
+        override val options = options
+    }
 
-@Suppress("UNCHECKED_CAST_TO_EXTERNAL_INTERFACE")
-fun NodeConstraintJs.toClass(node: String, constraint: String): NodeConstraint = when (type) {
-    ConstraintType.EXISTS -> NodeExistConstraint(
-        label = label,
-        properties = properties.toSet(),
-        options = (this as NodeExistConstraintJs).options.toMap()
-    )
-    ConstraintType.KEY -> NodeKeyConstraint(
-        label = label,
-        properties = properties.toSet(),
-        options = (this as NodeKeyConstraintJs).options.toMap()
-    )
-    ConstraintType.TYPE -> NodeTypeConstraint(
-        Neo4jType.valueOf((this as NodeTypeConstraintJs).dataType),
-        label = label,
-        properties = properties.toSet()
-    )
-    ConstraintType.UNIQUE -> NodeUniqueConstraint(
-        label = label,
-        properties = properties.toSet(),
-        options = (this as NodeUniqueConstraintJs).options.toMap()
-    )
-    else -> error("Invalid node constraint type '$type' for nodes.$node.constraints.$constraint.type")
-}
+fun NodeConstraint.toJs(): NodeConstraintJs = nodeConstraintJs(
+    kind = kind,
+    label = label,
+    properties = properties.toTypedArray(),
+    options = options.toReadonlyRecord()
+)
+
+fun NodeConstraintJs.toClass(): NodeConstraint = NodeConstraint(
+    kind = kind,
+    label = label,
+    properties = properties.toSet(),
+    options = options.toMap()
+)

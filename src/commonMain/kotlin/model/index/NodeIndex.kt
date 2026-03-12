@@ -16,12 +16,15 @@
  */
 package model.index
 
+import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
 import kotlin.js.JsExport
 
 @JsExport
 @Serializable
-sealed interface NodeIndex : Index {
-    val labels: Set<String>
-    val properties: Set<String>
-}
+data class NodeIndex(
+    val kind: String,
+    val labels: Set<String>,
+    val properties: Set<String>,
+    val options: Map<String, @Contextual Any>
+) : Index

@@ -16,6 +16,7 @@
  */
 package model.index
 
+import js.objects.ReadonlyRecord
 import js.objects.toReadonlyRecord
 import kotlinx.js.JsPlainObject
 import model.toMap
@@ -25,62 +26,27 @@ import model.toMap
 external interface NodeIndexJs : IndexJs {
     val labels: Array<String>
     val properties: Array<String>
+    val options: ReadonlyRecord<String, Any>
 }
 
-fun NodeIndex.toJs(): NodeIndexJs = when (this) {
-    is NodeFullTextIndex -> nodeFullTextIndexJs(
-        type = IndexType.FULLTEXT,
-        labels = labels.toTypedArray(),
-        properties = properties.toTypedArray(),
-        options = options.toReadonlyRecord()
-    )
-    is NodePointIndex -> nodePointIndexJs(
-        type = IndexType.POINT,
-        labels = labels.toTypedArray(),
-        properties = properties.toTypedArray(),
-        options = options.toReadonlyRecord()
-    )
-    is NodeRangeIndex -> nodeRangeIndexJs(
-        type = IndexType.RANGE,
-        labels = labels.toTypedArray(),
-        properties = properties.toTypedArray()
-    )
-    is NodeTextIndex -> nodeTextIndexJs(
-        type = IndexType.TEXT,
-        labels = labels.toTypedArray(),
-        properties = properties.toTypedArray(),
-        options = options.toReadonlyRecord()
-    )
-    is NodeVectorIndex -> nodeVectorIndexJs(
-        type = IndexType.VECTOR,
-        labels = labels.toTypedArray(),
-        properties = properties.toTypedArray(),
-        options = options.toReadonlyRecord()
-    )
-}
+fun nodeIndexJs(kind: String, labels: Array<String>, properties: Array<String>, options: ReadonlyRecord<String, Any>) =
+    object : NodeIndexJs {
+        override val kind = kind
+        override val labels = labels
+        override val properties = properties
+        override val options = options
+    }
 
-@Suppress("UNCHECKED_CAST_TO_EXTERNAL_INTERFACE")
-fun NodeIndexJs.toClass(node: String, index: String): NodeIndex = when (type) {
-    IndexType.FULLTEXT -> NodeFullTextIndex(
-        labels = labels.toSet(),
-        properties = properties.toSet(),
-        options = (this as NodeFullTextIndexJs).options.toMap()
-    )
-    IndexType.POINT -> NodePointIndex(
-        labels = labels.toSet(),
-        properties = properties.toSet(),
-        options = (this as NodePointIndexJs).options.toMap()
-    )
-    IndexType.RANGE -> NodeRangeIndex(labels = labels.toSet(), properties = properties.toSet())
-    IndexType.TEXT -> NodeTextIndex(
-        labels = labels.toSet(),
-        properties = properties.toSet(),
-        options = (this as NodeTextIndexJs).options.toMap()
-    )
-    IndexType.VECTOR -> NodeVectorIndex(
-        labels = labels.toSet(),
-        properties = properties.toSet(),
-        options = (this as NodeVectorIndexJs).options.toMap()
-    )
-    else -> error("Invalid node index type '$type' for nodes.$node.indexes.$index.type")
-}
+fun NodeIndex.toJs(): NodeIndexJs = nodeIndexJs(
+    kind = kind,
+    labels = labels.toTypedArray(),
+    properties = properties.toTypedArray(),
+    options = options.toReadonlyRecord()
+)
+
+fun NodeIndexJs.toClass(): NodeIndex = NodeIndex(
+    kind = kind,
+    labels = labels.toSet(),
+    properties = properties.toSet(),
+    options = options.toMap()
+)

@@ -21,5 +21,5 @@ import kotlinx.js.JsPlainObject
 @JsExport
 @JsPlainObject
 external interface IndexJs {
-    val type: String
+    val kind: String
 }

@@ -16,8 +16,13 @@
  */
 package model.constraint
 
+import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
 import kotlin.js.JsExport
 
 @JsExport @Serializable
-sealed interface RelationshipConstraint : Constraint
+data class RelationshipConstraint(
+    val kind: String,
+    override val properties: Set<String> = emptySet(),
+    val options: Map<String, @Contextual Any> = emptyMap()
+) : Constraint
