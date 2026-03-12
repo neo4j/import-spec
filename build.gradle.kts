@@ -59,6 +59,11 @@ tasks.named("jsBrowserProductionLibraryDistribution") {
     finalizedBy("generateTsUnions")
 }
 
+/*
+    Kotlin/JS doesn't support TypeScript unions
+    This script modifies the generated types and generates a string union given a basic enum.
+    It's a brittle hack but the type safety is much preferred on the frontend.
+ */
 tasks.register("generateTsUnions") {
     doLast {
         val mtsFile = file("./build/dist/js/productionLibrary/graph-spec.d.mts")
@@ -70,19 +75,6 @@ tasks.register("generateTsUnions") {
         content = setUnionType(content, "IndexJs", "kind", "IndexTypeJs")
         mtsFile.writeText(content)
     }
-}
-
-private fun setUnionType(
-    file: String,
-    parent: String,
-    param: String,
-    enum: String
-): String {
-    val index = file.indexOf("export declare interface $parent {")
-    require(index != -1) { "Unable to find parent class $parent" }
-    val start = file.indexOf("$param: string;")
-    require(start != -1) { "Unable to find string param $parent" }
-    return file.replaceRange(start..start + 8 + param.length, "$param: $enum;")
 }
 
 private fun generateUnion(
@@ -104,7 +96,20 @@ private fun generateUnion(
     val end = text.indexOf(";", start + 12)
     require(end != -1) { "No enum found for class $enum" }
     val types = text.substring(start + 12, end)
-    return file.replaceRange(index..index, "\nexport type $union = $types\ne")
+    return file.replaceRange(index..index, "export type $union = $types\ne")
+}
+
+private fun setUnionType(
+    file: String,
+    parent: String,
+    param: String,
+    enum: String
+): String {
+    val index = file.indexOf("export declare interface $parent {")
+    require(index != -1) { "Unable to find parent class $parent" }
+    val start = file.indexOf("$param: string;")
+    require(start != -1) { "Unable to find string param $parent" }
+    return file.replaceRange(start..start + 8 + param.length, "$param: $enum;")
 }
 
 scmVersion {
