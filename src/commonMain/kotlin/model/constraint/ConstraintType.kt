@@ -19,9 +19,9 @@ package model.constraint
 import kotlin.js.JsExport
 
 @JsExport
-object ConstraintType {
-    const val EXISTS = "EXISTS"
-    const val KEY = "KEY"
-    const val TYPE = "TYPE"
-    const val UNIQUE = "UNIQUE"
+enum class ConstraintType {
+    EXISTS,
+    KEY,
+    TYPE,
+    UNIQUE,
 }

@@ -144,7 +144,7 @@ class DataModelV3GraphSpecMigration : Migration(Version.DATA_MODEL_V30, Version.
                 else -> error("Unknown index type: '$type' at ${index.path}.$name")
             }
             val idx = schemaMapOf()
-            idx["type"] = indexType
+            idx["type"] = indexType.name
             idx["label"] = label
             if (properties != null) {
                 idx["properties"] = properties.map {
@@ -188,7 +188,7 @@ class DataModelV3GraphSpecMigration : Migration(Version.DATA_MODEL_V30, Version.
                 }
             }
             val constr = schemaMapOf()
-            constr["type"] = constraintType
+            constr["type"] = constraintType.name
             constr["label"] = label
             if (properties != null) {
                 constr["properties"] = properties.map {

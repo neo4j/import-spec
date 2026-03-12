@@ -140,10 +140,10 @@ object Prettify {
                         ?: error("Expected property string at ${properties.path}[0]")
                     val property = nodeProperties[propertyId] ?: error("Unable to find property $propertyId")
                     val type = constraint.string("kind")
-                    if (type == ConstraintType.EXISTS) {
+                    if (type == ConstraintType.EXISTS.name) {
                         property["nullable"] = false
                         toRemove.add(key)
-                    } else if (type == ConstraintType.UNIQUE) {
+                    } else if (type == ConstraintType.UNIQUE.name) {
                         property["unique"] = true
                         toRemove.add(key)
                     }

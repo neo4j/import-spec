@@ -19,11 +19,11 @@ package model.index
 import kotlin.js.JsExport
 
 @JsExport
-object IndexType {
-    const val FULLTEXT = "FULLTEXT"
-    const val POINT = "POINT"
-    const val RANGE = "RANGE"
-    const val TEXT = "TEXT"
-    const val VECTOR = "VECTOR"
-    const val LOOKUP = "LOOKUP"
+enum class IndexType {
+    FULLTEXT,
+    POINT,
+    RANGE,
+    TEXT,
+    VECTOR,
+    LOOKUP,
 }

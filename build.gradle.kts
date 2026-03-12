@@ -62,25 +62,40 @@ tasks.named("jsBrowserProductionLibraryDistribution") {
 tasks.register("generateTsUnions") {
     doLast {
         val mtsFile = file("./build/dist/js/productionLibrary/graph-spec.d.mts")
-        if (!mtsFile.exists()) {
-            println("No definitions file found")
-            return@doLast
-        }
+        require(mtsFile.exists()) { "Typescript file missing."}
         var content = mtsFile.readText()
-        content =
-            content.replace(
-                "export declare interface ConstraintJs {\n" +
-                    "    readonly kind: string;\n" +
-                    "    readonly properties: Array<string>;\n" +
-                    "}",
-                "export type ConstraintTypeJs = \"EXISTS\" | \"KEY\" | \"TYPE\" | \"UNIQUE\";\n" +
-                    "export declare interface ConstraintJs {\n" +
-                    "    readonly kind: ConstraintTypeJs;\n" +
-                    "    readonly properties: Array<string>;\n" +
-                    "}"
-            )
+        content = generateUnion(content, "ConstraintType", "ConstraintTypeJs")
+        content = generateUnion(content, "IndexType", "IndexTypeJs")
+        content = setUnionType(content, "ConstraintJs", "kind", "ConstraintTypeJs")
+        content = setUnionType(content, "IndexJs", "kind", "IndexTypeJs")
         mtsFile.writeText(content)
     }
+}
+
+private fun setUnionType(file: String, parent: String, param: String, enum: String): String {
+    val index = file.indexOf("export declare interface $parent {")
+    require(index != -1) { "Unable to find parent class $parent" }
+    val start = file.indexOf("${param}: string;")
+    require(start != -1) { "Unable to find string param $parent" }
+    return file.replaceRange(start.. start + 8 + param.length, "${param}: $enum;")
+}
+
+private fun generateUnion(file: String, enum: String, union: String): String {
+    if (file.contains("export type $union")) {
+        return file
+    }
+    val index = file.indexOf("export declare abstract class $enum {")
+    require(index != -1) { "No class found $enum" }
+    val final = file.indexOf("static values()", index)
+    require(final != -1) { "No enum found for class $enum" }
+    val text = file.substring(index, final)
+
+    val start = text.lastIndexOf("get name(): ")
+    require(start != -1) { "No enum found for class $enum" }
+    val end = text.indexOf(";", start + 12)
+    require(end != -1) { "No enum found for class $enum" }
+    val types = text.substring(start + 12, end)
+    return file.replaceRange(index..index, "\nexport type $union = $types\ne")
 }
 
 scmVersion {

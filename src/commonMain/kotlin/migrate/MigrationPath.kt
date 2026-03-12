@@ -22,10 +22,9 @@ import model.Type
 class MigrationPath(val migrations: Map<String, List<Migration>>) {
 
     fun migrate(schema: SchemaMap, type: String, targetVersion: String): SchemaMap {
-        println("Migrate: $schema")
         val from = version(schema, type)
         val to = version(targetVersion, Type.GRAPH_SPEC)
-        val path = findPath(from, to) ?: error("No migration path found between versions $from and $to")
+        val path = findPath(from, to) ?: error("Unsupported ${type}version: $from")
         var map = schema
         for (migration in path) {
             map = migration.migrate(map)

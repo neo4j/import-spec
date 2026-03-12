@@ -37,8 +37,8 @@ external interface NodeJs {
 fun NodeJs.toClass(id: String): Node = Node(
     labels = labels.toSet(),
     properties = properties.associateBy { key, value -> value.toClass(id, key) },
-    constraints = constraints.associateBy { key, value -> value.toClass(id, key) },
-    indexes = indexes.associateBy { key, value -> value.toClass(id, key) },
+    constraints = constraints.associateBy { key, value -> value.toClass() },
+    indexes = indexes.associateBy { key, value -> value.toClass() },
     extensions = extensions.toMap()
 )
 
