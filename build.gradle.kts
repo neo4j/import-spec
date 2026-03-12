@@ -20,6 +20,7 @@ kotlin {
     // Override target source sets for KMP
     sourceSets {
         commonMain.dependencies {
+            implementation(libs.kotlinx.schema)
             implementation(libs.kotlinx.serializer.json)
             implementation(libs.kotlinx.yamlkt)
         }
@@ -69,12 +70,12 @@ tasks.register("generateTsUnions") {
         content =
             content.replace(
                 "export declare interface ConstraintJs {\n" +
-                    "    readonly type: string;\n" +
+                    "    readonly kind: string;\n" +
                     "    readonly properties: Array<string>;\n" +
                     "}",
                 "export type ConstraintTypeJs = \"EXISTS\" | \"KEY\" | \"TYPE\" | \"UNIQUE\";\n" +
                     "export declare interface ConstraintJs {\n" +
-                    "    readonly type: ConstraintTypeJs;\n" +
+                    "    readonly kind: ConstraintTypeJs;\n" +
                     "    readonly properties: Array<string>;\n" +
                     "}"
             )

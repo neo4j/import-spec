@@ -1,9 +1,14 @@
 package migrate.migration.dataModel
 
+import GraphSpec
 import codec.format.JsonFormat
 import codec.format.YamlFormat
 import codec.schema.SchemaMap
 import codec.format.Prettify
+import kotlinx.schema.generator.json.serialization.SerializationClassJsonSchemaGenerator
+import kotlinx.schema.json.encodeToString
+import kotlinx.serialization.json.Json
+import model.GraphModel
 import org.junit.jupiter.api.Disabled
 import resourceAsString
 import java.io.File
@@ -27,33 +32,62 @@ class DataModelV3GraphSpecMigrationTest {
     }
 
     @Test
-    fun `Test adventureworks`() {
-        val input = DataModelV3GraphSpecMigrationTest::class.resourceAsString("adventureworks-sales.json")
-        val migration = DataModelV3GraphSpecMigration()
-        val format = JsonFormat.build()
-
-        val schema = format.decodeFromString(input) as SchemaMap
-        var output = migration.migrate(schema)
-
-        output = Prettify.transform(output)
-
-        val yaml = YamlFormat.build()
-        println(yaml.encodeToString(output))
+    fun `Generate schema`() {
+        val generator = SerializationClassJsonSchemaGenerator.Default
+        val schema = generator.generateSchema(GraphModel.serializer().descriptor)
+        println(schema.encodeToString(Json { prettyPrint = true }))
     }
 
     @Test
-    fun `Test chinook`() {
-        val input = DataModelV3GraphSpecMigrationTest::class.resourceAsString("chinook.json")
-        val migration = DataModelV3GraphSpecMigration()
-        val format = JsonFormat.build()
+    fun `Test examples`() {
+        val list = listOf(
+            "adventureworks-sales.json",
+            "chinook.json",
+            "dvd-rental.json",
+            "flights.json",
+            "ldbc.json",
+            "northwind.json",
+            "pandc.json"
+        )
+        for (name in list) {
+            val input = DataModelV3GraphSpecMigrationTest::class.resourceAsString("prod-like/$name")
+            val migration = DataModelV3GraphSpecMigration()
+            val format = JsonFormat.build()
 
-        val schema = format.decodeFromString(input) as SchemaMap
-        var output = migration.migrate(schema)
+            val schema = format.decodeFromString(input) as SchemaMap
 
-        output = Prettify.transform(output)
+            var output = migration.migrate(schema)
+            output = Prettify.transform(output)
 
-        val yaml = YamlFormat.build()
-        println(yaml.encodeToString(output))
+            val yaml = YamlFormat.build()
+            val string = yaml.encodeToString(output)
+
+            File("./${name.replace(".json", ".yaml")}").writeText(string)
+        }
+    }
+
+    @Test
+    fun `Test others`() {
+        val list = listOf(
+            "industry/transactions-and-account.json",
+            "industry/publication-intelligence.json",
+            "industry/patient-journey.json",
+            // ttl
+            "ttl/owl-time.json",
+            "ttl/foaf.json",
+            "ttl/bibo.json",
+        )
+        for (name in list) {
+            val input = DataModelV3GraphSpecMigrationTest::class.resourceAsString(name)
+
+            val output = GraphSpec.Json.decodeFromString(input)
+
+            println("Decoded $output")
+
+            val string = GraphSpec.Yaml.encodeToString(output)
+
+            File("./${name.replace(".json", ".yaml")}").writeText(string)
+        }
     }
 
     @Test

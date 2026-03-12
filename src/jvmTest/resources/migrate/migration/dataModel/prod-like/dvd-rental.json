@@ -1,0 +1,4543 @@
+{
+  "version": "3.0.0",
+  "graphSchemaRepresentation": {
+    "version": "1.0.0",
+    "graphSchema": {
+      "nodeLabels": [
+        {
+          "$id": "nl:0",
+          "token": "actor",
+          "properties": [
+            {
+              "$id": "p:0_0",
+              "token": "actor_id",
+              "type": {
+                "type": "integer"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:0_1",
+              "token": "first_name",
+              "type": {
+                "type": "string"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:0_2",
+              "token": "last_name",
+              "type": {
+                "type": "string"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:0_3",
+              "token": "last_update",
+              "type": {
+                "type": "datetime"
+              },
+              "nullable": false
+            }
+          ]
+        },
+        {
+          "$id": "nl:1",
+          "token": "address",
+          "properties": [
+            {
+              "$id": "p:1_0",
+              "token": "address_id",
+              "type": {
+                "type": "integer"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:1_1",
+              "token": "address",
+              "type": {
+                "type": "string"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:1_2",
+              "token": "address2",
+              "type": {
+                "type": "string"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:1_3",
+              "token": "district",
+              "type": {
+                "type": "string"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:1_5",
+              "token": "postal_code",
+              "type": {
+                "type": "string"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:1_6",
+              "token": "phone",
+              "type": {
+                "type": "string"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:1_7",
+              "token": "last_update",
+              "type": {
+                "type": "datetime"
+              },
+              "nullable": false
+            }
+          ]
+        },
+        {
+          "$id": "nl:2",
+          "token": "category",
+          "properties": [
+            {
+              "$id": "p:2_0",
+              "token": "category_id",
+              "type": {
+                "type": "integer"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:2_1",
+              "token": "name",
+              "type": {
+                "type": "string"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:2_2",
+              "token": "last_update",
+              "type": {
+                "type": "datetime"
+              },
+              "nullable": false
+            }
+          ]
+        },
+        {
+          "$id": "nl:3",
+          "token": "city",
+          "properties": [
+            {
+              "$id": "p:3_0",
+              "token": "city_id",
+              "type": {
+                "type": "integer"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:3_1",
+              "token": "city",
+              "type": {
+                "type": "string"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:3_3",
+              "token": "last_update",
+              "type": {
+                "type": "datetime"
+              },
+              "nullable": false
+            }
+          ]
+        },
+        {
+          "$id": "nl:4",
+          "token": "country",
+          "properties": [
+            {
+              "$id": "p:4_0",
+              "token": "country_id",
+              "type": {
+                "type": "integer"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:4_1",
+              "token": "country",
+              "type": {
+                "type": "string"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:4_2",
+              "token": "last_update",
+              "type": {
+                "type": "datetime"
+              },
+              "nullable": false
+            }
+          ]
+        },
+        {
+          "$id": "nl:5",
+          "token": "customer",
+          "properties": [
+            {
+              "$id": "p:5_0",
+              "token": "customer_id",
+              "type": {
+                "type": "integer"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:5_1",
+              "token": "store_id",
+              "type": {
+                "type": "integer"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:5_2",
+              "token": "first_name",
+              "type": {
+                "type": "string"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:5_3",
+              "token": "last_name",
+              "type": {
+                "type": "string"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:5_4",
+              "token": "email",
+              "type": {
+                "type": "string"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:5_6",
+              "token": "activebool",
+              "type": {
+                "type": "boolean"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:5_7",
+              "token": "create_date",
+              "type": {
+                "type": "date"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:5_8",
+              "token": "last_update",
+              "type": {
+                "type": "datetime"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:5_9",
+              "token": "active",
+              "type": {
+                "type": "integer"
+              },
+              "nullable": false
+            }
+          ]
+        },
+        {
+          "$id": "nl:6",
+          "token": "film",
+          "properties": [
+            {
+              "$id": "p:6_0",
+              "token": "film_id",
+              "type": {
+                "type": "integer"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:6_1",
+              "token": "title",
+              "type": {
+                "type": "string"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:6_2",
+              "token": "description",
+              "type": {
+                "type": "string"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:6_5",
+              "token": "rental_duration",
+              "type": {
+                "type": "integer"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:6_6",
+              "token": "rental_rate",
+              "type": {
+                "type": "float"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:6_7",
+              "token": "length",
+              "type": {
+                "type": "integer"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:6_8",
+              "token": "replacement_cost",
+              "type": {
+                "type": "float"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:6_9",
+              "token": "rating",
+              "type": {
+                "type": "string"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:6_10",
+              "token": "last_update",
+              "type": {
+                "type": "datetime"
+              },
+              "nullable": false
+            }
+          ]
+        },
+        {
+          "$id": "nl:7",
+          "token": "inventory",
+          "properties": [
+            {
+              "$id": "p:7_0",
+              "token": "inventory_id",
+              "type": {
+                "type": "integer"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:7_2",
+              "token": "store_id",
+              "type": {
+                "type": "integer"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:7_3",
+              "token": "last_update",
+              "type": {
+                "type": "datetime"
+              },
+              "nullable": false
+            }
+          ]
+        },
+        {
+          "$id": "nl:8",
+          "token": "language",
+          "properties": [
+            {
+              "$id": "p:8_0",
+              "token": "language_id",
+              "type": {
+                "type": "integer"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:8_1",
+              "token": "name",
+              "type": {
+                "type": "string"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:8_2",
+              "token": "last_update",
+              "type": {
+                "type": "datetime"
+              },
+              "nullable": false
+            }
+          ]
+        },
+        {
+          "$id": "nl:9",
+          "token": "payment",
+          "properties": [
+            {
+              "$id": "p:9_0",
+              "token": "payment_id",
+              "type": {
+                "type": "integer"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:9_4",
+              "token": "amount",
+              "type": {
+                "type": "float"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:9_5",
+              "token": "payment_date",
+              "type": {
+                "type": "datetime"
+              },
+              "nullable": false
+            }
+          ]
+        },
+        {
+          "$id": "nl:10",
+          "token": "rental",
+          "properties": [
+            {
+              "$id": "p:10_0",
+              "token": "rental_id",
+              "type": {
+                "type": "integer"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:10_1",
+              "token": "rental_date",
+              "type": {
+                "type": "datetime"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:10_4",
+              "token": "return_date",
+              "type": {
+                "type": "datetime"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:10_6",
+              "token": "last_update",
+              "type": {
+                "type": "datetime"
+              },
+              "nullable": false
+            }
+          ]
+        },
+        {
+          "$id": "nl:11",
+          "token": "staff",
+          "properties": [
+            {
+              "$id": "p:11_0",
+              "token": "staff_id",
+              "type": {
+                "type": "integer"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:11_1",
+              "token": "first_name",
+              "type": {
+                "type": "string"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:11_2",
+              "token": "last_name",
+              "type": {
+                "type": "string"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:11_4",
+              "token": "email",
+              "type": {
+                "type": "string"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:11_5",
+              "token": "store_id",
+              "type": {
+                "type": "integer"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:11_6",
+              "token": "active",
+              "type": {
+                "type": "boolean"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:11_7",
+              "token": "username",
+              "type": {
+                "type": "string"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:11_8",
+              "token": "password",
+              "type": {
+                "type": "string"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:11_9",
+              "token": "last_update",
+              "type": {
+                "type": "datetime"
+              },
+              "nullable": false
+            }
+          ]
+        },
+        {
+          "$id": "nl:12",
+          "token": "store",
+          "properties": [
+            {
+              "$id": "p:12_0",
+              "token": "store_id",
+              "type": {
+                "type": "integer"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:12_3",
+              "token": "last_update",
+              "type": {
+                "type": "datetime"
+              },
+              "nullable": false
+            }
+          ]
+        }
+      ],
+      "relationshipTypes": [
+        {
+          "$id": "rt:0",
+          "token": "RELATED_TO_CITY",
+          "properties": []
+        },
+        {
+          "$id": "rt:1",
+          "token": "RELATED_TO_COUNTRY",
+          "properties": []
+        },
+        {
+          "$id": "rt:2",
+          "token": "RELATED_TO_ADDRESS",
+          "properties": []
+        },
+        {
+          "$id": "rt:3",
+          "token": "RELATED_TO_LANGUAGE",
+          "properties": []
+        },
+        {
+          "$id": "rt:4",
+          "token": "RELATED_TO_FILM",
+          "properties": [
+            {
+              "$id": "p:4_0",
+              "token": "last_update",
+              "type": {
+                "type": "datetime"
+              },
+              "nullable": false
+            }
+          ]
+        },
+        {
+          "$id": "rt:5",
+          "token": "RELATED_TO_FILM",
+          "properties": [
+            {
+              "$id": "p:5_0",
+              "token": "last_update",
+              "type": {
+                "type": "datetime"
+              },
+              "nullable": false
+            }
+          ]
+        },
+        {
+          "$id": "rt:6",
+          "token": "RELATED_TO_FILM",
+          "properties": []
+        },
+        {
+          "$id": "rt:7",
+          "token": "RELATED_TO_CUSTOMER",
+          "properties": []
+        },
+        {
+          "$id": "rt:8",
+          "token": "RELATED_TO_RENTAL",
+          "properties": []
+        },
+        {
+          "$id": "rt:9",
+          "token": "RELATED_TO_STAFF",
+          "properties": []
+        },
+        {
+          "$id": "rt:10",
+          "token": "RELATED_TO_CUSTOMER",
+          "properties": []
+        },
+        {
+          "$id": "rt:11",
+          "token": "RELATED_TO_INVENTORY",
+          "properties": []
+        },
+        {
+          "$id": "rt:12",
+          "token": "RELATED_TO_STAFF",
+          "properties": []
+        },
+        {
+          "$id": "rt:13",
+          "token": "RELATED_TO_ADDRESS",
+          "properties": []
+        },
+        {
+          "$id": "rt:14",
+          "token": "RELATED_TO_ADDRESS",
+          "properties": []
+        },
+        {
+          "$id": "rt:15",
+          "token": "RELATED_TO_STAFF",
+          "properties": []
+        }
+      ],
+      "nodeObjectTypes": [
+        {
+          "$id": "n:0",
+          "labels": [
+            {
+              "$ref": "#nl:0"
+            }
+          ]
+        },
+        {
+          "$id": "n:1",
+          "labels": [
+            {
+              "$ref": "#nl:1"
+            }
+          ]
+        },
+        {
+          "$id": "n:2",
+          "labels": [
+            {
+              "$ref": "#nl:2"
+            }
+          ]
+        },
+        {
+          "$id": "n:3",
+          "labels": [
+            {
+              "$ref": "#nl:3"
+            }
+          ]
+        },
+        {
+          "$id": "n:4",
+          "labels": [
+            {
+              "$ref": "#nl:4"
+            }
+          ]
+        },
+        {
+          "$id": "n:5",
+          "labels": [
+            {
+              "$ref": "#nl:5"
+            }
+          ]
+        },
+        {
+          "$id": "n:6",
+          "labels": [
+            {
+              "$ref": "#nl:6"
+            }
+          ]
+        },
+        {
+          "$id": "n:7",
+          "labels": [
+            {
+              "$ref": "#nl:7"
+            }
+          ]
+        },
+        {
+          "$id": "n:8",
+          "labels": [
+            {
+              "$ref": "#nl:8"
+            }
+          ]
+        },
+        {
+          "$id": "n:9",
+          "labels": [
+            {
+              "$ref": "#nl:9"
+            }
+          ]
+        },
+        {
+          "$id": "n:10",
+          "labels": [
+            {
+              "$ref": "#nl:10"
+            }
+          ]
+        },
+        {
+          "$id": "n:11",
+          "labels": [
+            {
+              "$ref": "#nl:11"
+            }
+          ]
+        },
+        {
+          "$id": "n:12",
+          "labels": [
+            {
+              "$ref": "#nl:12"
+            }
+          ]
+        }
+      ],
+      "relationshipObjectTypes": [
+        {
+          "$id": "r:0",
+          "type": {
+            "$ref": "#rt:0"
+          },
+          "from": {
+            "$ref": "#n:1"
+          },
+          "to": {
+            "$ref": "#n:3"
+          }
+        },
+        {
+          "$id": "r:1",
+          "type": {
+            "$ref": "#rt:1"
+          },
+          "from": {
+            "$ref": "#n:3"
+          },
+          "to": {
+            "$ref": "#n:4"
+          }
+        },
+        {
+          "$id": "r:2",
+          "type": {
+            "$ref": "#rt:2"
+          },
+          "from": {
+            "$ref": "#n:5"
+          },
+          "to": {
+            "$ref": "#n:1"
+          }
+        },
+        {
+          "$id": "r:3",
+          "type": {
+            "$ref": "#rt:3"
+          },
+          "from": {
+            "$ref": "#n:6"
+          },
+          "to": {
+            "$ref": "#n:8"
+          }
+        },
+        {
+          "$id": "r:4",
+          "type": {
+            "$ref": "#rt:4"
+          },
+          "from": {
+            "$ref": "#n:0"
+          },
+          "to": {
+            "$ref": "#n:6"
+          }
+        },
+        {
+          "$id": "r:5",
+          "type": {
+            "$ref": "#rt:5"
+          },
+          "from": {
+            "$ref": "#n:2"
+          },
+          "to": {
+            "$ref": "#n:6"
+          }
+        },
+        {
+          "$id": "r:6",
+          "type": {
+            "$ref": "#rt:6"
+          },
+          "from": {
+            "$ref": "#n:7"
+          },
+          "to": {
+            "$ref": "#n:6"
+          }
+        },
+        {
+          "$id": "r:7",
+          "type": {
+            "$ref": "#rt:7"
+          },
+          "from": {
+            "$ref": "#n:9"
+          },
+          "to": {
+            "$ref": "#n:5"
+          }
+        },
+        {
+          "$id": "r:8",
+          "type": {
+            "$ref": "#rt:8"
+          },
+          "from": {
+            "$ref": "#n:9"
+          },
+          "to": {
+            "$ref": "#n:10"
+          }
+        },
+        {
+          "$id": "r:9",
+          "type": {
+            "$ref": "#rt:9"
+          },
+          "from": {
+            "$ref": "#n:9"
+          },
+          "to": {
+            "$ref": "#n:11"
+          }
+        },
+        {
+          "$id": "r:10",
+          "type": {
+            "$ref": "#rt:10"
+          },
+          "from": {
+            "$ref": "#n:10"
+          },
+          "to": {
+            "$ref": "#n:5"
+          }
+        },
+        {
+          "$id": "r:11",
+          "type": {
+            "$ref": "#rt:11"
+          },
+          "from": {
+            "$ref": "#n:10"
+          },
+          "to": {
+            "$ref": "#n:7"
+          }
+        },
+        {
+          "$id": "r:12",
+          "type": {
+            "$ref": "#rt:12"
+          },
+          "from": {
+            "$ref": "#n:10"
+          },
+          "to": {
+            "$ref": "#n:11"
+          }
+        },
+        {
+          "$id": "r:13",
+          "type": {
+            "$ref": "#rt:13"
+          },
+          "from": {
+            "$ref": "#n:11"
+          },
+          "to": {
+            "$ref": "#n:1"
+          }
+        },
+        {
+          "$id": "r:14",
+          "type": {
+            "$ref": "#rt:14"
+          },
+          "from": {
+            "$ref": "#n:12"
+          },
+          "to": {
+            "$ref": "#n:1"
+          }
+        },
+        {
+          "$id": "r:15",
+          "type": {
+            "$ref": "#rt:15"
+          },
+          "from": {
+            "$ref": "#n:12"
+          },
+          "to": {
+            "$ref": "#n:11"
+          }
+        }
+      ],
+      "constraints": [
+        {
+          "$id": "c:0",
+          "name": "actor",
+          "constraintType": "uniqueness",
+          "entityType": "node",
+          "nodeLabel": {
+            "$ref": "#nl:0"
+          },
+          "relationshipType": null,
+          "properties": [
+            {
+              "$ref": "#p:0_0"
+            }
+          ]
+        },
+        {
+          "$id": "c:1",
+          "name": "address",
+          "constraintType": "uniqueness",
+          "entityType": "node",
+          "nodeLabel": {
+            "$ref": "#nl:1"
+          },
+          "relationshipType": null,
+          "properties": [
+            {
+              "$ref": "#p:1_0"
+            }
+          ]
+        },
+        {
+          "$id": "c:2",
+          "name": "category",
+          "constraintType": "uniqueness",
+          "entityType": "node",
+          "nodeLabel": {
+            "$ref": "#nl:2"
+          },
+          "relationshipType": null,
+          "properties": [
+            {
+              "$ref": "#p:2_0"
+            }
+          ]
+        },
+        {
+          "$id": "c:3",
+          "name": "city",
+          "constraintType": "uniqueness",
+          "entityType": "node",
+          "nodeLabel": {
+            "$ref": "#nl:3"
+          },
+          "relationshipType": null,
+          "properties": [
+            {
+              "$ref": "#p:3_0"
+            }
+          ]
+        },
+        {
+          "$id": "c:4",
+          "name": "country",
+          "constraintType": "uniqueness",
+          "entityType": "node",
+          "nodeLabel": {
+            "$ref": "#nl:4"
+          },
+          "relationshipType": null,
+          "properties": [
+            {
+              "$ref": "#p:4_0"
+            }
+          ]
+        },
+        {
+          "$id": "c:5",
+          "name": "customer",
+          "constraintType": "uniqueness",
+          "entityType": "node",
+          "nodeLabel": {
+            "$ref": "#nl:5"
+          },
+          "relationshipType": null,
+          "properties": [
+            {
+              "$ref": "#p:5_0"
+            }
+          ]
+        },
+        {
+          "$id": "c:6",
+          "name": "film",
+          "constraintType": "uniqueness",
+          "entityType": "node",
+          "nodeLabel": {
+            "$ref": "#nl:6"
+          },
+          "relationshipType": null,
+          "properties": [
+            {
+              "$ref": "#p:6_0"
+            }
+          ]
+        },
+        {
+          "$id": "c:7",
+          "name": "inventory",
+          "constraintType": "uniqueness",
+          "entityType": "node",
+          "nodeLabel": {
+            "$ref": "#nl:7"
+          },
+          "relationshipType": null,
+          "properties": [
+            {
+              "$ref": "#p:7_0"
+            }
+          ]
+        },
+        {
+          "$id": "c:8",
+          "name": "language",
+          "constraintType": "uniqueness",
+          "entityType": "node",
+          "nodeLabel": {
+            "$ref": "#nl:8"
+          },
+          "relationshipType": null,
+          "properties": [
+            {
+              "$ref": "#p:8_0"
+            }
+          ]
+        },
+        {
+          "$id": "c:9",
+          "name": "payment",
+          "constraintType": "uniqueness",
+          "entityType": "node",
+          "nodeLabel": {
+            "$ref": "#nl:9"
+          },
+          "relationshipType": null,
+          "properties": [
+            {
+              "$ref": "#p:9_0"
+            }
+          ]
+        },
+        {
+          "$id": "c:10",
+          "name": "rental",
+          "constraintType": "uniqueness",
+          "entityType": "node",
+          "nodeLabel": {
+            "$ref": "#nl:10"
+          },
+          "relationshipType": null,
+          "properties": [
+            {
+              "$ref": "#p:10_0"
+            }
+          ]
+        },
+        {
+          "$id": "c:11",
+          "name": "staff",
+          "constraintType": "uniqueness",
+          "entityType": "node",
+          "nodeLabel": {
+            "$ref": "#nl:11"
+          },
+          "relationshipType": null,
+          "properties": [
+            {
+              "$ref": "#p:11_0"
+            }
+          ]
+        },
+        {
+          "$id": "c:12",
+          "name": "store",
+          "constraintType": "uniqueness",
+          "entityType": "node",
+          "nodeLabel": {
+            "$ref": "#nl:12"
+          },
+          "relationshipType": null,
+          "properties": [
+            {
+              "$ref": "#p:12_0"
+            }
+          ]
+        }
+      ],
+      "indexes": [
+        {
+          "$id": "i:0",
+          "name": "actor",
+          "indexType": "default",
+          "entityType": "node",
+          "nodeLabel": {
+            "$ref": "#nl:0"
+          },
+          "relationshipType": null,
+          "properties": [
+            {
+              "$ref": "#p:0_0"
+            }
+          ]
+        },
+        {
+          "$id": "i:1",
+          "name": "address",
+          "indexType": "default",
+          "entityType": "node",
+          "nodeLabel": {
+            "$ref": "#nl:1"
+          },
+          "relationshipType": null,
+          "properties": [
+            {
+              "$ref": "#p:1_0"
+            }
+          ]
+        },
+        {
+          "$id": "i:2",
+          "name": "category",
+          "indexType": "default",
+          "entityType": "node",
+          "nodeLabel": {
+            "$ref": "#nl:2"
+          },
+          "relationshipType": null,
+          "properties": [
+            {
+              "$ref": "#p:2_0"
+            }
+          ]
+        },
+        {
+          "$id": "i:3",
+          "name": "city",
+          "indexType": "default",
+          "entityType": "node",
+          "nodeLabel": {
+            "$ref": "#nl:3"
+          },
+          "relationshipType": null,
+          "properties": [
+            {
+              "$ref": "#p:3_0"
+            }
+          ]
+        },
+        {
+          "$id": "i:4",
+          "name": "country",
+          "indexType": "default",
+          "entityType": "node",
+          "nodeLabel": {
+            "$ref": "#nl:4"
+          },
+          "relationshipType": null,
+          "properties": [
+            {
+              "$ref": "#p:4_0"
+            }
+          ]
+        },
+        {
+          "$id": "i:5",
+          "name": "customer",
+          "indexType": "default",
+          "entityType": "node",
+          "nodeLabel": {
+            "$ref": "#nl:5"
+          },
+          "relationshipType": null,
+          "properties": [
+            {
+              "$ref": "#p:5_0"
+            }
+          ]
+        },
+        {
+          "$id": "i:6",
+          "name": "film",
+          "indexType": "default",
+          "entityType": "node",
+          "nodeLabel": {
+            "$ref": "#nl:6"
+          },
+          "relationshipType": null,
+          "properties": [
+            {
+              "$ref": "#p:6_0"
+            }
+          ]
+        },
+        {
+          "$id": "i:7",
+          "name": "inventory",
+          "indexType": "default",
+          "entityType": "node",
+          "nodeLabel": {
+            "$ref": "#nl:7"
+          },
+          "relationshipType": null,
+          "properties": [
+            {
+              "$ref": "#p:7_0"
+            }
+          ]
+        },
+        {
+          "$id": "i:8",
+          "name": "language",
+          "indexType": "default",
+          "entityType": "node",
+          "nodeLabel": {
+            "$ref": "#nl:8"
+          },
+          "relationshipType": null,
+          "properties": [
+            {
+              "$ref": "#p:8_0"
+            }
+          ]
+        },
+        {
+          "$id": "i:9",
+          "name": "payment",
+          "indexType": "default",
+          "entityType": "node",
+          "nodeLabel": {
+            "$ref": "#nl:9"
+          },
+          "relationshipType": null,
+          "properties": [
+            {
+              "$ref": "#p:9_0"
+            }
+          ]
+        },
+        {
+          "$id": "i:10",
+          "name": "rental",
+          "indexType": "default",
+          "entityType": "node",
+          "nodeLabel": {
+            "$ref": "#nl:10"
+          },
+          "relationshipType": null,
+          "properties": [
+            {
+              "$ref": "#p:10_0"
+            }
+          ]
+        },
+        {
+          "$id": "i:11",
+          "name": "staff",
+          "indexType": "default",
+          "entityType": "node",
+          "nodeLabel": {
+            "$ref": "#nl:11"
+          },
+          "relationshipType": null,
+          "properties": [
+            {
+              "$ref": "#p:11_0"
+            }
+          ]
+        },
+        {
+          "$id": "i:12",
+          "name": "store",
+          "indexType": "default",
+          "entityType": "node",
+          "nodeLabel": {
+            "$ref": "#nl:12"
+          },
+          "relationshipType": null,
+          "properties": [
+            {
+              "$ref": "#p:12_0"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "graphSchemaExtensionsRepresentation": {
+    "nodeKeyProperties": [
+      {
+        "node": {
+          "$ref": "#n:0"
+        },
+        "keyProperties": [
+          {
+            "$ref": "#p:0_0"
+          }
+        ]
+      },
+      {
+        "node": {
+          "$ref": "#n:1"
+        },
+        "keyProperties": [
+          {
+            "$ref": "#p:1_0"
+          }
+        ]
+      },
+      {
+        "node": {
+          "$ref": "#n:2"
+        },
+        "keyProperties": [
+          {
+            "$ref": "#p:2_0"
+          }
+        ]
+      },
+      {
+        "node": {
+          "$ref": "#n:3"
+        },
+        "keyProperties": [
+          {
+            "$ref": "#p:3_0"
+          }
+        ]
+      },
+      {
+        "node": {
+          "$ref": "#n:4"
+        },
+        "keyProperties": [
+          {
+            "$ref": "#p:4_0"
+          }
+        ]
+      },
+      {
+        "node": {
+          "$ref": "#n:5"
+        },
+        "keyProperties": [
+          {
+            "$ref": "#p:5_0"
+          }
+        ]
+      },
+      {
+        "node": {
+          "$ref": "#n:6"
+        },
+        "keyProperties": [
+          {
+            "$ref": "#p:6_0"
+          }
+        ]
+      },
+      {
+        "node": {
+          "$ref": "#n:7"
+        },
+        "keyProperties": [
+          {
+            "$ref": "#p:7_0"
+          }
+        ]
+      },
+      {
+        "node": {
+          "$ref": "#n:8"
+        },
+        "keyProperties": [
+          {
+            "$ref": "#p:8_0"
+          }
+        ]
+      },
+      {
+        "node": {
+          "$ref": "#n:9"
+        },
+        "keyProperties": [
+          {
+            "$ref": "#p:9_0"
+          }
+        ]
+      },
+      {
+        "node": {
+          "$ref": "#n:10"
+        },
+        "keyProperties": [
+          {
+            "$ref": "#p:10_0"
+          }
+        ]
+      },
+      {
+        "node": {
+          "$ref": "#n:11"
+        },
+        "keyProperties": [
+          {
+            "$ref": "#p:11_0"
+          }
+        ]
+      },
+      {
+        "node": {
+          "$ref": "#n:12"
+        },
+        "keyProperties": [
+          {
+            "$ref": "#p:12_0"
+          }
+        ]
+      }
+    ]
+  },
+  "graphMappingRepresentation": {
+    "dataSourceSchema": {
+      "type": "cloud",
+      "tableSchemas": [
+        {
+          "name": "actor",
+          "fields": [
+            {
+              "name": "actor_id",
+              "rawType": "serial",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "first_name",
+              "rawType": "varchar",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "last_name",
+              "rawType": "varchar",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "last_update",
+              "rawType": "timestamp",
+              "recommendedType": {
+                "type": "datetime"
+              },
+              "supportedTypes": [
+                {
+                  "type": "date"
+                },
+                {
+                  "type": "datetime"
+                },
+                {
+                  "type": "localdatetime"
+                }
+              ]
+            }
+          ],
+          "primaryKeys": [
+            "actor_id"
+          ],
+          "foreignKeys": [],
+          "expanded": true
+        },
+        {
+          "name": "actor_info",
+          "fields": [
+            {
+              "name": "actor_id",
+              "rawType": "int4",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "first_name",
+              "rawType": "varchar",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "last_name",
+              "rawType": "varchar",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "film_info",
+              "rawType": "text",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            }
+          ],
+          "primaryKeys": [],
+          "foreignKeys": [],
+          "expanded": true
+        },
+        {
+          "name": "address",
+          "expanded": true,
+          "fields": [
+            {
+              "name": "address_id",
+              "rawType": "serial",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "address",
+              "rawType": "varchar",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "address2",
+              "rawType": "varchar",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "district",
+              "rawType": "varchar",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "city_id",
+              "rawType": "int2",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "postal_code",
+              "rawType": "varchar",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "phone",
+              "rawType": "varchar",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "last_update",
+              "rawType": "timestamp",
+              "recommendedType": {
+                "type": "datetime"
+              },
+              "supportedTypes": [
+                {
+                  "type": "date"
+                },
+                {
+                  "type": "datetime"
+                },
+                {
+                  "type": "localdatetime"
+                }
+              ]
+            }
+          ],
+          "primaryKeys": [
+            "address_id"
+          ],
+          "foreignKeys": [
+            {
+              "referencedTable": "city",
+              "fields": [
+                {
+                  "field": "city_id",
+                  "referencedField": "city_id"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "category",
+          "fields": [
+            {
+              "name": "category_id",
+              "rawType": "serial",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "name",
+              "rawType": "varchar",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "last_update",
+              "rawType": "timestamp",
+              "recommendedType": {
+                "type": "datetime"
+              },
+              "supportedTypes": [
+                {
+                  "type": "date"
+                },
+                {
+                  "type": "datetime"
+                },
+                {
+                  "type": "localdatetime"
+                }
+              ]
+            }
+          ],
+          "primaryKeys": [
+            "category_id"
+          ],
+          "foreignKeys": [],
+          "expanded": true
+        },
+        {
+          "name": "city",
+          "expanded": true,
+          "fields": [
+            {
+              "name": "city_id",
+              "rawType": "serial",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "city",
+              "rawType": "varchar",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "country_id",
+              "rawType": "int2",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "last_update",
+              "rawType": "timestamp",
+              "recommendedType": {
+                "type": "datetime"
+              },
+              "supportedTypes": [
+                {
+                  "type": "date"
+                },
+                {
+                  "type": "datetime"
+                },
+                {
+                  "type": "localdatetime"
+                }
+              ]
+            }
+          ],
+          "primaryKeys": [
+            "city_id"
+          ],
+          "foreignKeys": [
+            {
+              "referencedTable": "country",
+              "fields": [
+                {
+                  "field": "country_id",
+                  "referencedField": "country_id"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "country",
+          "fields": [
+            {
+              "name": "country_id",
+              "rawType": "serial",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "country",
+              "rawType": "varchar",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "last_update",
+              "rawType": "timestamp",
+              "recommendedType": {
+                "type": "datetime"
+              },
+              "supportedTypes": [
+                {
+                  "type": "date"
+                },
+                {
+                  "type": "datetime"
+                },
+                {
+                  "type": "localdatetime"
+                }
+              ]
+            }
+          ],
+          "primaryKeys": [
+            "country_id"
+          ],
+          "foreignKeys": [],
+          "expanded": true
+        },
+        {
+          "name": "customer",
+          "expanded": true,
+          "fields": [
+            {
+              "name": "customer_id",
+              "rawType": "serial",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "store_id",
+              "rawType": "int2",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "first_name",
+              "rawType": "varchar",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "last_name",
+              "rawType": "varchar",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "email",
+              "rawType": "varchar",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "address_id",
+              "rawType": "int2",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "activebool",
+              "rawType": "bool",
+              "recommendedType": {
+                "type": "boolean"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "boolean"
+                }
+              ]
+            },
+            {
+              "name": "create_date",
+              "rawType": "date",
+              "recommendedType": {
+                "type": "date"
+              },
+              "supportedTypes": [
+                {
+                  "type": "date"
+                }
+              ]
+            },
+            {
+              "name": "last_update",
+              "rawType": "timestamp",
+              "recommendedType": {
+                "type": "datetime"
+              },
+              "supportedTypes": [
+                {
+                  "type": "date"
+                },
+                {
+                  "type": "datetime"
+                },
+                {
+                  "type": "localdatetime"
+                }
+              ]
+            },
+            {
+              "name": "active",
+              "rawType": "int4",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            }
+          ],
+          "primaryKeys": [
+            "customer_id"
+          ],
+          "foreignKeys": [
+            {
+              "referencedTable": "address",
+              "fields": [
+                {
+                  "field": "address_id",
+                  "referencedField": "address_id"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "customer_list",
+          "fields": [
+            {
+              "name": "id",
+              "rawType": "int4",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "name",
+              "rawType": "text",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "address",
+              "rawType": "varchar",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "zip code",
+              "rawType": "varchar",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "phone",
+              "rawType": "varchar",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "city",
+              "rawType": "varchar",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "country",
+              "rawType": "varchar",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "notes",
+              "rawType": "text",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "sid",
+              "rawType": "int2",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            }
+          ],
+          "primaryKeys": [],
+          "foreignKeys": [],
+          "expanded": true
+        },
+        {
+          "name": "film",
+          "fields": [
+            {
+              "name": "film_id",
+              "rawType": "serial",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "title",
+              "rawType": "varchar",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "description",
+              "rawType": "text",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "release_year",
+              "rawType": "year",
+              "recommendedType": null,
+              "supportedTypes": []
+            },
+            {
+              "name": "language_id",
+              "rawType": "int2",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "rental_duration",
+              "rawType": "int2",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "rental_rate",
+              "rawType": "numeric",
+              "recommendedType": {
+                "type": "float"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "length",
+              "rawType": "int2",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "replacement_cost",
+              "rawType": "numeric",
+              "recommendedType": {
+                "type": "float"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "rating",
+              "rawType": "mpaa_rating",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "last_update",
+              "rawType": "timestamp",
+              "recommendedType": {
+                "type": "datetime"
+              },
+              "supportedTypes": [
+                {
+                  "type": "date"
+                },
+                {
+                  "type": "datetime"
+                },
+                {
+                  "type": "localdatetime"
+                }
+              ]
+            },
+            {
+              "name": "special_features",
+              "rawType": "_text",
+              "recommendedType": null,
+              "supportedTypes": []
+            },
+            {
+              "name": "fulltext",
+              "rawType": "tsvector",
+              "recommendedType": null,
+              "supportedTypes": []
+            }
+          ],
+          "primaryKeys": [
+            "film_id"
+          ],
+          "foreignKeys": [
+            {
+              "referencedTable": "language",
+              "fields": [
+                {
+                  "field": "language_id",
+                  "referencedField": "language_id"
+                }
+              ]
+            }
+          ],
+          "expanded": true
+        },
+        {
+          "name": "film_actor",
+          "expanded": true,
+          "fields": [
+            {
+              "name": "actor_id",
+              "rawType": "int2",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "film_id",
+              "rawType": "int2",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "last_update",
+              "rawType": "timestamp",
+              "recommendedType": {
+                "type": "datetime"
+              },
+              "supportedTypes": [
+                {
+                  "type": "date"
+                },
+                {
+                  "type": "datetime"
+                },
+                {
+                  "type": "localdatetime"
+                }
+              ]
+            }
+          ],
+          "primaryKeys": [
+            "actor_id",
+            "film_id"
+          ],
+          "foreignKeys": [
+            {
+              "referencedTable": "actor",
+              "fields": [
+                {
+                  "field": "actor_id",
+                  "referencedField": "actor_id"
+                }
+              ]
+            },
+            {
+              "referencedTable": "film",
+              "fields": [
+                {
+                  "field": "film_id",
+                  "referencedField": "film_id"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "film_category",
+          "expanded": true,
+          "fields": [
+            {
+              "name": "film_id",
+              "rawType": "int2",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "category_id",
+              "rawType": "int2",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "last_update",
+              "rawType": "timestamp",
+              "recommendedType": {
+                "type": "datetime"
+              },
+              "supportedTypes": [
+                {
+                  "type": "date"
+                },
+                {
+                  "type": "datetime"
+                },
+                {
+                  "type": "localdatetime"
+                }
+              ]
+            }
+          ],
+          "primaryKeys": [
+            "film_id",
+            "category_id"
+          ],
+          "foreignKeys": [
+            {
+              "referencedTable": "category",
+              "fields": [
+                {
+                  "field": "category_id",
+                  "referencedField": "category_id"
+                }
+              ]
+            },
+            {
+              "referencedTable": "film",
+              "fields": [
+                {
+                  "field": "film_id",
+                  "referencedField": "film_id"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "film_list",
+          "fields": [
+            {
+              "name": "fid",
+              "rawType": "int4",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "title",
+              "rawType": "varchar",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "description",
+              "rawType": "text",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "category",
+              "rawType": "varchar",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "price",
+              "rawType": "numeric",
+              "recommendedType": {
+                "type": "float"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "length",
+              "rawType": "int2",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "rating",
+              "rawType": "mpaa_rating",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "actors",
+              "rawType": "text",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            }
+          ],
+          "primaryKeys": [],
+          "foreignKeys": [],
+          "expanded": true
+        },
+        {
+          "name": "inventory",
+          "expanded": true,
+          "fields": [
+            {
+              "name": "inventory_id",
+              "rawType": "serial",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "film_id",
+              "rawType": "int2",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "store_id",
+              "rawType": "int2",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "last_update",
+              "rawType": "timestamp",
+              "recommendedType": {
+                "type": "datetime"
+              },
+              "supportedTypes": [
+                {
+                  "type": "date"
+                },
+                {
+                  "type": "datetime"
+                },
+                {
+                  "type": "localdatetime"
+                }
+              ]
+            }
+          ],
+          "primaryKeys": [
+            "inventory_id"
+          ],
+          "foreignKeys": [
+            {
+              "referencedTable": "film",
+              "fields": [
+                {
+                  "field": "film_id",
+                  "referencedField": "film_id"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "language",
+          "fields": [
+            {
+              "name": "language_id",
+              "rawType": "serial",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "name",
+              "rawType": "bpchar",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "last_update",
+              "rawType": "timestamp",
+              "recommendedType": {
+                "type": "datetime"
+              },
+              "supportedTypes": [
+                {
+                  "type": "date"
+                },
+                {
+                  "type": "datetime"
+                },
+                {
+                  "type": "localdatetime"
+                }
+              ]
+            }
+          ],
+          "primaryKeys": [
+            "language_id"
+          ],
+          "foreignKeys": [],
+          "expanded": true
+        },
+        {
+          "name": "nicer_but_slower_film_list",
+          "fields": [
+            {
+              "name": "fid",
+              "rawType": "int4",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "title",
+              "rawType": "varchar",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "description",
+              "rawType": "text",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "category",
+              "rawType": "varchar",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "price",
+              "rawType": "numeric",
+              "recommendedType": {
+                "type": "float"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "length",
+              "rawType": "int2",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "rating",
+              "rawType": "mpaa_rating",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "actors",
+              "rawType": "text",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            }
+          ],
+          "primaryKeys": [],
+          "foreignKeys": [],
+          "expanded": true
+        },
+        {
+          "name": "payment",
+          "expanded": true,
+          "fields": [
+            {
+              "name": "payment_id",
+              "rawType": "serial",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "customer_id",
+              "rawType": "int2",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "staff_id",
+              "rawType": "int2",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "rental_id",
+              "rawType": "int4",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "amount",
+              "rawType": "numeric",
+              "recommendedType": {
+                "type": "float"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "payment_date",
+              "rawType": "timestamp",
+              "recommendedType": {
+                "type": "datetime"
+              },
+              "supportedTypes": [
+                {
+                  "type": "date"
+                },
+                {
+                  "type": "datetime"
+                },
+                {
+                  "type": "localdatetime"
+                }
+              ]
+            }
+          ],
+          "primaryKeys": [
+            "payment_id"
+          ],
+          "foreignKeys": [
+            {
+              "referencedTable": "customer",
+              "fields": [
+                {
+                  "field": "customer_id",
+                  "referencedField": "customer_id"
+                }
+              ]
+            },
+            {
+              "referencedTable": "rental",
+              "fields": [
+                {
+                  "field": "rental_id",
+                  "referencedField": "rental_id"
+                }
+              ]
+            },
+            {
+              "referencedTable": "staff",
+              "fields": [
+                {
+                  "field": "staff_id",
+                  "referencedField": "staff_id"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "rental",
+          "expanded": true,
+          "fields": [
+            {
+              "name": "rental_id",
+              "rawType": "serial",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "rental_date",
+              "rawType": "timestamp",
+              "recommendedType": {
+                "type": "datetime"
+              },
+              "supportedTypes": [
+                {
+                  "type": "date"
+                },
+                {
+                  "type": "datetime"
+                },
+                {
+                  "type": "localdatetime"
+                }
+              ]
+            },
+            {
+              "name": "inventory_id",
+              "rawType": "int4",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "customer_id",
+              "rawType": "int2",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "return_date",
+              "rawType": "timestamp",
+              "recommendedType": {
+                "type": "datetime"
+              },
+              "supportedTypes": [
+                {
+                  "type": "date"
+                },
+                {
+                  "type": "datetime"
+                },
+                {
+                  "type": "localdatetime"
+                }
+              ]
+            },
+            {
+              "name": "staff_id",
+              "rawType": "int2",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "last_update",
+              "rawType": "timestamp",
+              "recommendedType": {
+                "type": "datetime"
+              },
+              "supportedTypes": [
+                {
+                  "type": "date"
+                },
+                {
+                  "type": "datetime"
+                },
+                {
+                  "type": "localdatetime"
+                }
+              ]
+            }
+          ],
+          "primaryKeys": [
+            "rental_id"
+          ],
+          "foreignKeys": [
+            {
+              "referencedTable": "customer",
+              "fields": [
+                {
+                  "field": "customer_id",
+                  "referencedField": "customer_id"
+                }
+              ]
+            },
+            {
+              "referencedTable": "inventory",
+              "fields": [
+                {
+                  "field": "inventory_id",
+                  "referencedField": "inventory_id"
+                }
+              ]
+            },
+            {
+              "referencedTable": "staff",
+              "fields": [
+                {
+                  "field": "staff_id",
+                  "referencedField": "staff_id"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "sales_by_film_category",
+          "fields": [
+            {
+              "name": "category",
+              "rawType": "varchar",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "total_sales",
+              "rawType": "numeric",
+              "recommendedType": {
+                "type": "float"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            }
+          ],
+          "primaryKeys": [],
+          "foreignKeys": [],
+          "expanded": true
+        },
+        {
+          "name": "sales_by_store",
+          "fields": [
+            {
+              "name": "store",
+              "rawType": "text",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "manager",
+              "rawType": "text",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "total_sales",
+              "rawType": "numeric",
+              "recommendedType": {
+                "type": "float"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            }
+          ],
+          "primaryKeys": [],
+          "foreignKeys": [],
+          "expanded": true
+        },
+        {
+          "name": "staff",
+          "fields": [
+            {
+              "name": "staff_id",
+              "rawType": "serial",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "first_name",
+              "rawType": "varchar",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "last_name",
+              "rawType": "varchar",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "address_id",
+              "rawType": "int2",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "email",
+              "rawType": "varchar",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "store_id",
+              "rawType": "int2",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "active",
+              "rawType": "bool",
+              "recommendedType": {
+                "type": "boolean"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "boolean"
+                }
+              ]
+            },
+            {
+              "name": "username",
+              "rawType": "varchar",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "password",
+              "rawType": "varchar",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "last_update",
+              "rawType": "timestamp",
+              "recommendedType": {
+                "type": "datetime"
+              },
+              "supportedTypes": [
+                {
+                  "type": "date"
+                },
+                {
+                  "type": "datetime"
+                },
+                {
+                  "type": "localdatetime"
+                }
+              ]
+            },
+            {
+              "name": "picture",
+              "rawType": "bytea",
+              "recommendedType": null,
+              "supportedTypes": []
+            }
+          ],
+          "primaryKeys": [
+            "staff_id"
+          ],
+          "foreignKeys": [
+            {
+              "referencedTable": "address",
+              "fields": [
+                {
+                  "field": "address_id",
+                  "referencedField": "address_id"
+                }
+              ]
+            }
+          ],
+          "expanded": true
+        },
+        {
+          "name": "staff_list",
+          "fields": [
+            {
+              "name": "id",
+              "rawType": "int4",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "name",
+              "rawType": "text",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "address",
+              "rawType": "varchar",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "zip code",
+              "rawType": "varchar",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "phone",
+              "rawType": "varchar",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "city",
+              "rawType": "varchar",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "country",
+              "rawType": "varchar",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "sid",
+              "rawType": "int2",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            }
+          ],
+          "primaryKeys": [],
+          "foreignKeys": [],
+          "expanded": true
+        },
+        {
+          "name": "store",
+          "expanded": true,
+          "fields": [
+            {
+              "name": "store_id",
+              "rawType": "serial",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "manager_staff_id",
+              "rawType": "int2",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "address_id",
+              "rawType": "int2",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "last_update",
+              "rawType": "timestamp",
+              "recommendedType": {
+                "type": "datetime"
+              },
+              "supportedTypes": [
+                {
+                  "type": "date"
+                },
+                {
+                  "type": "datetime"
+                },
+                {
+                  "type": "localdatetime"
+                }
+              ]
+            }
+          ],
+          "primaryKeys": [
+            "store_id"
+          ],
+          "foreignKeys": [
+            {
+              "referencedTable": "address",
+              "fields": [
+                {
+                  "field": "address_id",
+                  "referencedField": "address_id"
+                }
+              ]
+            },
+            {
+              "referencedTable": "staff",
+              "fields": [
+                {
+                  "field": "manager_staff_id",
+                  "referencedField": "staff_id"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "nodeMappings": [
+      {
+        "node": {
+          "$ref": "#n:0"
+        },
+        "tableName": "actor",
+        "propertyMappings": [
+          {
+            "property": {
+              "$ref": "#p:0_0"
+            },
+            "fieldName": "actor_id"
+          },
+          {
+            "property": {
+              "$ref": "#p:0_1"
+            },
+            "fieldName": "first_name"
+          },
+          {
+            "property": {
+              "$ref": "#p:0_2"
+            },
+            "fieldName": "last_name"
+          },
+          {
+            "property": {
+              "$ref": "#p:0_3"
+            },
+            "fieldName": "last_update"
+          }
+        ]
+      },
+      {
+        "node": {
+          "$ref": "#n:1"
+        },
+        "tableName": "address",
+        "propertyMappings": [
+          {
+            "property": {
+              "$ref": "#p:1_0"
+            },
+            "fieldName": "address_id"
+          },
+          {
+            "property": {
+              "$ref": "#p:1_1"
+            },
+            "fieldName": "address"
+          },
+          {
+            "property": {
+              "$ref": "#p:1_2"
+            },
+            "fieldName": "address2"
+          },
+          {
+            "property": {
+              "$ref": "#p:1_3"
+            },
+            "fieldName": "district"
+          },
+          {
+            "property": {
+              "$ref": "#p:1_5"
+            },
+            "fieldName": "postal_code"
+          },
+          {
+            "property": {
+              "$ref": "#p:1_6"
+            },
+            "fieldName": "phone"
+          },
+          {
+            "property": {
+              "$ref": "#p:1_7"
+            },
+            "fieldName": "last_update"
+          }
+        ]
+      },
+      {
+        "node": {
+          "$ref": "#n:2"
+        },
+        "tableName": "category",
+        "propertyMappings": [
+          {
+            "property": {
+              "$ref": "#p:2_0"
+            },
+            "fieldName": "category_id"
+          },
+          {
+            "property": {
+              "$ref": "#p:2_1"
+            },
+            "fieldName": "name"
+          },
+          {
+            "property": {
+              "$ref": "#p:2_2"
+            },
+            "fieldName": "last_update"
+          }
+        ]
+      },
+      {
+        "node": {
+          "$ref": "#n:3"
+        },
+        "tableName": "city",
+        "propertyMappings": [
+          {
+            "property": {
+              "$ref": "#p:3_0"
+            },
+            "fieldName": "city_id"
+          },
+          {
+            "property": {
+              "$ref": "#p:3_1"
+            },
+            "fieldName": "city"
+          },
+          {
+            "property": {
+              "$ref": "#p:3_3"
+            },
+            "fieldName": "last_update"
+          }
+        ]
+      },
+      {
+        "node": {
+          "$ref": "#n:4"
+        },
+        "tableName": "country",
+        "propertyMappings": [
+          {
+            "property": {
+              "$ref": "#p:4_0"
+            },
+            "fieldName": "country_id"
+          },
+          {
+            "property": {
+              "$ref": "#p:4_1"
+            },
+            "fieldName": "country"
+          },
+          {
+            "property": {
+              "$ref": "#p:4_2"
+            },
+            "fieldName": "last_update"
+          }
+        ]
+      },
+      {
+        "node": {
+          "$ref": "#n:5"
+        },
+        "tableName": "customer",
+        "propertyMappings": [
+          {
+            "property": {
+              "$ref": "#p:5_0"
+            },
+            "fieldName": "customer_id"
+          },
+          {
+            "property": {
+              "$ref": "#p:5_1"
+            },
+            "fieldName": "store_id"
+          },
+          {
+            "property": {
+              "$ref": "#p:5_2"
+            },
+            "fieldName": "first_name"
+          },
+          {
+            "property": {
+              "$ref": "#p:5_3"
+            },
+            "fieldName": "last_name"
+          },
+          {
+            "property": {
+              "$ref": "#p:5_4"
+            },
+            "fieldName": "email"
+          },
+          {
+            "property": {
+              "$ref": "#p:5_6"
+            },
+            "fieldName": "activebool"
+          },
+          {
+            "property": {
+              "$ref": "#p:5_7"
+            },
+            "fieldName": "create_date"
+          },
+          {
+            "property": {
+              "$ref": "#p:5_8"
+            },
+            "fieldName": "last_update"
+          },
+          {
+            "property": {
+              "$ref": "#p:5_9"
+            },
+            "fieldName": "active"
+          }
+        ]
+      },
+      {
+        "node": {
+          "$ref": "#n:6"
+        },
+        "tableName": "film",
+        "propertyMappings": [
+          {
+            "property": {
+              "$ref": "#p:6_0"
+            },
+            "fieldName": "film_id"
+          },
+          {
+            "property": {
+              "$ref": "#p:6_1"
+            },
+            "fieldName": "title"
+          },
+          {
+            "property": {
+              "$ref": "#p:6_2"
+            },
+            "fieldName": "description"
+          },
+          {
+            "property": {
+              "$ref": "#p:6_5"
+            },
+            "fieldName": "rental_duration"
+          },
+          {
+            "property": {
+              "$ref": "#p:6_6"
+            },
+            "fieldName": "rental_rate"
+          },
+          {
+            "property": {
+              "$ref": "#p:6_7"
+            },
+            "fieldName": "length"
+          },
+          {
+            "property": {
+              "$ref": "#p:6_8"
+            },
+            "fieldName": "replacement_cost"
+          },
+          {
+            "property": {
+              "$ref": "#p:6_9"
+            },
+            "fieldName": "rating"
+          },
+          {
+            "property": {
+              "$ref": "#p:6_10"
+            },
+            "fieldName": "last_update"
+          }
+        ]
+      },
+      {
+        "node": {
+          "$ref": "#n:7"
+        },
+        "tableName": "inventory",
+        "propertyMappings": [
+          {
+            "property": {
+              "$ref": "#p:7_0"
+            },
+            "fieldName": "inventory_id"
+          },
+          {
+            "property": {
+              "$ref": "#p:7_2"
+            },
+            "fieldName": "store_id"
+          },
+          {
+            "property": {
+              "$ref": "#p:7_3"
+            },
+            "fieldName": "last_update"
+          }
+        ]
+      },
+      {
+        "node": {
+          "$ref": "#n:8"
+        },
+        "tableName": "language",
+        "propertyMappings": [
+          {
+            "property": {
+              "$ref": "#p:8_0"
+            },
+            "fieldName": "language_id"
+          },
+          {
+            "property": {
+              "$ref": "#p:8_1"
+            },
+            "fieldName": "name"
+          },
+          {
+            "property": {
+              "$ref": "#p:8_2"
+            },
+            "fieldName": "last_update"
+          }
+        ]
+      },
+      {
+        "node": {
+          "$ref": "#n:9"
+        },
+        "tableName": "payment",
+        "propertyMappings": [
+          {
+            "property": {
+              "$ref": "#p:9_0"
+            },
+            "fieldName": "payment_id"
+          },
+          {
+            "property": {
+              "$ref": "#p:9_4"
+            },
+            "fieldName": "amount"
+          },
+          {
+            "property": {
+              "$ref": "#p:9_5"
+            },
+            "fieldName": "payment_date"
+          }
+        ]
+      },
+      {
+        "node": {
+          "$ref": "#n:10"
+        },
+        "tableName": "rental",
+        "propertyMappings": [
+          {
+            "property": {
+              "$ref": "#p:10_0"
+            },
+            "fieldName": "rental_id"
+          },
+          {
+            "property": {
+              "$ref": "#p:10_1"
+            },
+            "fieldName": "rental_date"
+          },
+          {
+            "property": {
+              "$ref": "#p:10_4"
+            },
+            "fieldName": "return_date"
+          },
+          {
+            "property": {
+              "$ref": "#p:10_6"
+            },
+            "fieldName": "last_update"
+          }
+        ]
+      },
+      {
+        "node": {
+          "$ref": "#n:11"
+        },
+        "tableName": "staff",
+        "propertyMappings": [
+          {
+            "property": {
+              "$ref": "#p:11_0"
+            },
+            "fieldName": "staff_id"
+          },
+          {
+            "property": {
+              "$ref": "#p:11_1"
+            },
+            "fieldName": "first_name"
+          },
+          {
+            "property": {
+              "$ref": "#p:11_2"
+            },
+            "fieldName": "last_name"
+          },
+          {
+            "property": {
+              "$ref": "#p:11_4"
+            },
+            "fieldName": "email"
+          },
+          {
+            "property": {
+              "$ref": "#p:11_5"
+            },
+            "fieldName": "store_id"
+          },
+          {
+            "property": {
+              "$ref": "#p:11_6"
+            },
+            "fieldName": "active"
+          },
+          {
+            "property": {
+              "$ref": "#p:11_7"
+            },
+            "fieldName": "username"
+          },
+          {
+            "property": {
+              "$ref": "#p:11_8"
+            },
+            "fieldName": "password"
+          },
+          {
+            "property": {
+              "$ref": "#p:11_9"
+            },
+            "fieldName": "last_update"
+          }
+        ]
+      },
+      {
+        "node": {
+          "$ref": "#n:12"
+        },
+        "tableName": "store",
+        "propertyMappings": [
+          {
+            "property": {
+              "$ref": "#p:12_0"
+            },
+            "fieldName": "store_id"
+          },
+          {
+            "property": {
+              "$ref": "#p:12_3"
+            },
+            "fieldName": "last_update"
+          }
+        ]
+      }
+    ],
+    "relationshipMappings": [
+      {
+        "relationship": {
+          "$ref": "#r:0"
+        },
+        "tableName": "address",
+        "fromMappings": {
+          "#p:1_0": "address_id"
+        },
+        "toMappings": {
+          "#p:3_0": "city_id"
+        },
+        "propertyMappings": []
+      },
+      {
+        "relationship": {
+          "$ref": "#r:1"
+        },
+        "tableName": "city",
+        "fromMappings": {
+          "#p:3_0": "city_id"
+        },
+        "toMappings": {
+          "#p:4_0": "country_id"
+        },
+        "propertyMappings": []
+      },
+      {
+        "relationship": {
+          "$ref": "#r:2"
+        },
+        "tableName": "customer",
+        "fromMappings": {
+          "#p:5_0": "customer_id"
+        },
+        "toMappings": {
+          "#p:1_0": "address_id"
+        },
+        "propertyMappings": []
+      },
+      {
+        "relationship": {
+          "$ref": "#r:3"
+        },
+        "tableName": "film",
+        "fromMappings": {
+          "#p:6_0": "film_id"
+        },
+        "toMappings": {
+          "#p:8_0": "language_id"
+        },
+        "propertyMappings": []
+      },
+      {
+        "relationship": {
+          "$ref": "#r:4"
+        },
+        "tableName": "film_actor",
+        "fromMappings": {
+          "#p:0_0": "actor_id"
+        },
+        "toMappings": {
+          "#p:6_0": "film_id"
+        },
+        "propertyMappings": [
+          {
+            "property": {
+              "$ref": "#p:4_0"
+            },
+            "fieldName": "last_update"
+          }
+        ]
+      },
+      {
+        "relationship": {
+          "$ref": "#r:5"
+        },
+        "tableName": "film_category",
+        "fromMappings": {
+          "#p:2_0": "category_id"
+        },
+        "toMappings": {
+          "#p:6_0": "film_id"
+        },
+        "propertyMappings": [
+          {
+            "property": {
+              "$ref": "#p:5_0"
+            },
+            "fieldName": "last_update"
+          }
+        ]
+      },
+      {
+        "relationship": {
+          "$ref": "#r:6"
+        },
+        "tableName": "inventory",
+        "fromMappings": {
+          "#p:7_0": "inventory_id"
+        },
+        "toMappings": {
+          "#p:6_0": "film_id"
+        },
+        "propertyMappings": []
+      },
+      {
+        "relationship": {
+          "$ref": "#r:7"
+        },
+        "tableName": "payment",
+        "fromMappings": {
+          "#p:9_0": "payment_id"
+        },
+        "toMappings": {
+          "#p:5_0": "customer_id"
+        },
+        "propertyMappings": []
+      },
+      {
+        "relationship": {
+          "$ref": "#r:8"
+        },
+        "tableName": "payment",
+        "fromMappings": {
+          "#p:9_0": "payment_id"
+        },
+        "toMappings": {
+          "#p:10_0": "rental_id"
+        },
+        "propertyMappings": []
+      },
+      {
+        "relationship": {
+          "$ref": "#r:9"
+        },
+        "tableName": "payment",
+        "fromMappings": {
+          "#p:9_0": "payment_id"
+        },
+        "toMappings": {
+          "#p:11_0": "staff_id"
+        },
+        "propertyMappings": []
+      },
+      {
+        "relationship": {
+          "$ref": "#r:10"
+        },
+        "tableName": "rental",
+        "fromMappings": {
+          "#p:10_0": "rental_id"
+        },
+        "toMappings": {
+          "#p:5_0": "customer_id"
+        },
+        "propertyMappings": []
+      },
+      {
+        "relationship": {
+          "$ref": "#r:11"
+        },
+        "tableName": "rental",
+        "fromMappings": {
+          "#p:10_0": "rental_id"
+        },
+        "toMappings": {
+          "#p:7_0": "inventory_id"
+        },
+        "propertyMappings": []
+      },
+      {
+        "relationship": {
+          "$ref": "#r:12"
+        },
+        "tableName": "rental",
+        "fromMappings": {
+          "#p:10_0": "rental_id"
+        },
+        "toMappings": {
+          "#p:11_0": "staff_id"
+        },
+        "propertyMappings": []
+      },
+      {
+        "relationship": {
+          "$ref": "#r:13"
+        },
+        "tableName": "staff",
+        "fromMappings": {
+          "#p:11_0": "staff_id"
+        },
+        "toMappings": {
+          "#p:1_0": "address_id"
+        },
+        "propertyMappings": []
+      },
+      {
+        "relationship": {
+          "$ref": "#r:14"
+        },
+        "tableName": "store",
+        "fromMappings": {
+          "#p:12_0": "store_id"
+        },
+        "toMappings": {
+          "#p:1_0": "address_id"
+        },
+        "propertyMappings": []
+      },
+      {
+        "relationship": {
+          "$ref": "#r:15"
+        },
+        "tableName": "store",
+        "fromMappings": {
+          "#p:12_0": "store_id"
+        },
+        "toMappings": {
+          "#p:11_0": "manager_staff_id"
+        },
+        "propertyMappings": []
+      }
+    ]
+  },
+  "configurations": {
+    "idsToIgnore": []
+  }
+}

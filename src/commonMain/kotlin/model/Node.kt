@@ -25,9 +25,9 @@ import kotlin.js.JsExport
 @JsExport
 @Serializable
 data class Node(
-    val labels: Set<String>,
-    val properties: Map<String, Property>,
-    val constraints: Map<String, NodeConstraint>,
-    val indexes: Map<String, NodeIndex>,
-    val extensions: Map<String, @Contextual Any>
+    val labels: Set<String> = emptySet(),
+    val properties: Map<String, Property> = emptyMap(),
+    val constraints: Map<String, NodeConstraint> = emptyMap(),
+    val indexes: Map<String, NodeIndex> = emptyMap(),
+    val extensions: Map<String, @Contextual Any> = emptyMap()
 )

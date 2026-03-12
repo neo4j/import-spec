@@ -12,6 +12,9 @@ gradle-app.setting
 # Avoid ignore Gradle wrappper properties
 !gradle-wrapper.properties
 
+# Kotlin
+.kotlin
+
 ### IntelliJ IDEA ###
 .idea
 *.iws

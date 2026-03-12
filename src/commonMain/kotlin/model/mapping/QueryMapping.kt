@@ -14,16 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package model.constraint
+package model.mapping
 
-import kotlinx.serialization.Contextual
-import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlin.js.JsExport
 
+@JsExport
 @Serializable
-@SerialName(ConstraintType.UNIQUE)
-data class NodeUniqueConstraint(
-    override val label: String,
-    override val properties: Set<String> = emptySet(),
-    val options: Map<String, @Contextual Any> = emptyMap()
-) : NodeConstraint
+data class QueryMapping(val source: String, val table: String, val query: String) : Mapping()

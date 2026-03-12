@@ -1,0 +1,1541 @@
+{
+  "version": "3.0.0",
+  "graphSchemaRepresentation": {
+    "version": "1.0.0",
+    "graphSchema": {
+      "nodeLabels": [
+        {
+          "$id": "nl:0",
+          "token": "Aircraft",
+          "properties": [
+            {
+              "$id": "p:0_0",
+              "token": "aircraftCode",
+              "type": {
+                "type": "string"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:0_1",
+              "token": "model",
+              "type": {
+                "type": "string"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:0_2",
+              "token": "aircraftRange",
+              "type": {
+                "type": "integer"
+              },
+              "nullable": false
+            }
+          ]
+        },
+        {
+          "$id": "nl:1",
+          "token": "Airport",
+          "properties": [
+            {
+              "$id": "p:1_0",
+              "token": "airportCode",
+              "type": {
+                "type": "string"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:1_1",
+              "token": "airportName",
+              "type": {
+                "type": "string"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:1_2",
+              "token": "city",
+              "type": {
+                "type": "string"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:1_3",
+              "token": "coordinates",
+              "type": {
+                "type": "point"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:1_4",
+              "token": "timezone",
+              "type": {
+                "type": "string"
+              },
+              "nullable": false
+            }
+          ]
+        },
+        {
+          "$id": "nl:2",
+          "token": "Booking",
+          "properties": [
+            {
+              "$id": "p:2_0",
+              "token": "bookRef",
+              "type": {
+                "type": "string"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:2_1",
+              "token": "bookDate",
+              "type": {
+                "type": "datetime"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:2_2",
+              "token": "totalAmount",
+              "type": {
+                "type": "float"
+              },
+              "nullable": false
+            }
+          ]
+        },
+        {
+          "$id": "nl:3",
+          "token": "Flight",
+          "properties": [
+            {
+              "$id": "p:3_0",
+              "token": "flightId",
+              "type": {
+                "type": "integer"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:3_1",
+              "token": "flightNo",
+              "type": {
+                "type": "string"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:3_2",
+              "token": "scheduledDeparture",
+              "type": {
+                "type": "datetime"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:3_3",
+              "token": "scheduledArrival",
+              "type": {
+                "type": "datetime"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:3_6",
+              "token": "status",
+              "type": {
+                "type": "string"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:3_8",
+              "token": "actualDeparture",
+              "type": {
+                "type": "datetime"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:3_9",
+              "token": "actualArrival",
+              "type": {
+                "type": "datetime"
+              },
+              "nullable": false
+            }
+          ]
+        },
+        {
+          "$id": "nl:4",
+          "token": "Ticket",
+          "properties": [
+            {
+              "$id": "p:4_0",
+              "token": "ticketNo",
+              "type": {
+                "type": "string"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:4_2",
+              "token": "passengerId",
+              "type": {
+                "type": "string"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:4_3",
+              "token": "passengerName",
+              "type": {
+                "type": "string"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:4_4",
+              "token": "contactData",
+              "type": {
+                "type": "string"
+              },
+              "nullable": false
+            }
+          ]
+        }
+      ],
+      "relationshipTypes": [
+        {
+          "$id": "rt:0",
+          "token": "FLIGHT_USES_AIRCRAFT",
+          "properties": []
+        },
+        {
+          "$id": "rt:1",
+          "token": "FLIGHT_DEPARTS_FROM_AIRPORT",
+          "properties": []
+        },
+        {
+          "$id": "rt:2",
+          "token": "FLIGHT_ARRIVES_AT_AIRPORT",
+          "properties": []
+        },
+        {
+          "$id": "rt:3",
+          "token": "FLIGHT_HAS_TICKET",
+          "properties": [
+            {
+              "$id": "p:3_0",
+              "token": "fare_conditions",
+              "type": {
+                "type": "string"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:3_1",
+              "token": "amount",
+              "type": {
+                "type": "float"
+              },
+              "nullable": false
+            }
+          ]
+        },
+        {
+          "$id": "rt:4",
+          "token": "TICKET_BELONGS_TO_BOOKING",
+          "properties": []
+        }
+      ],
+      "nodeObjectTypes": [
+        {
+          "$id": "n:0",
+          "labels": [
+            {
+              "$ref": "#nl:0"
+            }
+          ]
+        },
+        {
+          "$id": "n:1",
+          "labels": [
+            {
+              "$ref": "#nl:1"
+            }
+          ]
+        },
+        {
+          "$id": "n:2",
+          "labels": [
+            {
+              "$ref": "#nl:2"
+            }
+          ]
+        },
+        {
+          "$id": "n:3",
+          "labels": [
+            {
+              "$ref": "#nl:3"
+            }
+          ]
+        },
+        {
+          "$id": "n:4",
+          "labels": [
+            {
+              "$ref": "#nl:4"
+            }
+          ]
+        }
+      ],
+      "relationshipObjectTypes": [
+        {
+          "$id": "r:0",
+          "type": {
+            "$ref": "#rt:0"
+          },
+          "from": {
+            "$ref": "#n:3"
+          },
+          "to": {
+            "$ref": "#n:0"
+          }
+        },
+        {
+          "$id": "r:1",
+          "type": {
+            "$ref": "#rt:1"
+          },
+          "from": {
+            "$ref": "#n:3"
+          },
+          "to": {
+            "$ref": "#n:1"
+          }
+        },
+        {
+          "$id": "r:2",
+          "type": {
+            "$ref": "#rt:2"
+          },
+          "from": {
+            "$ref": "#n:3"
+          },
+          "to": {
+            "$ref": "#n:1"
+          }
+        },
+        {
+          "$id": "r:3",
+          "type": {
+            "$ref": "#rt:3"
+          },
+          "from": {
+            "$ref": "#n:3"
+          },
+          "to": {
+            "$ref": "#n:4"
+          }
+        },
+        {
+          "$id": "r:4",
+          "type": {
+            "$ref": "#rt:4"
+          },
+          "from": {
+            "$ref": "#n:4"
+          },
+          "to": {
+            "$ref": "#n:2"
+          }
+        }
+      ],
+      "constraints": [
+        {
+          "$id": "c:0",
+          "name": "aircrafts_data",
+          "constraintType": "uniqueness",
+          "entityType": "node",
+          "nodeLabel": {
+            "$ref": "#nl:0"
+          },
+          "relationshipType": null,
+          "properties": [
+            {
+              "$ref": "#p:0_0"
+            }
+          ]
+        },
+        {
+          "$id": "c:1",
+          "name": "airports_data",
+          "constraintType": "uniqueness",
+          "entityType": "node",
+          "nodeLabel": {
+            "$ref": "#nl:1"
+          },
+          "relationshipType": null,
+          "properties": [
+            {
+              "$ref": "#p:1_0"
+            }
+          ]
+        },
+        {
+          "$id": "c:2",
+          "name": "bookings",
+          "constraintType": "uniqueness",
+          "entityType": "node",
+          "nodeLabel": {
+            "$ref": "#nl:2"
+          },
+          "relationshipType": null,
+          "properties": [
+            {
+              "$ref": "#p:2_0"
+            }
+          ]
+        },
+        {
+          "$id": "c:3",
+          "name": "flights",
+          "constraintType": "uniqueness",
+          "entityType": "node",
+          "nodeLabel": {
+            "$ref": "#nl:3"
+          },
+          "relationshipType": null,
+          "properties": [
+            {
+              "$ref": "#p:3_0"
+            }
+          ]
+        },
+        {
+          "$id": "c:4",
+          "name": "tickets",
+          "constraintType": "uniqueness",
+          "entityType": "node",
+          "nodeLabel": {
+            "$ref": "#nl:4"
+          },
+          "relationshipType": null,
+          "properties": [
+            {
+              "$ref": "#p:4_0"
+            }
+          ]
+        }
+      ],
+      "indexes": [
+        {
+          "$id": "i:0",
+          "name": "aircrafts_data-text",
+          "indexType": "text",
+          "entityType": "node",
+          "nodeLabel": {
+            "$ref": "#nl:0"
+          },
+          "relationshipType": null,
+          "properties": [
+            {
+              "$ref": "#p:0_0"
+            }
+          ]
+        },
+        {
+          "$id": "i:1",
+          "name": "airports_data-text",
+          "indexType": "text",
+          "entityType": "node",
+          "nodeLabel": {
+            "$ref": "#nl:1"
+          },
+          "relationshipType": null,
+          "properties": [
+            {
+              "$ref": "#p:1_0"
+            }
+          ]
+        },
+        {
+          "$id": "i:2",
+          "name": "bookings-text",
+          "indexType": "text",
+          "entityType": "node",
+          "nodeLabel": {
+            "$ref": "#nl:2"
+          },
+          "relationshipType": null,
+          "properties": [
+            {
+              "$ref": "#p:2_0"
+            }
+          ]
+        },
+        {
+          "$id": "i:3",
+          "name": "flights",
+          "indexType": "default",
+          "entityType": "node",
+          "nodeLabel": {
+            "$ref": "#nl:3"
+          },
+          "relationshipType": null,
+          "properties": [
+            {
+              "$ref": "#p:3_0"
+            }
+          ]
+        },
+        {
+          "$id": "i:4",
+          "name": "tickets-text",
+          "indexType": "text",
+          "entityType": "node",
+          "nodeLabel": {
+            "$ref": "#nl:4"
+          },
+          "relationshipType": null,
+          "properties": [
+            {
+              "$ref": "#p:4_0"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "graphSchemaExtensionsRepresentation": {
+    "nodeKeyProperties": [
+      {
+        "node": {
+          "$ref": "#n:0"
+        },
+        "keyProperties": [
+          {
+            "$ref": "#p:0_0"
+          }
+        ]
+      },
+      {
+        "node": {
+          "$ref": "#n:1"
+        },
+        "keyProperties": [
+          {
+            "$ref": "#p:1_0"
+          }
+        ]
+      },
+      {
+        "node": {
+          "$ref": "#n:2"
+        },
+        "keyProperties": [
+          {
+            "$ref": "#p:2_0"
+          }
+        ]
+      },
+      {
+        "node": {
+          "$ref": "#n:3"
+        },
+        "keyProperties": [
+          {
+            "$ref": "#p:3_0"
+          }
+        ]
+      },
+      {
+        "node": {
+          "$ref": "#n:4"
+        },
+        "keyProperties": [
+          {
+            "$ref": "#p:4_0"
+          }
+        ]
+      }
+    ]
+  },
+  "graphMappingRepresentation": {
+    "dataSourceSchema": {
+      "type": "cloud",
+      "tableSchemas": [
+        {
+          "name": "aircrafts_data",
+          "fields": [
+            {
+              "name": "aircraft_code",
+              "rawType": "CHAR",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "model",
+              "rawType": "JSON",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "aircrafts_range",
+              "rawType": "INT",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            }
+          ],
+          "primaryKeys": [
+            "aircraft_code"
+          ],
+          "foreignKeys": [],
+          "expanded": true
+        },
+        {
+          "name": "airports_data",
+          "fields": [
+            {
+              "name": "airport_code",
+              "rawType": "CHAR",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "airport_name",
+              "rawType": "JSON",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "city",
+              "rawType": "JSON",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "coordinates",
+              "rawType": "GEOMETRY",
+              "recommendedType": {
+                "type": "point"
+              },
+              "supportedTypes": [
+                {
+                  "type": "point"
+                }
+              ]
+            },
+            {
+              "name": "timezone",
+              "rawType": "TEXT",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            }
+          ],
+          "primaryKeys": [
+            "airport_code"
+          ],
+          "foreignKeys": [],
+          "expanded": true
+        },
+        {
+          "name": "boarding_passes",
+          "fields": [
+            {
+              "name": "ticket_no",
+              "rawType": "CHAR",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "flight_id",
+              "rawType": "INT",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "boarding_no",
+              "rawType": "INT",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "seat_no",
+              "rawType": "VARCHAR",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            }
+          ],
+          "primaryKeys": [
+            "flight_id",
+            "ticket_no"
+          ],
+          "foreignKeys": [
+            {
+              "referencedTable": "ticket_flights",
+              "fields": [
+                {
+                  "field": "ticket_no",
+                  "referencedField": "ticket_no"
+                },
+                {
+                  "field": "flight_id",
+                  "referencedField": "flight_id"
+                }
+              ]
+            }
+          ],
+          "expanded": true
+        },
+        {
+          "name": "bookings",
+          "fields": [
+            {
+              "name": "book_ref",
+              "rawType": "CHAR",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "book_date",
+              "rawType": "TIMESTAMP",
+              "recommendedType": {
+                "type": "datetime"
+              },
+              "supportedTypes": [
+                {
+                  "type": "date"
+                },
+                {
+                  "type": "datetime"
+                },
+                {
+                  "type": "time"
+                },
+                {
+                  "type": "localtime"
+                },
+                {
+                  "type": "localdatetime"
+                }
+              ]
+            },
+            {
+              "name": "total_amount",
+              "rawType": "DECIMAL",
+              "recommendedType": {
+                "type": "float"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            }
+          ],
+          "primaryKeys": [
+            "book_ref"
+          ],
+          "foreignKeys": [],
+          "expanded": true
+        },
+        {
+          "name": "flights",
+          "fields": [
+            {
+              "name": "flight_id",
+              "rawType": "INT",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "flight_no",
+              "rawType": "CHAR",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "scheduled_departure",
+              "rawType": "TIMESTAMP",
+              "recommendedType": {
+                "type": "datetime"
+              },
+              "supportedTypes": [
+                {
+                  "type": "date"
+                },
+                {
+                  "type": "datetime"
+                },
+                {
+                  "type": "time"
+                },
+                {
+                  "type": "localtime"
+                },
+                {
+                  "type": "localdatetime"
+                }
+              ]
+            },
+            {
+              "name": "scheduled_arrival",
+              "rawType": "TIMESTAMP",
+              "recommendedType": {
+                "type": "datetime"
+              },
+              "supportedTypes": [
+                {
+                  "type": "date"
+                },
+                {
+                  "type": "datetime"
+                },
+                {
+                  "type": "time"
+                },
+                {
+                  "type": "localtime"
+                },
+                {
+                  "type": "localdatetime"
+                }
+              ]
+            },
+            {
+              "name": "departure_airport",
+              "rawType": "CHAR",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "arrival_airport",
+              "rawType": "CHAR",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "status",
+              "rawType": "TEXT",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "aircraft_code",
+              "rawType": "CHAR",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "actual_departure",
+              "rawType": "TIMESTAMP",
+              "recommendedType": {
+                "type": "datetime"
+              },
+              "supportedTypes": [
+                {
+                  "type": "date"
+                },
+                {
+                  "type": "datetime"
+                },
+                {
+                  "type": "time"
+                },
+                {
+                  "type": "localtime"
+                },
+                {
+                  "type": "localdatetime"
+                }
+              ]
+            },
+            {
+              "name": "actual_arrival",
+              "rawType": "TIMESTAMP",
+              "recommendedType": {
+                "type": "datetime"
+              },
+              "supportedTypes": [
+                {
+                  "type": "date"
+                },
+                {
+                  "type": "datetime"
+                },
+                {
+                  "type": "time"
+                },
+                {
+                  "type": "localtime"
+                },
+                {
+                  "type": "localdatetime"
+                }
+              ]
+            }
+          ],
+          "primaryKeys": [
+            "flight_id"
+          ],
+          "foreignKeys": [
+            {
+              "referencedTable": "aircrafts_data",
+              "fields": [
+                {
+                  "field": "aircraft_code",
+                  "referencedField": "aircraft_code"
+                }
+              ]
+            },
+            {
+              "referencedTable": "airports_data",
+              "fields": [
+                {
+                  "field": "departure_airport",
+                  "referencedField": "airport_code"
+                },
+                {
+                  "field": "arrival_airport",
+                  "referencedField": "airport_code"
+                }
+              ]
+            }
+          ],
+          "expanded": true
+        },
+        {
+          "name": "seats",
+          "fields": [
+            {
+              "name": "aircraft_code",
+              "rawType": "CHAR",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "seat_no",
+              "rawType": "VARCHAR",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "fare_conditions",
+              "rawType": "VARCHAR",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            }
+          ],
+          "primaryKeys": [
+            "aircraft_code",
+            "seat_no"
+          ],
+          "foreignKeys": [
+            {
+              "referencedTable": "aircrafts_data",
+              "fields": [
+                {
+                  "field": "aircraft_code",
+                  "referencedField": "aircraft_code"
+                }
+              ]
+            }
+          ],
+          "expanded": true
+        },
+        {
+          "name": "ticket_flights",
+          "fields": [
+            {
+              "name": "ticket_no",
+              "rawType": "CHAR",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "flight_id",
+              "rawType": "INT",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "fare_conditions",
+              "rawType": "VARCHAR",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "amount",
+              "rawType": "DECIMAL",
+              "recommendedType": {
+                "type": "float"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            }
+          ],
+          "primaryKeys": [
+            "flight_id",
+            "ticket_no"
+          ],
+          "foreignKeys": [
+            {
+              "referencedTable": "flights",
+              "fields": [
+                {
+                  "field": "flight_id",
+                  "referencedField": "flight_id"
+                }
+              ]
+            },
+            {
+              "referencedTable": "tickets",
+              "fields": [
+                {
+                  "field": "ticket_no",
+                  "referencedField": "ticket_no"
+                }
+              ]
+            }
+          ],
+          "expanded": true
+        },
+        {
+          "name": "tickets",
+          "fields": [
+            {
+              "name": "ticket_no",
+              "rawType": "CHAR",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "book_ref",
+              "rawType": "CHAR",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "passenger_id",
+              "rawType": "VARCHAR",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "passenger_name",
+              "rawType": "TEXT",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "contact_data",
+              "rawType": "JSON",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            }
+          ],
+          "primaryKeys": [
+            "ticket_no"
+          ],
+          "foreignKeys": [
+            {
+              "referencedTable": "bookings",
+              "fields": [
+                {
+                  "field": "book_ref",
+                  "referencedField": "book_ref"
+                }
+              ]
+            }
+          ],
+          "expanded": true
+        }
+      ]
+    },
+    "nodeMappings": [
+      {
+        "node": {
+          "$ref": "#n:0"
+        },
+        "tableName": "aircrafts_data",
+        "propertyMappings": [
+          {
+            "property": {
+              "$ref": "#p:0_0"
+            },
+            "fieldName": "aircraft_code"
+          },
+          {
+            "property": {
+              "$ref": "#p:0_1"
+            },
+            "fieldName": "model"
+          },
+          {
+            "property": {
+              "$ref": "#p:0_2"
+            },
+            "fieldName": "aircrafts_range"
+          }
+        ]
+      },
+      {
+        "node": {
+          "$ref": "#n:1"
+        },
+        "tableName": "airports_data",
+        "propertyMappings": [
+          {
+            "property": {
+              "$ref": "#p:1_0"
+            },
+            "fieldName": "airport_code"
+          },
+          {
+            "property": {
+              "$ref": "#p:1_1"
+            },
+            "fieldName": "airport_name"
+          },
+          {
+            "property": {
+              "$ref": "#p:1_2"
+            },
+            "fieldName": "city"
+          },
+          {
+            "property": {
+              "$ref": "#p:1_3"
+            },
+            "fieldName": "coordinates"
+          },
+          {
+            "property": {
+              "$ref": "#p:1_4"
+            },
+            "fieldName": "timezone"
+          }
+        ]
+      },
+      {
+        "node": {
+          "$ref": "#n:2"
+        },
+        "tableName": "bookings",
+        "propertyMappings": [
+          {
+            "property": {
+              "$ref": "#p:2_0"
+            },
+            "fieldName": "book_ref"
+          },
+          {
+            "property": {
+              "$ref": "#p:2_1"
+            },
+            "fieldName": "book_date"
+          },
+          {
+            "property": {
+              "$ref": "#p:2_2"
+            },
+            "fieldName": "total_amount"
+          }
+        ]
+      },
+      {
+        "node": {
+          "$ref": "#n:3"
+        },
+        "tableName": "flights",
+        "propertyMappings": [
+          {
+            "property": {
+              "$ref": "#p:3_0"
+            },
+            "fieldName": "flight_id"
+          },
+          {
+            "property": {
+              "$ref": "#p:3_1"
+            },
+            "fieldName": "flight_no"
+          },
+          {
+            "property": {
+              "$ref": "#p:3_2"
+            },
+            "fieldName": "scheduled_departure"
+          },
+          {
+            "property": {
+              "$ref": "#p:3_3"
+            },
+            "fieldName": "scheduled_arrival"
+          },
+          {
+            "property": {
+              "$ref": "#p:3_6"
+            },
+            "fieldName": "status"
+          },
+          {
+            "property": {
+              "$ref": "#p:3_8"
+            },
+            "fieldName": "actual_departure"
+          },
+          {
+            "property": {
+              "$ref": "#p:3_9"
+            },
+            "fieldName": "actual_arrival"
+          }
+        ]
+      },
+      {
+        "node": {
+          "$ref": "#n:4"
+        },
+        "tableName": "tickets",
+        "propertyMappings": [
+          {
+            "property": {
+              "$ref": "#p:4_0"
+            },
+            "fieldName": "ticket_no"
+          },
+          {
+            "property": {
+              "$ref": "#p:4_2"
+            },
+            "fieldName": "passenger_id"
+          },
+          {
+            "property": {
+              "$ref": "#p:4_3"
+            },
+            "fieldName": "passenger_name"
+          },
+          {
+            "property": {
+              "$ref": "#p:4_4"
+            },
+            "fieldName": "contact_data"
+          }
+        ]
+      }
+    ],
+    "relationshipMappings": [
+      {
+        "relationship": {
+          "$ref": "#r:0"
+        },
+        "tableName": "flights",
+        "fromMappings": {
+          "#p:3_0": "flight_id"
+        },
+        "toMappings": {
+          "#p:0_0": "aircraft_code"
+        },
+        "propertyMappings": []
+      },
+      {
+        "relationship": {
+          "$ref": "#r:1"
+        },
+        "tableName": "flights",
+        "fromMappings": {
+          "#p:3_0": "flight_id"
+        },
+        "toMappings": {
+          "#p:1_0": "departure_airport"
+        },
+        "propertyMappings": []
+      },
+      {
+        "relationship": {
+          "$ref": "#r:2"
+        },
+        "tableName": "flights",
+        "fromMappings": {
+          "#p:3_0": "flight_id"
+        },
+        "toMappings": {
+          "#p:1_0": "arrival_airport"
+        },
+        "propertyMappings": []
+      },
+      {
+        "relationship": {
+          "$ref": "#r:3"
+        },
+        "tableName": "ticket_flights",
+        "fromMappings": {
+          "#p:3_0": "flight_id"
+        },
+        "toMappings": {
+          "#p:4_0": "ticket_no"
+        },
+        "propertyMappings": [
+          {
+            "property": {
+              "$ref": "#p:3_0"
+            },
+            "fieldName": "fare_conditions"
+          },
+          {
+            "property": {
+              "$ref": "#p:3_1"
+            },
+            "fieldName": "amount"
+          }
+        ]
+      },
+      {
+        "relationship": {
+          "$ref": "#r:4"
+        },
+        "tableName": "tickets",
+        "fromMappings": {
+          "#p:4_0": "ticket_no"
+        },
+        "toMappings": {
+          "#p:2_0": "book_ref"
+        },
+        "propertyMappings": []
+      }
+    ]
+  },
+  "configurations": {
+    "idsToIgnore": []
+  }
+}

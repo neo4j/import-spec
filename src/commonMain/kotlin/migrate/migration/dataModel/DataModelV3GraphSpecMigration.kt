@@ -363,21 +363,22 @@ class DataModelV3GraphSpecMigration : Migration(Version.DATA_MODEL_V30, Version.
             val propertyMappings = relationshipMapping.listOfMaps("propertyMappings")
             val properties = migratePropertyMappings(propertyMappings)
             // ref is lost, and we know type isn't unique; so we are assuming type + property id are unique
-            list.add(
-                schemaMapOf(
-                    "type" to SchemaLiteral(token),
-                    "from" to schemaMapOf(
-                        "node" to SchemaLiteral(fromRef),
-                        "properties" to SchemaMap(fromMappings)
-                    ),
-                    "to" to schemaMapOf(
-                        "node" to SchemaLiteral(toRef),
-                        "properties" to SchemaMap(toMappings)
-                    ),
-                    "table" to tableName,
-                    "properties" to SchemaMap(properties)
-                )
+            val map = schemaMapOf(
+                "type" to SchemaLiteral(token),
+                "from" to schemaMapOf(
+                    "node" to SchemaLiteral(fromRef),
+                    "properties" to SchemaMap(fromMappings)
+                ),
+                "to" to schemaMapOf(
+                    "node" to SchemaLiteral(toRef),
+                    "properties" to SchemaMap(toMappings)
+                ),
+                "table" to tableName
             )
+            if (properties.isNotEmpty()) {
+                map["properties"] = properties
+            }
+            list.add(map)
         }
     }
 

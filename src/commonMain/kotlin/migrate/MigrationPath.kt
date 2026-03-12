@@ -17,11 +17,14 @@
 package migrate
 
 import codec.schema.SchemaMap
+import model.Type
 
 class MigrationPath(val migrations: Map<String, List<Migration>>) {
 
-    fun migrate(schema: SchemaMap, type: String, to: String): SchemaMap {
+    fun migrate(schema: SchemaMap, type: String, targetVersion: String): SchemaMap {
+        println("Migrate: $schema")
         val from = version(schema, type)
+        val to = version(targetVersion, Type.GRAPH_SPEC)
         val path = findPath(from, to) ?: error("No migration path found between versions $from and $to")
         var map = schema
         for (migration in path) {
@@ -31,13 +34,19 @@ class MigrationPath(val migrations: Map<String, List<Migration>>) {
         return map
     }
 
-    private fun version(schema: SchemaMap, type: String): String {
-        val version = schema.stringOrNull("version") ?: error("Version must be specified")
+    private fun version(version: String, type: String): String {
         var semver = version.substringBefore("-")
         if (semver.count { it == '.' } > 1) {
             semver = semver.substringBeforeLast(".") // 3.0, 2.4 etc..
         }
+        if (type == Type.GRAPH_SPEC) {
+            return semver
+        }
         return "$type:$semver"
+    }
+    private fun version(schema: SchemaMap, type: String): String {
+        val version = schema.stringOrNull("version") ?: error("Version must be specified")
+        return version(version, type)
     }
 
     /**

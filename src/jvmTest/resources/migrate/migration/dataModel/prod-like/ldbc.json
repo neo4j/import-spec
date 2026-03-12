@@ -1,0 +1,4202 @@
+{
+  "version": "3.0.0",
+  "graphSchemaRepresentation": {
+    "version": "1.0.0",
+    "graphSchema": {
+      "nodeLabels": [
+        {
+          "$id": "nl:0",
+          "token": "Comment",
+          "properties": [
+            {
+              "$id": "p:0_0",
+              "token": "creationDate",
+              "type": {
+                "type": "integer"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:0_1",
+              "token": "deletionDate",
+              "type": {
+                "type": "integer"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:0_2",
+              "token": "explicitlyDeleted",
+              "type": {
+                "type": "boolean"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:0_3",
+              "token": "id",
+              "type": {
+                "type": "integer"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:0_4",
+              "token": "locationIP",
+              "type": {
+                "type": "string"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:0_5",
+              "token": "browserUsed",
+              "type": {
+                "type": "string"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:0_6",
+              "token": "content",
+              "type": {
+                "type": "string"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:0_7",
+              "token": "length",
+              "type": {
+                "type": "integer"
+              },
+              "nullable": false
+            }
+          ]
+        },
+        {
+          "$id": "nl:1",
+          "token": "Forum",
+          "properties": [
+            {
+              "$id": "p:1_0",
+              "token": "creationDate",
+              "type": {
+                "type": "integer"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:1_1",
+              "token": "deletionDate",
+              "type": {
+                "type": "integer"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:1_2",
+              "token": "explicitlyDeleted",
+              "type": {
+                "type": "boolean"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:1_3",
+              "token": "id",
+              "type": {
+                "type": "integer"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:1_4",
+              "token": "title",
+              "type": {
+                "type": "string"
+              },
+              "nullable": false
+            }
+          ]
+        },
+        {
+          "$id": "nl:2",
+          "token": "Organisation",
+          "properties": [
+            {
+              "$id": "p:2_0",
+              "token": "id",
+              "type": {
+                "type": "integer"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:2_1",
+              "token": "type",
+              "type": {
+                "type": "string"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:2_2",
+              "token": "name",
+              "type": {
+                "type": "string"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:2_3",
+              "token": "url",
+              "type": {
+                "type": "string"
+              },
+              "nullable": false
+            }
+          ]
+        },
+        {
+          "$id": "nl:3",
+          "token": "Person",
+          "properties": [
+            {
+              "$id": "p:3_0",
+              "token": "creationDate",
+              "type": {
+                "type": "integer"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:3_1",
+              "token": "deletionDate",
+              "type": {
+                "type": "integer"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:3_2",
+              "token": "explicitlyDeleted",
+              "type": {
+                "type": "boolean"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:3_3",
+              "token": "id",
+              "type": {
+                "type": "integer"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:3_4",
+              "token": "firstName",
+              "type": {
+                "type": "string"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:3_5",
+              "token": "lastName",
+              "type": {
+                "type": "string"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:3_6",
+              "token": "gender",
+              "type": {
+                "type": "string"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:3_7",
+              "token": "birthday",
+              "type": {
+                "type": "integer"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:3_8",
+              "token": "locationIP",
+              "type": {
+                "type": "string"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:3_9",
+              "token": "browserUsed",
+              "type": {
+                "type": "string"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:3_11",
+              "token": "language",
+              "type": {
+                "type": "string"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:3_12",
+              "token": "email",
+              "type": {
+                "type": "string"
+              },
+              "nullable": false
+            }
+          ]
+        },
+        {
+          "$id": "nl:4",
+          "token": "Place",
+          "properties": [
+            {
+              "$id": "p:4_0",
+              "token": "id",
+              "type": {
+                "type": "integer"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:4_1",
+              "token": "name",
+              "type": {
+                "type": "string"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:4_2",
+              "token": "url",
+              "type": {
+                "type": "string"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:4_3",
+              "token": "type",
+              "type": {
+                "type": "string"
+              },
+              "nullable": false
+            }
+          ]
+        },
+        {
+          "$id": "nl:5",
+          "token": "Post",
+          "properties": [
+            {
+              "$id": "p:5_0",
+              "token": "creationDate",
+              "type": {
+                "type": "integer"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:5_1",
+              "token": "deletionDate",
+              "type": {
+                "type": "integer"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:5_2",
+              "token": "explicitlyDeleted",
+              "type": {
+                "type": "boolean"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:5_3",
+              "token": "id",
+              "type": {
+                "type": "integer"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:5_4",
+              "token": "imageFile",
+              "type": {
+                "type": "string"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:5_5",
+              "token": "locationIP",
+              "type": {
+                "type": "string"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:5_6",
+              "token": "browserUsed",
+              "type": {
+                "type": "string"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:5_7",
+              "token": "language",
+              "type": {
+                "type": "string"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:5_8",
+              "token": "content",
+              "type": {
+                "type": "string"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:5_9",
+              "token": "length",
+              "type": {
+                "type": "integer"
+              },
+              "nullable": false
+            }
+          ]
+        },
+        {
+          "$id": "nl:6",
+          "token": "Tag",
+          "properties": [
+            {
+              "$id": "p:6_0",
+              "token": "id",
+              "type": {
+                "type": "integer"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:6_1",
+              "token": "name",
+              "type": {
+                "type": "string"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:6_2",
+              "token": "url",
+              "type": {
+                "type": "string"
+              },
+              "nullable": false
+            }
+          ]
+        },
+        {
+          "$id": "nl:7",
+          "token": "TagClass",
+          "properties": [
+            {
+              "$id": "p:7_0",
+              "token": "id",
+              "type": {
+                "type": "integer"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:7_1",
+              "token": "name",
+              "type": {
+                "type": "string"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:7_2",
+              "token": "url",
+              "type": {
+                "type": "string"
+              },
+              "nullable": false
+            }
+          ]
+        }
+      ],
+      "relationshipTypes": [
+        {
+          "$id": "rt:0",
+          "token": "AUTHORED_BY",
+          "properties": []
+        },
+        {
+          "$id": "rt:1",
+          "token": "AUTHORED_AT",
+          "properties": []
+        },
+        {
+          "$id": "rt:2",
+          "token": "REPLIED_TO",
+          "properties": []
+        },
+        {
+          "$id": "rt:3",
+          "token": "REPLIED_TO",
+          "properties": []
+        },
+        {
+          "$id": "rt:4",
+          "token": "HAS_TAG",
+          "properties": [
+            {
+              "$id": "p:4_0",
+              "token": "creationDate",
+              "type": {
+                "type": "integer"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:4_1",
+              "token": "deletionDate",
+              "type": {
+                "type": "integer"
+              },
+              "nullable": false
+            }
+          ]
+        },
+        {
+          "$id": "rt:5",
+          "token": "MODERATED_BY",
+          "properties": []
+        },
+        {
+          "$id": "rt:6",
+          "token": "MEMBER_OF",
+          "properties": [
+            {
+              "$id": "p:6_0",
+              "token": "creationDate",
+              "type": {
+                "type": "integer"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:6_1",
+              "token": "deletionDate",
+              "type": {
+                "type": "integer"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:6_2",
+              "token": "explicitlyDeleted",
+              "type": {
+                "type": "boolean"
+              },
+              "nullable": false
+            }
+          ]
+        },
+        {
+          "$id": "rt:7",
+          "token": "HAS_TAG",
+          "properties": [
+            {
+              "$id": "p:7_0",
+              "token": "creationDate",
+              "type": {
+                "type": "integer"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:7_1",
+              "token": "deletionDate",
+              "type": {
+                "type": "integer"
+              },
+              "nullable": false
+            }
+          ]
+        },
+        {
+          "$id": "rt:8",
+          "token": "LOCATED_IN",
+          "properties": []
+        },
+        {
+          "$id": "rt:9",
+          "token": "LIVES_IN",
+          "properties": []
+        },
+        {
+          "$id": "rt:10",
+          "token": "INTERESTED_IN",
+          "properties": [
+            {
+              "$id": "p:10_0",
+              "token": "creationDate",
+              "type": {
+                "type": "integer"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:10_1",
+              "token": "deletionDate",
+              "type": {
+                "type": "integer"
+              },
+              "nullable": false
+            }
+          ]
+        },
+        {
+          "$id": "rt:11",
+          "token": "KNOWS",
+          "properties": [
+            {
+              "$id": "p:11_0",
+              "token": "creationDate",
+              "type": {
+                "type": "integer"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:11_1",
+              "token": "deletionDate",
+              "type": {
+                "type": "integer"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:11_2",
+              "token": "explicitlyDeleted",
+              "type": {
+                "type": "boolean"
+              },
+              "nullable": false
+            }
+          ]
+        },
+        {
+          "$id": "rt:12",
+          "token": "LIKED",
+          "properties": [
+            {
+              "$id": "p:12_0",
+              "token": "creationDate",
+              "type": {
+                "type": "integer"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:12_1",
+              "token": "deletionDate",
+              "type": {
+                "type": "integer"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:12_2",
+              "token": "explicitlyDeleted",
+              "type": {
+                "type": "boolean"
+              },
+              "nullable": false
+            }
+          ]
+        },
+        {
+          "$id": "rt:13",
+          "token": "LIKED",
+          "properties": [
+            {
+              "$id": "p:13_0",
+              "token": "creationDate",
+              "type": {
+                "type": "integer"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:13_1",
+              "token": "deletionDate",
+              "type": {
+                "type": "integer"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:13_2",
+              "token": "explicitlyDeleted",
+              "type": {
+                "type": "boolean"
+              },
+              "nullable": false
+            }
+          ]
+        },
+        {
+          "$id": "rt:14",
+          "token": "STUDIES_AT",
+          "properties": [
+            {
+              "$id": "p:14_0",
+              "token": "creationDate",
+              "type": {
+                "type": "integer"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:14_1",
+              "token": "deletionDate",
+              "type": {
+                "type": "integer"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:14_2",
+              "token": "classYear",
+              "type": {
+                "type": "integer"
+              },
+              "nullable": false
+            }
+          ]
+        },
+        {
+          "$id": "rt:15",
+          "token": "WORKS_AT",
+          "properties": [
+            {
+              "$id": "p:15_0",
+              "token": "creationDate",
+              "type": {
+                "type": "integer"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:15_1",
+              "token": "deletionDate",
+              "type": {
+                "type": "integer"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:15_2",
+              "token": "workFrom",
+              "type": {
+                "type": "integer"
+              },
+              "nullable": false
+            }
+          ]
+        },
+        {
+          "$id": "rt:16",
+          "token": "IS_SIMILAR_TO",
+          "properties": []
+        },
+        {
+          "$id": "rt:17",
+          "token": "AUTHORED_BY",
+          "properties": []
+        },
+        {
+          "$id": "rt:18",
+          "token": "POSTED_IN",
+          "properties": []
+        },
+        {
+          "$id": "rt:19",
+          "token": "AUTHORED_AT",
+          "properties": []
+        },
+        {
+          "$id": "rt:20",
+          "token": "HAS_TAG",
+          "properties": [
+            {
+              "$id": "p:20_0",
+              "token": "creationDate",
+              "type": {
+                "type": "integer"
+              },
+              "nullable": false
+            },
+            {
+              "$id": "p:20_1",
+              "token": "deletionDate",
+              "type": {
+                "type": "integer"
+              },
+              "nullable": false
+            }
+          ]
+        },
+        {
+          "$id": "rt:21",
+          "token": "HAS_CLASS",
+          "properties": []
+        },
+        {
+          "$id": "rt:22",
+          "token": "IS_SUBCLASS",
+          "properties": []
+        }
+      ],
+      "nodeObjectTypes": [
+        {
+          "$id": "n:0",
+          "labels": [
+            {
+              "$ref": "#nl:0"
+            }
+          ]
+        },
+        {
+          "$id": "n:1",
+          "labels": [
+            {
+              "$ref": "#nl:1"
+            }
+          ]
+        },
+        {
+          "$id": "n:2",
+          "labels": [
+            {
+              "$ref": "#nl:2"
+            }
+          ]
+        },
+        {
+          "$id": "n:3",
+          "labels": [
+            {
+              "$ref": "#nl:3"
+            }
+          ]
+        },
+        {
+          "$id": "n:4",
+          "labels": [
+            {
+              "$ref": "#nl:4"
+            }
+          ]
+        },
+        {
+          "$id": "n:5",
+          "labels": [
+            {
+              "$ref": "#nl:5"
+            }
+          ]
+        },
+        {
+          "$id": "n:6",
+          "labels": [
+            {
+              "$ref": "#nl:6"
+            }
+          ]
+        },
+        {
+          "$id": "n:7",
+          "labels": [
+            {
+              "$ref": "#nl:7"
+            }
+          ]
+        }
+      ],
+      "relationshipObjectTypes": [
+        {
+          "$id": "r:0",
+          "type": {
+            "$ref": "#rt:0"
+          },
+          "from": {
+            "$ref": "#n:0"
+          },
+          "to": {
+            "$ref": "#n:3"
+          }
+        },
+        {
+          "$id": "r:1",
+          "type": {
+            "$ref": "#rt:1"
+          },
+          "from": {
+            "$ref": "#n:0"
+          },
+          "to": {
+            "$ref": "#n:4"
+          }
+        },
+        {
+          "$id": "r:2",
+          "type": {
+            "$ref": "#rt:2"
+          },
+          "from": {
+            "$ref": "#n:0"
+          },
+          "to": {
+            "$ref": "#n:5"
+          }
+        },
+        {
+          "$id": "r:3",
+          "type": {
+            "$ref": "#rt:3"
+          },
+          "from": {
+            "$ref": "#n:0"
+          },
+          "to": {
+            "$ref": "#n:0"
+          }
+        },
+        {
+          "$id": "r:4",
+          "type": {
+            "$ref": "#rt:4"
+          },
+          "from": {
+            "$ref": "#n:0"
+          },
+          "to": {
+            "$ref": "#n:6"
+          }
+        },
+        {
+          "$id": "r:5",
+          "type": {
+            "$ref": "#rt:5"
+          },
+          "from": {
+            "$ref": "#n:1"
+          },
+          "to": {
+            "$ref": "#n:3"
+          }
+        },
+        {
+          "$id": "r:6",
+          "type": {
+            "$ref": "#rt:6"
+          },
+          "from": {
+            "$ref": "#n:3"
+          },
+          "to": {
+            "$ref": "#n:1"
+          }
+        },
+        {
+          "$id": "r:7",
+          "type": {
+            "$ref": "#rt:7"
+          },
+          "from": {
+            "$ref": "#n:1"
+          },
+          "to": {
+            "$ref": "#n:6"
+          }
+        },
+        {
+          "$id": "r:8",
+          "type": {
+            "$ref": "#rt:8"
+          },
+          "from": {
+            "$ref": "#n:2"
+          },
+          "to": {
+            "$ref": "#n:4"
+          }
+        },
+        {
+          "$id": "r:9",
+          "type": {
+            "$ref": "#rt:9"
+          },
+          "from": {
+            "$ref": "#n:3"
+          },
+          "to": {
+            "$ref": "#n:4"
+          }
+        },
+        {
+          "$id": "r:10",
+          "type": {
+            "$ref": "#rt:10"
+          },
+          "from": {
+            "$ref": "#n:3"
+          },
+          "to": {
+            "$ref": "#n:6"
+          }
+        },
+        {
+          "$id": "r:11",
+          "type": {
+            "$ref": "#rt:11"
+          },
+          "from": {
+            "$ref": "#n:3"
+          },
+          "to": {
+            "$ref": "#n:3"
+          }
+        },
+        {
+          "$id": "r:12",
+          "type": {
+            "$ref": "#rt:12"
+          },
+          "from": {
+            "$ref": "#n:3"
+          },
+          "to": {
+            "$ref": "#n:0"
+          }
+        },
+        {
+          "$id": "r:13",
+          "type": {
+            "$ref": "#rt:13"
+          },
+          "from": {
+            "$ref": "#n:3"
+          },
+          "to": {
+            "$ref": "#n:5"
+          }
+        },
+        {
+          "$id": "r:14",
+          "type": {
+            "$ref": "#rt:14"
+          },
+          "from": {
+            "$ref": "#n:3"
+          },
+          "to": {
+            "$ref": "#n:2"
+          }
+        },
+        {
+          "$id": "r:15",
+          "type": {
+            "$ref": "#rt:15"
+          },
+          "from": {
+            "$ref": "#n:3"
+          },
+          "to": {
+            "$ref": "#n:2"
+          }
+        },
+        {
+          "$id": "r:16",
+          "type": {
+            "$ref": "#rt:16"
+          },
+          "from": {
+            "$ref": "#n:4"
+          },
+          "to": {
+            "$ref": "#n:4"
+          }
+        },
+        {
+          "$id": "r:17",
+          "type": {
+            "$ref": "#rt:17"
+          },
+          "from": {
+            "$ref": "#n:5"
+          },
+          "to": {
+            "$ref": "#n:3"
+          }
+        },
+        {
+          "$id": "r:18",
+          "type": {
+            "$ref": "#rt:18"
+          },
+          "from": {
+            "$ref": "#n:5"
+          },
+          "to": {
+            "$ref": "#n:1"
+          }
+        },
+        {
+          "$id": "r:19",
+          "type": {
+            "$ref": "#rt:19"
+          },
+          "from": {
+            "$ref": "#n:5"
+          },
+          "to": {
+            "$ref": "#n:4"
+          }
+        },
+        {
+          "$id": "r:20",
+          "type": {
+            "$ref": "#rt:20"
+          },
+          "from": {
+            "$ref": "#n:5"
+          },
+          "to": {
+            "$ref": "#n:6"
+          }
+        },
+        {
+          "$id": "r:21",
+          "type": {
+            "$ref": "#rt:21"
+          },
+          "from": {
+            "$ref": "#n:6"
+          },
+          "to": {
+            "$ref": "#n:7"
+          }
+        },
+        {
+          "$id": "r:22",
+          "type": {
+            "$ref": "#rt:22"
+          },
+          "from": {
+            "$ref": "#n:7"
+          },
+          "to": {
+            "$ref": "#n:7"
+          }
+        }
+      ],
+      "constraints": [
+        {
+          "$id": "c:0",
+          "name": "Comment",
+          "constraintType": "uniqueness",
+          "entityType": "node",
+          "nodeLabel": {
+            "$ref": "#nl:0"
+          },
+          "relationshipType": null,
+          "properties": [
+            {
+              "$ref": "#p:0_3"
+            }
+          ]
+        },
+        {
+          "$id": "c:1",
+          "name": "Forum",
+          "constraintType": "uniqueness",
+          "entityType": "node",
+          "nodeLabel": {
+            "$ref": "#nl:1"
+          },
+          "relationshipType": null,
+          "properties": [
+            {
+              "$ref": "#p:1_3"
+            }
+          ]
+        },
+        {
+          "$id": "c:2",
+          "name": "Organisation",
+          "constraintType": "uniqueness",
+          "entityType": "node",
+          "nodeLabel": {
+            "$ref": "#nl:2"
+          },
+          "relationshipType": null,
+          "properties": [
+            {
+              "$ref": "#p:2_0"
+            }
+          ]
+        },
+        {
+          "$id": "c:3",
+          "name": "Person",
+          "constraintType": "uniqueness",
+          "entityType": "node",
+          "nodeLabel": {
+            "$ref": "#nl:3"
+          },
+          "relationshipType": null,
+          "properties": [
+            {
+              "$ref": "#p:3_3"
+            }
+          ]
+        },
+        {
+          "$id": "c:4",
+          "name": "Place",
+          "constraintType": "uniqueness",
+          "entityType": "node",
+          "nodeLabel": {
+            "$ref": "#nl:4"
+          },
+          "relationshipType": null,
+          "properties": [
+            {
+              "$ref": "#p:4_0"
+            }
+          ]
+        },
+        {
+          "$id": "c:5",
+          "name": "Post",
+          "constraintType": "uniqueness",
+          "entityType": "node",
+          "nodeLabel": {
+            "$ref": "#nl:5"
+          },
+          "relationshipType": null,
+          "properties": [
+            {
+              "$ref": "#p:5_3"
+            }
+          ]
+        },
+        {
+          "$id": "c:6",
+          "name": "Tag",
+          "constraintType": "uniqueness",
+          "entityType": "node",
+          "nodeLabel": {
+            "$ref": "#nl:6"
+          },
+          "relationshipType": null,
+          "properties": [
+            {
+              "$ref": "#p:6_0"
+            }
+          ]
+        },
+        {
+          "$id": "c:7",
+          "name": "TagClass",
+          "constraintType": "uniqueness",
+          "entityType": "node",
+          "nodeLabel": {
+            "$ref": "#nl:7"
+          },
+          "relationshipType": null,
+          "properties": [
+            {
+              "$ref": "#p:7_0"
+            }
+          ]
+        }
+      ],
+      "indexes": [
+        {
+          "$id": "i:0",
+          "name": "Comment",
+          "indexType": "default",
+          "entityType": "node",
+          "nodeLabel": {
+            "$ref": "#nl:0"
+          },
+          "relationshipType": null,
+          "properties": [
+            {
+              "$ref": "#p:0_3"
+            }
+          ]
+        },
+        {
+          "$id": "i:1",
+          "name": "Forum",
+          "indexType": "default",
+          "entityType": "node",
+          "nodeLabel": {
+            "$ref": "#nl:1"
+          },
+          "relationshipType": null,
+          "properties": [
+            {
+              "$ref": "#p:1_3"
+            }
+          ]
+        },
+        {
+          "$id": "i:2",
+          "name": "Organisation",
+          "indexType": "default",
+          "entityType": "node",
+          "nodeLabel": {
+            "$ref": "#nl:2"
+          },
+          "relationshipType": null,
+          "properties": [
+            {
+              "$ref": "#p:2_0"
+            }
+          ]
+        },
+        {
+          "$id": "i:3",
+          "name": "Person",
+          "indexType": "default",
+          "entityType": "node",
+          "nodeLabel": {
+            "$ref": "#nl:3"
+          },
+          "relationshipType": null,
+          "properties": [
+            {
+              "$ref": "#p:3_3"
+            }
+          ]
+        },
+        {
+          "$id": "i:4",
+          "name": "Place",
+          "indexType": "default",
+          "entityType": "node",
+          "nodeLabel": {
+            "$ref": "#nl:4"
+          },
+          "relationshipType": null,
+          "properties": [
+            {
+              "$ref": "#p:4_0"
+            }
+          ]
+        },
+        {
+          "$id": "i:5",
+          "name": "Post",
+          "indexType": "default",
+          "entityType": "node",
+          "nodeLabel": {
+            "$ref": "#nl:5"
+          },
+          "relationshipType": null,
+          "properties": [
+            {
+              "$ref": "#p:5_3"
+            }
+          ]
+        },
+        {
+          "$id": "i:6",
+          "name": "Tag",
+          "indexType": "default",
+          "entityType": "node",
+          "nodeLabel": {
+            "$ref": "#nl:6"
+          },
+          "relationshipType": null,
+          "properties": [
+            {
+              "$ref": "#p:6_0"
+            }
+          ]
+        },
+        {
+          "$id": "i:7",
+          "name": "TagClass",
+          "indexType": "default",
+          "entityType": "node",
+          "nodeLabel": {
+            "$ref": "#nl:7"
+          },
+          "relationshipType": null,
+          "properties": [
+            {
+              "$ref": "#p:7_0"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "graphSchemaExtensionsRepresentation": {
+    "nodeKeyProperties": [
+      {
+        "node": {
+          "$ref": "#n:0"
+        },
+        "keyProperties": [
+          {
+            "$ref": "#p:0_3"
+          }
+        ]
+      },
+      {
+        "node": {
+          "$ref": "#n:1"
+        },
+        "keyProperties": [
+          {
+            "$ref": "#p:1_3"
+          }
+        ]
+      },
+      {
+        "node": {
+          "$ref": "#n:2"
+        },
+        "keyProperties": [
+          {
+            "$ref": "#p:2_0"
+          }
+        ]
+      },
+      {
+        "node": {
+          "$ref": "#n:3"
+        },
+        "keyProperties": [
+          {
+            "$ref": "#p:3_3"
+          }
+        ]
+      },
+      {
+        "node": {
+          "$ref": "#n:4"
+        },
+        "keyProperties": [
+          {
+            "$ref": "#p:4_0"
+          }
+        ]
+      },
+      {
+        "node": {
+          "$ref": "#n:5"
+        },
+        "keyProperties": [
+          {
+            "$ref": "#p:5_3"
+          }
+        ]
+      },
+      {
+        "node": {
+          "$ref": "#n:6"
+        },
+        "keyProperties": [
+          {
+            "$ref": "#p:6_0"
+          }
+        ]
+      },
+      {
+        "node": {
+          "$ref": "#n:7"
+        },
+        "keyProperties": [
+          {
+            "$ref": "#p:7_0"
+          }
+        ]
+      }
+    ]
+  },
+  "graphMappingRepresentation": {
+    "dataSourceSchema": {
+      "type": "cloud",
+      "tableSchemas": [
+        {
+          "name": "Comment",
+          "fields": [
+            {
+              "name": "creationDate",
+              "rawType": "BIGINT",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "deletionDate",
+              "rawType": "BIGINT",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "explicitlyDeleted",
+              "rawType": "BOOLEAN",
+              "recommendedType": {
+                "type": "boolean"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "boolean"
+                }
+              ]
+            },
+            {
+              "name": "id",
+              "rawType": "BIGINT",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "locationIP",
+              "rawType": "VARCHAR",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "browserUsed",
+              "rawType": "VARCHAR",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "content",
+              "rawType": "VARCHAR",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "length",
+              "rawType": "INTEGER",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "CreatorPersonId",
+              "rawType": "BIGINT",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "LocationCountryId",
+              "rawType": "INTEGER",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "ParentPostId",
+              "rawType": "BIGINT",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "ParentCommentId",
+              "rawType": "BIGINT",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            }
+          ],
+          "primaryKeys": [],
+          "foreignKeys": [],
+          "expanded": true
+        },
+        {
+          "name": "CommentHasTag",
+          "fields": [
+            {
+              "name": "creationDate",
+              "rawType": "BIGINT",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "deletionDate",
+              "rawType": "BIGINT",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "CommentId",
+              "rawType": "BIGINT",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "TagId",
+              "rawType": "INTEGER",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            }
+          ],
+          "primaryKeys": [],
+          "foreignKeys": [],
+          "expanded": true
+        },
+        {
+          "name": "Forum",
+          "fields": [
+            {
+              "name": "creationDate",
+              "rawType": "BIGINT",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "deletionDate",
+              "rawType": "BIGINT",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "explicitlyDeleted",
+              "rawType": "BOOLEAN",
+              "recommendedType": {
+                "type": "boolean"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "boolean"
+                }
+              ]
+            },
+            {
+              "name": "id",
+              "rawType": "BIGINT",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "title",
+              "rawType": "VARCHAR",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "ModeratorPersonId",
+              "rawType": "BIGINT",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            }
+          ],
+          "primaryKeys": [],
+          "foreignKeys": [],
+          "expanded": true
+        },
+        {
+          "name": "ForumHasMember",
+          "fields": [
+            {
+              "name": "creationDate",
+              "rawType": "BIGINT",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "deletionDate",
+              "rawType": "BIGINT",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "explicitlyDeleted",
+              "rawType": "BOOLEAN",
+              "recommendedType": {
+                "type": "boolean"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "boolean"
+                }
+              ]
+            },
+            {
+              "name": "ForumId",
+              "rawType": "BIGINT",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "PersonId",
+              "rawType": "BIGINT",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            }
+          ],
+          "primaryKeys": [],
+          "foreignKeys": [],
+          "expanded": true
+        },
+        {
+          "name": "ForumHasTag",
+          "fields": [
+            {
+              "name": "creationDate",
+              "rawType": "BIGINT",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "deletionDate",
+              "rawType": "BIGINT",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "ForumId",
+              "rawType": "BIGINT",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "TagId",
+              "rawType": "INTEGER",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            }
+          ],
+          "primaryKeys": [],
+          "foreignKeys": [],
+          "expanded": true
+        },
+        {
+          "name": "Organisation",
+          "fields": [
+            {
+              "name": "id",
+              "rawType": "INTEGER",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "type",
+              "rawType": "VARCHAR",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "name",
+              "rawType": "VARCHAR",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "url",
+              "rawType": "VARCHAR",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "LocationPlaceId",
+              "rawType": "INTEGER",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            }
+          ],
+          "primaryKeys": [],
+          "foreignKeys": [],
+          "expanded": true
+        },
+        {
+          "name": "Person",
+          "fields": [
+            {
+              "name": "creationDate",
+              "rawType": "BIGINT",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "deletionDate",
+              "rawType": "BIGINT",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "explicitlyDeleted",
+              "rawType": "BOOLEAN",
+              "recommendedType": {
+                "type": "boolean"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "boolean"
+                }
+              ]
+            },
+            {
+              "name": "id",
+              "rawType": "BIGINT",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "firstName",
+              "rawType": "VARCHAR",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "lastName",
+              "rawType": "VARCHAR",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "gender",
+              "rawType": "VARCHAR",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "birthday",
+              "rawType": "BIGINT",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "locationIP",
+              "rawType": "VARCHAR",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "browserUsed",
+              "rawType": "VARCHAR",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "LocationCityId",
+              "rawType": "INTEGER",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "language",
+              "rawType": "VARCHAR",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "email",
+              "rawType": "VARCHAR",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            }
+          ],
+          "primaryKeys": [],
+          "foreignKeys": [],
+          "expanded": true
+        },
+        {
+          "name": "PersonHasInterest",
+          "fields": [
+            {
+              "name": "creationDate",
+              "rawType": "BIGINT",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "deletionDate",
+              "rawType": "BIGINT",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "PersonId",
+              "rawType": "BIGINT",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "TagId",
+              "rawType": "INTEGER",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            }
+          ],
+          "primaryKeys": [],
+          "foreignKeys": [],
+          "expanded": true
+        },
+        {
+          "name": "PersonKnowsPerson",
+          "fields": [
+            {
+              "name": "creationDate",
+              "rawType": "BIGINT",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "deletionDate",
+              "rawType": "BIGINT",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "explicitlyDeleted",
+              "rawType": "BOOLEAN",
+              "recommendedType": {
+                "type": "boolean"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "boolean"
+                }
+              ]
+            },
+            {
+              "name": "Person1Id",
+              "rawType": "BIGINT",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "Person2Id",
+              "rawType": "BIGINT",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            }
+          ],
+          "primaryKeys": [],
+          "foreignKeys": [],
+          "expanded": true
+        },
+        {
+          "name": "PersonLikesComment",
+          "fields": [
+            {
+              "name": "creationDate",
+              "rawType": "BIGINT",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "deletionDate",
+              "rawType": "BIGINT",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "explicitlyDeleted",
+              "rawType": "BOOLEAN",
+              "recommendedType": {
+                "type": "boolean"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "boolean"
+                }
+              ]
+            },
+            {
+              "name": "PersonId",
+              "rawType": "BIGINT",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "CommentId",
+              "rawType": "BIGINT",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            }
+          ],
+          "primaryKeys": [],
+          "foreignKeys": [],
+          "expanded": true
+        },
+        {
+          "name": "PersonLikesPost",
+          "fields": [
+            {
+              "name": "creationDate",
+              "rawType": "BIGINT",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "deletionDate",
+              "rawType": "BIGINT",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "explicitlyDeleted",
+              "rawType": "BOOLEAN",
+              "recommendedType": {
+                "type": "boolean"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "boolean"
+                }
+              ]
+            },
+            {
+              "name": "PersonId",
+              "rawType": "BIGINT",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "PostId",
+              "rawType": "BIGINT",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            }
+          ],
+          "primaryKeys": [],
+          "foreignKeys": [],
+          "expanded": true
+        },
+        {
+          "name": "PersonStudiesAt",
+          "fields": [
+            {
+              "name": "creationDate",
+              "rawType": "BIGINT",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "deletionDate",
+              "rawType": "BIGINT",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "PersonId",
+              "rawType": "BIGINT",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "UniversityId",
+              "rawType": "BIGINT",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "classYear",
+              "rawType": "INTEGER",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            }
+          ],
+          "primaryKeys": [],
+          "foreignKeys": [],
+          "expanded": true
+        },
+        {
+          "name": "PersonWorksAt",
+          "fields": [
+            {
+              "name": "creationDate",
+              "rawType": "BIGINT",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "deletionDate",
+              "rawType": "BIGINT",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "PersonId",
+              "rawType": "BIGINT",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "CompanyId",
+              "rawType": "BIGINT",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "workFrom",
+              "rawType": "INTEGER",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            }
+          ],
+          "primaryKeys": [],
+          "foreignKeys": [],
+          "expanded": true
+        },
+        {
+          "name": "Place",
+          "fields": [
+            {
+              "name": "id",
+              "rawType": "INTEGER",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "name",
+              "rawType": "VARCHAR",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "url",
+              "rawType": "VARCHAR",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "type",
+              "rawType": "VARCHAR",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "PartOfPlaceId",
+              "rawType": "INTEGER",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            }
+          ],
+          "primaryKeys": [],
+          "foreignKeys": [],
+          "expanded": true
+        },
+        {
+          "name": "Post",
+          "fields": [
+            {
+              "name": "creationDate",
+              "rawType": "BIGINT",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "deletionDate",
+              "rawType": "BIGINT",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "explicitlyDeleted",
+              "rawType": "BOOLEAN",
+              "recommendedType": {
+                "type": "boolean"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "boolean"
+                }
+              ]
+            },
+            {
+              "name": "id",
+              "rawType": "BIGINT",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "imageFile",
+              "rawType": "VARCHAR",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "locationIP",
+              "rawType": "VARCHAR",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "browserUsed",
+              "rawType": "VARCHAR",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "language",
+              "rawType": "VARCHAR",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "content",
+              "rawType": "VARCHAR",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "length",
+              "rawType": "INTEGER",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "CreatorPersonId",
+              "rawType": "BIGINT",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "ContainerForumId",
+              "rawType": "BIGINT",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "LocationCountryId",
+              "rawType": "BIGINT",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            }
+          ],
+          "primaryKeys": [],
+          "foreignKeys": [],
+          "expanded": true
+        },
+        {
+          "name": "PostHasTag",
+          "fields": [
+            {
+              "name": "creationDate",
+              "rawType": "BIGINT",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "deletionDate",
+              "rawType": "BIGINT",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "PostId",
+              "rawType": "BIGINT",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "TagId",
+              "rawType": "INTEGER",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            }
+          ],
+          "primaryKeys": [],
+          "foreignKeys": [],
+          "expanded": true
+        },
+        {
+          "name": "Tag",
+          "fields": [
+            {
+              "name": "id",
+              "rawType": "INTEGER",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "name",
+              "rawType": "VARCHAR",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "url",
+              "rawType": "VARCHAR",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "TypeTagClassId",
+              "rawType": "INTEGER",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            }
+          ],
+          "primaryKeys": [],
+          "foreignKeys": [],
+          "expanded": true
+        },
+        {
+          "name": "TagClass",
+          "fields": [
+            {
+              "name": "id",
+              "rawType": "INTEGER",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            },
+            {
+              "name": "name",
+              "rawType": "VARCHAR",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "url",
+              "rawType": "VARCHAR",
+              "recommendedType": {
+                "type": "string"
+              },
+              "supportedTypes": [
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "SubclassOfTagClassId",
+              "rawType": "INTEGER",
+              "recommendedType": {
+                "type": "integer"
+              },
+              "supportedTypes": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "float"
+                }
+              ]
+            }
+          ],
+          "primaryKeys": [],
+          "foreignKeys": [],
+          "expanded": true
+        }
+      ]
+    },
+    "nodeMappings": [
+      {
+        "node": {
+          "$ref": "#n:0"
+        },
+        "tableName": "Comment",
+        "propertyMappings": [
+          {
+            "property": {
+              "$ref": "#p:0_0"
+            },
+            "fieldName": "creationDate"
+          },
+          {
+            "property": {
+              "$ref": "#p:0_1"
+            },
+            "fieldName": "deletionDate"
+          },
+          {
+            "property": {
+              "$ref": "#p:0_2"
+            },
+            "fieldName": "explicitlyDeleted"
+          },
+          {
+            "property": {
+              "$ref": "#p:0_3"
+            },
+            "fieldName": "id"
+          },
+          {
+            "property": {
+              "$ref": "#p:0_4"
+            },
+            "fieldName": "locationIP"
+          },
+          {
+            "property": {
+              "$ref": "#p:0_5"
+            },
+            "fieldName": "browserUsed"
+          },
+          {
+            "property": {
+              "$ref": "#p:0_6"
+            },
+            "fieldName": "content"
+          },
+          {
+            "property": {
+              "$ref": "#p:0_7"
+            },
+            "fieldName": "length"
+          }
+        ]
+      },
+      {
+        "node": {
+          "$ref": "#n:1"
+        },
+        "tableName": "Forum",
+        "propertyMappings": [
+          {
+            "property": {
+              "$ref": "#p:1_0"
+            },
+            "fieldName": "creationDate"
+          },
+          {
+            "property": {
+              "$ref": "#p:1_1"
+            },
+            "fieldName": "deletionDate"
+          },
+          {
+            "property": {
+              "$ref": "#p:1_2"
+            },
+            "fieldName": "explicitlyDeleted"
+          },
+          {
+            "property": {
+              "$ref": "#p:1_3"
+            },
+            "fieldName": "id"
+          },
+          {
+            "property": {
+              "$ref": "#p:1_4"
+            },
+            "fieldName": "title"
+          }
+        ]
+      },
+      {
+        "node": {
+          "$ref": "#n:2"
+        },
+        "tableName": "Organisation",
+        "propertyMappings": [
+          {
+            "property": {
+              "$ref": "#p:2_0"
+            },
+            "fieldName": "id"
+          },
+          {
+            "property": {
+              "$ref": "#p:2_1"
+            },
+            "fieldName": "type"
+          },
+          {
+            "property": {
+              "$ref": "#p:2_2"
+            },
+            "fieldName": "name"
+          },
+          {
+            "property": {
+              "$ref": "#p:2_3"
+            },
+            "fieldName": "url"
+          }
+        ]
+      },
+      {
+        "node": {
+          "$ref": "#n:3"
+        },
+        "tableName": "Person",
+        "propertyMappings": [
+          {
+            "property": {
+              "$ref": "#p:3_0"
+            },
+            "fieldName": "creationDate"
+          },
+          {
+            "property": {
+              "$ref": "#p:3_1"
+            },
+            "fieldName": "deletionDate"
+          },
+          {
+            "property": {
+              "$ref": "#p:3_2"
+            },
+            "fieldName": "explicitlyDeleted"
+          },
+          {
+            "property": {
+              "$ref": "#p:3_3"
+            },
+            "fieldName": "id"
+          },
+          {
+            "property": {
+              "$ref": "#p:3_4"
+            },
+            "fieldName": "firstName"
+          },
+          {
+            "property": {
+              "$ref": "#p:3_5"
+            },
+            "fieldName": "lastName"
+          },
+          {
+            "property": {
+              "$ref": "#p:3_6"
+            },
+            "fieldName": "gender"
+          },
+          {
+            "property": {
+              "$ref": "#p:3_7"
+            },
+            "fieldName": "birthday"
+          },
+          {
+            "property": {
+              "$ref": "#p:3_8"
+            },
+            "fieldName": "locationIP"
+          },
+          {
+            "property": {
+              "$ref": "#p:3_9"
+            },
+            "fieldName": "browserUsed"
+          },
+          {
+            "property": {
+              "$ref": "#p:3_11"
+            },
+            "fieldName": "language"
+          },
+          {
+            "property": {
+              "$ref": "#p:3_12"
+            },
+            "fieldName": "email"
+          }
+        ]
+      },
+      {
+        "node": {
+          "$ref": "#n:4"
+        },
+        "tableName": "Place",
+        "propertyMappings": [
+          {
+            "property": {
+              "$ref": "#p:4_0"
+            },
+            "fieldName": "id"
+          },
+          {
+            "property": {
+              "$ref": "#p:4_1"
+            },
+            "fieldName": "name"
+          },
+          {
+            "property": {
+              "$ref": "#p:4_2"
+            },
+            "fieldName": "url"
+          },
+          {
+            "property": {
+              "$ref": "#p:4_3"
+            },
+            "fieldName": "type"
+          }
+        ]
+      },
+      {
+        "node": {
+          "$ref": "#n:5"
+        },
+        "tableName": "Post",
+        "propertyMappings": [
+          {
+            "property": {
+              "$ref": "#p:5_0"
+            },
+            "fieldName": "creationDate"
+          },
+          {
+            "property": {
+              "$ref": "#p:5_1"
+            },
+            "fieldName": "deletionDate"
+          },
+          {
+            "property": {
+              "$ref": "#p:5_2"
+            },
+            "fieldName": "explicitlyDeleted"
+          },
+          {
+            "property": {
+              "$ref": "#p:5_3"
+            },
+            "fieldName": "id"
+          },
+          {
+            "property": {
+              "$ref": "#p:5_4"
+            },
+            "fieldName": "imageFile"
+          },
+          {
+            "property": {
+              "$ref": "#p:5_5"
+            },
+            "fieldName": "locationIP"
+          },
+          {
+            "property": {
+              "$ref": "#p:5_6"
+            },
+            "fieldName": "browserUsed"
+          },
+          {
+            "property": {
+              "$ref": "#p:5_7"
+            },
+            "fieldName": "language"
+          },
+          {
+            "property": {
+              "$ref": "#p:5_8"
+            },
+            "fieldName": "content"
+          },
+          {
+            "property": {
+              "$ref": "#p:5_9"
+            },
+            "fieldName": "length"
+          }
+        ]
+      },
+      {
+        "node": {
+          "$ref": "#n:6"
+        },
+        "tableName": "Tag",
+        "propertyMappings": [
+          {
+            "property": {
+              "$ref": "#p:6_0"
+            },
+            "fieldName": "id"
+          },
+          {
+            "property": {
+              "$ref": "#p:6_1"
+            },
+            "fieldName": "name"
+          },
+          {
+            "property": {
+              "$ref": "#p:6_2"
+            },
+            "fieldName": "url"
+          }
+        ]
+      },
+      {
+        "node": {
+          "$ref": "#n:7"
+        },
+        "tableName": "TagClass",
+        "propertyMappings": [
+          {
+            "property": {
+              "$ref": "#p:7_0"
+            },
+            "fieldName": "id"
+          },
+          {
+            "property": {
+              "$ref": "#p:7_1"
+            },
+            "fieldName": "name"
+          },
+          {
+            "property": {
+              "$ref": "#p:7_2"
+            },
+            "fieldName": "url"
+          }
+        ]
+      }
+    ],
+    "relationshipMappings": [
+      {
+        "relationship": {
+          "$ref": "#r:0"
+        },
+        "tableName": "Comment",
+        "fromMappings": {
+          "#p:0_3": "id"
+        },
+        "toMappings": {
+          "#p:3_3": "CreatorPersonId"
+        },
+        "propertyMappings": []
+      },
+      {
+        "relationship": {
+          "$ref": "#r:1"
+        },
+        "tableName": "Comment",
+        "fromMappings": {
+          "#p:0_3": "id"
+        },
+        "toMappings": {
+          "#p:4_0": "LocationCountryId"
+        },
+        "propertyMappings": []
+      },
+      {
+        "relationship": {
+          "$ref": "#r:2"
+        },
+        "tableName": "Comment",
+        "fromMappings": {
+          "#p:0_3": "id"
+        },
+        "toMappings": {
+          "#p:5_3": "ParentPostId"
+        },
+        "propertyMappings": []
+      },
+      {
+        "relationship": {
+          "$ref": "#r:3"
+        },
+        "tableName": "Comment",
+        "fromMappings": {
+          "#p:0_3": "id"
+        },
+        "toMappings": {
+          "#p:0_3": "ParentCommentId"
+        },
+        "propertyMappings": []
+      },
+      {
+        "relationship": {
+          "$ref": "#r:4"
+        },
+        "tableName": "CommentHasTag",
+        "fromMappings": {
+          "#p:0_3": "CommentId"
+        },
+        "toMappings": {
+          "#p:6_0": "TagId"
+        },
+        "propertyMappings": [
+          {
+            "property": {
+              "$ref": "#p:4_0"
+            },
+            "fieldName": "creationDate"
+          },
+          {
+            "property": {
+              "$ref": "#p:4_1"
+            },
+            "fieldName": "deletionDate"
+          }
+        ]
+      },
+      {
+        "relationship": {
+          "$ref": "#r:5"
+        },
+        "tableName": "Forum",
+        "fromMappings": {
+          "#p:1_3": "id"
+        },
+        "toMappings": {
+          "#p:3_3": "ModeratorPersonId"
+        },
+        "propertyMappings": []
+      },
+      {
+        "relationship": {
+          "$ref": "#r:6"
+        },
+        "tableName": "ForumHasMember",
+        "fromMappings": {
+          "#p:3_3": "PersonId"
+        },
+        "toMappings": {
+          "#p:1_3": "ForumId"
+        },
+        "propertyMappings": [
+          {
+            "property": {
+              "$ref": "#p:6_0"
+            },
+            "fieldName": "creationDate"
+          },
+          {
+            "property": {
+              "$ref": "#p:6_1"
+            },
+            "fieldName": "deletionDate"
+          },
+          {
+            "property": {
+              "$ref": "#p:6_2"
+            },
+            "fieldName": "explicitlyDeleted"
+          }
+        ]
+      },
+      {
+        "relationship": {
+          "$ref": "#r:7"
+        },
+        "tableName": "ForumHasTag",
+        "fromMappings": {
+          "#p:1_3": "ForumId"
+        },
+        "toMappings": {
+          "#p:6_0": "TagId"
+        },
+        "propertyMappings": [
+          {
+            "property": {
+              "$ref": "#p:7_0"
+            },
+            "fieldName": "creationDate"
+          },
+          {
+            "property": {
+              "$ref": "#p:7_1"
+            },
+            "fieldName": "deletionDate"
+          }
+        ]
+      },
+      {
+        "relationship": {
+          "$ref": "#r:8"
+        },
+        "tableName": "Organisation",
+        "fromMappings": {
+          "#p:2_0": "id"
+        },
+        "toMappings": {
+          "#p:4_0": "LocationPlaceId"
+        },
+        "propertyMappings": []
+      },
+      {
+        "relationship": {
+          "$ref": "#r:9"
+        },
+        "tableName": "Person",
+        "fromMappings": {
+          "#p:3_3": "id"
+        },
+        "toMappings": {
+          "#p:4_0": "LocationCityId"
+        },
+        "propertyMappings": []
+      },
+      {
+        "relationship": {
+          "$ref": "#r:10"
+        },
+        "tableName": "PersonHasInterest",
+        "fromMappings": {
+          "#p:3_3": "PersonId"
+        },
+        "toMappings": {
+          "#p:6_0": "TagId"
+        },
+        "propertyMappings": [
+          {
+            "property": {
+              "$ref": "#p:10_0"
+            },
+            "fieldName": "creationDate"
+          },
+          {
+            "property": {
+              "$ref": "#p:10_1"
+            },
+            "fieldName": "deletionDate"
+          }
+        ]
+      },
+      {
+        "relationship": {
+          "$ref": "#r:11"
+        },
+        "tableName": "PersonKnowsPerson",
+        "fromMappings": {
+          "#p:3_3": "Person1Id"
+        },
+        "toMappings": {
+          "#p:3_3": "Person2Id"
+        },
+        "propertyMappings": [
+          {
+            "property": {
+              "$ref": "#p:11_0"
+            },
+            "fieldName": "creationDate"
+          },
+          {
+            "property": {
+              "$ref": "#p:11_1"
+            },
+            "fieldName": "deletionDate"
+          },
+          {
+            "property": {
+              "$ref": "#p:11_2"
+            },
+            "fieldName": "explicitlyDeleted"
+          }
+        ]
+      },
+      {
+        "relationship": {
+          "$ref": "#r:12"
+        },
+        "tableName": "PersonLikesComment",
+        "fromMappings": {
+          "#p:3_3": "PersonId"
+        },
+        "toMappings": {
+          "#p:0_3": "CommentId"
+        },
+        "propertyMappings": [
+          {
+            "property": {
+              "$ref": "#p:12_0"
+            },
+            "fieldName": "creationDate"
+          },
+          {
+            "property": {
+              "$ref": "#p:12_1"
+            },
+            "fieldName": "deletionDate"
+          },
+          {
+            "property": {
+              "$ref": "#p:12_2"
+            },
+            "fieldName": "explicitlyDeleted"
+          }
+        ]
+      },
+      {
+        "relationship": {
+          "$ref": "#r:13"
+        },
+        "tableName": "PersonLikesPost",
+        "fromMappings": {
+          "#p:3_3": "PersonId"
+        },
+        "toMappings": {
+          "#p:5_3": "PostId"
+        },
+        "propertyMappings": [
+          {
+            "property": {
+              "$ref": "#p:13_0"
+            },
+            "fieldName": "creationDate"
+          },
+          {
+            "property": {
+              "$ref": "#p:13_1"
+            },
+            "fieldName": "deletionDate"
+          },
+          {
+            "property": {
+              "$ref": "#p:13_2"
+            },
+            "fieldName": "explicitlyDeleted"
+          }
+        ]
+      },
+      {
+        "relationship": {
+          "$ref": "#r:14"
+        },
+        "tableName": "PersonStudiesAt",
+        "fromMappings": {
+          "#p:3_3": "PersonId"
+        },
+        "toMappings": {
+          "#p:2_0": "UniversityId"
+        },
+        "propertyMappings": [
+          {
+            "property": {
+              "$ref": "#p:14_0"
+            },
+            "fieldName": "creationDate"
+          },
+          {
+            "property": {
+              "$ref": "#p:14_1"
+            },
+            "fieldName": "deletionDate"
+          },
+          {
+            "property": {
+              "$ref": "#p:14_2"
+            },
+            "fieldName": "classYear"
+          }
+        ]
+      },
+      {
+        "relationship": {
+          "$ref": "#r:15"
+        },
+        "tableName": "PersonWorksAt",
+        "fromMappings": {
+          "#p:3_3": "PersonId"
+        },
+        "toMappings": {
+          "#p:2_0": "CompanyId"
+        },
+        "propertyMappings": [
+          {
+            "property": {
+              "$ref": "#p:15_0"
+            },
+            "fieldName": "creationDate"
+          },
+          {
+            "property": {
+              "$ref": "#p:15_1"
+            },
+            "fieldName": "deletionDate"
+          },
+          {
+            "property": {
+              "$ref": "#p:15_2"
+            },
+            "fieldName": "workFrom"
+          }
+        ]
+      },
+      {
+        "relationship": {
+          "$ref": "#r:16"
+        },
+        "tableName": "Place",
+        "fromMappings": {
+          "#p:4_0": "id"
+        },
+        "toMappings": {
+          "#p:4_0": "PartOfPlaceId"
+        },
+        "propertyMappings": []
+      },
+      {
+        "relationship": {
+          "$ref": "#r:17"
+        },
+        "tableName": "Post",
+        "fromMappings": {
+          "#p:5_3": "id"
+        },
+        "toMappings": {
+          "#p:3_3": "CreatorPersonId"
+        },
+        "propertyMappings": []
+      },
+      {
+        "relationship": {
+          "$ref": "#r:18"
+        },
+        "tableName": "Post",
+        "fromMappings": {
+          "#p:5_3": "id"
+        },
+        "toMappings": {
+          "#p:1_3": "ContainerForumId"
+        },
+        "propertyMappings": []
+      },
+      {
+        "relationship": {
+          "$ref": "#r:19"
+        },
+        "tableName": "Post",
+        "fromMappings": {
+          "#p:5_3": "id"
+        },
+        "toMappings": {
+          "#p:4_0": "LocationCountryId"
+        },
+        "propertyMappings": []
+      },
+      {
+        "relationship": {
+          "$ref": "#r:20"
+        },
+        "tableName": "PostHasTag",
+        "fromMappings": {
+          "#p:5_3": "PostId"
+        },
+        "toMappings": {
+          "#p:6_0": "TagId"
+        },
+        "propertyMappings": [
+          {
+            "property": {
+              "$ref": "#p:20_0"
+            },
+            "fieldName": "creationDate"
+          },
+          {
+            "property": {
+              "$ref": "#p:20_1"
+            },
+            "fieldName": "deletionDate"
+          }
+        ]
+      },
+      {
+        "relationship": {
+          "$ref": "#r:21"
+        },
+        "tableName": "Tag",
+        "fromMappings": {
+          "#p:6_0": "id"
+        },
+        "toMappings": {
+          "#p:7_0": "TypeTagClassId"
+        },
+        "propertyMappings": []
+      },
+      {
+        "relationship": {
+          "$ref": "#r:22"
+        },
+        "tableName": "TagClass",
+        "fromMappings": {
+          "#p:7_0": "id"
+        },
+        "toMappings": {
+          "#p:7_0": "SubclassOfTagClassId"
+        },
+        "propertyMappings": []
+      }
+    ]
+  },
+  "configurations": {
+    "idsToIgnore": []
+  }
+}
