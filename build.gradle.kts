@@ -62,7 +62,7 @@ tasks.named("jsBrowserProductionLibraryDistribution") {
 tasks.register("generateTsUnions") {
     doLast {
         val mtsFile = file("./build/dist/js/productionLibrary/graph-spec.d.mts")
-        require(mtsFile.exists()) { "Typescript file missing."}
+        require(mtsFile.exists()) { "Typescript file missing." }
         var content = mtsFile.readText()
         content = generateUnion(content, "ConstraintType", "ConstraintTypeJs")
         content = generateUnion(content, "IndexType", "IndexTypeJs")
@@ -72,15 +72,24 @@ tasks.register("generateTsUnions") {
     }
 }
 
-private fun setUnionType(file: String, parent: String, param: String, enum: String): String {
+private fun setUnionType(
+    file: String,
+    parent: String,
+    param: String,
+    enum: String
+): String {
     val index = file.indexOf("export declare interface $parent {")
     require(index != -1) { "Unable to find parent class $parent" }
-    val start = file.indexOf("${param}: string;")
+    val start = file.indexOf("$param: string;")
     require(start != -1) { "Unable to find string param $parent" }
-    return file.replaceRange(start.. start + 8 + param.length, "${param}: $enum;")
+    return file.replaceRange(start..start + 8 + param.length, "$param: $enum;")
 }
 
-private fun generateUnion(file: String, enum: String, union: String): String {
+private fun generateUnion(
+    file: String,
+    enum: String,
+    union: String
+): String {
     if (file.contains("export type $union")) {
         return file
     }

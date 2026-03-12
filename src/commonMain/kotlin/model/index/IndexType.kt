@@ -25,5 +25,5 @@ enum class IndexType {
     RANGE,
     TEXT,
     VECTOR,
-    LOOKUP,
+    LOOKUP
 }

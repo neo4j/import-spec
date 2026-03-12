@@ -23,5 +23,5 @@ enum class ConstraintType {
     EXISTS,
     KEY,
     TYPE,
-    UNIQUE,
+    UNIQUE
 }
