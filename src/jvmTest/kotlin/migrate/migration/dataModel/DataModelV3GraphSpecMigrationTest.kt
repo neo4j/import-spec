@@ -18,13 +18,11 @@ class DataModelV3GraphSpecMigrationTest {
         val format = JsonFormat.build()
 
         val schema = format.decodeFromString(input) as SchemaMap
-        println(schema)
         var output = migration.migrate(schema)
 
-        println(output)
         output = Prettify.transform(output)
 
-        val yaml = YamlFormat.build()
+        val yaml = JsonFormat.build()
         println(yaml.encodeToString(output))
     }
 

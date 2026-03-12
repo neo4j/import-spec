@@ -66,26 +66,17 @@ tasks.register("generateTsUnions") {
             return@doLast
         }
         var content = mtsFile.readText()
-        val start = content.indexOf("export declare interface NodeConstraintJs extends ConstraintJs {")
-        if (start == -1) {
-            println("No node constraint interface found")
-            return@doLast
-        }
         content =
-            content
-                .replaceRange(
-                    start - 1..start - 1,
-                    "\nexport type ConstraintTypeJs = \"EXISTS\" | \"KEY\" | \"TYPE\" | \"UNIQUE\";\n"
-                )
-        val index = content.indexOf("label: string", start + 64)
-        if (index == -1) {
-            println("No node constraint label found")
-            return@doLast
-        }
-        content =
-            content.replaceRange(
-                index..index + 13,
-                "label: ConstraintTypeJs"
+            content.replace(
+                "export declare interface ConstraintJs {\n" +
+                    "    readonly type: string;\n" +
+                    "    readonly properties: Array<string>;\n" +
+                    "}",
+                "export type ConstraintTypeJs = \"EXISTS\" | \"KEY\" | \"TYPE\" | \"UNIQUE\";\n" +
+                    "export declare interface ConstraintJs {\n" +
+                    "    readonly type: ConstraintTypeJs;\n" +
+                    "    readonly properties: Array<string>;\n" +
+                    "}"
             )
         mtsFile.writeText(content)
     }
