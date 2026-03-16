@@ -72,9 +72,11 @@ tasks.register("generateTsUnions") {
         require(mtsFile.exists()) { "Typescript file missing." }
         var content = mtsFile.readText()
         content = generateUnion(content, "ConstraintType", "ConstraintTypeJs")
-        content = generateUnion(content, "IndexType", "IndexTypeJs")
         content = setUnionType(content, "ConstraintJs", "type", "ConstraintTypeJs")
+        content = generateUnion(content, "IndexType", "IndexTypeJs")
         content = setUnionType(content, "IndexJs", "type", "IndexTypeJs")
+        content = generateUnion(content, "MappingMode", "MappingModeJs")
+        content = setUnionType(content, "NodeMappingJs", "mode", "MappingModeJs")
         mtsFile.writeText(content)
     }
 }

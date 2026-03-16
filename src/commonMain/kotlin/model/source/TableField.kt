@@ -23,9 +23,8 @@ import kotlin.js.JsExport
 @JsExport
 @Serializable
 data class TableField(
-    val name: String,
     val type: String = "",
     val size: Int = 0,
-    val suggested: Neo4jType = Neo4jType.STRING,
+    val suggested: Neo4jType? = null,
     val supported: Set<Neo4jType> = emptySet()
 )

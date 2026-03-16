@@ -29,5 +29,5 @@ data class Node(
     val properties: Map<String, Property> = emptyMap(),
     val constraints: Map<String, NodeConstraint> = emptyMap(),
     val indexes: Map<String, NodeIndex> = emptyMap(),
-    val extensions: Map<String, @Contextual Any> = emptyMap()
+    val extensions: Map<String, @Contextual Any> = emptyMap(),
 )
