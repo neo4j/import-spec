@@ -22,5 +22,8 @@ import kotlin.js.JsExport
 
 @JsExport
 @Serializable
-data class RelationshipIndex(val kind: String, val properties: Set<String>, val options: Map<String, @Contextual Any>) :
-    Index
+data class RelationshipIndex(
+    val type: String,
+    val properties: Set<String>,
+    val options: Map<String, @Contextual Any>
+)

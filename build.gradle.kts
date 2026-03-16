@@ -23,10 +23,11 @@ kotlin {
             implementation(libs.kotlinx.schema)
             implementation(libs.kotlinx.serializer.json)
             implementation(libs.kotlinx.yamlkt)
+            implementation(libs.kaseChange)
         }
         jsMain.dependencies {
             implementation(libs.kotlin.js.plain.objects)
-            implementation(libs.kotlin.wrappers.js)
+            implementation(libs.kotlin.wrappers.ts)
         }
         commonTest.dependencies { implementation(libs.kotlin.test) }
     }
@@ -63,6 +64,7 @@ tasks.named("jsBrowserProductionLibraryDistribution") {
     Kotlin/JS doesn't support TypeScript unions
     This script modifies the generated types and generates a string union given a basic enum.
     It's a brittle hack but the type safety is much preferred on the frontend.
+    There's the potential to use a different library for TS generation in the future which does support this natively.
  */
 tasks.register("generateTsUnions") {
     doLast {
@@ -71,8 +73,8 @@ tasks.register("generateTsUnions") {
         var content = mtsFile.readText()
         content = generateUnion(content, "ConstraintType", "ConstraintTypeJs")
         content = generateUnion(content, "IndexType", "IndexTypeJs")
-        content = setUnionType(content, "ConstraintJs", "kind", "ConstraintTypeJs")
-        content = setUnionType(content, "IndexJs", "kind", "IndexTypeJs")
+        content = setUnionType(content, "ConstraintJs", "type", "ConstraintTypeJs")
+        content = setUnionType(content, "IndexJs", "type", "IndexTypeJs")
         mtsFile.writeText(content)
     }
 }

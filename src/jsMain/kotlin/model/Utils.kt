@@ -16,9 +16,9 @@
  */
 package model
 
-import js.core.JsPrimitives.toKotlinString
 import js.objects.Object
 import js.objects.ReadonlyRecord
+import js.string.JsStrings.toKotlinString
 import kotlin.collections.set
 
 fun <T> ReadonlyRecord<String, T>.toMap(): Map<String, T> = buildMap {

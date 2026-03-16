@@ -20,6 +20,7 @@ import codec.schema.SchemaElement
 import codec.schema.SchemaLiteral
 import codec.schema.SchemaMap
 import model.constraint.ConstraintType
+import net.pearx.kasechange.toCamelCase
 import kotlin.collections.component1
 import kotlin.collections.component2
 import kotlin.collections.iterator
@@ -38,8 +39,10 @@ object Prettify {
             schema,
             "nodes",
             name = {
-                it.stringOrNull("name")
-                    ?: (it.listOrNull("labels")?.firstOrNull() as? SchemaLiteral)?.string
+                (
+                    it.stringOrNull("name")
+                        ?: (it.listOrNull("labels")?.firstOrNull() as? SchemaLiteral)?.string
+                    )?.toCamelCase()
             }
         ) { nodeId, node ->
             prettifyProperties(node, nodePropertyIds, nodeId)
@@ -51,7 +54,7 @@ object Prettify {
         val (relationships, relationshipIds) = prettify(
             schema,
             "relationships",
-            name = { it.stringOrNull("type") }
+            name = { it.stringOrNull("type")?.toCamelCase() } // TODO fallback to combo of from and to names
         ) { _, relationship ->
             val type = relationship.string("type")
             val from = relationship.string("from")
@@ -140,12 +143,20 @@ object Prettify {
                         ?: error("Expected property string at ${properties.path}[0]")
                     val property = nodeProperties[propertyId] ?: error("Unable to find property $propertyId")
                     val type = constraint.string("kind")
-                    if (type == ConstraintType.EXISTS.name) {
-                        property["nullable"] = false
-                        toRemove.add(key)
-                    } else if (type == ConstraintType.UNIQUE.name) {
-                        property["unique"] = true
-                        toRemove.add(key)
+                    when (type) {
+                        ConstraintType.EXISTS.name -> {
+                            property["nullable"] = false
+                            toRemove.add(key)
+                        }
+                        ConstraintType.UNIQUE.name -> {
+                            property["unique"] = true
+                            toRemove.add(key)
+                        }
+                        ConstraintType.KEY.name -> {
+                            property["nullable"] = false
+                            property["unique"] = true
+                            toRemove.add(key)
+                        }
                     }
                 }
             }

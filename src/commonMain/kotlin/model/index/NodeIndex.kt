@@ -23,8 +23,8 @@ import kotlin.js.JsExport
 @JsExport
 @Serializable
 data class NodeIndex(
-    val kind: String,
+    val type: String,
     val labels: Set<String>,
     val properties: Set<String>,
-    val options: Map<String, @Contextual Any>
-) : Index
+    val options: Map<String, @Contextual Any> = emptyMap(),
+)

@@ -23,29 +23,30 @@ import model.toMap
 
 @JsExport
 @JsPlainObject
-external interface NodeIndexJs : IndexJs {
+external interface NodeIndexJs {
+    val type: String
     val labels: Array<String>
     val properties: Array<String>
     val options: ReadonlyRecord<String, Any>
 }
 
-fun nodeIndexJs(kind: String, labels: Array<String>, properties: Array<String>, options: ReadonlyRecord<String, Any>) =
+fun nodeIndexJs(type: String, labels: Array<String>, properties: Array<String>, options: ReadonlyRecord<String, Any>) =
     object : NodeIndexJs {
-        override val kind = kind
+        override val type = type
         override val labels = labels
         override val properties = properties
         override val options = options
     }
 
 fun NodeIndex.toJs(): NodeIndexJs = nodeIndexJs(
-    kind = kind,
+    type = type,
     labels = labels.toTypedArray(),
     properties = properties.toTypedArray(),
     options = options.toReadonlyRecord()
 )
 
 fun NodeIndexJs.toClass(): NodeIndex = NodeIndex(
-    kind = kind,
+    type = type,
     labels = labels.toSet(),
     properties = properties.toSet(),
     options = options.toMap()

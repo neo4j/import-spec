@@ -21,4 +21,4 @@ import kotlin.js.JsExport
 
 @JsExport
 @Serializable
-sealed class Mapping
+sealed interface Mapping

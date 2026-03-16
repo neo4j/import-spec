@@ -22,6 +22,7 @@ import kotlin.js.JsExport
 @JsExport
 @Serializable
 enum class Neo4jType {
+    ANY,
     BOOLEAN,
     BOOLEAN_ARRAY,
     BYTE_ARRAY,
@@ -45,5 +46,12 @@ enum class Neo4jType {
     ZONED_DATETIME_ARRAY,
     ZONED_TIME,
     ZONED_TIME_ARRAY,
-    VECTOR
+    INTEGER_VECTOR,
+    INTEGER8_VECTOR,
+    INTEGER16_VECTOR,
+    INTEGER32_VECTOR,
+    FLOAT_VECTOR,
+    FLOAT8_VECTOR,
+    FLOAT16_VECTOR,
+    FLOAT32_VECTOR,
 }

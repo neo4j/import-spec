@@ -22,25 +22,27 @@ import kotlinx.js.JsPlainObject
 import model.toMap
 
 @JsExport @JsPlainObject
-external interface RelationshipConstraintJs : ConstraintJs {
+external interface RelationshipConstraintJs {
+    val type: String
+    val properties: Array<String>
     val options: ReadonlyRecord<String, Any>
 }
 
-fun relationshipConstraintJs(kind: String, properties: Array<String>, options: ReadonlyRecord<String, Any>) =
+fun relationshipConstraintJs(type: String, properties: Array<String>, options: ReadonlyRecord<String, Any>) =
     object : RelationshipConstraintJs {
-        override val kind = kind
+        override val type = type
         override val properties = properties
         override val options = options
     }
 
 fun RelationshipConstraint.toJs(): RelationshipConstraintJs = relationshipConstraintJs(
-    kind = kind,
+    type = type,
     properties = properties.toTypedArray(),
     options = options.toReadonlyRecord()
 )
 
 fun RelationshipConstraintJs.toClass(): RelationshipConstraint = RelationshipConstraint(
-    kind = kind,
+    type = type,
     properties = properties.toSet(),
     options = options.toMap()
 )

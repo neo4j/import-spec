@@ -16,7 +16,6 @@
  */
 package model
 
-import kotlinx.serialization.EncodeDefault
 import kotlinx.serialization.Serializable
 import model.mapping.Mapping
 import model.source.Table
@@ -28,8 +27,7 @@ import kotlin.js.JsStatic
 @JsExport
 @Serializable
 data class GraphModel(
-    @EncodeDefault
-    val version: String = Version.LATEST,
+    val version: String,
     val nodes: Map<String, Node> = emptyMap(),
     val relationships: Map<String, Relationship> = emptyMap(),
     val tables: Map<String, Table> = emptyMap(),

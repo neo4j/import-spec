@@ -23,8 +23,8 @@ import kotlin.js.JsExport
 @JsExport
 @Serializable
 data class NodeConstraint(
-    val kind: String,
+    val type: String,
     val label: String,
-    override val properties: Set<String> = emptySet(),
+    val properties: Set<String>,
     val options: Map<String, @Contextual Any> = emptyMap()
-) : Constraint
+)

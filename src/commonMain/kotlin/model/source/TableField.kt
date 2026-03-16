@@ -25,7 +25,7 @@ import kotlin.js.JsExport
 data class TableField(
     val name: String,
     val type: String = "",
-    val size: Int = 0, // TODO: Is size needed or used?
+    val size: Int = 0,
     val suggested: Neo4jType = Neo4jType.STRING,
     val supported: Set<Neo4jType> = emptySet()
 )

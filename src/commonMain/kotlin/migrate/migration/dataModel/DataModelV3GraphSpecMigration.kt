@@ -144,7 +144,7 @@ class DataModelV3GraphSpecMigration : Migration(Version.DATA_MODEL_V30, Version.
                 else -> error("Unknown index type: '$type' at ${index.path}.$name")
             }
             val idx = schemaMapOf()
-            idx["type"] = indexType.name
+            idx["kind"] = indexType.name
             idx["label"] = label
             if (properties != null) {
                 idx["properties"] = properties.map {
@@ -188,7 +188,7 @@ class DataModelV3GraphSpecMigration : Migration(Version.DATA_MODEL_V30, Version.
                 }
             }
             val constr = schemaMapOf()
-            constr["type"] = constraintType.name
+            constr["kind"] = constraintType.name
             constr["label"] = label
             if (properties != null) {
                 constr["properties"] = properties.map {
@@ -267,7 +267,7 @@ class DataModelV3GraphSpecMigration : Migration(Version.DATA_MODEL_V30, Version.
             val name = table.string("name")
             for (field in table.listOfMaps("fields")) {
                 val name = field.literal("name")
-                val rawType = field.literal("rawType")
+                val rawType = field.literalOrNull("rawType")
                 val size = field.literalOrNull("size")
                 val schemaMapOf = schemaMapOf(
                     "name" to name,
@@ -287,30 +287,38 @@ class DataModelV3GraphSpecMigration : Migration(Version.DATA_MODEL_V30, Version.
                 }
                 fields[name.string] = schemaMapOf
             }
-            val primaryKeys = table.list("primaryKeys")
+            val primaryKeys = table.listOrNull("primaryKeys")
             val foreignKeys = mutableMapOf<String, SchemaElement>()
-            for (foreignKey in table.listOfMaps("foreignKeys")) {
-                val tableRef = foreignKey.literal("referencedTable")
-                val fields = mutableListOf<SchemaElement>()
-                val referencedFields = mutableListOf<SchemaElement>()
-                for (field in foreignKey.listOfMaps("fields")) {
-                    fields.add(field.literal("field"))
-                    referencedFields.add(field.literal("referencedField"))
-                }
-                foreignKeys["foreignKey${foreignKeys.size + 1}"] = schemaMapOf(
-                    "fields" to SchemaList(fields),
-                    "references" to schemaMapOf(
-                        "table" to tableRef,
-                        "fields" to SchemaList(referencedFields)
+            val foreign = table.listOfMapsOrNull("foreignKeys")
+            if (foreign != null) {
+                for (foreignKey in foreign) {
+                    val tableRef = foreignKey.literal("referencedTable")
+                    val fields = mutableListOf<SchemaElement>()
+                    val referencedFields = mutableListOf<SchemaElement>()
+                    for (field in foreignKey.listOfMaps("fields")) {
+                        fields.add(field.literal("field"))
+                        referencedFields.add(field.literal("referencedField"))
+                    }
+                    foreignKeys["foreignKey${foreignKeys.size + 1}"] = schemaMapOf(
+                        "fields" to SchemaList(fields),
+                        "references" to schemaMapOf(
+                            "table" to tableRef,
+                            "fields" to SchemaList(referencedFields)
+                        )
                     )
-                )
+                }
             }
-            tables[name] = schemaMapOf(
+            val schemaMapOf = schemaMapOf(
                 "source" to (sourceType ?: SchemaNull),
-                "fields" to SchemaMap(fields),
-                "primaryKeys" to primaryKeys,
-                "foreignKeys" to SchemaMap(foreignKeys)
+                "fields" to SchemaMap(fields)
             )
+            if (!primaryKeys.isNullOrEmpty()) {
+                schemaMapOf["primaryKeys"] = primaryKeys
+            }
+            if (foreignKeys.isNotEmpty()) {
+                schemaMapOf["foreignKeys"] = foreignKeys
+            }
+            tables[name] = schemaMapOf
         }
         return tables
     }

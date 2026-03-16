@@ -23,28 +23,30 @@ import model.toMap
 
 @JsExport
 @JsPlainObject
-external interface NodeConstraintJs : ConstraintJs {
+external interface NodeConstraintJs {
+    val type: String
     val label: String
+    val properties: Array<String>
     val options: ReadonlyRecord<String, Any>
 }
 
-fun nodeConstraintJs(kind: String, label: String, properties: Array<String>, options: ReadonlyRecord<String, Any>) =
+fun nodeConstraintJs(type: String, label: String, properties: Array<String>, options: ReadonlyRecord<String, Any>) =
     object : NodeConstraintJs {
-        override val kind = kind
+        override val type = type
         override val label = label
         override val properties = properties
         override val options = options
     }
 
 fun NodeConstraint.toJs(): NodeConstraintJs = nodeConstraintJs(
-    kind = kind,
+    type = type,
     label = label,
     properties = properties.toTypedArray(),
     options = options.toReadonlyRecord()
 )
 
 fun NodeConstraintJs.toClass(): NodeConstraint = NodeConstraint(
-    kind = kind,
+    type = type,
     label = label,
     properties = properties.toSet(),
     options = options.toMap()

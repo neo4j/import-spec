@@ -21,4 +21,11 @@ import kotlin.js.JsExport
 
 @JsExport
 @Serializable
-data class Property(val type: Neo4jType? = null, val nullable: Boolean = false, val unique: Boolean = false)
+data class Property(
+    val type: Neo4jType = Neo4jType.ANY,
+    val nullable: Boolean = false,
+    val unique: Boolean = false
+) {
+    val key: Boolean
+        get() = !nullable && unique
+}

@@ -20,9 +20,10 @@ import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
 import kotlin.js.JsExport
 
-@JsExport @Serializable
+@JsExport
+@Serializable
 data class RelationshipConstraint(
-    val kind: String,
-    override val properties: Set<String> = emptySet(),
+    val type: String,
+    val properties: Set<String>,
     val options: Map<String, @Contextual Any> = emptyMap()
-) : Constraint
+)
