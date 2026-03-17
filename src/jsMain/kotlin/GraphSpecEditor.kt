@@ -14,11 +14,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import js.objects.emptyReadonlyRecord
+import js.objects.toRecord
 import model.GraphModel
 import model.GraphModelJs
 import model.NodeJs
 import model.RelationshipJs
+import model.mapping.MappingJs
+import model.source.TableJs
 
 @JsExport
 class GraphSpecEditor {
@@ -26,12 +28,16 @@ class GraphSpecEditor {
         @JsStatic
         fun plain(model: GraphModel): GraphModelJs {
             val version = model.version
-            val nodes = emptyReadonlyRecord<String, NodeJs>()
-            val relationships = emptyReadonlyRecord<String, RelationshipJs>()
+            val nodes = emptyMap<String, NodeJs>().toRecord()
+            val relationships = emptyMap<String, RelationshipJs>().toRecord()
+            val tables = emptyMap<String, TableJs>().toRecord()
+            val mappings = emptyArray<MappingJs>()
             return object : GraphModelJs {
                 override val version = version
                 override val nodes = nodes
                 override val relationships = relationships
+                override val tables = tables
+                override val mappings = mappings
             }
         }
 

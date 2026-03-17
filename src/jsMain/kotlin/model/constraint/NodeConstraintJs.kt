@@ -16,8 +16,8 @@
  */
 package model.constraint
 
-import js.objects.ReadonlyRecord
-import js.objects.toReadonlyRecord
+import js.objects.Record
+import js.objects.toRecord
 import kotlinx.js.JsPlainObject
 import model.toMap
 
@@ -27,10 +27,10 @@ external interface NodeConstraintJs {
     val type: String
     val label: String
     val properties: Array<String>
-    val options: ReadonlyRecord<String, Any>
+    val options: Record<String, Any>
 }
 
-fun nodeConstraintJs(type: String, label: String, properties: Array<String>, options: ReadonlyRecord<String, Any>) =
+fun nodeConstraintJs(type: String, label: String, properties: Array<String>, options: Record<String, Any>) =
     object : NodeConstraintJs {
         override val type = type
         override val label = label
@@ -42,7 +42,7 @@ fun NodeConstraint.toJs(): NodeConstraintJs = nodeConstraintJs(
     type = type,
     label = label,
     properties = properties.toTypedArray(),
-    options = options.toReadonlyRecord()
+    options = options.toRecord()
 )
 
 fun NodeConstraintJs.toClass(): NodeConstraint = NodeConstraint(

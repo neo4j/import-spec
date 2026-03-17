@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) "Neo4j"
+ * Neo4j Sweden AB [https://neo4j.com]
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package model.source
 
 import kotlinx.js.JsPlainObject
@@ -14,12 +30,7 @@ external interface TableFieldJs {
     val supported: Array<String>
 }
 
-fun tableFieldJs(
-    type: String,
-    size: Int,
-    suggested: String?,
-    supported: Array<String>,
-) = object : TableFieldJs {
+fun tableFieldJs(type: String, size: Int, suggested: String?, supported: Array<String>) = object : TableFieldJs {
     override val type = type
     override val size = size
     override val suggested = suggested
@@ -30,14 +41,12 @@ fun TableField.toJs() = tableFieldJs(
     type = type,
     size = size,
     suggested = suggested?.name,
-    supported = supported.map { it.name }.toTypedArray(),
+    supported = supported.map { it.name }.toTypedArray()
 )
 
-fun TableFieldJs.toClass(): TableField {
-    return TableField(
-        type = type,
-        size = size,
-        suggested = suggested?.let { Neo4jType.valueOf(it) },
-        supported = supported.map { Neo4jType.valueOf(it) }.toSet(),
-    )
-}
+fun TableFieldJs.toClass(): TableField = TableField(
+    type = type,
+    size = size,
+    suggested = suggested?.let { Neo4jType.valueOf(it) },
+    supported = supported.map { Neo4jType.valueOf(it) }.toSet()
+)

@@ -16,8 +16,8 @@
  */
 package model.index
 
-import js.objects.ReadonlyRecord
-import js.objects.toReadonlyRecord
+import js.objects.Record
+import js.objects.toRecord
 import kotlinx.js.JsPlainObject
 import model.toMap
 
@@ -27,10 +27,10 @@ external interface NodeIndexJs {
     val type: String
     val labels: Array<String>
     val properties: Array<String>
-    val options: ReadonlyRecord<String, Any>
+    val options: Record<String, Any>
 }
 
-fun nodeIndexJs(type: String, labels: Array<String>, properties: Array<String>, options: ReadonlyRecord<String, Any>) =
+fun nodeIndexJs(type: String, labels: Array<String>, properties: Array<String>, options: Record<String, Any>) =
     object : NodeIndexJs {
         override val type = type
         override val labels = labels
@@ -42,7 +42,7 @@ fun NodeIndex.toJs(): NodeIndexJs = nodeIndexJs(
     type = type,
     labels = labels.toTypedArray(),
     properties = properties.toTypedArray(),
-    options = options.toReadonlyRecord()
+    options = options.toRecord()
 )
 
 fun NodeIndexJs.toClass(): NodeIndex = NodeIndex(

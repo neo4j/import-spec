@@ -1,5 +1,6 @@
 import org.jetbrains.kotlin.gradle.dsl.JsModuleKind
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.tasks.Kotlin2JsCompile
 
 plugins {
     alias(libs.plugins.spotless)
@@ -60,6 +61,12 @@ tasks.named("jsBrowserProductionLibraryDistribution") {
     finalizedBy("generateTsUnions")
 }
 
+tasks.withType<Kotlin2JsCompile>().configureEach {
+    compilerOptions {
+        target = "es2015"
+    }
+}
+
 /*
     Kotlin/JS doesn't support TypeScript unions
     This script modifies the generated types and generates a string union given a basic enum.
@@ -71,12 +78,14 @@ tasks.register("generateTsUnions") {
         val mtsFile = file("./build/dist/js/productionLibrary/graph-spec.d.mts")
         require(mtsFile.exists()) { "Typescript file missing." }
         var content = mtsFile.readText()
-        content = generateUnion(content, "ConstraintType", "ConstraintTypeJs")
-        content = setUnionType(content, "ConstraintJs", "type", "ConstraintTypeJs")
-        content = generateUnion(content, "IndexType", "IndexTypeJs")
-        content = setUnionType(content, "IndexJs", "type", "IndexTypeJs")
-        content = generateUnion(content, "MappingMode", "MappingModeJs")
-        content = setUnionType(content, "NodeMappingJs", "mode", "MappingModeJs")
+//        content = generateUnion(content, "ConstraintType", "ConstraintTypeJs")
+//        content = setUnionType(content, "NodeConstraintJs", "type", "ConstraintTypeJs")
+//        content = setUnionType(content, "RelationshipConstraintJs", "type", "ConstraintTypeJs")
+//        content = generateUnion(content, "IndexType", "IndexTypeJs")
+//        content = setUnionType(content, "NodeIndexJs", "type", "IndexTypeJs")
+//        content = setUnionType(content, "RelationshipIndexJs", "type", "IndexTypeJs")
+//        content = generateUnion(content, "MappingMode", "MappingModeJs")
+//        content = setUnionType(content, "NodeMappingJs", "mode", "MappingModeJs")
         mtsFile.writeText(content)
     }
 }

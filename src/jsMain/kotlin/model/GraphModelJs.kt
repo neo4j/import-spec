@@ -16,7 +16,7 @@
  */
 package model
 
-import js.objects.ReadonlyRecord
+import js.objects.Record
 import kotlinx.js.JsPlainObject
 import model.mapping.MappingJs
 import model.source.TableJs
@@ -25,18 +25,18 @@ import model.source.TableJs
 @JsPlainObject
 external interface GraphModelJs {
     val version: String
-    val nodes: ReadonlyRecord<String, NodeJs>
-    val relationships: ReadonlyRecord<String, RelationshipJs>
-    val tables: ReadonlyRecord<String, TableJs>
+    val nodes: Record<String, NodeJs>
+    val relationships: Record<String, RelationshipJs>
+    val tables: Record<String, TableJs>
     val mappings: Array<MappingJs>
 }
 
 fun graphModelJs(
     version: String,
-    nodes: ReadonlyRecord<String, NodeJs>,
-    relationships: ReadonlyRecord<String, RelationshipJs>,
-    tables: ReadonlyRecord<String, TableJs>,
-    mappings: Array<MappingJs>,
+    nodes: Record<String, NodeJs>,
+    relationships: Record<String, RelationshipJs>,
+    tables: Record<String, TableJs>,
+    mappings: Array<MappingJs>
 ): GraphModelJs = object : GraphModelJs {
     override val version = version
     override val nodes = nodes

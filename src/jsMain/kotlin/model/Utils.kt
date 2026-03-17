@@ -17,18 +17,18 @@
 package model
 
 import js.objects.Object
-import js.objects.ReadonlyRecord
+import js.objects.Record
 import js.string.JsStrings.toKotlinString
 import kotlin.collections.set
 
-fun <T> ReadonlyRecord<String, T>.toMap(): Map<String, T> = buildMap {
+fun <T> Record<String, T>.toMap(): Map<String, T> = buildMap {
     for (key in Object.keys(this)) {
         val value = this@toMap[key] ?: continue
         set(key.toKotlinString(), value)
     }
 }
 
-fun <T, R> ReadonlyRecord<String, T>.associateBy(block: (String, T) -> R): Map<String, R> = buildMap {
+fun <T, R> Record<String, T>.associateBy(block: (String, T) -> R): Map<String, R> = buildMap {
     for (key in Object.keys(this)) {
         val value = this@associateBy[key] ?: continue
         val result = block(key, value)

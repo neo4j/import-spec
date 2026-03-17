@@ -26,5 +26,5 @@ data class NodeIndex(
     val type: String,
     val labels: Set<String>,
     val properties: Set<String>,
-    val options: Map<String, @Contextual Any> = emptyMap(),
+    val options: Map<String, @Contextual Any> = emptyMap()
 )

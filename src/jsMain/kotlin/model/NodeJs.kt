@@ -16,8 +16,8 @@
  */
 package model
 
-import js.objects.ReadonlyRecord
-import js.objects.emptyReadonlyRecord
+import js.objects.Record
+import js.objects.toRecord
 import kotlinx.js.JsPlainObject
 import model.constraint.NodeConstraintJs
 import model.constraint.toClass
@@ -28,10 +28,10 @@ import model.index.toClass
 @JsPlainObject
 external interface NodeJs {
     val labels: Array<String>
-    val properties: ReadonlyRecord<String, PropertyJs>
-    val constraints: ReadonlyRecord<String, NodeConstraintJs>
-    val indexes: ReadonlyRecord<String, NodeIndexJs>
-    val extensions: ReadonlyRecord<String, Any>
+    val properties: Record<String, PropertyJs>
+    val constraints: Record<String, NodeConstraintJs>
+    val indexes: Record<String, NodeIndexJs>
+    val extensions: Record<String, Any>
 }
 
 fun NodeJs.toClass(id: String): Node = Node(
@@ -44,10 +44,10 @@ fun NodeJs.toClass(id: String): Node = Node(
 
 fun Node.toJs(): NodeJs {
     val labels = labels.toTypedArray()
-    val properties = emptyReadonlyRecord<String, PropertyJs>()
-    val constraints = emptyReadonlyRecord<String, NodeConstraintJs>()
-    val indexes = emptyReadonlyRecord<String, NodeIndexJs>()
-    val extensions = emptyReadonlyRecord<String, Any>()
+    val properties = emptyMap<String, PropertyJs>().toRecord()
+    val constraints = emptyMap<String, NodeConstraintJs>().toRecord()
+    val indexes = emptyMap<String, NodeIndexJs>().toRecord()
+    val extensions = emptyMap<String, Any>().toRecord()
     return object : NodeJs {
         override val labels = labels
         override val properties = properties

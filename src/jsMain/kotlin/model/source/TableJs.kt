@@ -1,27 +1,40 @@
+/*
+ * Copyright (c) "Neo4j"
+ * Neo4j Sweden AB [https://neo4j.com]
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package model.source
 
-import js.objects.ReadonlyRecord
-import js.objects.toReadonlyRecord
+import js.objects.Record
+import js.objects.toRecord
 import kotlinx.js.JsPlainObject
-import model.Neo4jType
 import model.associateBy
-import model.mapping.PropertyMapping
-import kotlin.String
 
 @JsExport
 @JsPlainObject
 external interface TableJs {
     val source: String
-    val fields: ReadonlyRecord<String, TableFieldJs>
+    val fields: Record<String, TableFieldJs>
     val primaryKeys: Array<String>
-    val foreignKeys: ReadonlyRecord<String, ForeignKeyJs>
+    val foreignKeys: Record<String, ForeignKeyJs>
 }
 
 fun tableJs(
     source: String,
-    fields: ReadonlyRecord<String, TableFieldJs>,
+    fields: Record<String, TableFieldJs>,
     primaryKeys: Array<String>,
-    foreignKeys: ReadonlyRecord<String, ForeignKeyJs>,
+    foreignKeys: Record<String, ForeignKeyJs>
 ) = object : TableJs {
     override val source = source
     override val fields = fields
@@ -31,16 +44,14 @@ fun tableJs(
 
 fun Table.toJs() = tableJs(
     source = source,
-    fields = fields.map { (key, value) -> key to value.toJs() }.toMap().toReadonlyRecord(),
+    fields = fields.map { (key, value) -> key to value.toJs() }.toMap().toRecord(),
     primaryKeys = primaryKeys.toTypedArray(),
-    foreignKeys = foreignKeys.map { it.key to it.value.toJs() }.toMap().toReadonlyRecord(),
+    foreignKeys = foreignKeys.map { it.key to it.value.toJs() }.toMap().toRecord()
 )
 
-fun TableJs.toClass(): Table {
-    return Table(
-        source = source,
-        fields = fields.associateBy { _, field -> field.toClass() },
-        primaryKeys = primaryKeys.toSet(),
-        foreignKeys = foreignKeys.associateBy { _, fk -> fk.toClass() },
-    )
-}
+fun TableJs.toClass(): Table = Table(
+    source = source,
+    fields = fields.associateBy { _, field -> field.toClass() },
+    primaryKeys = primaryKeys.toSet(),
+    foreignKeys = foreignKeys.associateBy { _, fk -> fk.toClass() }
+)

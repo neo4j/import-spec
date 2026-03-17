@@ -53,5 +53,5 @@ enum class Neo4jType {
     FLOAT_VECTOR,
     FLOAT8_VECTOR,
     FLOAT16_VECTOR,
-    FLOAT32_VECTOR,
+    FLOAT32_VECTOR
 }
