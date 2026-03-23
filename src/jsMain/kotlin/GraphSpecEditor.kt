@@ -14,13 +14,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import js.objects.Record
+import js.objects.buildRecord
 import js.objects.toRecord
 import model.GraphModel
 import model.GraphModelJs
 import model.NodeJs
 import model.RelationshipJs
+import model.graphModelJs
 import model.mapping.MappingJs
+import model.nodeJs
 import model.source.TableJs
+import model.toMap
 
 @JsExport
 class GraphSpecEditor {
@@ -44,6 +49,35 @@ class GraphSpecEditor {
         @JsStatic
         fun model(model: GraphModelJs): GraphModel = GraphModel(model.version)
 
-        fun addNode(nodes: Map<String, NodeJs>): Map<String, NodeJs> = nodes
+        @JsStatic
+        fun addNode(nodes: Record<String, NodeJs>, id: String) = buildRecord {
+            for ((key, value) in nodes.toMap()) {
+                set(key, value) // TODO does it need to be a deep copy? - Yes
+            }
+            set(id, nodeJs())
+        }
+
+        // Testing - don't know how this will look
+        @JsStatic
+        fun GraphModelJs.addNodeLabel(id: String, label: String): GraphModelJs {
+            val copy = nodes.toMap().toMutableMap()
+            copy[id] = addLabel(nodes[id] ?: return this, label)
+            return graphModelJs(
+                version = version,
+                nodes = copy.toRecord(),
+                relationships = relationships,
+                tables = tables,
+                mappings = mappings
+            )
+        }
+
+        @JsStatic
+        fun addLabel(node: NodeJs, label: String) = nodeJs(
+            labels = node.labels + label,
+            properties = node.properties,
+            constraints = node.constraints,
+            indexes = node.indexes,
+            extensions = node.extensions
+        )
     }
 }

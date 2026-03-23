@@ -78,14 +78,14 @@ tasks.register("generateTsUnions") {
         val mtsFile = file("./build/dist/js/productionLibrary/graph-spec.d.mts")
         require(mtsFile.exists()) { "Typescript file missing." }
         var content = mtsFile.readText()
-//        content = generateUnion(content, "ConstraintType", "ConstraintTypeJs")
-//        content = setUnionType(content, "NodeConstraintJs", "type", "ConstraintTypeJs")
-//        content = setUnionType(content, "RelationshipConstraintJs", "type", "ConstraintTypeJs")
-//        content = generateUnion(content, "IndexType", "IndexTypeJs")
-//        content = setUnionType(content, "NodeIndexJs", "type", "IndexTypeJs")
-//        content = setUnionType(content, "RelationshipIndexJs", "type", "IndexTypeJs")
-//        content = generateUnion(content, "MappingMode", "MappingModeJs")
-//        content = setUnionType(content, "NodeMappingJs", "mode", "MappingModeJs")
+        content = generateUnion(content, "ConstraintType", "ConstraintTypeJs")
+        content = setUnionType(content, "NodeConstraintJs", "type", "ConstraintTypeJs")
+        content = setUnionType(content, "RelationshipConstraintJs", "type", "ConstraintTypeJs")
+        content = generateUnion(content, "IndexType", "IndexTypeJs")
+        content = setUnionType(content, "NodeIndexJs", "type", "IndexTypeJs")
+        content = setUnionType(content, "RelationshipIndexJs", "type", "IndexTypeJs")
+        content = generateUnion(content, "MappingMode", "MappingModeJs")
+        content = setUnionType(content, "NodeMappingJs", "mode", "MappingModeJs")
         mtsFile.writeText(content)
     }
 }

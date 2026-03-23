@@ -21,8 +21,10 @@ import js.objects.toRecord
 import kotlinx.js.JsPlainObject
 import model.constraint.NodeConstraintJs
 import model.constraint.toClass
+import model.constraint.toJs
 import model.index.NodeIndexJs
 import model.index.toClass
+import model.index.toJs
 
 @JsExport
 @JsPlainObject
@@ -42,17 +44,24 @@ fun NodeJs.toClass(id: String): Node = Node(
     extensions = extensions.toMap()
 )
 
-fun Node.toJs(): NodeJs {
-    val labels = labels.toTypedArray()
-    val properties = emptyMap<String, PropertyJs>().toRecord()
-    val constraints = emptyMap<String, NodeConstraintJs>().toRecord()
-    val indexes = emptyMap<String, NodeIndexJs>().toRecord()
-    val extensions = emptyMap<String, Any>().toRecord()
-    return object : NodeJs {
-        override val labels = labels
-        override val properties = properties
-        override val constraints = constraints
-        override val indexes = indexes
-        override val extensions = extensions
-    }
+fun Node.toJs(): NodeJs = nodeJs(
+    labels = labels.toTypedArray(),
+    properties = properties.map { (key, value) -> key to value.toJs() }.toMap().toRecord(),
+    constraints = constraints.map { (key, value) -> key to value.toJs() }.toMap().toRecord(),
+    indexes = indexes.map { (key, value) -> key to value.toJs() }.toMap().toRecord(),
+    extensions = extensions.map { (key, value) -> key to value }.toMap().toRecord()
+)
+
+fun nodeJs(
+    labels: Array<String> = emptyArray(),
+    properties: Record<String, PropertyJs> = emptyRecord(),
+    constraints: Record<String, NodeConstraintJs> = emptyRecord(),
+    indexes: Record<String, NodeIndexJs> = emptyRecord(),
+    extensions: Record<String, Any> = emptyRecord()
+): NodeJs = object : NodeJs {
+    override val labels = labels
+    override val properties = properties
+    override val constraints = constraints
+    override val indexes = indexes
+    override val extensions = extensions
 }

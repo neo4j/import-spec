@@ -18,6 +18,7 @@ package model
 
 import js.objects.Object
 import js.objects.Record
+import js.objects.toRecord
 import js.string.JsStrings.toKotlinString
 import kotlin.collections.set
 
@@ -35,3 +36,5 @@ fun <T, R> Record<String, T>.associateBy(block: (String, T) -> R): Map<String, R
         set(key.toKotlinString(), result)
     }
 }
+
+fun <T : Any, R> emptyRecord() = emptyMap<T, R>().toRecord()
