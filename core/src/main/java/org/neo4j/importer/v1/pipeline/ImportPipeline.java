@@ -33,6 +33,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import org.neo4j.importer.v1.Configuration;
 import org.neo4j.importer.v1.ImportSpecification;
 import org.neo4j.importer.v1.actions.Action;
 import org.neo4j.importer.v1.actions.ActionStage;
@@ -104,16 +105,23 @@ import org.neo4j.importer.v1.targets.Targets;
  */
 public class ImportPipeline implements Iterable<ImportStep>, Serializable {
 
+    private final Configuration configuration;
+
     private final Map<ImportStep, Set<ImportStep>> stepGraph;
 
     public static ImportPipeline of(ImportSpecification importSpecification) {
         var dependencyNameGraph = buildDependencyNameGraph(importSpecification);
         var dependencyGraph = resolveNames(importSpecification, dependencyNameGraph);
-        return new ImportPipeline(dependencyGraph);
+        return new ImportPipeline(importSpecification.getConfiguration(), dependencyGraph);
     }
 
-    private ImportPipeline(Map<ImportStep, Set<ImportStep>> stepGraph) {
+    private ImportPipeline(Configuration configuration, Map<ImportStep, Set<ImportStep>> stepGraph) {
+        this.configuration = configuration;
         this.stepGraph = stepGraph;
+    }
+
+    public Configuration configuration() {
+        return configuration;
     }
 
     @Override
