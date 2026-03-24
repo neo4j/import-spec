@@ -45,7 +45,7 @@ fun relationshipJs(
     properties: Record<String, PropertyJs> = emptyRecord(),
     constraints: Record<String, RelationshipConstraintJs> = emptyRecord(),
     indexes: Record<String, RelationshipIndexJs> = emptyRecord(),
-    extensions: Record<String, Any> = emptyRecord(),
+    extensions: Record<String, Any> = emptyRecord()
 ): RelationshipJs = jso {
     this.type = type
     this.from = from
@@ -63,15 +63,15 @@ fun Relationship.toJs() = relationshipJs(
     properties = properties.mapValues { (_, property) -> property.toJs() }.toRecord(),
     constraints = constraints.mapValues { (_, constraint) -> constraint.toJs() }.toRecord(),
     indexes = indexes.mapValues { (_, index) -> index.toJs() }.toRecord(),
-    extensions = extensions.toRecord(),
+    extensions = extensions.toRecord()
 )
 
 fun RelationshipJs.toClass(id: String) = Relationship(
     type = type,
     from = from,
     to = to,
-    properties = properties.toMap().mapValues { (name, property) -> property.toClass("relationships.${id}", name) },
+    properties = properties.toMap().mapValues { (name, property) -> property.toClass("relationships.$id", name) },
     constraints = constraints.toMap().mapValues { (_, constraint) -> constraint.toClass() },
     indexes = indexes.toMap().mapValues { (_, index) -> index.toClass() },
-    extensions = extensions.toMap(),
+    extensions = extensions.toMap()
 )

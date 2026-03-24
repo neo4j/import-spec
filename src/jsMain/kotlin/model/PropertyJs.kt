@@ -26,11 +26,7 @@ external interface PropertyJs {
     val unique: Boolean
 }
 
-fun propertyJs(
-    type: String? = null,
-    nullable: Boolean = false,
-    unique: Boolean = false,
-): PropertyJs = jso {
+fun propertyJs(type: String? = null, nullable: Boolean = false, unique: Boolean = false): PropertyJs = jso {
     this.type = type
     this.nullable = nullable
     this.unique = unique
@@ -39,7 +35,7 @@ fun propertyJs(
 fun Property.toJs() = propertyJs(
     type = type?.name,
     nullable = nullable,
-    unique = unique,
+    unique = unique
 )
 
 fun PropertyJs.toClass(parent: String, property: String): Property {

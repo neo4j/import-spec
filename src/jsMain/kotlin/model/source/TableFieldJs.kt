@@ -35,7 +35,7 @@ fun tableFieldJs(
     type: String,
     size: Int = -1,
     suggested: String? = null,
-    supported: Array<String> = emptyArray(),
+    supported: Array<String> = emptyArray()
 ): TableFieldJs = jso {
     this.type = type
     this.size = size
@@ -47,7 +47,7 @@ fun TableField.toJs() = tableFieldJs(
     type = type,
     size = size,
     suggested = suggested?.name,
-    supported = supported.map { it.name }.toTypedArray(),
+    supported = supported.map { it.name }.toTypedArray()
 )
 
 fun TableFieldJs.toClass() = TableField(

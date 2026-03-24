@@ -45,10 +45,10 @@ fun nodeIndexJs(
 }
 
 fun NodeIndex.toJs() = nodeIndexJs(
-   type = type,
-   labels = labels.toTypedArray(),
-   properties = properties.toTypedArray(),
-   options = options.toRecord(),
+    type = type,
+    labels = labels.toTypedArray(),
+    properties = properties.toTypedArray(),
+    options = options.toRecord()
 )
 
 fun NodeIndexJs.toClass() = NodeIndex(

@@ -34,7 +34,7 @@ external interface RelationshipIndexJs {
 fun relationshipIndexJs(
     type: String,
     properties: Array<String>,
-    options: Record<String, Any> = emptyRecord(),
+    options: Record<String, Any> = emptyRecord()
 ): RelationshipIndexJs = jso {
     this.type = type
     this.properties = properties
@@ -44,7 +44,7 @@ fun relationshipIndexJs(
 fun RelationshipIndex.toJs() = relationshipIndexJs(
     type = type,
     properties = properties.toTypedArray(),
-    options = options.toRecord(),
+    options = options.toRecord()
 )
 
 fun RelationshipIndexJs.toClass() = RelationshipIndex(

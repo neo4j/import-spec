@@ -29,10 +29,7 @@ external interface TargetMappingJs {
     val properties: Record<String, PropertyMappingJs>
 }
 
-fun targetMappingJs(
-    node: String,
-    properties: Record<String, PropertyMappingJs>
-): TargetMappingJs = jso {
+fun targetMappingJs(node: String, properties: Record<String, PropertyMappingJs>): TargetMappingJs = jso {
     this.node = node
     this.properties = properties
 }

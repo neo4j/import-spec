@@ -57,7 +57,7 @@ fun Node.toJs() = nodeJs(
     properties = properties.mapValues { (_, property) -> property.toJs() }.toRecord(),
     constraints = constraints.mapValues { (_, constraint) -> constraint.toJs() }.toRecord(),
     indexes = indexes.mapValues { (_, index) -> index.toJs() }.toRecord(),
-    extensions = extensions.toRecord(),
+    extensions = extensions.toRecord()
 )
 
 fun NodeJs.toClass(id: String): Node = Node(

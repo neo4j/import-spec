@@ -36,7 +36,7 @@ fun graphModelJs(
     nodes: Record<String, NodeJs>,
     relationships: Record<String, RelationshipJs>,
     tables: Record<String, TableJs>,
-    mappings: Array<MappingJs>,
+    mappings: Array<MappingJs>
 ): GraphModelJs = jso {
     this.version = version
     this.nodes = nodes

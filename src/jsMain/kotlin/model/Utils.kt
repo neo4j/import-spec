@@ -37,9 +37,9 @@ fun <T, R> Record<String, T>.associateBy(block: (String, T) -> R): Map<String, R
     }
 }
 
-fun <T, R> Map<String, T>.associateBy(block: (String, T) -> R): Record<String, R> {
-    return mapValues { (key, value) -> block(key, value) }.toRecord()
-}
+fun <T, R> Map<String, T>.associateBy(block: (String, T) -> R): Record<String, R> = mapValues { (key, value) ->
+    block(key, value)
+}.toRecord()
 
 fun <T : Any, R> emptyRecord() = emptyMap<T, R>().toRecord()
 

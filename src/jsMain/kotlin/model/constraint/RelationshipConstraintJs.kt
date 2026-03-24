@@ -34,7 +34,7 @@ external interface RelationshipConstraintJs {
 fun relationshipConstraint(
     type: String,
     properties: Array<String> = emptyArray(),
-    options: Record<String, Any> = emptyRecord(),
+    options: Record<String, Any> = emptyRecord()
 ): RelationshipConstraintJs = jso {
     this.type = type
     this.properties = properties
@@ -44,7 +44,7 @@ fun relationshipConstraint(
 fun RelationshipConstraint.toJs() = relationshipConstraint(
     type = type,
     properties = properties.toTypedArray(),
-    options = options.toRecord(),
+    options = options.toRecord()
 )
 
 fun RelationshipConstraintJs.toClass() = RelationshipConstraint(

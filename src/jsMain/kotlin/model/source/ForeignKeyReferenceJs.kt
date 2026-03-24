@@ -29,17 +29,14 @@ external interface ForeignKeyReferenceJs {
     val fields: Array<String>
 }
 
-fun foreignKeyReferenceJs(
-    table: String,
-    fields: Array<String>
-): ForeignKeyReferenceJs = jso {
+fun foreignKeyReferenceJs(table: String, fields: Array<String>): ForeignKeyReferenceJs = jso {
     this.table = table
     this.fields = fields
 }
 
 fun ForeignKeyReference.toJs() = foreignKeyReferenceJs(
     table = table,
-    fields = fields.toTypedArray(),
+    fields = fields.toTypedArray()
 )
 
 fun ForeignKeyReferenceJs.toClass() = ForeignKeyReference(

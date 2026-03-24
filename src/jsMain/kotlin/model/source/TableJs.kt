@@ -36,7 +36,7 @@ fun tableJs(
     source: String,
     fields: Record<String, TableFieldJs> = emptyRecord(),
     primaryKeys: Array<String> = emptyArray(),
-    foreignKeys: Record<String, ForeignKeyJs> = emptyRecord(),
+    foreignKeys: Record<String, ForeignKeyJs> = emptyRecord()
 ): TableJs = jso {
     this.source = source
     this.fields = fields
@@ -48,7 +48,7 @@ fun Table.toJs() = tableJs(
     source = source,
     fields = fields.mapValues { (_, field) -> field.toJs() }.toRecord(),
     primaryKeys = primaryKeys.toTypedArray(),
-    foreignKeys = foreignKeys.mapValues { (_, key) -> key.toJs() }.toRecord(),
+    foreignKeys = foreignKeys.mapValues { (_, key) -> key.toJs() }.toRecord()
 )
 
 fun TableJs.toClass() = Table(

@@ -36,7 +36,7 @@ fun nodeConstraintJs(
     type: String,
     label: String,
     properties: Array<String> = emptyArray(),
-    options: Record<String, Any> = emptyRecord(),
+    options: Record<String, Any> = emptyRecord()
 ): NodeConstraintJs = jso {
     this.type = type
     this.label = label
@@ -48,7 +48,7 @@ fun NodeConstraint.toJs() = nodeConstraintJs(
     type = type,
     label = label,
     properties = properties.toTypedArray(),
-    options = options.toRecord(),
+    options = options.toRecord()
 )
 
 fun NodeConstraintJs.toClass() = NodeConstraint(

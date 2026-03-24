@@ -41,7 +41,7 @@ class GraphSpecEditor {
             nodes = model.nodes.mapValues { (_, node) -> node.toJs() }.toRecord(),
             relationships = model.relationships.mapValues { (_, relationship) -> relationship.toJs() }.toRecord(),
             tables = model.tables.mapValues { (_, table) -> table.toJs() }.toRecord(),
-            mappings = emptyArray(),
+            mappings = emptyArray()
         )
         //                this.mappings = model.mappings.mapValues { (string, rel) -> rel.toJs() }.toRecord()
 
