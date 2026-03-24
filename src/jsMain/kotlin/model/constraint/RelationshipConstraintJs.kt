@@ -19,29 +19,35 @@ package model.constraint
 import js.objects.Record
 import js.objects.toRecord
 import kotlinx.js.JsPlainObject
+import model.emptyRecord
+import model.jso
 import model.toMap
 
-@JsExport @JsPlainObject
+@JsExport
+@JsPlainObject
 external interface RelationshipConstraintJs {
     val type: String
     val properties: Array<String>
     val options: Record<String, Any>
 }
 
-fun relationshipConstraintJs(type: String, properties: Array<String>, options: Record<String, Any>) =
-    object : RelationshipConstraintJs {
-        override val type = type
-        override val properties = properties
-        override val options = options
-    }
+fun relationshipConstraint(
+    type: String,
+    properties: Array<String> = emptyArray(),
+    options: Record<String, Any> = emptyRecord(),
+): RelationshipConstraintJs = jso {
+    this.type = type
+    this.properties = properties
+    this.options = options
+}
 
-fun RelationshipConstraint.toJs(): RelationshipConstraintJs = relationshipConstraintJs(
+fun RelationshipConstraint.toJs() = relationshipConstraint(
     type = type,
     properties = properties.toTypedArray(),
-    options = options.toRecord()
+    options = options.toRecord(),
 )
 
-fun RelationshipConstraintJs.toClass(): RelationshipConstraint = RelationshipConstraint(
+fun RelationshipConstraintJs.toClass() = RelationshipConstraint(
     type = type,
     properties = properties.toSet(),
     options = options.toMap()

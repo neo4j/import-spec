@@ -19,6 +19,8 @@ package model.index
 import js.objects.Record
 import js.objects.toRecord
 import kotlinx.js.JsPlainObject
+import model.emptyRecord
+import model.jso
 import model.toMap
 
 @JsExport
@@ -29,20 +31,23 @@ external interface RelationshipIndexJs {
     val options: Record<String, Any>
 }
 
-fun relationshipIndexJs(type: String, properties: Array<String>, options: Record<String, Any>) =
-    object : RelationshipIndexJs {
-        override val type = type
-        override val properties = properties
-        override val options = options
-    }
+fun relationshipIndexJs(
+    type: String,
+    properties: Array<String>,
+    options: Record<String, Any> = emptyRecord(),
+): RelationshipIndexJs = jso {
+    this.type = type
+    this.properties = properties
+    this.options = options
+}
 
-fun RelationshipIndex.toJs(): RelationshipIndexJs = relationshipIndexJs(
+fun RelationshipIndex.toJs() = relationshipIndexJs(
     type = type,
     properties = properties.toTypedArray(),
-    options = options.toRecord()
+    options = options.toRecord(),
 )
 
-fun RelationshipIndexJs.toClass(): RelationshipIndex = RelationshipIndex(
+fun RelationshipIndexJs.toClass() = RelationshipIndex(
     type = type,
     properties = properties.toSet(),
     options = options.toMap()

@@ -19,6 +19,8 @@ package model.constraint
 import js.objects.Record
 import js.objects.toRecord
 import kotlinx.js.JsPlainObject
+import model.emptyRecord
+import model.jso
 import model.toMap
 
 @JsExport
@@ -30,22 +32,26 @@ external interface NodeConstraintJs {
     val options: Record<String, Any>
 }
 
-fun nodeConstraintJs(type: String, label: String, properties: Array<String>, options: Record<String, Any>) =
-    object : NodeConstraintJs {
-        override val type = type
-        override val label = label
-        override val properties = properties
-        override val options = options
-    }
+fun nodeConstraintJs(
+    type: String,
+    label: String,
+    properties: Array<String> = emptyArray(),
+    options: Record<String, Any> = emptyRecord(),
+): NodeConstraintJs = jso {
+    this.type = type
+    this.label = label
+    this.properties = properties
+    this.options = options
+}
 
-fun NodeConstraint.toJs(): NodeConstraintJs = nodeConstraintJs(
+fun NodeConstraint.toJs() = nodeConstraintJs(
     type = type,
     label = label,
     properties = properties.toTypedArray(),
-    options = options.toRecord()
+    options = options.toRecord(),
 )
 
-fun NodeConstraintJs.toClass(): NodeConstraint = NodeConstraint(
+fun NodeConstraintJs.toClass() = NodeConstraint(
     type = type,
     label = label,
     properties = properties.toSet(),

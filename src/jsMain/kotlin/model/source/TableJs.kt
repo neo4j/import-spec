@@ -20,6 +20,8 @@ import js.objects.Record
 import js.objects.toRecord
 import kotlinx.js.JsPlainObject
 import model.associateBy
+import model.emptyRecord
+import model.jso
 
 @JsExport
 @JsPlainObject
@@ -32,24 +34,24 @@ external interface TableJs {
 
 fun tableJs(
     source: String,
-    fields: Record<String, TableFieldJs>,
-    primaryKeys: Array<String>,
-    foreignKeys: Record<String, ForeignKeyJs>
-) = object : TableJs {
-    override val source = source
-    override val fields = fields
-    override val primaryKeys = primaryKeys
-    override val foreignKeys = foreignKeys
+    fields: Record<String, TableFieldJs> = emptyRecord(),
+    primaryKeys: Array<String> = emptyArray(),
+    foreignKeys: Record<String, ForeignKeyJs> = emptyRecord(),
+): TableJs = jso {
+    this.source = source
+    this.fields = fields
+    this.primaryKeys = primaryKeys
+    this.foreignKeys = foreignKeys
 }
 
 fun Table.toJs() = tableJs(
     source = source,
-    fields = fields.map { (key, value) -> key to value.toJs() }.toMap().toRecord(),
+    fields = fields.mapValues { (_, field) -> field.toJs() }.toRecord(),
     primaryKeys = primaryKeys.toTypedArray(),
-    foreignKeys = foreignKeys.map { it.key to it.value.toJs() }.toMap().toRecord()
+    foreignKeys = foreignKeys.mapValues { (_, key) -> key.toJs() }.toRecord(),
 )
 
-fun TableJs.toClass(): Table = Table(
+fun TableJs.toClass() = Table(
     source = source,
     fields = fields.associateBy { _, field -> field.toClass() },
     primaryKeys = primaryKeys.toSet(),

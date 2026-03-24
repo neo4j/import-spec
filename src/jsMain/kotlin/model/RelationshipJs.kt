@@ -16,9 +16,15 @@
  */
 package model
 
+import js.objects.Record
+import js.objects.toRecord
 import kotlinx.js.JsPlainObject
 import model.constraint.RelationshipConstraintJs
+import model.constraint.toClass
+import model.constraint.toJs
 import model.index.RelationshipIndexJs
+import model.index.toClass
+import model.index.toJs
 
 @JsExport
 @JsPlainObject
@@ -26,8 +32,46 @@ external interface RelationshipJs {
     val type: String
     val from: String
     val to: String
-    val properties: Map<String, PropertyJs>
-    val constraints: Map<String, RelationshipConstraintJs>
-    val indexes: Map<String, RelationshipIndexJs>
-    val extensions: Map<String, Any>
+    val properties: Record<String, PropertyJs>
+    val constraints: Record<String, RelationshipConstraintJs>
+    val indexes: Record<String, RelationshipIndexJs>
+    val extensions: Record<String, Any>
 }
+
+fun relationshipJs(
+    type: String,
+    from: String,
+    to: String,
+    properties: Record<String, PropertyJs> = emptyRecord(),
+    constraints: Record<String, RelationshipConstraintJs> = emptyRecord(),
+    indexes: Record<String, RelationshipIndexJs> = emptyRecord(),
+    extensions: Record<String, Any> = emptyRecord(),
+): RelationshipJs = jso {
+    this.type = type
+    this.from = from
+    this.to = to
+    this.properties = properties
+    this.constraints = constraints
+    this.indexes = indexes
+    this.extensions = extensions
+}
+
+fun Relationship.toJs() = relationshipJs(
+    type = type,
+    from = from,
+    to = to,
+    properties = properties.mapValues { (_, property) -> property.toJs() }.toRecord(),
+    constraints = constraints.mapValues { (_, constraint) -> constraint.toJs() }.toRecord(),
+    indexes = indexes.mapValues { (_, index) -> index.toJs() }.toRecord(),
+    extensions = extensions.toRecord(),
+)
+
+fun RelationshipJs.toClass(id: String) = Relationship(
+    type = type,
+    from = from,
+    to = to,
+    properties = properties.toMap().mapValues { (name, property) -> property.toClass("relationships.${id}", name) },
+    constraints = constraints.toMap().mapValues { (_, constraint) -> constraint.toClass() },
+    indexes = indexes.toMap().mapValues { (_, index) -> index.toClass() },
+    extensions = extensions.toMap(),
+)

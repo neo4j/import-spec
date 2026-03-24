@@ -18,6 +18,7 @@ package model.source
 
 import kotlinx.js.JsPlainObject
 import model.Neo4jType
+import model.jso
 import model.mapping.PropertyMapping
 import kotlin.String
 
@@ -28,17 +29,20 @@ external interface ForeignKeyJs {
     val references: ForeignKeyReferenceJs
 }
 
-fun foreignKeyJs(fields: Array<String>, references: ForeignKeyReferenceJs) = object : ForeignKeyJs {
-    override val fields = fields
-    override val references = references
+fun foreignKeyJs(
+    fields: Array<String>,
+    references: ForeignKeyReferenceJs,
+): ForeignKeyJs = jso {
+    this.fields = fields
+    this.references = references
 }
 
 fun ForeignKey.toJs() = foreignKeyJs(
     fields = fields.toTypedArray(),
-    references = references.toJs()
+    references = references.toJs(),
 )
 
-fun ForeignKeyJs.toClass(): ForeignKey = ForeignKey(
+fun ForeignKeyJs.toClass() = ForeignKey(
     fields = fields.toSet(),
     references = references.toClass()
 )

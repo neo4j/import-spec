@@ -19,32 +19,31 @@ import js.objects.buildRecord
 import js.objects.toRecord
 import model.GraphModel
 import model.GraphModelJs
+import model.Node
 import model.NodeJs
 import model.RelationshipJs
+import model.associateBy
 import model.graphModelJs
+import model.jso
 import model.mapping.MappingJs
 import model.nodeJs
 import model.source.TableJs
+import model.source.toJs
+import model.toJs
 import model.toMap
 
 @JsExport
 class GraphSpecEditor {
     companion object {
         @JsStatic
-        fun plain(model: GraphModel): GraphModelJs {
-            val version = model.version
-            val nodes = emptyMap<String, NodeJs>().toRecord()
-            val relationships = emptyMap<String, RelationshipJs>().toRecord()
-            val tables = emptyMap<String, TableJs>().toRecord()
-            val mappings = emptyArray<MappingJs>()
-            return object : GraphModelJs {
-                override val version = version
-                override val nodes = nodes
-                override val relationships = relationships
-                override val tables = tables
-                override val mappings = mappings
-            }
-        }
+        fun plain(model: GraphModel): GraphModelJs = graphModelJs(
+            version = model.version,
+            nodes = model.nodes.mapValues { (_, node) -> node.toJs() }.toRecord(),
+            relationships = model.relationships.mapValues { (_, relationship) -> relationship.toJs() }.toRecord(),
+            tables = model.tables.mapValues { (_, table) -> table.toJs() }.toRecord(),
+            mappings = emptyArray(),
+        )
+        //                this.mappings = model.mappings.mapValues { (string, rel) -> rel.toJs() }.toRecord()
 
         @JsStatic
         fun model(model: GraphModelJs): GraphModel = GraphModel(model.version)
@@ -57,17 +56,16 @@ class GraphSpecEditor {
             set(id, nodeJs())
         }
 
-        // Testing - don't know how this will look
         @JsStatic
-        fun GraphModelJs.addNodeLabel(id: String, label: String): GraphModelJs {
-            val copy = nodes.toMap().toMutableMap()
-            copy[id] = addLabel(nodes[id] ?: return this, label)
+        fun addNodeLabel(model: GraphModelJs, id: String, label: String): GraphModelJs {
+            val copy = model.nodes.toMap().toMutableMap()
+            copy[id] = addLabel(model.nodes[id] ?: return model, label)
             return graphModelJs(
-                version = version,
+                version = model.version,
                 nodes = copy.toRecord(),
-                relationships = relationships,
-                tables = tables,
-                mappings = mappings
+                relationships = model.relationships,
+                tables = model.tables,
+                mappings = model.mappings
             )
         }
 

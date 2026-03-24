@@ -20,6 +20,7 @@ import js.objects.Record
 import js.objects.toRecord
 import kotlinx.js.JsPlainObject
 import model.associateBy
+import model.jso
 
 @JsExport
 @JsPlainObject
@@ -28,9 +29,12 @@ external interface TargetMappingJs {
     val properties: Record<String, PropertyMappingJs>
 }
 
-fun targetMappingJs(node: String, properties: Record<String, PropertyMappingJs>) = object : TargetMappingJs {
-    override val node = node
-    override val properties = properties
+fun targetMappingJs(
+    node: String,
+    properties: Record<String, PropertyMappingJs>
+): TargetMappingJs = jso {
+    this.node = node
+    this.properties = properties
 }
 
 fun TargetMapping.toJs() = targetMappingJs(
@@ -38,7 +42,7 @@ fun TargetMapping.toJs() = targetMappingJs(
     properties = properties.map { it.key to it.value.toJs() }.toMap().toRecord()
 )
 
-fun TargetMappingJs.toClass(): TargetMapping = TargetMapping(
+fun TargetMappingJs.toClass() = TargetMapping(
     node = node,
     properties = properties.associateBy { _, value -> value.toClass() }
 )

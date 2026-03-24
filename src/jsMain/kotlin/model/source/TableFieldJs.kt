@@ -18,6 +18,7 @@ package model.source
 
 import kotlinx.js.JsPlainObject
 import model.Neo4jType
+import model.jso
 import model.mapping.PropertyMapping
 import kotlin.String
 
@@ -30,21 +31,26 @@ external interface TableFieldJs {
     val supported: Array<String>
 }
 
-fun tableFieldJs(type: String, size: Int, suggested: String?, supported: Array<String>) = object : TableFieldJs {
-    override val type = type
-    override val size = size
-    override val suggested = suggested
-    override val supported = supported
+fun tableFieldJs(
+    type: String,
+    size: Int = -1,
+    suggested: String? = null,
+    supported: Array<String> = emptyArray(),
+): TableFieldJs = jso {
+    this.type = type
+    this.size = size
+    this.suggested = suggested
+    this.supported = supported
 }
 
 fun TableField.toJs() = tableFieldJs(
     type = type,
     size = size,
     suggested = suggested?.name,
-    supported = supported.map { it.name }.toTypedArray()
+    supported = supported.map { it.name }.toTypedArray(),
 )
 
-fun TableFieldJs.toClass(): TableField = TableField(
+fun TableFieldJs.toClass() = TableField(
     type = type,
     size = size,
     suggested = suggested?.let { Neo4jType.valueOf(it) },

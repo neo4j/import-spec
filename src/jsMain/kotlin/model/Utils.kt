@@ -37,4 +37,14 @@ fun <T, R> Record<String, T>.associateBy(block: (String, T) -> R): Map<String, R
     }
 }
 
+fun <T, R> Map<String, T>.associateBy(block: (String, T) -> R): Record<String, R> {
+    return mapValues { (key, value) -> block(key, value) }.toRecord()
+}
+
 fun <T : Any, R> emptyRecord() = emptyMap<T, R>().toRecord()
+
+fun jso(block: dynamic.() -> Unit): dynamic {
+    val js = js("{}")
+    block(js)
+    return js
+}

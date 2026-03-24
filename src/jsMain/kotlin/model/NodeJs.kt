@@ -25,6 +25,8 @@ import model.constraint.toJs
 import model.index.NodeIndexJs
 import model.index.toClass
 import model.index.toJs
+import kotlin.collections.component1
+import kotlin.collections.component2
 
 @JsExport
 @JsPlainObject
@@ -36,32 +38,32 @@ external interface NodeJs {
     val extensions: Record<String, Any>
 }
 
-fun NodeJs.toClass(id: String): Node = Node(
-    labels = labels.toSet(),
-    properties = properties.associateBy { key, value -> value.toClass(id, key) },
-    constraints = constraints.associateBy { _, value -> value.toClass() },
-    indexes = indexes.associateBy { _, value -> value.toClass() },
-    extensions = extensions.toMap()
-)
-
-fun Node.toJs(): NodeJs = nodeJs(
-    labels = labels.toTypedArray(),
-    properties = properties.map { (key, value) -> key to value.toJs() }.toMap().toRecord(),
-    constraints = constraints.map { (key, value) -> key to value.toJs() }.toMap().toRecord(),
-    indexes = indexes.map { (key, value) -> key to value.toJs() }.toMap().toRecord(),
-    extensions = extensions.map { (key, value) -> key to value }.toMap().toRecord()
-)
-
 fun nodeJs(
     labels: Array<String> = emptyArray(),
     properties: Record<String, PropertyJs> = emptyRecord(),
     constraints: Record<String, NodeConstraintJs> = emptyRecord(),
     indexes: Record<String, NodeIndexJs> = emptyRecord(),
     extensions: Record<String, Any> = emptyRecord()
-): NodeJs = object : NodeJs {
-    override val labels = labels
-    override val properties = properties
-    override val constraints = constraints
-    override val indexes = indexes
-    override val extensions = extensions
+): NodeJs = jso {
+    this.labels = labels
+    this.properties = properties
+    this.constraints = constraints
+    this.indexes = indexes
+    this.extensions = extensions
 }
+
+fun Node.toJs() = nodeJs(
+    labels = labels.toTypedArray(),
+    properties = properties.mapValues { (_, property) -> property.toJs() }.toRecord(),
+    constraints = constraints.mapValues { (_, constraint) -> constraint.toJs() }.toRecord(),
+    indexes = indexes.mapValues { (_, index) -> index.toJs() }.toRecord(),
+    extensions = extensions.toRecord(),
+)
+
+fun NodeJs.toClass(id: String): Node = Node(
+    labels = labels.toSet(),
+    properties = properties.associateBy { key, value -> value.toClass("nodes.$id", key) },
+    constraints = constraints.associateBy { _, value -> value.toClass() },
+    indexes = indexes.associateBy { _, value -> value.toClass() },
+    extensions = extensions.toMap()
+)

@@ -19,6 +19,8 @@ package model.index
 import js.objects.Record
 import js.objects.toRecord
 import kotlinx.js.JsPlainObject
+import model.emptyRecord
+import model.jso
 import model.toMap
 
 @JsExport
@@ -30,22 +32,26 @@ external interface NodeIndexJs {
     val options: Record<String, Any>
 }
 
-fun nodeIndexJs(type: String, labels: Array<String>, properties: Array<String>, options: Record<String, Any>) =
-    object : NodeIndexJs {
-        override val type = type
-        override val labels = labels
-        override val properties = properties
-        override val options = options
-    }
+fun nodeIndexJs(
+    type: String,
+    labels: Array<String> = emptyArray(),
+    properties: Array<String> = emptyArray(),
+    options: Record<String, Any> = emptyRecord()
+): NodeIndexJs = jso {
+    this.type = type
+    this.labels = labels
+    this.properties = properties
+    this.options = options
+}
 
-fun NodeIndex.toJs(): NodeIndexJs = nodeIndexJs(
-    type = type,
-    labels = labels.toTypedArray(),
-    properties = properties.toTypedArray(),
-    options = options.toRecord()
+fun NodeIndex.toJs() = nodeIndexJs(
+   type = type,
+   labels = labels.toTypedArray(),
+   properties = properties.toTypedArray(),
+   options = options.toRecord(),
 )
 
-fun NodeIndexJs.toClass(): NodeIndex = NodeIndex(
+fun NodeIndexJs.toClass() = NodeIndex(
     type = type,
     labels = labels.toSet(),
     properties = properties.toSet(),

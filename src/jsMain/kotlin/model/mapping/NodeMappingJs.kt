@@ -20,6 +20,7 @@ import js.objects.Record
 import js.objects.toRecord
 import kotlinx.js.JsPlainObject
 import model.associateBy
+import model.jso
 
 @JsExport
 @JsPlainObject
@@ -39,16 +40,16 @@ fun nodeMappingJs(
     mode: String,
     matchLabel: String?,
     keys: Array<String>
-) = object : NodeMappingJs {
-    override val node = node
-    override val table = table
-    override val properties = properties
-    override val mode = mode
-    override val matchLabel = matchLabel
-    override val keys = keys
+): NodeMappingJs = jso {
+    this.node = node
+    this.table = table
+    this.properties = properties
+    this.mode = mode
+    this.matchLabel = matchLabel
+    this.keys = keys
 }
 
-fun NodeMapping.toJs(): NodeMappingJs = nodeMappingJs(
+fun NodeMapping.toJs() = nodeMappingJs(
     node = node,
     table = table,
     properties = properties.map { it.key to it.value.toJs() }.toMap().toRecord(),
@@ -57,7 +58,7 @@ fun NodeMapping.toJs(): NodeMappingJs = nodeMappingJs(
     keys = keys.toTypedArray()
 )
 
-fun NodeMappingJs.toClass(): NodeMapping = NodeMapping(
+fun NodeMappingJs.toClass() = NodeMapping(
     node = node,
     table = table,
     properties = properties.associateBy { _, value -> value.toClass() },

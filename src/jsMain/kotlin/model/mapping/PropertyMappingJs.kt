@@ -17,6 +17,7 @@
 package model.mapping
 
 import kotlinx.js.JsPlainObject
+import model.jso
 
 @JsExport
 @JsPlainObject
@@ -24,10 +25,10 @@ external interface PropertyMappingJs {
     val field: String
 }
 
-fun propertyMappingJs(field: String) = object : PropertyMappingJs {
-    override val field = field
+fun propertyMappingJs(field: String): PropertyMappingJs = jso {
+    this.field = field
 }
 
 fun PropertyMapping.toJs() = propertyMappingJs(field)
 
-fun PropertyMappingJs.toClass(): PropertyMapping = PropertyMapping(field)
+fun PropertyMappingJs.toClass() = PropertyMapping(field)

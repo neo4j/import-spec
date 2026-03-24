@@ -20,6 +20,7 @@ import js.objects.Record
 import js.objects.toRecord
 import kotlinx.js.JsPlainObject
 import model.associateBy
+import model.jso
 
 @JsExport
 @JsPlainObject
@@ -43,18 +44,18 @@ fun relationshipMappingJs(
     mode: String,
     matchLabel: String?,
     keys: Array<String>
-) = object : RelationshipMappingJs {
-    override val relationship = relationship
-    override val table = table
-    override val from = from
-    override val to = to
-    override val properties = properties
-    override val mode = mode
-    override val matchLabel = matchLabel
-    override val keys = keys
+): RelationshipMappingJs = jso {
+    this.relationship = relationship
+    this.table = table
+    this.from = from
+    this.to = to
+    this.properties = properties
+    this.mode = mode
+    this.matchLabel = matchLabel
+    this.keys = keys
 }
 
-fun RelationshipMapping.toJs(): RelationshipMappingJs = relationshipMappingJs(
+fun RelationshipMapping.toJs() = relationshipMappingJs(
     relationship = relationship,
     table = table,
     from = from.toJs(),
@@ -65,7 +66,7 @@ fun RelationshipMapping.toJs(): RelationshipMappingJs = relationshipMappingJs(
     keys = keys.toTypedArray()
 )
 
-fun RelationshipMappingJs.toClass(): RelationshipMapping = RelationshipMapping(
+fun RelationshipMappingJs.toClass() = RelationshipMapping(
     relationship = relationship,
     table = table,
     from = from.toClass(),

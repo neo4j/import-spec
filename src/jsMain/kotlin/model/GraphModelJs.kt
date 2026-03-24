@@ -36,11 +36,11 @@ fun graphModelJs(
     nodes: Record<String, NodeJs>,
     relationships: Record<String, RelationshipJs>,
     tables: Record<String, TableJs>,
-    mappings: Array<MappingJs>
-): GraphModelJs = object : GraphModelJs {
-    override val version = version
-    override val nodes = nodes
-    override val relationships = relationships
-    override val tables = tables
-    override val mappings = mappings
+    mappings: Array<MappingJs>,
+): GraphModelJs = jso {
+    this.version = version
+    this.nodes = nodes
+    this.relationships = relationships
+    this.tables = tables
+    this.mappings = mappings
 }

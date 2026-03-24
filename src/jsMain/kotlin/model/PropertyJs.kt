@@ -26,18 +26,26 @@ external interface PropertyJs {
     val unique: Boolean
 }
 
-fun propertyJs(type: String?, nullable: Boolean, unique: Boolean) = object : PropertyJs {
-    override val type: String? = type
-    override val nullable: Boolean = nullable
-    override val unique: Boolean = unique
+fun propertyJs(
+    type: String? = null,
+    nullable: Boolean = false,
+    unique: Boolean = false,
+): PropertyJs = jso {
+    this.type = type
+    this.nullable = nullable
+    this.unique = unique
 }
 
-fun Property.toJs() = propertyJs(type?.name, nullable, unique)
+fun Property.toJs() = propertyJs(
+    type = type?.name,
+    nullable = nullable,
+    unique = unique,
+)
 
-fun PropertyJs.toClass(node: String, property: String): Property {
-    val type = type ?: error("Missing property type for nodes.$node.properties.$property.type")
+fun PropertyJs.toClass(parent: String, property: String): Property {
+    val type = type ?: error("Missing property type for $parent.properties.$property.type")
     val neo4jType =
         Neo4jType.entries.firstOrNull { it.name == type }
-            ?: error("Invalid neo4j type '$type' for nodes.$node.properties.$property")
+            ?: error("Invalid neo4j type '$type' for $parent.properties.$property")
     return Property(neo4jType, nullable, unique)
 }
