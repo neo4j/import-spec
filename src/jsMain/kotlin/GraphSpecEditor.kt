@@ -26,6 +26,7 @@ import model.associateBy
 import model.graphModelJs
 import model.jso
 import model.mapping.MappingJs
+import model.mapping.toJs
 import model.nodeJs
 import model.source.TableJs
 import model.source.toJs
@@ -41,9 +42,8 @@ class GraphSpecEditor {
             nodes = model.nodes.mapValues { (_, node) -> node.toJs() }.toRecord(),
             relationships = model.relationships.mapValues { (_, relationship) -> relationship.toJs() }.toRecord(),
             tables = model.tables.mapValues { (_, table) -> table.toJs() }.toRecord(),
-            mappings = emptyArray()
+            mappings = model.mappings.map { mapping -> mapping.toJs() }.toTypedArray()
         )
-        //                this.mappings = model.mappings.mapValues { (string, rel) -> rel.toJs() }.toRecord()
 
         @JsStatic
         fun model(model: GraphModelJs): GraphModel = GraphModel(model.version)

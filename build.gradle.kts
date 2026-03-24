@@ -98,9 +98,9 @@ private fun generateUnion(
     if (file.contains("export type $union")) {
         return file
     }
-    val index = file.indexOf("export declare abstract class $enum {")
+    val index = file.indexOf("export declare abstract class $enum ")
     require(index != -1) { "No class found $enum" }
-    val final = file.indexOf("static values()", index)
+    val final = file.indexOf("}\n", index)
     require(final != -1) { "No enum found for class $enum" }
     val text = file.substring(index, final)
 
@@ -118,7 +118,7 @@ private fun setUnionType(
     param: String,
     enum: String
 ): String {
-    val index = file.indexOf("export declare interface $parent {")
+    val index = file.indexOf("export declare interface $parent ")
     require(index != -1) { "Unable to find parent class $parent" }
     val start = file.indexOf("$param: string;")
     require(start != -1) { "Unable to find string param $parent" }

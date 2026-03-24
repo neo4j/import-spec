@@ -24,7 +24,7 @@ import model.jso
 
 @JsExport
 @JsPlainObject
-external interface RelationshipMappingJs {
+external interface RelationshipMappingJs : MappingJs {
     val relationship: String
     val table: String
     val from: TargetMappingJs

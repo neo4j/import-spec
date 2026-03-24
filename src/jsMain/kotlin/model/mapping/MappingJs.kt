@@ -21,3 +21,12 @@ import kotlinx.js.JsPlainObject
 @JsExport
 @JsPlainObject
 external interface MappingJs
+
+fun Mapping.toJs(): MappingJs = when (this) {
+    is LabelMapping -> toJs()
+    is NodeMapping -> toJs()
+    is QueryMapping -> toJs()
+    is RelationshipMapping -> toJs()
+}
+
+fun MappingJs.toClass(): Mapping = TODO("Not sure how this would work")

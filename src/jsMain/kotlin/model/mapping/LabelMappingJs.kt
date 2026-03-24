@@ -16,30 +16,27 @@
  */
 package model.mapping
 
-import js.objects.Record
-import js.objects.toRecord
 import kotlinx.js.JsPlainObject
-import model.associateBy
 import model.jso
 
 @JsExport
 @JsPlainObject
-external interface TargetMappingJs : MappingJs {
-    val node: String
-    val properties: Record<String, PropertyMappingJs>
+external interface LabelMappingJs : MappingJs {
+    val table: String
+    val field: String
 }
 
-fun targetMappingJs(node: String, properties: Record<String, PropertyMappingJs>): TargetMappingJs = jso {
-    this.node = node
-    this.properties = properties
+fun labelMappingJs(table: String, field: String): LabelMappingJs = jso {
+    this.table = table
+    this.field = field
 }
 
-fun TargetMapping.toJs() = targetMappingJs(
-    node = node,
-    properties = properties.map { it.key to it.value.toJs() }.toMap().toRecord()
+fun LabelMapping.toJs() = labelMappingJs(
+    table = table,
+    field = field
 )
 
-fun TargetMappingJs.toClass() = TargetMapping(
-    node = node,
-    properties = properties.associateBy { _, value -> value.toClass() }
+fun LabelMappingJs.toClass() = LabelMapping(
+    table = table,
+    field = field
 )
