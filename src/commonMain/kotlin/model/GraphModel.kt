@@ -36,10 +36,38 @@ data class GraphModel(
     @JsExport.Ignore
     fun validate(validators: List<Validation>): List<Issue> {
         val issues = mutableListOf<Issue>()
-        for (validation in validators) {
-            validation.validate(this, issues)
+        val (roots, tree) = buildTree(validators)
+        for (validation in roots) {
+            validate(tree, validation, issues)
         }
         return issues
+    }
+
+    private fun buildTree(validators: List<Validation>): Pair<List<Validation>, Map<Validation, List<Validation>>> {
+        val tree = mutableMapOf<Validation, MutableList<Validation>>()
+        val roots = mutableListOf<Validation>()
+        for (validation in validators) {
+            val dependencies = validation.dependsOn()
+            if (dependencies.isEmpty()) {
+                roots.add(validation)
+                continue
+            }
+            for (dependent in dependencies) {
+                tree.getOrPut(dependent) { mutableListOf() }.add(validation)
+            }
+        }
+        return Pair(roots, tree)
+    }
+
+    private fun validate(tree: Map<Validation, List<Validation>>, validation: Validation, issues: MutableList<Issue>) {
+        val start = issues.size
+        validation.validate(this, issues)
+        if (issues.size <= start) {
+            return
+        }
+        for (dependency in tree[validation] ?: return) {
+            validate(tree, dependency, issues)
+        }
     }
 
     companion object {

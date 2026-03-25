@@ -21,5 +21,6 @@ import kotlin.js.JsExport
 
 @JsExport
 interface Validation {
+    fun dependsOn(): List<Validation> = emptyList()
     fun validate(model: GraphModel, issues: MutableList<Issue>)
 }
