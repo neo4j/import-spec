@@ -1036,12 +1036,30 @@
         },
         "dimension": {
           "type": "integer",
-          "minimum": 1
+          "minimum": 1,
+          "maximum": 4096
         }
       },
       "required": [
         "name"
-      ]
+      ],
+      "if": {
+        "properties": {
+          "name": {
+            "enum": [
+              "integer_vector", "INTEGER_VECTOR",
+              "float_vector", "FLOAT_VECTOR",
+              "float32_vector", "FLOAT32_VECTOR",
+              "integer8_vector", "INTEGER8_VECTOR",
+              "integer16_vector", "INTEGER16_VECTOR",
+              "integer32_vector", "INTEGER32_VECTOR"
+            ]
+          }
+        }
+      },
+      "then": {
+        "required": ["dimension"]
+      }
     }
   }
 }
