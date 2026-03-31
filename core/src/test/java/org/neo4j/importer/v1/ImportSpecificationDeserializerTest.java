@@ -27,7 +27,9 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.io.FileReader;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.TestInfo;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
@@ -49,6 +51,10 @@ import org.neo4j.importer.v1.validation.UndeserializableSourceException;
 import org.neo4j.importer.v1.validation.UnparseableSpecificationException;
 
 class ImportSpecificationDeserializerTest {
+    @BeforeEach
+    void setUp() {
+        Locale.setDefault(Locale.ENGLISH);
+    }
 
     @ParameterizedTest
     @EnumSource(SpecFormat.class)
@@ -2365,6 +2371,54 @@ class ImportSpecificationDeserializerTest {
                         "1 error(s)",
                         "0 warning(s)",
                         "$.targets.nodes[0].properties[0].target_property_type.dimension \"STRING\" is non vector type and cannot have dimension");
+    }
+
+    @ParameterizedTest
+    @EnumSource(SpecFormat.class)
+    void fails_if_vector_type_has_null_dimension(SpecFormat format, TestInfo testInfo) {
+
+        assertThatThrownBy(() -> {
+                    try (var reader = specReader(format, testInfo)) {
+                        deserialize(reader);
+                    }
+                })
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "$.targets.nodes[0].properties[0].target_property_type.dimension vector type \"FLOAT_VECTOR\" must specify a dimension between 1 and 4096");
+    }
+
+    @ParameterizedTest
+    @EnumSource(SpecFormat.class)
+    void fails_if_vector_type_has_dimension_above_maximum(SpecFormat format, TestInfo testInfo) {
+
+        assertThatThrownBy(() -> {
+                    try (var reader = specReader(format, testInfo)) {
+                        deserialize(reader);
+                    }
+                })
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "$.targets.nodes[0].properties[0].target_property_type.dimension: must have a maximum value of 4096");
+    }
+
+    @ParameterizedTest
+    @EnumSource(SpecFormat.class)
+    void fails_if_vector_type_has_dimension_below_minimum(SpecFormat format, TestInfo testInfo) {
+
+        assertThatThrownBy(() -> {
+                    try (var reader = specReader(format, testInfo)) {
+                        deserialize(reader);
+                    }
+                })
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "$.targets.nodes[0].properties[0].target_property_type.dimension: must have a minimum value of 1");
     }
 
     @ParameterizedTest
