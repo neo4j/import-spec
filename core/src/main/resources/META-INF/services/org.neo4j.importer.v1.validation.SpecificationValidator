@@ -36,6 +36,7 @@ org.neo4j.importer.v1.validation.plugin.NoDuplicatedTargetPropertyValidator
 org.neo4j.importer.v1.validation.plugin.NoIncompleteNodeReferenceKeyMatchValidator
 org.neo4j.importer.v1.validation.plugin.NoKeylessRelationshipNodeValidator
 org.neo4j.importer.v1.validation.plugin.NoNullCypherActionExecutionModeValidator
+org.neo4j.importer.v1.validation.plugin.NoNullDimensionOnVectorTargetTypesValidator
 org.neo4j.importer.v1.validation.plugin.NoRedundantKeyAndExistenceConstraintsValidator
 org.neo4j.importer.v1.validation.plugin.NoRedundantKeyAndUniqueConstraintsValidator
 org.neo4j.importer.v1.validation.plugin.NoRedundantKeyConstraintAndRangeIndexValidator
