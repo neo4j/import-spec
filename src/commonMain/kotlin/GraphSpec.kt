@@ -21,6 +21,7 @@ import codec.format.YamlFormat
 import codec.schema.SchemaMap
 import migrate.MigrationPath
 import migrate.migration.dataModel.DataModelV2V3Migration
+import migrate.migration.dataModel.DataModelV3GraphSpecMigration
 import model.GraphModel
 import model.Type
 import model.Version
@@ -58,6 +59,7 @@ private fun defaultConfig(): GraphSpecConfig {
     val builder = GraphSpecConfig.Builder()
     builder.migrate(DataModelV2V3Migration(Version.DATA_MODEL_V23))
     builder.migrate(DataModelV2V3Migration(Version.DATA_MODEL_V24))
+    builder.migrate(DataModelV3GraphSpecMigration())
     return builder.build()
 }
 
