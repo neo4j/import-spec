@@ -120,8 +120,15 @@ private fun setUnionType(
 ): String {
     val index = file.indexOf("export declare interface $parent ")
     require(index != -1) { "Unable to find parent class $parent" }
-    val start = file.indexOf("$param: string;")
-    require(start != -1) { "Unable to find string param $parent" }
+    val end = file.indexOf("}", index)
+    val substring = file.substring(index, end)
+    if (substring.contains("$param: $enum;")) {
+        // already replaced
+        return file
+    }
+    require(substring.contains("$param: string;")) { "Unable to find $param: string;" }
+    val start = file.indexOf("$param: string;", index)
+    require(start != -1) { "Unable to find string param $parent $param" }
     return file.replaceRange(start..start + 8 + param.length, "$param: $enum;")
 }
 
