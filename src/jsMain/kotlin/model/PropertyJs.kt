@@ -21,25 +21,25 @@ import kotlinx.js.JsPlainObject
 @JsExport
 @JsPlainObject
 external interface PropertyJs {
-    val type: String?
+    val type: String
     val nullable: Boolean
     val unique: Boolean
 }
 
-fun propertyJs(type: String? = null, nullable: Boolean = false, unique: Boolean = false): PropertyJs = jso {
+fun propertyJs(type: String, nullable: Boolean = false, unique: Boolean = false): PropertyJs = jso {
     this.type = type
     this.nullable = nullable
     this.unique = unique
 }
 
 fun Property.toJs() = propertyJs(
-    type = type?.name,
+    type = type.name,
     nullable = nullable,
     unique = unique
 )
 
 fun PropertyJs.toClass(parent: String, property: String): Property {
-    val type = type ?: error("Missing property type for $parent.properties.$property.type")
+    val type = type
     val neo4jType =
         Neo4jType.entries.firstOrNull { it.name == type }
             ?: error("Invalid neo4j type '$type' for $parent.properties.$property")

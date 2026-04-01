@@ -27,14 +27,14 @@ import kotlin.String
 external interface TableFieldJs {
     val type: String
     val size: Int
-    val suggested: String?
+    val suggested: String
     val supported: Array<String>
 }
 
 fun tableFieldJs(
     type: String,
     size: Int = -1,
-    suggested: String? = null,
+    suggested: String = "any",
     supported: Array<String> = emptyArray()
 ): TableFieldJs = jso {
     this.type = type
@@ -46,13 +46,13 @@ fun tableFieldJs(
 fun TableField.toJs() = tableFieldJs(
     type = type,
     size = size,
-    suggested = suggested?.name,
+    suggested = suggested.name,
     supported = supported.map { it.name }.toTypedArray()
 )
 
 fun TableFieldJs.toClass() = TableField(
     type = type,
     size = size,
-    suggested = suggested?.let { Neo4jType.valueOf(it) },
+    suggested = suggested.let { Neo4jType.valueOf(it) },
     supported = supported.map { Neo4jType.valueOf(it) }.toSet()
 )

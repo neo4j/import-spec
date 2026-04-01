@@ -86,6 +86,10 @@ tasks.register("generateTsUnions") {
         content = setUnionType(content, "RelationshipIndexJs", "type", "IndexTypeJs")
         content = generateUnion(content, "MappingMode", "MappingModeJs")
         content = setUnionType(content, "NodeMappingJs", "mode", "MappingModeJs")
+        content = generateUnion(content, "Neo4jType", "Neo4jTypeJs")
+        content = setUnionType(content, "PropertyJs", "type", "Neo4jTypeJs")
+        content = setUnionType(content, "TableFieldJs", "suggested", "Neo4jTypeJs")
+//        content = setUnionType(content, "TableFieldJs", "supported", "Array<Neo4jTypeJs>", "Array<string>")
         mtsFile.writeText(content)
     }
 }
@@ -116,20 +120,21 @@ private fun setUnionType(
     file: String,
     parent: String,
     param: String,
-    enum: String
+    type: String,
+    expected: String = "string"
 ): String {
     val index = file.indexOf("export declare interface $parent ")
     require(index != -1) { "Unable to find parent class $parent" }
     val end = file.indexOf("}", index)
     val substring = file.substring(index, end)
-    if (substring.contains("$param: $enum;")) {
+    if (substring.contains("$param: $type;")) {
         // already replaced
         return file
     }
-    require(substring.contains("$param: string;")) { "Unable to find $param: string;" }
-    val start = file.indexOf("$param: string;", index)
-    require(start != -1) { "Unable to find string param $parent $param" }
-    return file.replaceRange(start..start + 8 + param.length, "$param: $enum;")
+    require(substring.contains("$param: $expected;")) { "Unable to find $param: $expected;" }
+    val start = file.indexOf("$param: $expected;", index)
+    require(start != -1) { "Unable to find $expected param $parent $param" }
+    return file.replaceRange(start..start + 8 + param.length, "$param: $type;")
 }
 
 scmVersion {
