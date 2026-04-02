@@ -31,7 +31,7 @@ import kotlin.collections.component2
 @JsExport
 @JsPlainObject
 external interface NodeJs {
-    val labels: Array<String>
+    var labels: Array<String>
     val properties: Record<String, PropertyJs>
     val constraints: Record<String, NodeConstraintJs>
     val indexes: Record<String, NodeIndexJs>
