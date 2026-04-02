@@ -24,6 +24,7 @@ kotlin {
             implementation(libs.kotlinx.schema)
             implementation(libs.kotlinx.serializer.json)
             implementation(libs.kotlinx.yamlkt)
+            implementation(libs.kotlinx.protobuf)
             implementation(libs.kaseChange)
         }
         jsMain.dependencies {

@@ -11,6 +11,7 @@ kotlinx-serializer-json = { module = "org.jetbrains.kotlinx:kotlinx-serializatio
 kotlin-js-plain-objects = { module = "org.jetbrains.kotlin:kotlin-js-plain-objects", version.ref = "kotlin" }
 slf4jnop = { module = "org.slf4j:slf4j-nop", version = "2.0.17" }
 kotlinx-yamlkt = { module = "net.mamoe.yamlkt:yamlkt", version = "0.13.0" }
+kotlinx-protobuf = { module = "org.jetbrains.kotlinx:kotlinx-serialization-protobuf", version.ref = "kotlinx-serialization" }
 kotlin-wrappers-ts = { module = "org.jetbrains.kotlin-wrappers:kotlin-typescript", version = "2026.3.10-6.0.1-rc" }
 kotlinx-schema = { module = "org.jetbrains.kotlinx:kotlinx-schema-generator-json", version = "0.4.1" }
 kaseChange = { module = "net.pearx.kasechange:kasechange", version = "1.4.1" }
