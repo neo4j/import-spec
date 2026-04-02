@@ -18,7 +18,7 @@ import kotlin.test.Test
 class DataModelV3GraphSpecMigrationTest {
     @Test
     fun `Test full spec`() {
-        val input = DataModelV3GraphSpecMigrationTest::class.resourceAsString("northwind.json")
+        val input = DataModelV3GraphSpecMigrationTest::class.resourceAsString("prod-like/northwind.json")
         val migration = DataModelV3GraphSpecMigration()
         val format = JsonFormat.build()
 

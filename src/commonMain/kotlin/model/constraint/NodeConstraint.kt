@@ -24,7 +24,7 @@ import kotlin.js.JsExport
 @Serializable
 data class NodeConstraint(
     val type: String,
-    val label: String,
+    val label: String, // TODO: Optional to avoid id issues with frontend redux?
     val properties: Set<String>,
     val options: Map<String, @Contextual Any> = emptyMap()
 )

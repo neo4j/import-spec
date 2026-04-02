@@ -33,6 +33,10 @@ import model.source.toJs
 import model.toJs
 import model.toMap
 
+/**
+ * React stores state in Redux with plain JavaScript objects
+ * We need a duplicate of these as they are defined separately and in a mutable way.
+ */
 @JsExport
 class GraphSpecEditor {
     companion object {
@@ -54,6 +58,17 @@ class GraphSpecEditor {
                 set(key, value) // TODO does it need to be a deep copy? - Yes
             }
             set(id, nodeJs())
+        }
+
+        @JsStatic
+        fun addNodeInline(model: GraphModelJs, id: String) {
+            model.nodes[id] = nodeJs()
+        }
+
+        @JsStatic
+        fun addNodeLabelInline(model: GraphModelJs, id: String, label: String) {
+            val node = model.nodes[id] ?: return // TODO how to handle missing nodes
+            node.labels += label
         }
 
         @JsStatic
