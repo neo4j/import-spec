@@ -4,7 +4,7 @@
     {
       "type": "bigquery",
       "name": "my-bigquery-source",
-      "query": "SELECT id, name FROM my.table"
+      "query": "SELECT id, embeddings FROM my.table"
     }
   ],
   "targets": {
@@ -15,8 +15,8 @@
         "labels": ["ALabel"],
         "properties": [
           {
-            "source_field": "id",
-            "target_property": "id",
+            "source_field": "embeddings",
+            "target_property": "embeddings",
             "target_property_type": {
               "name": "FLOAT_VECTOR",
               "dimension": 4097
