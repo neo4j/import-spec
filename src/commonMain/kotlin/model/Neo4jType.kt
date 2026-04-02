@@ -16,7 +16,9 @@
  */
 package model
 
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.JsonNames
 import kotlin.js.JsExport
 
 @JsExport
@@ -24,34 +26,106 @@ import kotlin.js.JsExport
 enum class Neo4jType {
     ANY,
     BOOLEAN,
-    BOOLEAN_ARRAY,
-    BYTE_ARRAY,
+
+    @SerialName("LIST<BOOLEAN>")
+    LIST_BOOLEAN,
+
     DATE,
-    DATE_ARRAY,
+
+    @SerialName("LIST<DATE>")
+    LIST_DATE,
     DURATION,
-    DURATION_ARRAY,
-    FLOAT,
-    FLOAT_ARRAY,
-    INTEGER,
-    INTEGER_ARRAY,
+
+    @SerialName("LIST<DURATION>")
+    LIST_DURATION,
+    FLOAT32,
+
+    @SerialName("LIST<FLOAT32>")
+    LIST_FLOAT32,
+
+    @JsonNames("FLOAT")
+    @SerialName("FLOAT")
+    FLOAT64,
+
+    @JsonNames("LIST<FLOAT>")
+    @SerialName("LIST<FLOAT>")
+    LIST_FLOAT64,
+    INTEGER8,
+
+    @SerialName("LIST<INTEGER8>")
+    LIST_INTEGER8,
+    INTEGER16,
+
+    @SerialName("LIST<INTEGER16>")
+    LIST_INTEGER16,
+    INTEGER32,
+
+    @SerialName("LIST<INTEGER32>")
+    LIST_INTEGER32,
+
+    @JsonNames("INTEGER")
+    @SerialName("INTEGER")
+    INTEGER64,
+
+    @JsonNames("LIST<INTEGER>")
+    @SerialName("LIST<INTEGER>")
+    LIST_INTEGER64,
+
+    @JsonNames("LOCAL_DATETIME")
+    @SerialName("LOCAL DATETIME")
     LOCAL_DATETIME,
-    LOCAL_DATETIME_ARRAY,
+
+    @JsonNames("LIST<LOCAL_DATETIME>")
+    @SerialName("LIST<LOCAL DATETIME>")
+    LIST_LOCAL_DATETIME,
+
+    @JsonNames("LOCAL_TIME")
+    @SerialName("LOCAL TIME")
     LOCAL_TIME,
-    LOCAL_TIME_ARRAY,
+
+    @JsonNames("LIST<LOCAL_TIME>")
+    @SerialName("LIST<LOCAL TIME>")
+    LIST_LOCAL_TIME,
     POINT,
-    POINT_ARRAY,
+
+    @SerialName("LIST<POINT>")
+    LIST_POINT,
     STRING,
-    STRING_ARRAY,
+
+    @SerialName("LIST<STRING>")
+    LIST_STRING,
+
+    @SerialName("VECTOR<FLOAT>")
+    VECTOR_FLOAT,
+
+    @SerialName("VECTOR<FLOAT32>")
+    VECTOR_FLOAT32,
+
+    @SerialName("VECTOR<INTEGER>")
+    VECTOR_INTEGER,
+
+    @SerialName("VECTOR<INTEGER32>")
+    VECTOR_INTEGER32,
+
+    @SerialName("VECTOR<INTEGER16>")
+    VECTOR_INTEGER16,
+
+    @SerialName("VECTOR<INTEGER8>")
+    VECTOR_INTEGER8,
+
+    @JsonNames("ZONED_DATETIME")
+    @SerialName("ZONED DATETIME")
     ZONED_DATETIME,
-    ZONED_DATETIME_ARRAY,
+
+    @JsonNames("LIST<ZONED_DATETIME>")
+    @SerialName("LIST<ZONED DATETIME>")
+    LIST_ZONED_DATETIME,
+
+    @JsonNames("ZONED_TIME")
+    @SerialName("ZONED TIME")
     ZONED_TIME,
-    ZONED_TIME_ARRAY,
-    INTEGER_VECTOR,
-    INTEGER8_VECTOR,
-    INTEGER16_VECTOR,
-    INTEGER32_VECTOR,
-    FLOAT_VECTOR,
-    FLOAT8_VECTOR,
-    FLOAT16_VECTOR,
-    FLOAT32_VECTOR
+
+    @JsonNames("LIST<ZONED_TIME>")
+    @SerialName("LIST<ZONED TIME>")
+    LIST_ZONED_TIME,
 }
