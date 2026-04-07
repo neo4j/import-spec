@@ -3,6 +3,7 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.Kotlin2JsCompile
 
 plugins {
+    id("tasks.ts.modifier")
     alias(libs.plugins.spotless)
     alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.kotlin.serialization)
@@ -24,7 +25,6 @@ kotlin {
             implementation(libs.kotlinx.schema)
             implementation(libs.kotlinx.serializer.json)
             implementation(libs.kotlinx.yamlkt)
-            implementation(libs.kotlinx.protobuf)
             implementation(libs.kaseChange)
         }
         jsMain.dependencies {
@@ -58,10 +58,6 @@ kotlin {
     }
 }
 
-tasks.named("jsBrowserProductionLibraryDistribution") {
-    finalizedBy("generateTsUnions")
-}
-
 tasks.withType<Kotlin2JsCompile>().configureEach {
     compilerOptions {
         target = "es2015"
@@ -70,72 +66,22 @@ tasks.withType<Kotlin2JsCompile>().configureEach {
 
 /*
     Kotlin/JS doesn't support TypeScript unions
+    https://youtrack.jetbrains.com/issue/KT-55101/
     This script modifies the generated types and generates a string union given a basic enum.
-    It's a brittle hack but the type safety is much preferred on the frontend.
+    It's a somewhat brittle hack but the type safety is much preferred on the frontend.
     There's the potential to use a different library for TS generation in the future which does support this natively.
  */
-tasks.register("generateTsUnions") {
-    doLast {
-        val mtsFile = file("./build/dist/js/productionLibrary/graph-spec.d.mts")
-        require(mtsFile.exists()) { "Typescript file missing." }
-        var content = mtsFile.readText()
-        content = generateUnion(content, "ConstraintType", "ConstraintTypeJs")
-        content = setUnionType(content, "NodeConstraintJs", "type", "ConstraintTypeJs")
-        content = setUnionType(content, "RelationshipConstraintJs", "type", "ConstraintTypeJs")
-        content = generateUnion(content, "IndexType", "IndexTypeJs")
-        content = setUnionType(content, "NodeIndexJs", "type", "IndexTypeJs")
-        content = setUnionType(content, "RelationshipIndexJs", "type", "IndexTypeJs")
-        content = generateUnion(content, "MappingMode", "MappingModeJs")
-        content = setUnionType(content, "NodeMappingJs", "mode", "MappingModeJs")
-        content = generateUnion(content, "Neo4jType", "Neo4jTypeJs")
-        content = setUnionType(content, "PropertyJs", "type", "Neo4jTypeJs")
-        content = setUnionType(content, "TableFieldJs", "suggested", "Neo4jTypeJs")
-//        content = setUnionType(content, "TableFieldJs", "supported", "Array<Neo4jTypeJs>", "Array<string>")
-        mtsFile.writeText(content)
-    }
+tasks.register("generateTsUnions", TypeScriptModifierTask::class.java) {
+    typescriptFile =
+        layout.buildDirectory
+            .dir("dist/js/productionLibrary/")
+            .get()
+            .file("graph-spec.d.mts")
+            .asFile
 }
 
-private fun generateUnion(
-    file: String,
-    enum: String,
-    union: String
-): String {
-    if (file.contains("export type $union")) {
-        return file
-    }
-    val index = file.indexOf("export declare abstract class $enum ")
-    require(index != -1) { "No class found $enum" }
-    val final = file.indexOf("}\n", index)
-    require(final != -1) { "No enum found for class $enum" }
-    val text = file.substring(index, final)
-
-    val start = text.lastIndexOf("get name(): ")
-    require(start != -1) { "No enum found for class $enum" }
-    val end = text.indexOf(";", start + 12)
-    require(end != -1) { "No enum found for class $enum" }
-    val types = text.substring(start + 12, end)
-    return file.replaceRange(index..index, "export type $union = $types\ne")
-}
-
-private fun setUnionType(
-    file: String,
-    parent: String,
-    param: String,
-    type: String,
-    expected: String = "string"
-): String {
-    val index = file.indexOf("export declare interface $parent ")
-    require(index != -1) { "Unable to find parent class $parent" }
-    val end = file.indexOf("}", index)
-    val substring = file.substring(index, end)
-    if (substring.contains("$param: $type;")) {
-        // already replaced
-        return file
-    }
-    require(substring.contains("$param: $expected;")) { "Unable to find $param: $expected;" }
-    val start = file.indexOf("$param: $expected;", index)
-    require(start != -1) { "Unable to find $expected param $parent $param" }
-    return file.replaceRange(start..start + 8 + param.length, "$param: $type;")
+tasks.named("jsBrowserProductionLibraryDistribution") {
+    finalizedBy("generateTsUnions")
 }
 
 scmVersion {
