@@ -25,6 +25,7 @@ import model.jso
 @JsExport
 @JsPlainObject
 external interface RelationshipMappingJs : MappingJs {
+    override val type: String
     val relationship: String
     val table: String
     val from: TargetMappingJs
@@ -45,6 +46,7 @@ fun relationshipMappingJs(
     matchLabel: String?,
     keys: Array<String>
 ): RelationshipMappingJs = jso {
+    this.type = MappingType.RELATIONSHIP
     this.relationship = relationship
     this.table = table
     this.from = from

@@ -26,10 +26,13 @@ import model.associateBy
 import model.graphModelJs
 import model.jso
 import model.mapping.MappingJs
+import model.mapping.toClass
 import model.mapping.toJs
 import model.nodeJs
 import model.source.TableJs
+import model.source.toClass
 import model.source.toJs
+import model.toClass
 import model.toJs
 import model.toMap
 
@@ -50,7 +53,13 @@ class GraphSpecEditor {
         )
 
         @JsStatic
-        fun model(model: GraphModelJs): GraphModel = GraphModel(model.version)
+        fun model(model: GraphModelJs): GraphModel = GraphModel(
+            version = model.version,
+            nodes = model.nodes.associateBy { id, js -> js.toClass(id) },
+            relationships = model.relationships.associateBy { id, js -> js.toClass(id) },
+            tables = model.tables.associateBy { _, js -> js.toClass() },
+            mappings = model.mappings.map { it.toClass() },
+        )
 
         @JsStatic
         fun addNode(nodes: Record<String, NodeJs>, id: String) = buildRecord {

@@ -22,11 +22,13 @@ import model.jso
 @JsExport
 @JsPlainObject
 external interface LabelMappingJs : MappingJs {
+    override val type: String
     val table: String
     val field: String
 }
 
 fun labelMappingJs(table: String, field: String): LabelMappingJs = jso {
+    this.type = MappingType.LABEL
     this.table = table
     this.field = field
 }

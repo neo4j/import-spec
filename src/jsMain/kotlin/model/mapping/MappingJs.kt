@@ -20,7 +20,9 @@ import kotlinx.js.JsPlainObject
 
 @JsExport
 @JsPlainObject
-external interface MappingJs
+external interface MappingJs {
+    val type: String
+}
 
 fun Mapping.toJs(): MappingJs = when (this) {
     is LabelMapping -> toJs()
@@ -29,4 +31,10 @@ fun Mapping.toJs(): MappingJs = when (this) {
     is RelationshipMapping -> toJs()
 }
 
-fun MappingJs.toClass(): Mapping = TODO("Not sure how this would work")
+fun MappingJs.toClass(): Mapping = when(this.type) {
+    MappingType.LABEL -> (this as LabelMappingJs).toClass()
+    MappingType.QUERY -> (this as QueryMappingJs).toClass()
+    MappingType.NODE -> (this as NodeMappingJs).toClass()
+    MappingType.RELATIONSHIP -> (this as RelationshipMappingJs).toClass()
+    else -> error("Unexpected mapping type: ${this.type}")
+}

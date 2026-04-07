@@ -25,6 +25,7 @@ import model.jso
 @JsExport
 @JsPlainObject
 external interface NodeMappingJs : MappingJs {
+    override val type: String
     val node: String
     val table: String
     val properties: Record<String, PropertyMappingJs>
@@ -41,6 +42,7 @@ fun nodeMappingJs(
     matchLabel: String?,
     keys: Array<String>
 ): NodeMappingJs = jso {
+    this.type = MappingType.NODE
     this.node = node
     this.table = table
     this.properties = properties

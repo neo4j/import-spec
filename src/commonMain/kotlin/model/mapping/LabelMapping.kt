@@ -16,9 +16,11 @@
  */
 package model.mapping
 
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlin.js.JsExport
 
 @JsExport
 @Serializable
+@SerialName(MappingType.LABEL)
 data class LabelMapping(val table: String, val field: String) : Mapping

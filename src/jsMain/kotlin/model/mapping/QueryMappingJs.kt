@@ -16,9 +16,29 @@
  */
 package model.mapping
 
-import kotlinx.serialization.Serializable
-import kotlin.js.JsExport
+import kotlinx.js.JsPlainObject
+import model.jso
 
 @JsExport
-@Serializable(with = MappingSerializer::class)
-sealed interface Mapping
+@JsPlainObject
+external interface QueryMappingJs : MappingJs {
+    override val type: String
+    val table: String
+    val query: String
+}
+
+fun queryMappingJs(table: String, query: String): QueryMappingJs = jso {
+    this.type = MappingType.QUERY
+    this.table = table
+    this.query = query
+}
+
+fun QueryMapping.toJs() = queryMappingJs(
+    table = table,
+    query = query
+)
+
+fun QueryMappingJs.toClass() = QueryMapping(
+    table = table,
+    query = query
+)
