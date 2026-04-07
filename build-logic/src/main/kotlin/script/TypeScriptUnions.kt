@@ -20,11 +20,19 @@ class TypeScriptUnions {
     private data class Union(val enum: String, val name: String)
 
     private val unions = mutableSetOf<Union>()
+    private val renames = mutableMapOf<String, Map<String, String>>()
+
+    /**
+     * Rename values in a union
+     */
+    fun rename(union: String, map: Map<String, String>) {
+        renames[union] = map
+    }
 
     /**
      * Takes an enum class and generates a string union from it
      */
-    fun union(enum: String, union: String) {
+    fun create(enum: String, union: String) {
         unions.add(Union(enum, union))
     }
 
@@ -67,7 +75,11 @@ class TypeScriptUnions {
         }
         index += "get name():".length + 1
         val closing = section.indexOf(";", index)
-        val strings = section.substring(index, closing)
+        var strings = section.substring(index, closing)
+        val renames = renames[union.name] ?: emptyMap()
+        for ((key, value) in renames) {
+            strings = strings.replace("\"${key}\"", "\"${value}\"")
+        }
         return "export type ${union.name} = $strings"
     }
 

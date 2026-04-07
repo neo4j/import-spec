@@ -18,9 +18,12 @@ package model
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.JsonNames
 import kotlin.js.JsExport
 
+/**
+ * Note: Make sure to update TypeScriptModifierTask.kt if any of the serial names
+ * change or new types are added.
+ */
 @JsExport
 @Serializable
 enum class Neo4jType {
@@ -29,7 +32,6 @@ enum class Neo4jType {
 
     @SerialName("LIST<BOOLEAN>")
     LIST_BOOLEAN,
-
     DATE,
 
     @SerialName("LIST<DATE>")
@@ -43,11 +45,9 @@ enum class Neo4jType {
     @SerialName("LIST<FLOAT32>")
     LIST_FLOAT32,
 
-    @JsonNames("FLOAT")
     @SerialName("FLOAT")
     FLOAT64,
 
-    @JsonNames("LIST<FLOAT>")
     @SerialName("LIST<FLOAT>")
     LIST_FLOAT64,
     INTEGER8,
@@ -63,27 +63,21 @@ enum class Neo4jType {
     @SerialName("LIST<INTEGER32>")
     LIST_INTEGER32,
 
-    @JsonNames("INTEGER")
     @SerialName("INTEGER")
     INTEGER64,
 
-    @JsonNames("LIST<INTEGER>")
     @SerialName("LIST<INTEGER>")
     LIST_INTEGER64,
 
-    @JsonNames("LOCAL_DATETIME")
     @SerialName("LOCAL DATETIME")
     LOCAL_DATETIME,
 
-    @JsonNames("LIST<LOCAL_DATETIME>")
     @SerialName("LIST<LOCAL DATETIME>")
     LIST_LOCAL_DATETIME,
 
-    @JsonNames("LOCAL_TIME")
     @SerialName("LOCAL TIME")
     LOCAL_TIME,
 
-    @JsonNames("LIST<LOCAL_TIME>")
     @SerialName("LIST<LOCAL TIME>")
     LIST_LOCAL_TIME,
     POINT,
@@ -113,19 +107,15 @@ enum class Neo4jType {
     @SerialName("VECTOR<INTEGER8>")
     VECTOR_INTEGER8,
 
-    @JsonNames("ZONED_DATETIME")
     @SerialName("ZONED DATETIME")
     ZONED_DATETIME,
 
-    @JsonNames("LIST<ZONED_DATETIME>")
     @SerialName("LIST<ZONED DATETIME>")
     LIST_ZONED_DATETIME,
 
-    @JsonNames("ZONED_TIME")
     @SerialName("ZONED TIME")
     ZONED_TIME,
 
-    @JsonNames("LIST<ZONED_TIME>")
     @SerialName("LIST<ZONED TIME>")
-    LIST_ZONED_TIME,
+    LIST_ZONED_TIME
 }

@@ -17,15 +17,17 @@
 import org.junit.Test
 import script.TypeScriptUnions
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
+import kotlin.test.assertTrue
 
 class TypeScriptUnionsTest {
 
     @Test
-    fun `Add enum union`() {
-        val builder = TypeScriptUnions()
-        builder.union("TestType", "TestTypeJs")
+    fun `should ignore nested get names()'s`() {
+        val unions = TypeScriptUnions()
+        unions.create("TestType", "TestTypeJs")
 
-        val result = builder.run(
+        val result = unions.run(
             """
             export declare abstract class TestType {
                 private constructor();
@@ -59,22 +61,111 @@ class TypeScriptUnionsTest {
     }
 
     @Test
-    fun `Drop old unions`() {
-        val builder = TypeScriptUnions()
-        val result = builder.run(
-            """
-            export declare abstract class TestType {}
-            //auto-gen
-            export type TestTypeJs = "WRONG"
-            """.trimIndent()
-        )
+    fun `should generate union from enum class`() {
+        val unions = TypeScriptUnions()
+        val input = """
+            abstract class Color {
+                get name(): "RED" | "GREEN" | "BLUE";
+            }
+        """.trimIndent()
 
-        val lines = result.lines()
-        assertEquals(
-            """
-            export declare abstract class TestType {}
-            """.trimIndent(),
-            lines[lines.lastIndex - 1]
-        )
+        unions.create("Color", "ColorType")
+        val result = unions.run(input)
+
+        val expected = """
+            abstract class Color {
+                get name(): "RED" | "GREEN" | "BLUE";
+            }
+            //auto-gen
+            export type ColorType = "RED" | "GREEN" | "BLUE"
+        """.trimIndent()
+
+        assertEquals(expected.trim(), result.trim())
+    }
+
+    @Test
+    fun `should rename values in the generated union`() {
+        val unions = TypeScriptUnions()
+        val input = """
+            abstract class Priority {
+                get name(): "HIGH" | "LOW";
+            }
+        """.trimIndent()
+
+        unions.create("Priority", "PriorityLevel")
+        unions.rename("PriorityLevel", mapOf("HIGH" to "URGENT", "LOW" to "RELAXED"))
+
+        val result = unions.run(input)
+
+        assertTrue(result.contains("export type PriorityLevel = \"URGENT\" | \"RELAXED\""))
+    }
+
+    @Test
+    fun `should handle existing marker by replacing content after it`() {
+        val unions = TypeScriptUnions()
+        val input = """
+            val x = 10;
+            //auto-gen
+            export type OldType = "OLD"
+        """.trimIndent()
+
+        unions.create("Status", "StatusType")
+
+        // This input mimics the class that 'create' expects
+        val classDefinition = """
+            abstract class Status {
+                get name(): "OPEN" | "CLOSED";
+            }
+        """.trimIndent()
+
+        val result = unions.run(classDefinition + "\n" + input)
+
+        // It should keep code before //auto-gen and discard "OldType"
+        assertTrue(result.contains("val x = 10;"))
+        assertTrue(result.contains("export type StatusType = \"OPEN\" | \"CLOSED\""))
+        assert(!result.contains("OldType"))
+    }
+
+    @Test
+    fun `should handle multiple unions`() {
+        val tsUnions = TypeScriptUnions()
+        val input = """
+            abstract class A { get name(): "A1" | "A2"; }
+            abstract class B { get name(): "B1" | "B2"; }
+        """.trimIndent()
+
+        tsUnions.create("A", "UnionA")
+        tsUnions.create("B", "UnionB")
+
+        val result = tsUnions.run(input)
+
+        assertTrue(result.contains("export type UnionA = \"A1\" | \"A2\""))
+        assertTrue(result.contains("export type UnionB = \"B1\" | \"B2\""))
+    }
+
+    @Test
+    fun `should throw error if enum class is not found`() {
+        val unions = TypeScriptUnions()
+        val input = "abstract class Other { get name(): \"X\"; }"
+        unions.create("Missing", "MissingUnion")
+
+        assertFailsWith<IllegalStateException>("Enum Missing not found") {
+            unions.run(input)
+        }
+    }
+
+    @Test
+    fun `should throw error if get name is missing`() {
+        val unions = TypeScriptUnions()
+        val input = """
+            abstract class Broken {
+                get value(): "X";
+            }
+        """.trimIndent()
+        unions.create("Broken", "BrokenUnion")
+
+        assertFailsWith<IllegalStateException>("Unable to find `get name()`") {
+            unions.run(input)
+        }
     }
 }
