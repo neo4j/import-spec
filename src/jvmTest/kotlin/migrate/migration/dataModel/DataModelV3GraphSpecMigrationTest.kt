@@ -7,9 +7,7 @@ import codec.schema.SchemaMap
 import codec.format.Prettify
 import kotlinx.schema.generator.json.serialization.SerializationClassJsonSchemaGenerator
 import kotlinx.schema.json.encodeToString
-import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.protobuf.schema.ProtoBufSchemaGenerator
 import model.GraphModel
 import org.junit.jupiter.api.Disabled
 import resourceAsString
@@ -38,13 +36,6 @@ class DataModelV3GraphSpecMigrationTest {
         val generator = SerializationClassJsonSchemaGenerator.Default
         val schema = generator.generateSchema(GraphModel.serializer().descriptor)
         println(schema.encodeToString(Json { prettyPrint = true }))
-    }
-
-    @OptIn(ExperimentalSerializationApi::class)
-    @Test
-    fun `Generate proto schema`() {
-        val schemas = ProtoBufSchemaGenerator.generateSchemaText(GraphModel.serializer().descriptor)
-        println(schemas)
     }
 
     @Test
