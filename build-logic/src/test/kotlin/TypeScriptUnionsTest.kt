@@ -93,7 +93,10 @@ class TypeScriptUnionsTest {
         """.trimIndent()
 
         unions.create("Priority", "PriorityLevel")
-        unions.rename("PriorityLevel", mapOf("HIGH" to "URGENT", "LOW" to "RELAXED"))
+        val map = mapOf("HIGH" to "URGENT", "LOW" to "RELAXED")
+        unions.rename("PriorityLevel") {
+            map[it] ?: it
+        }
 
         val result = unions.run(input)
 

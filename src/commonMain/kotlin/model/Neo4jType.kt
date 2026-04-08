@@ -20,10 +20,6 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlin.js.JsExport
 
-/**
- * Note: Make sure to update TypeScriptModifierTask.kt if any of the serial names
- * change or new types are added.
- */
 @JsExport
 @Serializable
 enum class Neo4jType {
@@ -44,12 +40,10 @@ enum class Neo4jType {
 
     @SerialName("LIST<FLOAT32>")
     LIST_FLOAT32,
-
-    @SerialName("FLOAT")
-    FLOAT64,
+    FLOAT,
 
     @SerialName("LIST<FLOAT>")
-    LIST_FLOAT64,
+    LIST_FLOAT,
     INTEGER8,
 
     @SerialName("LIST<INTEGER8>")
@@ -64,10 +58,10 @@ enum class Neo4jType {
     LIST_INTEGER32,
 
     @SerialName("INTEGER")
-    INTEGER64,
+    INTEGER,
 
     @SerialName("LIST<INTEGER>")
-    LIST_INTEGER64,
+    LIST_INTEGER,
 
     @SerialName("LOCAL DATETIME")
     LOCAL_DATETIME,
@@ -117,5 +111,7 @@ enum class Neo4jType {
     ZONED_TIME,
 
     @SerialName("LIST<ZONED TIME>")
-    LIST_ZONED_TIME
+    LIST_ZONED_TIME,
+
+    UUID,
 }

@@ -55,39 +55,13 @@ abstract class TypeScriptModifierTask : DefaultTask() {
         types.replace("PropertyJs", "type", "string", "Neo4jTypeJs")
         types.replace("TableFieldJs", "suggested", "string", "Neo4jTypeJs")
         types.replace("TableFieldJs", "supported", "Array<string>", "array<Neo4jTypeJs>")
-        // This is the most fragile bit as any additions or changes won't be detected
-        unions.rename(
-            "Neo4jTypeJs",
-            mapOf(
-                "LIST_BOOLEAN" to "LIST<BOOLEAN>",
-                "LIST_DATE" to "LIST<DATE>",
-                "LIST_DURATION" to "LIST<DURATION>",
-                "LIST_FLOAT32" to "LIST<FLOAT32>",
-                "FLOAT64" to "FLOAT",
-                "LIST_FLOAT64" to "LIST<FLOAT>",
-                "LIST_INTEGER8" to "LIST<INTEGER8>",
-                "LIST_INTEGER16" to "LIST<INTEGER16>",
-                "LIST_INTEGER32" to "LIST<INTEGER32>",
-                "INTEGER64" to "INTEGER",
-                "LIST_INTEGER64" to "LIST<INTEGER>",
-                "LOCAL_DATETIME" to "LOCAL DATETIME",
-                "LIST_LOCAL_DATETIME" to "LIST<LOCAL DATETIME>",
-                "LOCAL_TIME" to "LOCAL TIME",
-                "LIST_LOCAL_TIME" to "LIST<LOCAL TIME>",
-                "LIST_POINT" to "LIST<POINT>",
-                "LIST_STRING" to "LIST<STRING>",
-                "VECTOR_FLOAT" to "VECTOR<FLOAT>",
-                "VECTOR_FLOAT32" to "VECTOR<FLOAT32>",
-                "VECTOR_INTEGER" to "VECTOR<INTEGER>",
-                "VECTOR_INTEGER32" to "VECTOR<INTEGER32>",
-                "VECTOR_INTEGER16" to "VECTOR<INTEGER16>",
-                "VECTOR_INTEGER8" to "VECTOR<INTEGER8>",
-                "ZONED_DATETIME" to "ZONED DATETIME",
-                "LIST_ZONED_DATETIME" to "LIST<ZONED DATETIME>",
-                "ZONED_TIME" to "ZONED TIME",
-                "LIST_ZONED_TIME" to "LIST<ZONED TIME>"
-            )
-        )
+        unions.rename("Neo4jTypeJs") { name ->
+            if (name.startsWith("LIST_")) {
+                "${name.replace("LIST_", "LIST<")}>"
+            } else {
+                name
+            }.replace("_", " ")
+        }
         val input = typescriptFile.readText()
         var result = unions.run(input)
         result = types.run(result)

@@ -20,13 +20,13 @@ class TypeScriptUnions {
     private data class Union(val enum: String, val name: String)
 
     private val unions = mutableSetOf<Union>()
-    private val renames = mutableMapOf<String, Map<String, String>>()
+    private val renames = mutableMapOf<String, (String) -> String>()
 
     /**
      * Rename values in a union
      */
-    fun rename(union: String, map: Map<String, String>) {
-        renames[union] = map
+    fun rename(union: String, block: (String) -> String) {
+        renames[union] = block
     }
 
     /**
@@ -76,9 +76,9 @@ class TypeScriptUnions {
         index += "get name():".length + 1
         val closing = section.indexOf(";", index)
         var strings = section.substring(index, closing)
-        val renames = renames[union.name] ?: emptyMap()
-        for ((key, value) in renames) {
-            strings = strings.replace("\"${key}\"", "\"${value}\"")
+        val rename = renames[union.name]
+        if (rename != null) {
+            strings = strings.split("|").joinToString(separator = " | ") { "\"${rename(it.trim(' ', '"'))}\"" }
         }
         return "export type ${union.name} = $strings"
     }
