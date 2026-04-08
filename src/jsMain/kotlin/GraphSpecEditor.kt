@@ -19,17 +19,13 @@ import js.objects.buildRecord
 import js.objects.toRecord
 import model.GraphModel
 import model.GraphModelJs
-import model.Node
 import model.NodeJs
-import model.RelationshipJs
 import model.associateBy
 import model.graphModelJs
-import model.jso
-import model.mapping.MappingJs
+import model.labelsJs
 import model.mapping.toClass
 import model.mapping.toJs
 import model.nodeJs
-import model.source.TableJs
 import model.source.toClass
 import model.source.toJs
 import model.toClass
@@ -77,7 +73,7 @@ class GraphSpecEditor {
         @JsStatic
         fun addNodeLabelInline(model: GraphModelJs, id: String, label: String) {
             val node = model.nodes[id] ?: return // TODO how to handle missing nodes
-            node.labels += label
+            node.labels.implied += label
         }
 
         @JsStatic
@@ -95,7 +91,11 @@ class GraphSpecEditor {
 
         @JsStatic
         fun addLabel(node: NodeJs, label: String) = nodeJs(
-            labels = node.labels + label,
+            labels = labelsJs(
+                identifier = node.labels.identifier,
+                implied = node.labels.implied + label,
+                optional = node.labels.optional,
+            ),
             properties = node.properties,
             constraints = node.constraints,
             indexes = node.indexes,

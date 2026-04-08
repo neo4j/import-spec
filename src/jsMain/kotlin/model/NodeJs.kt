@@ -31,7 +31,7 @@ import kotlin.collections.component2
 @JsExport
 @JsPlainObject
 external interface NodeJs {
-    var labels: Array<String>
+    var labels: LabelsJs
     val properties: Record<String, PropertyJs>
     val constraints: Record<String, NodeConstraintJs>
     val indexes: Record<String, NodeIndexJs>
@@ -39,7 +39,7 @@ external interface NodeJs {
 }
 
 fun nodeJs(
-    labels: Array<String> = emptyArray(),
+    labels: LabelsJs = labelsJs(),
     properties: Record<String, PropertyJs> = emptyRecord(),
     constraints: Record<String, NodeConstraintJs> = emptyRecord(),
     indexes: Record<String, NodeIndexJs> = emptyRecord(),
@@ -53,7 +53,7 @@ fun nodeJs(
 }
 
 fun Node.toJs() = nodeJs(
-    labels = labels.toTypedArray(),
+    labels = labels.toJs(),
     properties = properties.mapValues { (_, property) -> property.toJs() }.toRecord(),
     constraints = constraints.mapValues { (_, constraint) -> constraint.toJs() }.toRecord(),
     indexes = indexes.mapValues { (_, index) -> index.toJs() }.toRecord(),
@@ -61,7 +61,7 @@ fun Node.toJs() = nodeJs(
 )
 
 fun NodeJs.toClass(id: String): Node = Node(
-    labels = labels.toSet(),
+    labels = labels.toClass(),
     properties = properties.associateBy { key, value -> value.toClass("nodes.$id", key) },
     constraints = constraints.associateBy { _, value -> value.toClass() },
     indexes = indexes.associateBy { _, value -> value.toClass() },

@@ -107,8 +107,13 @@ class DataModelV3GraphSpecMigration : Migration(Version.DATA_MODEL_V30, Version.
             for (label in labels) {
                 convertProperties(label, nodeProperties)
             }
+            val implied = labelTokens.drop(1).toTypedArray()
+            val labelMap = schemaMapOf("identifier" to SchemaLiteral(labelTokens.first()))
+            if (implied.isNotEmpty()) {
+                labelMap["implied"] = schemaListOf(*implied)
+            }
             val node = schemaMapOf(
-                "labels" to schemaListOf(*labelTokens.toTypedArray())
+                "labels" to labelMap
             )
             val labelRef = labelRefs.firstOrNull() // TODO loop all
             if (labelRef != null) {
