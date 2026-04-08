@@ -34,7 +34,6 @@ sealed class GraphSpec(val configuration: GraphSpecConfig, val builder: Format.B
 
     fun encodeToString(model: GraphModel, targetVersion: String = Version.LATEST, pretty: Boolean = true): String {
         val schema = format.encodeToSchema(model)
-        println("Encoded $schema")
         var map = schema as? SchemaMap ?: error("Schema format expected")
         map = path.migrate(map, Type.GRAPH_SPEC, targetVersion)
         if (targetVersion == Version.LATEST && pretty) {
