@@ -24,22 +24,26 @@ import model.jso
 
 @JsExport
 @JsPlainObject
-external interface TargetMappingJs : MappingJs {
+external interface TargetMappingJs {
     val node: String
+    val label: String
     val properties: Record<String, PropertyMappingJs>
 }
 
-fun targetMappingJs(node: String, properties: Record<String, PropertyMappingJs>): TargetMappingJs = jso {
+fun targetMappingJs(node: String, label: String, properties: Record<String, PropertyMappingJs>): TargetMappingJs = jso {
     this.node = node
+    this.label = label
     this.properties = properties
 }
 
 fun TargetMapping.toJs() = targetMappingJs(
     node = node,
+    label = label,
     properties = properties.map { it.key to it.value.toJs() }.toMap().toRecord()
 )
 
 fun TargetMappingJs.toClass() = TargetMapping(
     node = node,
+    label = label,
     properties = properties.associateBy { _, value -> value.toClass() }
 )
