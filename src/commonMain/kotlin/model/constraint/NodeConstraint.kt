@@ -17,11 +17,13 @@
 package model.constraint
 
 import kotlinx.serialization.Contextual
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlin.js.JsExport
 
 @JsExport
 @Serializable
+@SerialName("NodeConstraint")
 data class NodeConstraint(
     val type: String,
     val label: String, // TODO: Optional to avoid id issues with frontend redux?

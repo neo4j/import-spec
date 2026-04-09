@@ -17,6 +17,7 @@
 package model
 
 import kotlinx.serialization.Contextual
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import model.constraint.RelationshipConstraint
 import model.index.RelationshipIndex
@@ -24,6 +25,7 @@ import kotlin.js.JsExport
 
 @JsExport
 @Serializable
+@SerialName("Relationship")
 data class Relationship(
     val type: String,
     val from: String,

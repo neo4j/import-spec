@@ -16,11 +16,13 @@
  */
 package model.source
 
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlin.js.JsExport
 
 @JsExport
 @Serializable
+@SerialName("Table")
 class Table(
     val source: String,
     val fields: Map<String, TableField> = emptyMap(),

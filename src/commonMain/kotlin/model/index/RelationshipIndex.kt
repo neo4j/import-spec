@@ -17,9 +17,11 @@
 package model.index
 
 import kotlinx.serialization.Contextual
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlin.js.JsExport
 
 @JsExport
 @Serializable
+@SerialName("RelationshipIndex")
 data class RelationshipIndex(val type: String, val properties: Set<String>, val options: Map<String, @Contextual Any>)

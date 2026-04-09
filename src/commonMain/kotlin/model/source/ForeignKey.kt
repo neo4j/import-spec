@@ -16,9 +16,11 @@
  */
 package model.source
 
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlin.js.JsExport
 
 @JsExport
 @Serializable
+@SerialName("ForeignKey")
 data class ForeignKey(val fields: Set<String>, val references: ForeignKeyReference)

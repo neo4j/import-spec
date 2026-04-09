@@ -16,12 +16,14 @@
  */
 package model.source
 
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import model.Neo4jType
 import kotlin.js.JsExport
 
 @JsExport
 @Serializable
+@SerialName("TableField")
 data class TableField(
     val type: String = "",
     val size: Int = 0,

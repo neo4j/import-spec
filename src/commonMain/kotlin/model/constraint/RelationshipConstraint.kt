@@ -17,11 +17,13 @@
 package model.constraint
 
 import kotlinx.serialization.Contextual
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlin.js.JsExport
 
 @JsExport
 @Serializable
+@SerialName("RelationshipConstraint")
 data class RelationshipConstraint(
     val type: String,
     val properties: Set<String>,

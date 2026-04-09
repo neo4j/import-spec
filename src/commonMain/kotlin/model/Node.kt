@@ -17,6 +17,7 @@
 package model
 
 import kotlinx.serialization.Contextual
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import model.constraint.NodeConstraint
 import model.index.NodeIndex
@@ -24,6 +25,7 @@ import kotlin.js.JsExport
 
 @JsExport
 @Serializable
+@SerialName("Node")
 data class Node(
     val labels: Labels = Labels(),
     val properties: Map<String, Property> = emptyMap(),

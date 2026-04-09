@@ -22,6 +22,7 @@ import kotlin.js.JsExport
 
 @JsExport
 @Serializable
+@SerialName("Neo4jType")
 enum class Neo4jType {
     ANY,
     BOOLEAN,

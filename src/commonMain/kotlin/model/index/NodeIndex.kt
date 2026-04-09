@@ -17,11 +17,13 @@
 package model.index
 
 import kotlinx.serialization.Contextual
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlin.js.JsExport
 
 @JsExport
 @Serializable
+@SerialName("NodeIndex")
 data class NodeIndex(
     val type: String,
     val labels: Set<String>,
