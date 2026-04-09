@@ -24,5 +24,5 @@ import kotlin.js.JsExport
 data class TargetMapping(
     val node: String = "",
     val label: String = "",
-    val properties: Map<String, PropertyMapping> = emptyMap(),
+    val properties: Map<String, PropertyMapping> = emptyMap()
 )

@@ -18,9 +18,15 @@ package model.source
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import model.extension.ExtensionValue
+import model.extension.Extensions
 import kotlin.js.JsExport
 
 @JsExport
 @Serializable
 @SerialName("ForeignKeyReference")
-data class ForeignKeyReference(val table: String, val fields: Set<String> = emptySet())
+data class ForeignKeyReference(
+    val table: String,
+    val fields: Set<String> = emptySet(),
+    override val extensions: MutableMap<String, ExtensionValue> = mutableMapOf()
+) : Extensions

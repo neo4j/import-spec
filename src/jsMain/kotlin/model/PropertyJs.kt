@@ -16,7 +16,12 @@
  */
 package model
 
+import js.objects.Record
+import js.objects.toRecord
 import kotlinx.js.JsPlainObject
+import model.extension.ExtensionValueJs
+import model.extension.toClass
+import model.extension.toJs
 
 @JsExport
 @JsPlainObject
@@ -24,18 +29,26 @@ external interface PropertyJs {
     val type: String
     val nullable: Boolean
     val unique: Boolean
+    val extensions: Record<String, ExtensionValueJs>
 }
 
-fun propertyJs(type: String, nullable: Boolean = false, unique: Boolean = false): PropertyJs = jso {
+fun propertyJs(
+    type: String,
+    nullable: Boolean = false,
+    unique: Boolean = false,
+    extensions: Record<String, ExtensionValueJs>
+): PropertyJs = jso {
     this.type = type
     this.nullable = nullable
     this.unique = unique
+    this.extensions = extensions
 }
 
 fun Property.toJs() = propertyJs(
     type = type.name,
     nullable = nullable,
-    unique = unique
+    unique = unique,
+    extensions = extensions.mapValues { (_, extension) -> extension.toJs() }.toRecord()
 )
 
 fun PropertyJs.toClass(parent: String, property: String): Property {
@@ -43,5 +56,10 @@ fun PropertyJs.toClass(parent: String, property: String): Property {
     val neo4jType =
         Neo4jType.entries.firstOrNull { it.name == type }
             ?: error("Invalid neo4j type '$type' for $parent.properties.$property")
-    return Property(neo4jType, nullable, unique)
+    return Property(
+        type = neo4jType,
+        nullable = nullable,
+        unique = unique,
+        extensions = extensions.associateBy { _, value -> value.toClass() }.toMutableMap()
+    )
 }

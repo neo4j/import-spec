@@ -14,12 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package model.mapping
+package model.extension
 
 import kotlinx.serialization.DeserializationStrategy
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.InternalSerializationApi
-import kotlinx.serialization.PolymorphicSerializer
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.descriptors.PolymorphicKind
@@ -30,30 +29,34 @@ import kotlinx.serialization.json.JsonContentPolymorphicSerializer
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.jsonObject
 
-object MappingSerializer : JsonContentPolymorphicSerializer<Mapping>(Mapping::class) {
+object ExtensionValueSerializer : JsonContentPolymorphicSerializer<ExtensionValue>(ExtensionValue::class) {
     @OptIn(InternalSerializationApi::class, ExperimentalSerializationApi::class)
-    override val descriptor: SerialDescriptor = buildSerialDescriptor("Mapping", PolymorphicKind.SEALED) {
+    override val descriptor: SerialDescriptor = buildSerialDescriptor("ExtensionValue", PolymorphicKind.SEALED) {
         element("type", String.serializer().descriptor)
 
         element(
             "value",
-            buildClassSerialDescriptor("MappingChoices") {
-                element(MappingType.NODE, NodeMapping.serializer().descriptor)
-                element(MappingType.RELATIONSHIP, RelationshipMapping.serializer().descriptor)
-                element(MappingType.QUERY, QueryMapping.serializer().descriptor)
-                element(MappingType.LABEL, LabelMapping.serializer().descriptor)
+            buildClassSerialDescriptor("ExtensionValues") {
+                element(ExtensionType.STRING, StringValue.serializer().descriptor)
+                element(ExtensionType.BOOLEAN, BooleanValue.serializer().descriptor)
+                element(ExtensionType.LONG, LongValue.serializer().descriptor)
+                element(ExtensionType.DOUBLE, DoubleValue.serializer().descriptor)
+                element(ExtensionType.LIST, ListValue.serializer().descriptor)
+                element(ExtensionType.MAP, MapValue.serializer().descriptor)
             }
         )
     }
 
-    override fun selectDeserializer(element: JsonElement): DeserializationStrategy<Mapping> {
+    override fun selectDeserializer(element: JsonElement): DeserializationStrategy<ExtensionValue> {
         val jsonObject = element.jsonObject
         return when {
-            MappingType.NODE in jsonObject -> NodeMapping.serializer()
-            MappingType.RELATIONSHIP in jsonObject -> RelationshipMapping.serializer()
-            MappingType.QUERY in jsonObject -> QueryMapping.serializer()
-            MappingType.LABEL in jsonObject -> LabelMapping.serializer()
-            else -> throw SerializationException("Unknown Mapping type. Keys: ${jsonObject.keys}")
+            ExtensionType.STRING in jsonObject -> StringValue.serializer()
+            ExtensionType.BOOLEAN in jsonObject -> BooleanValue.serializer()
+            ExtensionType.LONG in jsonObject -> LongValue.serializer()
+            ExtensionType.DOUBLE in jsonObject -> DoubleValue.serializer()
+            ExtensionType.LIST in jsonObject -> ListValue.serializer()
+            ExtensionType.MAP in jsonObject -> MapValue.serializer()
+            else -> throw SerializationException("Unknown Extension type. Keys: ${jsonObject.keys}")
         }
     }
 }

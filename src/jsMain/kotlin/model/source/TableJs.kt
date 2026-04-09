@@ -21,7 +21,11 @@ import js.objects.toRecord
 import kotlinx.js.JsPlainObject
 import model.associateBy
 import model.emptyRecord
+import model.extension.ExtensionValueJs
+import model.extension.toClass
+import model.extension.toJs
 import model.jso
+import kotlin.String
 
 @JsExport
 @JsPlainObject
@@ -30,30 +34,35 @@ external interface TableJs {
     val fields: Record<String, TableFieldJs>
     val primaryKeys: Array<String>
     val foreignKeys: Record<String, ForeignKeyJs>
+    val extensions: Record<String, ExtensionValueJs>
 }
 
 fun tableJs(
     source: String,
     fields: Record<String, TableFieldJs> = emptyRecord(),
     primaryKeys: Array<String> = emptyArray(),
-    foreignKeys: Record<String, ForeignKeyJs> = emptyRecord()
+    foreignKeys: Record<String, ForeignKeyJs> = emptyRecord(),
+    extensions: Record<String, ExtensionValueJs> = emptyRecord()
 ): TableJs = jso {
     this.source = source
     this.fields = fields
     this.primaryKeys = primaryKeys
     this.foreignKeys = foreignKeys
+    this.extensions = extensions
 }
 
 fun Table.toJs() = tableJs(
     source = source,
     fields = fields.mapValues { (_, field) -> field.toJs() }.toRecord(),
     primaryKeys = primaryKeys.toTypedArray(),
-    foreignKeys = foreignKeys.mapValues { (_, key) -> key.toJs() }.toRecord()
+    foreignKeys = foreignKeys.mapValues { (_, key) -> key.toJs() }.toRecord(),
+    extensions = extensions.associateBy { _, value -> value.toJs() }
 )
 
 fun TableJs.toClass() = Table(
     source = source,
     fields = fields.associateBy { _, field -> field.toClass() },
     primaryKeys = primaryKeys.toSet(),
-    foreignKeys = foreignKeys.associateBy { _, fk -> fk.toClass() }
+    foreignKeys = foreignKeys.associateBy { _, fk -> fk.toClass() },
+    extensions = extensions.associateBy { _, value -> value.toClass() }.toMutableMap()
 )

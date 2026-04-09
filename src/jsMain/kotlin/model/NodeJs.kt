@@ -22,6 +22,9 @@ import kotlinx.js.JsPlainObject
 import model.constraint.NodeConstraintJs
 import model.constraint.toClass
 import model.constraint.toJs
+import model.extension.ExtensionValueJs
+import model.extension.toClass
+import model.extension.toJs
 import model.index.NodeIndexJs
 import model.index.toClass
 import model.index.toJs
@@ -35,7 +38,7 @@ external interface NodeJs {
     val properties: Record<String, PropertyJs>
     val constraints: Record<String, NodeConstraintJs>
     val indexes: Record<String, NodeIndexJs>
-    val extensions: Record<String, Any>
+    val extensions: Record<String, ExtensionValueJs>
 }
 
 fun nodeJs(
@@ -43,7 +46,7 @@ fun nodeJs(
     properties: Record<String, PropertyJs> = emptyRecord(),
     constraints: Record<String, NodeConstraintJs> = emptyRecord(),
     indexes: Record<String, NodeIndexJs> = emptyRecord(),
-    extensions: Record<String, Any> = emptyRecord()
+    extensions: Record<String, ExtensionValueJs> = emptyRecord()
 ): NodeJs = jso {
     this.labels = labels
     this.properties = properties
@@ -57,7 +60,7 @@ fun Node.toJs() = nodeJs(
     properties = properties.mapValues { (_, property) -> property.toJs() }.toRecord(),
     constraints = constraints.mapValues { (_, constraint) -> constraint.toJs() }.toRecord(),
     indexes = indexes.mapValues { (_, index) -> index.toJs() }.toRecord(),
-    extensions = extensions.toRecord()
+    extensions = extensions.mapValues { (_, extension) -> extension.toJs() }.toRecord()
 )
 
 fun NodeJs.toClass(id: String): Node = Node(
@@ -65,5 +68,5 @@ fun NodeJs.toClass(id: String): Node = Node(
     properties = properties.associateBy { key, value -> value.toClass("nodes.$id", key) },
     constraints = constraints.associateBy { _, value -> value.toClass() },
     indexes = indexes.associateBy { _, value -> value.toClass() },
-    extensions = extensions.toMap()
+    extensions = extensions.associateBy { _, value -> value.toClass() }.toMutableMap()
 )

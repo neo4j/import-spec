@@ -14,20 +14,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package model.constraint
+package model.extension
 
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
-import model.extension.ExtensionValue
-import model.extension.Extensions
-import kotlin.js.JsExport
-
-@JsExport
-@Serializable
-@SerialName("RelationshipConstraint")
-data class RelationshipConstraint(
-    val type: String,
-    val properties: Set<String>,
-    val options: Map<String, ExtensionValue> = emptyMap(),
-    override val extensions: MutableMap<String, ExtensionValue> = mutableMapOf()
-) : Extensions
+object ExtensionType {
+    const val STRING = "String"
+    const val BOOLEAN = "Boolean"
+    const val LONG = "Long"
+    const val DOUBLE = "Double"
+    const val LIST = "List"
+    const val MAP = "Map"
+}

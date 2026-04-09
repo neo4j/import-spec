@@ -16,10 +16,11 @@
  */
 package model
 
-import kotlinx.serialization.Contextual
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import model.constraint.NodeConstraint
+import model.extension.ExtensionValue
+import model.extension.Extensions
 import model.index.NodeIndex
 import kotlin.js.JsExport
 
@@ -31,5 +32,5 @@ data class Node(
     val properties: Map<String, Property> = emptyMap(),
     val constraints: Map<String, NodeConstraint> = emptyMap(),
     val indexes: Map<String, NodeIndex> = emptyMap(),
-    val extensions: Map<String, @Contextual Any> = emptyMap()
-)
+    override val extensions: MutableMap<String, ExtensionValue> = mutableMapOf()
+) : Extensions

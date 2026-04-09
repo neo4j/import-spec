@@ -19,7 +19,11 @@ package model.constraint
 import js.objects.Record
 import js.objects.toRecord
 import kotlinx.js.JsPlainObject
+import model.associateBy
 import model.emptyRecord
+import model.extension.ExtensionValueJs
+import model.extension.toClass
+import model.extension.toJs
 import model.jso
 import model.toMap
 
@@ -29,31 +33,36 @@ external interface NodeConstraintJs {
     val type: String
     val label: String
     val properties: Array<String>
-    val options: Record<String, Any>
+    val options: Record<String, ExtensionValueJs>
+    val extensions: Record<String, ExtensionValueJs>
 }
 
 fun nodeConstraintJs(
     type: String,
     label: String,
     properties: Array<String> = emptyArray(),
-    options: Record<String, Any> = emptyRecord()
+    options: Record<String, ExtensionValueJs> = emptyRecord(),
+    extensions: Record<String, ExtensionValueJs> = emptyRecord()
 ): NodeConstraintJs = jso {
     this.type = type
     this.label = label
     this.properties = properties
     this.options = options
+    this.extensions = extensions
 }
 
 fun NodeConstraint.toJs() = nodeConstraintJs(
     type = type,
     label = label,
     properties = properties.toTypedArray(),
-    options = options.toRecord()
+    options = options.associateBy { _, value -> value.toJs() },
+    extensions = extensions.associateBy { _, value -> value.toJs() }
 )
 
 fun NodeConstraintJs.toClass() = NodeConstraint(
     type = type,
     label = label,
     properties = properties.toSet(),
-    options = options.toMap()
+    options = options.associateBy { _, value -> value.toClass() },
+    extensions = extensions.associateBy { _, value -> value.toClass() }.toMutableMap()
 )

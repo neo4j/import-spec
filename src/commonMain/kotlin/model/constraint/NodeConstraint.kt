@@ -16,9 +16,10 @@
  */
 package model.constraint
 
-import kotlinx.serialization.Contextual
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import model.extension.ExtensionValue
+import model.extension.Extensions
 import kotlin.js.JsExport
 
 @JsExport
@@ -28,5 +29,6 @@ data class NodeConstraint(
     val type: String,
     val label: String, // TODO: Optional to avoid id issues with frontend redux?
     val properties: Set<String>,
-    val options: Map<String, @Contextual Any> = emptyMap()
-)
+    val options: Map<String, ExtensionValue> = emptyMap(),
+    override val extensions: MutableMap<String, ExtensionValue> = mutableMapOf()
+) : Extensions

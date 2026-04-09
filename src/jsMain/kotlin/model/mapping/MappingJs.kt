@@ -31,7 +31,7 @@ fun Mapping.toJs(): MappingJs = when (this) {
     is RelationshipMapping -> toJs()
 }
 
-fun MappingJs.toClass(): Mapping = when(this.type) {
+fun MappingJs.toClass(): Mapping = when (this.type) {
     MappingType.LABEL -> (this as LabelMappingJs).toClass()
     MappingType.QUERY -> (this as QueryMappingJs).toClass()
     MappingType.NODE -> (this as NodeMappingJs).toClass()

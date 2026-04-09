@@ -44,6 +44,7 @@ kotlin {
             sourceMap = true
             moduleKind = JsModuleKind.MODULE_ES
             freeCompilerArgs.add("-opt-in=kotlin.js.ExperimentalWasmJsInterop")
+            freeCompilerArgs.add("-Xes-long-as-bigint")
         }
         generateTypeScriptDefinitions()
     }

@@ -18,12 +18,19 @@ package model
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import model.extension.ExtensionValue
+import model.extension.Extensions
 import kotlin.js.JsExport
 
 @JsExport
 @Serializable
 @SerialName("Property")
-data class Property(val type: Neo4jType = Neo4jType.ANY, val nullable: Boolean = false, val unique: Boolean = false) {
+data class Property(
+    val type: Neo4jType = Neo4jType.ANY,
+    val nullable: Boolean = false,
+    val unique: Boolean = false,
+    override val extensions: MutableMap<String, ExtensionValue> = mutableMapOf()
+) : Extensions {
     val key: Boolean
         get() = !nullable && unique
 }

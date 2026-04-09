@@ -114,5 +114,5 @@ enum class Neo4jType {
     @SerialName("LIST<ZONED TIME>")
     LIST_ZONED_TIME,
 
-    UUID,
+    UUID
 }

@@ -18,6 +18,8 @@ package model.source
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import model.extension.ExtensionValue
+import model.extension.Extensions
 import kotlin.js.JsExport
 
 @JsExport
@@ -27,5 +29,6 @@ class Table(
     val source: String,
     val fields: Map<String, TableField> = emptyMap(),
     val primaryKeys: Set<String> = emptySet(),
-    val foreignKeys: Map<String, ForeignKey> = emptyMap()
-)
+    val foreignKeys: Map<String, ForeignKey> = emptyMap(),
+    override val extensions: MutableMap<String, ExtensionValue> = mutableMapOf()
+) : Extensions

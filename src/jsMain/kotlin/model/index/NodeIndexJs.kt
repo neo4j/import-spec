@@ -19,7 +19,11 @@ package model.index
 import js.objects.Record
 import js.objects.toRecord
 import kotlinx.js.JsPlainObject
+import model.associateBy
 import model.emptyRecord
+import model.extension.ExtensionValueJs
+import model.extension.toClass
+import model.extension.toJs
 import model.jso
 import model.toMap
 
@@ -29,31 +33,36 @@ external interface NodeIndexJs {
     val type: String
     val labels: Array<String>
     val properties: Array<String>
-    val options: Record<String, Any>
+    val options: Record<String, ExtensionValueJs>
+    val extensions: Record<String, ExtensionValueJs>
 }
 
 fun nodeIndexJs(
     type: String,
     labels: Array<String> = emptyArray(),
     properties: Array<String> = emptyArray(),
-    options: Record<String, Any> = emptyRecord()
+    options: Record<String, ExtensionValueJs> = emptyRecord(),
+    extensions: Record<String, ExtensionValueJs> = emptyRecord()
 ): NodeIndexJs = jso {
     this.type = type
     this.labels = labels
     this.properties = properties
     this.options = options
+    this.extensions = extensions
 }
 
 fun NodeIndex.toJs() = nodeIndexJs(
     type = type,
     labels = labels.toTypedArray(),
     properties = properties.toTypedArray(),
-    options = options.toRecord()
+    options = options.associateBy { _, value -> value.toJs() },
+    extensions = extensions.associateBy { _, value -> value.toJs() }
 )
 
 fun NodeIndexJs.toClass() = NodeIndex(
     type = type,
     labels = labels.toSet(),
     properties = properties.toSet(),
-    options = options.toMap()
+    options = options.associateBy { _, value -> value.toClass() },
+    extensions = extensions.associateBy { _, value -> value.toClass() }.toMutableMap()
 )

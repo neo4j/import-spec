@@ -54,7 +54,7 @@ class GraphSpecEditor {
             nodes = model.nodes.associateBy { id, js -> js.toClass(id) },
             relationships = model.relationships.associateBy { id, js -> js.toClass(id) },
             tables = model.tables.associateBy { _, js -> js.toClass() },
-            mappings = model.mappings.map { it.toClass() },
+            mappings = model.mappings.map { it.toClass() }
         )
 
         @JsStatic
@@ -94,7 +94,7 @@ class GraphSpecEditor {
             labels = labelsJs(
                 identifier = node.labels.identifier,
                 implied = node.labels.implied + label,
-                optional = node.labels.optional,
+                optional = node.labels.optional
             ),
             properties = node.properties,
             constraints = node.constraints,

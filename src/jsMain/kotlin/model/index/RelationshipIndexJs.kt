@@ -19,7 +19,11 @@ package model.index
 import js.objects.Record
 import js.objects.toRecord
 import kotlinx.js.JsPlainObject
+import model.associateBy
 import model.emptyRecord
+import model.extension.ExtensionValueJs
+import model.extension.toClass
+import model.extension.toJs
 import model.jso
 import model.toMap
 
@@ -28,27 +32,32 @@ import model.toMap
 external interface RelationshipIndexJs {
     val type: String
     val properties: Array<String>
-    val options: Record<String, Any>
+    val options: Record<String, ExtensionValueJs>
+    val extensions: Record<String, ExtensionValueJs>
 }
 
 fun relationshipIndexJs(
     type: String,
     properties: Array<String>,
-    options: Record<String, Any> = emptyRecord()
+    options: Record<String, ExtensionValueJs> = emptyRecord(),
+    extensions: Record<String, ExtensionValueJs> = emptyRecord()
 ): RelationshipIndexJs = jso {
     this.type = type
     this.properties = properties
     this.options = options
+    this.extensions = extensions
 }
 
 fun RelationshipIndex.toJs() = relationshipIndexJs(
     type = type,
     properties = properties.toTypedArray(),
-    options = options.toRecord()
+    options = options.associateBy { _, value -> value.toJs() },
+    extensions = extensions.associateBy { _, value -> value.toJs() }
 )
 
 fun RelationshipIndexJs.toClass() = RelationshipIndex(
     type = type,
     properties = properties.toSet(),
-    options = options.toMap()
+    options = options.associateBy { _, value -> value.toClass() },
+    extensions = extensions.associateBy { _, value -> value.toClass() }.toMutableMap()
 )

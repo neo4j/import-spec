@@ -14,20 +14,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package model.constraint
+package model.extension
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import model.extension.ExtensionValue
-import model.extension.Extensions
 import kotlin.js.JsExport
 
 @JsExport
-@Serializable
-@SerialName("RelationshipConstraint")
-data class RelationshipConstraint(
-    val type: String,
-    val properties: Set<String>,
-    val options: Map<String, ExtensionValue> = emptyMap(),
-    override val extensions: MutableMap<String, ExtensionValue> = mutableMapOf()
-) : Extensions
+@Serializable(with = ExtensionValueSerializer::class)
+@SerialName("ExtensionValue")
+sealed class ExtensionValue {
+    val asString: String?
+        get() = (this as? StringValue)?.value
+
+    val asBoolean: Boolean?
+        get() = (this as? BooleanValue)?.value
+
+    val asLong: Long?
+        get() = (this as? LongValue)?.value
+
+    val asDouble: Double?
+        get() = (this as? DoubleValue)?.value
+
+    val asList: List<ExtensionValue>?
+        get() = (this as? ListValue)?.value
+
+    val asMap: Map<String, ExtensionValue>?
+        get() = (this as? MapValue)?.value
+}

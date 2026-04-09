@@ -16,8 +16,14 @@
  */
 package model.source
 
+import js.objects.Record
 import kotlinx.js.JsPlainObject
 import model.Neo4jType
+import model.associateBy
+import model.emptyRecord
+import model.extension.ExtensionValueJs
+import model.extension.toClass
+import model.extension.toJs
 import model.jso
 import model.mapping.PropertyMapping
 import kotlin.String
@@ -27,19 +33,27 @@ import kotlin.String
 external interface ForeignKeyReferenceJs {
     val table: String
     val fields: Array<String>
+    val extensions: Record<String, ExtensionValueJs>
 }
 
-fun foreignKeyReferenceJs(table: String, fields: Array<String>): ForeignKeyReferenceJs = jso {
+fun foreignKeyReferenceJs(
+    table: String,
+    fields: Array<String>,
+    extensions: Record<String, ExtensionValueJs> = emptyRecord()
+): ForeignKeyReferenceJs = jso {
     this.table = table
     this.fields = fields
+    this.extensions = extensions
 }
 
 fun ForeignKeyReference.toJs() = foreignKeyReferenceJs(
     table = table,
-    fields = fields.toTypedArray()
+    fields = fields.toTypedArray(),
+    extensions = extensions.associateBy { _, value -> value.toJs() }
 )
 
 fun ForeignKeyReferenceJs.toClass() = ForeignKeyReference(
     table = table,
-    fields = fields.toSet()
+    fields = fields.toSet(),
+    extensions = extensions.associateBy { _, value -> value.toClass() }.toMutableMap()
 )

@@ -16,9 +16,10 @@
  */
 package model.index
 
-import kotlinx.serialization.Contextual
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import model.extension.ExtensionValue
+import model.extension.Extensions
 import kotlin.js.JsExport
 
 @JsExport
@@ -28,5 +29,6 @@ data class NodeIndex(
     val type: String,
     val labels: Set<String>,
     val properties: Set<String>,
-    val options: Map<String, @Contextual Any> = emptyMap()
-)
+    val options: Map<String, ExtensionValue> = emptyMap(),
+    override val extensions: MutableMap<String, ExtensionValue> = mutableMapOf()
+) : Extensions

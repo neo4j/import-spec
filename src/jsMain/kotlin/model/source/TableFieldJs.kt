@@ -16,8 +16,14 @@
  */
 package model.source
 
+import js.objects.Record
 import kotlinx.js.JsPlainObject
 import model.Neo4jType
+import model.associateBy
+import model.emptyRecord
+import model.extension.ExtensionValueJs
+import model.extension.toClass
+import model.extension.toJs
 import model.jso
 import model.mapping.PropertyMapping
 import kotlin.String
@@ -29,30 +35,35 @@ external interface TableFieldJs {
     val size: Int
     val suggested: String
     val supported: Array<String>
+    val extensions: Record<String, ExtensionValueJs>
 }
 
 fun tableFieldJs(
     type: String,
     size: Int = -1,
     suggested: String = "any",
-    supported: Array<String> = emptyArray()
+    supported: Array<String> = emptyArray(),
+    extensions: Record<String, ExtensionValueJs> = emptyRecord()
 ): TableFieldJs = jso {
     this.type = type
     this.size = size
     this.suggested = suggested
     this.supported = supported
+    this.extensions = extensions
 }
 
 fun TableField.toJs() = tableFieldJs(
     type = type,
     size = size,
     suggested = suggested.name,
-    supported = supported.map { it.name }.toTypedArray()
+    supported = supported.map { it.name }.toTypedArray(),
+    extensions = extensions.associateBy { _, value -> value.toJs() }
 )
 
 fun TableFieldJs.toClass() = TableField(
     type = type,
     size = size,
     suggested = suggested.let { Neo4jType.valueOf(it) },
-    supported = supported.map { Neo4jType.valueOf(it) }.toSet()
+    supported = supported.map { Neo4jType.valueOf(it) }.toSet(),
+    extensions = extensions.associateBy { _, value -> value.toClass() }.toMutableMap()
 )
