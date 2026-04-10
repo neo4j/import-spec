@@ -32,10 +32,10 @@ sealed class GraphSpec(val configuration: GraphSpecConfig, val builder: Format.B
     private val path = MigrationPath(configuration.migrations)
     private val format = builder.build()
 
-    fun encodeToString(model: GraphModel, targetVersion: String = Version.LATEST, pretty: Boolean = true): String {
+    fun encodeToString(model: GraphModel, targetVersion: String = Version.LATEST, type: String = Type.GRAPH_SPEC, pretty: Boolean = true): String {
         val schema = format.encodeToSchema(model)
         var map = schema as? SchemaMap ?: error("Schema format expected")
-        map = path.migrate(map, Type.GRAPH_SPEC, targetVersion)
+        map = path.migrate(map, type, targetVersion)
         if (targetVersion == Version.LATEST && pretty) {
             map = Prettify.transform(map)
         }

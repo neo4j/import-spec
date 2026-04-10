@@ -43,6 +43,7 @@ class MigrationPath(val migrations: Map<String, List<Migration>>) {
         }
         return "$type:$semver"
     }
+
     private fun version(schema: SchemaMap, type: String): String {
         val version = schema.stringOrNull("version") ?: error("Version must be specified")
         return version(version, type)

@@ -33,8 +33,8 @@ import model.toJs
 import model.toMap
 
 /**
- * React stores state in Redux with plain JavaScript objects
- * We need a duplicate of these as they are defined separately and in a mutable way.
+ * We have duplicate model built on external interfaces with conversion to and from classes in order
+ * to support plain JavaScript objects which are used in React's Redux state storage.
  */
 @JsExport
 class GraphSpecEditor {
