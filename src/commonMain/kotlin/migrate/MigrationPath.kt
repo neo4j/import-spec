@@ -21,10 +21,10 @@ import model.Type
 
 class MigrationPath(val migrations: Map<String, List<Migration>>) {
 
-    fun migrate(schema: SchemaMap, type: String, targetVersion: String): SchemaMap {
+    fun migrate(schema: SchemaMap, type: String, targetVersion: String, targetType: String): SchemaMap {
         val from = version(schema, type)
-        val to = version(targetVersion, Type.GRAPH_SPEC)
-        val path = findPath(from, to) ?: error("Unsupported ${type}version: $from")
+        val to = version(targetVersion, targetType)
+        val path = findPath(from, to) ?: error("Unsupported $type version: $from")
         var map = schema
         for (migration in path) {
             map = migration.migrate(map)
@@ -34,12 +34,9 @@ class MigrationPath(val migrations: Map<String, List<Migration>>) {
     }
 
     private fun version(version: String, type: String): String {
-        var semver = version.substringBefore("-")
+        var semver = version.substringBefore('-').substringBefore('+')
         if (semver.count { it == '.' } > 1) {
-            semver = semver.substringBeforeLast(".") // 3.0, 2.4 etc..
-        }
-        if (type == Type.GRAPH_SPEC) {
-            return semver
+            semver = "${semver.substringBeforeLast('.')}.0" // 3.0, 2.4 etc..
         }
         return "$type:$semver"
     }
@@ -64,27 +61,30 @@ class MigrationPath(val migrations: Map<String, List<Migration>>) {
         while (!stack.isEmpty()) {
             val version = stack.removeFirst()
             for (migration in migrations[version] ?: continue) {
-                if (visited.contains(migration.to)) {
+                if (visited.contains(migration.toKey)) {
                     continue
                 }
-                visited.add(migration.to)
-                frontier[migration.to] = migration
-                if (migration.to == to) {
+                visited.add(migration.toKey)
+                frontier[migration.toKey] = migration
+                if (migration.toKey == to) {
                     return path(from, to, frontier)
                 }
-                stack.add(migration.to)
+                stack.add(migration.toKey)
             }
         }
         return null
     }
 
+    /**
+     * Backtrace the path
+     */
     private fun path(start: String, end: String, frontier: MutableMap<String, Migration>): List<Migration>? {
         val reversed = mutableListOf<Migration>()
         var cur = end
         while (cur != start) {
             val m = frontier[cur] ?: return null
             reversed.add(0, m)
-            cur = m.from
+            cur = m.fromKey
         }
         return reversed
     }

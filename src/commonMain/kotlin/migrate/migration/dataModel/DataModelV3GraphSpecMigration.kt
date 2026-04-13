@@ -25,11 +25,13 @@ import codec.schema.schemaListOf
 import codec.schema.schemaMapOf
 import migrate.Migration
 import migrate.migration.dataModel.DataModelV2V3Migration.Companion.unwrap
+import model.Type
 import model.Version
 import model.constraint.ConstraintType
 import model.index.IndexType
 
-class DataModelV3GraphSpecMigration : Migration(Version.DATA_MODEL_V30, Version.LATEST) {
+class DataModelV3GraphSpecMigration :
+    Migration(Type.DATA_MODEL, Version.DATA_MODEL_V30, Type.GRAPH_SPEC, Version.LATEST) {
 
     override fun migrate(schema: SchemaMap): SchemaMap {
         val schema = unwrap(schema)

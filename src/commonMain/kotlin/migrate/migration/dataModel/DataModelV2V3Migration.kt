@@ -19,12 +19,14 @@ package migrate.migration.dataModel
 import codec.schema.SchemaMap
 import codec.schema.schemaMapOf
 import migrate.Migration
+import model.Type
 import model.Version
 
 /**
  * 2.0 -> 3.0 adds support for multiple keys properties
  */
-class DataModelV2V3Migration(version: String) : Migration(version, Version.DATA_MODEL_V30) {
+class DataModelV2V3Migration(version: String) :
+    Migration(Type.DATA_MODEL, version, Type.DATA_MODEL, Version.DATA_MODEL_V30) {
     override fun migrate(schema: SchemaMap): SchemaMap {
         val schema = unwrap(schema)
         // Replace singular keyProperty with a list keyProperties

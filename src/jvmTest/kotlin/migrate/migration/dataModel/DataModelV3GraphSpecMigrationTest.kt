@@ -5,10 +5,13 @@ import codec.format.JsonFormat
 import codec.format.YamlFormat
 import codec.schema.SchemaMap
 import codec.format.Prettify
+import kotlinx.schema.generator.json.JsonSchemaConfig
 import kotlinx.schema.generator.json.serialization.SerializationClassJsonSchemaGenerator
 import kotlinx.schema.json.encodeToString
 import kotlinx.serialization.json.Json
 import model.GraphModel
+import model.Type
+import net.mamoe.yamlkt.Yaml
 import org.junit.jupiter.api.Disabled
 import resourceAsString
 import java.io.File
@@ -28,12 +31,23 @@ class DataModelV3GraphSpecMigrationTest {
         output = Prettify.transform(output)
 
         val yaml = JsonFormat.build()
-        println(yaml.encodeToString(output))
+        val element = Json.parseToJsonElement(input)
+        println(element)
+        println(YamlFormat.build().encodeToString(output))
     }
 
     @Test
     fun `Generate schema`() {
-        val generator = SerializationClassJsonSchemaGenerator.Default
+        val config = JsonSchemaConfig(
+            includeOpenAPIPolymorphicDiscriminator = true,
+//            definitionsNamingStrategy = DefinitionsNamingStrategy { descriptor ->
+//                 This takes "com.company.model.Node" and returns "Node"
+//                descriptor.serialName.substringAfterLast('.')
+//            }
+        )
+
+        // Initialize the generator with the config instead of using .Default
+        val generator = SerializationClassJsonSchemaGenerator(jsonSchemaConfig = JsonSchemaConfig.OpenAPI)
         val schema = generator.generateSchema(GraphModel.serializer().descriptor)
         println(schema.encodeToString(Json { prettyPrint = true }))
     }

@@ -20,6 +20,10 @@ import codec.schema.SchemaMap
 import kotlin.js.JsExport
 
 @JsExport
-abstract class Migration(val from: String, val to: String) {
+abstract class Migration(val fromType: String, val from: String, val toType: String, val to: String) {
+    val fromKey: String
+        get() = "$fromType:$from"
+    val toKey: String
+        get() = "$toType:$to"
     abstract fun migrate(schema: SchemaMap): SchemaMap
 }

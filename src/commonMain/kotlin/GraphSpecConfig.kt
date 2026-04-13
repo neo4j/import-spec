@@ -36,7 +36,7 @@ class GraphSpecConfig(val validators: List<Validation>, val migrations: Map<Stri
         }
 
         fun migrate(migration: Migration) {
-            migrations.getOrPut(migration.from) { mutableListOf() }.add(migration)
+            migrations.getOrPut(migration.fromKey) { mutableListOf() }.add(migration)
         }
 
         fun build(): GraphSpecConfig = GraphSpecConfig(validators = validators, migrations = migrations)
