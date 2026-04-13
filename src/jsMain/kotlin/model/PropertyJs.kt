@@ -36,7 +36,7 @@ fun propertyJs(
     type: String,
     nullable: Boolean = false,
     unique: Boolean = false,
-    extensions: Record<String, ExtensionValueJs>
+    extensions: Record<String, ExtensionValueJs> = emptyRecord()
 ): PropertyJs = jso {
     this.type = type
     this.nullable = nullable

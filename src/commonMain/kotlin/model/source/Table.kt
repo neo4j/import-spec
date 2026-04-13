@@ -25,7 +25,7 @@ import kotlin.js.JsExport
 @JsExport
 @Serializable
 @SerialName("Table")
-class Table(
+data class Table(
     val source: String,
     val fields: Map<String, TableField> = emptyMap(),
     val primaryKeys: Set<String> = emptySet(),

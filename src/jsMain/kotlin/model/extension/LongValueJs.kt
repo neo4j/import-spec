@@ -27,7 +27,7 @@ external interface LongValueJs : ExtensionValueJs {
 }
 
 fun longValueJs(value: Long): LongValueJs = jso {
-    this.type = ExtensionType.BOOLEAN
+    this.type = ExtensionType.LONG
     this.value = value
 }
 

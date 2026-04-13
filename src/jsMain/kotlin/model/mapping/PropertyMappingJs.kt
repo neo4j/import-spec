@@ -21,7 +21,7 @@ import model.jso
 
 @JsExport
 @JsPlainObject
-external interface PropertyMappingJs : MappingJs {
+external interface PropertyMappingJs {
     val field: String
 }
 

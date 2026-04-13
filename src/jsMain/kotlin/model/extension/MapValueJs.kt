@@ -29,7 +29,7 @@ external interface MapValueJs : ExtensionValueJs {
 }
 
 fun mapValueJs(value: Record<String, ExtensionValueJs>): MapValueJs = jso {
-    this.type = ExtensionType.DOUBLE
+    this.type = ExtensionType.MAP
     this.value = value
 }
 

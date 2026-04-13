@@ -41,7 +41,7 @@ external interface TableFieldJs {
 fun tableFieldJs(
     type: String,
     size: Int = -1,
-    suggested: String = "any",
+    suggested: String = "ANY",
     supported: Array<String> = emptyArray(),
     extensions: Record<String, ExtensionValueJs> = emptyRecord()
 ): TableFieldJs = jso {

@@ -27,7 +27,7 @@ external interface ListValueJs : ExtensionValueJs {
 }
 
 fun listValueJs(value: Array<ExtensionValueJs>): ListValueJs = jso {
-    this.type = ExtensionType.DOUBLE
+    this.type = ExtensionType.LIST
     this.value = value
 }
 

@@ -53,9 +53,9 @@ fun tableJs(
 
 fun Table.toJs() = tableJs(
     source = source,
-    fields = fields.mapValues { (_, field) -> field.toJs() }.toRecord(),
+    fields = fields.associateBy { _, field -> field.toJs() },
     primaryKeys = primaryKeys.toTypedArray(),
-    foreignKeys = foreignKeys.mapValues { (_, key) -> key.toJs() }.toRecord(),
+    foreignKeys = foreignKeys.associateBy { _, key -> key.toJs() },
     extensions = extensions.associateBy { _, value -> value.toJs() }
 )
 

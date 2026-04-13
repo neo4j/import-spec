@@ -34,7 +34,7 @@ external interface RelationshipConstraintJs {
     val extensions: Record<String, ExtensionValueJs>
 }
 
-fun relationshipConstraint(
+fun relationshipConstraintJs(
     type: String,
     properties: Array<String> = emptyArray(),
     options: Record<String, ExtensionValueJs> = emptyRecord(),
@@ -46,7 +46,7 @@ fun relationshipConstraint(
     this.extensions = extensions
 }
 
-fun RelationshipConstraint.toJs() = relationshipConstraint(
+fun RelationshipConstraint.toJs() = relationshipConstraintJs(
     type = type,
     properties = properties.toTypedArray(),
     options = options.associateBy { _, value -> value.toJs() },

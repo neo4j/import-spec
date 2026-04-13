@@ -38,7 +38,7 @@ external interface ForeignKeyReferenceJs {
 
 fun foreignKeyReferenceJs(
     table: String,
-    fields: Array<String>,
+    fields: Array<String> = emptyArray(),
     extensions: Record<String, ExtensionValueJs> = emptyRecord()
 ): ForeignKeyReferenceJs = jso {
     this.table = table
