@@ -27,7 +27,7 @@ object RelationshipNodes : RelationshipValidation {
         relationship: Relationship,
         issues: MutableList<Issue>
     ) {
-        if (model.nodes.containsKey(relationship.from)) {
+        if (relationship.from.node.isNotBlank() && model.nodes.containsKey(relationship.from.node)) {
             issues.add(
                 Issue(
                     code = "missing_relation_from_node",
@@ -36,7 +36,7 @@ object RelationshipNodes : RelationshipValidation {
                 )
             )
         }
-        if (model.nodes.containsKey(relationship.to)) {
+        if (relationship.to.node.isNotBlank() && model.nodes.containsKey(relationship.to.node)) {
             issues.add(
                 Issue(
                     code = "missing_relation_to_node",

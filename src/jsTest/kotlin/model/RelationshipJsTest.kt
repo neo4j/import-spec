@@ -12,8 +12,8 @@ class RelationshipJsTest : JsMappingTest<Relationship, RelationshipJs>() {
 
     override fun createClass() = Relationship(
         type = "RELATIONSHIP_TYPE",
-        from = "from_node",
-        to = "to_node",
+        from = RelationshipTarget("from_node"),
+        to = RelationshipTarget("to_node"),
         properties = mapOf("prop" to Property(Neo4jType.STRING)),
         constraints = mapOf("constraint" to RelationshipConstraint("type", setOf("prop"))),
         indexes = mapOf("index" to RelationshipIndex("type", setOf("prop"))),
@@ -26,8 +26,8 @@ class RelationshipJsTest : JsMappingTest<Relationship, RelationshipJs>() {
 
     override fun verifyJsObject(jsObject: RelationshipJs) {
         assertEquals("RELATIONSHIP_TYPE", jsObject.type)
-        assertEquals("from_node", jsObject.from)
-        assertEquals("to_node", jsObject.to)
+        assertEquals("from_node", jsObject.from.node)
+        assertEquals("to_node", jsObject.to.node)
         assertJsEquals(propertyJs("STRING"), jsObject.properties["prop"])
         assertJsEquals(relationshipConstraintJs("type", arrayOf("prop")), jsObject.constraints["constraint"])
         assertJsEquals(relationshipIndexJs("type", arrayOf("prop")), jsObject.indexes["index"])

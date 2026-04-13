@@ -33,8 +33,8 @@ import model.index.toJs
 @JsPlainObject
 external interface RelationshipJs {
     val type: String
-    val from: String
-    val to: String
+    val from: RelationshipTargetJs
+    val to: RelationshipTargetJs
     val properties: Record<String, PropertyJs>
     val constraints: Record<String, RelationshipConstraintJs>
     val indexes: Record<String, RelationshipIndexJs>
@@ -43,8 +43,8 @@ external interface RelationshipJs {
 
 fun relationshipJs(
     type: String,
-    from: String,
-    to: String,
+    from: RelationshipTargetJs,
+    to: RelationshipTargetJs,
     properties: Record<String, PropertyJs> = emptyRecord(),
     constraints: Record<String, RelationshipConstraintJs> = emptyRecord(),
     indexes: Record<String, RelationshipIndexJs> = emptyRecord(),
@@ -61,8 +61,8 @@ fun relationshipJs(
 
 fun Relationship.toJs() = relationshipJs(
     type = type,
-    from = from,
-    to = to,
+    from = from.toJs(),
+    to = to.toJs(),
     properties = properties.mapValues { (_, property) -> property.toJs() }.toRecord(),
     constraints = constraints.mapValues { (_, constraint) -> constraint.toJs() }.toRecord(),
     indexes = indexes.mapValues { (_, index) -> index.toJs() }.toRecord(),
@@ -71,8 +71,8 @@ fun Relationship.toJs() = relationshipJs(
 
 fun RelationshipJs.toClass(id: String) = Relationship(
     type = type,
-    from = from,
-    to = to,
+    from = from.toClass(),
+    to = to.toClass(),
     properties = properties.toMap().mapValues { (name, property) -> property.toClass("relationships.$id", name) },
     constraints = constraints.toMap().mapValues { (_, constraint) -> constraint.toClass() },
     indexes = indexes.toMap().mapValues { (_, index) -> index.toClass() },

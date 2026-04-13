@@ -18,21 +18,14 @@ package model
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import model.constraint.RelationshipConstraint
-import model.extension.ExtensionValue
-import model.extension.Extensions
-import model.index.RelationshipIndex
 import kotlin.js.JsExport
 
 @JsExport
 @Serializable
-@SerialName("Relationship")
-data class Relationship(
-    val type: String,
-    val from: RelationshipTarget,
-    val to: RelationshipTarget,
-    val properties: Map<String, Property> = emptyMap(),
-    val constraints: Map<String, RelationshipConstraint> = emptyMap(),
-    val indexes: Map<String, RelationshipIndex> = emptyMap(),
-    override val extensions: MutableMap<String, ExtensionValue> = mutableMapOf()
-) : Extensions
+@SerialName("RelationshipTarget")
+data class RelationshipTarget(
+    val node: String = "",
+    val label: String = "",
+    val property: String = ""
+    // TODO: Not sure if property is necessary or not
+)
