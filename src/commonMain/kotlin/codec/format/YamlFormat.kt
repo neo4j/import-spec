@@ -60,7 +60,7 @@ class YamlFormat(private val yaml: Yaml, private val json: JsonFormat) : Format 
                     }
                     .toMap()
                     .toMutableMap()
-            SchemaMap(content)
+            SchemaMap(content, parent)
         }
         is YamlLiteral -> SchemaLiteral(yaml.content, parent)
         YamlNull -> SchemaNull

@@ -24,4 +24,15 @@ data class SchemaLiteral(override val string: String, override val path: String 
         get() = true
 
     override fun toString(): String = string
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other == null || this::class != other::class) return false
+
+        other as SchemaLiteral
+
+        return string == other.string
+    }
+
+    override fun hashCode(): Int = string.hashCode()
 }

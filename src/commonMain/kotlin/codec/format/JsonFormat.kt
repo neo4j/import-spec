@@ -30,14 +30,7 @@ import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.contentOrNull
 import kotlinx.serialization.json.decodeFromJsonElement
 import kotlinx.serialization.json.encodeToJsonElement
-import kotlinx.serialization.modules.SerializersModule
-import kotlinx.serialization.modules.polymorphic
-import kotlinx.serialization.modules.subclass
 import model.GraphModel
-import model.mapping.Mapping
-import model.mapping.NodeMapping
-import model.mapping.QueryMapping
-import model.mapping.RelationshipMapping
 
 class JsonFormat(private val json: Json) : Format {
     override fun encodeToString(element: SchemaElement) = json.encodeToString(element.toJson())
