@@ -32,5 +32,6 @@ data class Node(
     val properties: Map<String, Property> = emptyMap(),
     val constraints: Map<String, NodeConstraint> = emptyMap(),
     val indexes: Map<String, NodeIndex> = emptyMap(),
-    override val extensions: MutableMap<String, ExtensionValue> = mutableMapOf()
+    override val extensions: MutableMap<String, ExtensionValue> = mutableMapOf(),
+    val name: String? = null
 ) : Extensions

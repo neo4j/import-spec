@@ -42,8 +42,8 @@ class GraphSpecEditor {
         @JsStatic
         fun plain(model: GraphModel): GraphModelJs = graphModelJs(
             version = model.version,
-            nodes = model.nodes.mapValues { (_, node) -> node.toJs() }.toRecord(),
-            relationships = model.relationships.mapValues { (_, relationship) -> relationship.toJs() }.toRecord(),
+            nodes = model.nodes.mapValues { (key, node) -> node.toJs(key) }.toRecord(),
+            relationships = model.relationships.mapValues { (id, relationship) -> relationship.toJs(id) }.toRecord(),
             tables = model.tables.mapValues { (_, table) -> table.toJs() }.toRecord(),
             mappings = model.mappings.map { mapping -> mapping.toJs() }.toTypedArray()
         )
@@ -62,12 +62,13 @@ class GraphSpecEditor {
             for ((key, value) in nodes.toMap()) {
                 set(key, value) // TODO does it need to be a deep copy? - Yes
             }
-            set(id, nodeJs())
+            set(id, nodeJs(id = id, name = id))
         }
 
         @JsStatic
         fun addNodeInline(model: GraphModelJs, id: String) {
-            model.nodes[id] = nodeJs()
+            // TODO use id given or generate id separate from name?
+            model.nodes[id] = nodeJs(id = id, name = id)
         }
 
         @JsStatic
@@ -79,7 +80,6 @@ class GraphSpecEditor {
         @JsStatic
         fun addNodeLabel(model: GraphModelJs, id: String, label: String): GraphModelJs {
             val copy = model.nodes.toMap().toMutableMap()
-            copy[id] = addLabel(model.nodes[id] ?: return model, label)
             return graphModelJs(
                 version = model.version,
                 nodes = copy.toRecord(),
@@ -88,18 +88,5 @@ class GraphSpecEditor {
                 mappings = model.mappings
             )
         }
-
-        @JsStatic
-        fun addLabel(node: NodeJs, label: String) = nodeJs(
-            labels = labelsJs(
-                identifier = node.labels.identifier,
-                implied = node.labels.implied + label,
-                optional = node.labels.optional
-            ),
-            properties = node.properties,
-            constraints = node.constraints,
-            indexes = node.indexes,
-            extensions = node.extensions
-        )
     }
 }

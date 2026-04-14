@@ -39,6 +39,8 @@ external interface RelationshipJs {
     val constraints: Record<String, RelationshipConstraintJs>
     val indexes: Record<String, RelationshipIndexJs>
     val extensions: Record<String, ExtensionValueJs>
+    var name: String
+    val id: String
 }
 
 fun relationshipJs(
@@ -48,7 +50,9 @@ fun relationshipJs(
     properties: Record<String, PropertyJs> = emptyRecord(),
     constraints: Record<String, RelationshipConstraintJs> = emptyRecord(),
     indexes: Record<String, RelationshipIndexJs> = emptyRecord(),
-    extensions: Record<String, ExtensionValueJs> = emptyRecord()
+    extensions: Record<String, ExtensionValueJs> = emptyRecord(),
+    name: String,
+    id: String
 ): RelationshipJs = jso {
     this.type = type
     this.from = from
@@ -57,16 +61,20 @@ fun relationshipJs(
     this.constraints = constraints
     this.indexes = indexes
     this.extensions = extensions
+    this.name = name
+    this.id = id
 }
 
-fun Relationship.toJs() = relationshipJs(
+fun Relationship.toJs(id: String) = relationshipJs(
     type = type,
     from = from.toJs(),
     to = to.toJs(),
-    properties = properties.mapValues { (_, property) -> property.toJs() }.toRecord(),
+    properties = properties.mapValues { (key, property) -> property.toJs(key) }.toRecord(),
     constraints = constraints.mapValues { (_, constraint) -> constraint.toJs() }.toRecord(),
     indexes = indexes.mapValues { (_, index) -> index.toJs() }.toRecord(),
-    extensions = extensions.mapValues { (_, extension) -> extension.toJs() }.toRecord()
+    extensions = extensions.mapValues { (_, extension) -> extension.toJs() }.toRecord(),
+    name = name ?: id,
+    id = id
 )
 
 fun RelationshipJs.toClass(id: String) = Relationship(
@@ -76,5 +84,6 @@ fun RelationshipJs.toClass(id: String) = Relationship(
     properties = properties.toMap().mapValues { (name, property) -> property.toClass("relationships.$id", name) },
     constraints = constraints.toMap().mapValues { (_, constraint) -> constraint.toClass() },
     indexes = indexes.toMap().mapValues { (_, index) -> index.toClass() },
-    extensions = extensions.toMap().mapValues { (_, value) -> value.toClass() }.toMutableMap()
+    extensions = extensions.toMap().mapValues { (_, value) -> value.toClass() }.toMutableMap(),
+    name = name
 )

@@ -30,25 +30,33 @@ external interface PropertyJs {
     val nullable: Boolean
     val unique: Boolean
     val extensions: Record<String, ExtensionValueJs>
+    val name: String
+    val id: String
 }
 
 fun propertyJs(
     type: String,
     nullable: Boolean = false,
     unique: Boolean = false,
-    extensions: Record<String, ExtensionValueJs> = emptyRecord()
+    extensions: Record<String, ExtensionValueJs> = emptyRecord(),
+    name: String,
+    id: String
 ): PropertyJs = jso {
     this.type = type
     this.nullable = nullable
     this.unique = unique
     this.extensions = extensions
+    this.name = name
+    this.id = id
 }
 
-fun Property.toJs() = propertyJs(
+fun Property.toJs(key: String) = propertyJs(
     type = type.name,
     nullable = nullable,
     unique = unique,
-    extensions = extensions.mapValues { (_, extension) -> extension.toJs() }.toRecord()
+    extensions = extensions.mapValues { (_, extension) -> extension.toJs() }.toRecord(),
+    name = name ?: key,
+    id = key
 )
 
 fun PropertyJs.toClass(parent: String, property: String): Property {
@@ -60,6 +68,7 @@ fun PropertyJs.toClass(parent: String, property: String): Property {
         type = neo4jType,
         nullable = nullable,
         unique = unique,
-        extensions = extensions.associateBy { _, value -> value.toClass() }.toMutableMap()
+        extensions = extensions.associateBy { _, value -> value.toClass() }.toMutableMap(),
+        name = name
     )
 }

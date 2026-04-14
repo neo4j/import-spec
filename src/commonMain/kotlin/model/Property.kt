@@ -29,7 +29,8 @@ data class Property(
     val type: Neo4jType = Neo4jType.ANY,
     val nullable: Boolean = false,
     val unique: Boolean = false,
-    override val extensions: MutableMap<String, ExtensionValue> = mutableMapOf()
+    override val extensions: MutableMap<String, ExtensionValue> = mutableMapOf(),
+    val name: String? = null
 ) : Extensions {
     val key: Boolean
         get() = !nullable && unique

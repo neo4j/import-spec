@@ -34,5 +34,6 @@ data class Relationship(
     val properties: Map<String, Property> = emptyMap(),
     val constraints: Map<String, RelationshipConstraint> = emptyMap(),
     val indexes: Map<String, RelationshipIndex> = emptyMap(),
-    override val extensions: MutableMap<String, ExtensionValue> = mutableMapOf()
+    override val extensions: MutableMap<String, ExtensionValue> = mutableMapOf(),
+    val name: String? = null
 ) : Extensions
