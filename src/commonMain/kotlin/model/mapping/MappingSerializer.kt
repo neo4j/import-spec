@@ -49,11 +49,11 @@ object MappingSerializer : JsonContentPolymorphicSerializer<Mapping>(Mapping::cl
     override fun selectDeserializer(element: JsonElement): DeserializationStrategy<Mapping> {
         val jsonObject = element.jsonObject
         return when {
-            MappingType.NODE in jsonObject -> NodeMapping.serializer()
-            MappingType.RELATIONSHIP in jsonObject -> RelationshipMapping.serializer()
-            MappingType.QUERY in jsonObject -> QueryMapping.serializer()
-            MappingType.LABEL in jsonObject -> LabelMapping.serializer()
-            else -> throw SerializationException("Unknown Mapping type. Keys: ${jsonObject.keys}")
+            "node" in jsonObject -> NodeMapping.serializer()
+            "relationship" in jsonObject -> RelationshipMapping.serializer()
+            "query" in jsonObject -> QueryMapping.serializer()
+            "field" in jsonObject -> LabelMapping.serializer()
+            else -> throw SerializationException("Unknown Mapping type for object: $jsonObject")
         }
     }
 }

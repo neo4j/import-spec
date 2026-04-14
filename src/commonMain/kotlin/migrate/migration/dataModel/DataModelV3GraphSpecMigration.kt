@@ -151,8 +151,8 @@ class DataModelV3GraphSpecMigration :
                 else -> error("Unknown index type: '$type' at ${index.path}.$name")
             }
             val idx = schemaMapOf()
-            idx["kind"] = indexType.name
-            idx["label"] = label
+            idx["type"] = indexType.name
+            idx["labels"] = schemaListOf(label)
             if (properties != null) {
                 idx["properties"] = properties.map {
                     SchemaLiteral(it.string("\$ref").removePrefix("#"))
@@ -173,7 +173,7 @@ class DataModelV3GraphSpecMigration :
         constraints: Map<String, List<SchemaMap>>,
         labelRef: String,
         label: String,
-        node: SchemaMap
+        entity: SchemaMap
     ) {
         val constraints = constraints[labelRef] ?: return
         val all = schemaMapOf()
@@ -195,7 +195,7 @@ class DataModelV3GraphSpecMigration :
                 }
             }
             val constr = schemaMapOf()
-            constr["kind"] = constraintType.name
+            constr["type"] = constraintType.name
             constr["label"] = label
             if (properties != null) {
                 constr["properties"] = properties.map {
@@ -209,7 +209,7 @@ class DataModelV3GraphSpecMigration :
             }
         }
         if (all.isNotEmpty()) {
-            node["constraints"] = all
+            entity["constraints"] = all
         }
     }
 
@@ -235,8 +235,12 @@ class DataModelV3GraphSpecMigration :
             convertProperties(relationshipType, properties)
             val relationship = schemaMapOf(
                 "type" to token,
-                "from" to SchemaLiteral(fromRef),
-                "to" to SchemaLiteral(toRef),
+                "from" to schemaMapOf(
+                    "node" to SchemaLiteral(fromRef)
+                ),
+                "to" to schemaMapOf(
+                    "node" to SchemaLiteral(toRef)
+                ),
                 "properties" to SchemaMap(properties)
             )
             updateConstraints(constraints, typeRef, token.string, relationship)
@@ -379,7 +383,7 @@ class DataModelV3GraphSpecMigration :
             val properties = migratePropertyMappings(propertyMappings)
             // ref is lost, and we know type isn't unique; so we are assuming type + property id are unique
             val map = schemaMapOf(
-                "type" to SchemaLiteral(token),
+                "relationship" to SchemaLiteral(token),
                 "from" to schemaMapOf(
                     "node" to SchemaLiteral(fromRef),
                     "properties" to SchemaMap(fromMappings)

@@ -23,9 +23,11 @@ object Version {
     const val DATA_MODEL_V23 = "2.3.0"
     const val DATA_MODEL_V24 = "2.4.0"
     const val DATA_MODEL_V30 = "3.0.0"
+
     /*
         Import Spec versions
      */
+    const val IMPORT_SPEC_V1 = "1.0.0"
 
     /*
         Graph spec versions

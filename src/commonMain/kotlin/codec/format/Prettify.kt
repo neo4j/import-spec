@@ -142,7 +142,7 @@ object Prettify {
                     val propertyId = (properties.single() as? SchemaLiteral)?.string
                         ?: error("Expected property string at ${properties.path}[0]")
                     val property = nodeProperties[propertyId] ?: error("Unable to find property $propertyId")
-                    val type = constraint.string("kind")
+                    val type = constraint.string("type")
                     when (type) {
                         ConstraintType.EXISTS.name -> {
                             property["nullable"] = false
