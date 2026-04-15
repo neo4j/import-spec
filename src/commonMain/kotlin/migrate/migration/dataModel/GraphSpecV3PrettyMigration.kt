@@ -14,19 +14,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package codec.format
+package migrate.migration.dataModel
 
 import codec.schema.SchemaElement
 import codec.schema.SchemaLiteral
 import codec.schema.SchemaMap
+import migrate.Migration
+import model.Type
+import model.Version
 import model.constraint.ConstraintType
 import net.pearx.kasechange.toCamelCase
-import kotlin.collections.component1
-import kotlin.collections.component2
-import kotlin.collections.iterator
 
-object Prettify {
-    fun transform(schema: SchemaMap): SchemaMap {
+class GraphSpecV3PrettyMigration : Migration(Type.GRAPH_SPEC, Version.LATEST, Type.GRAPH_SPEC_PRETTY, Version.LATEST) {
+    override fun migrate(schema: SchemaMap): SchemaMap {
         rename(schema)
         tidyConstraints(schema)
         sort(schema)

@@ -16,12 +16,12 @@
  */
 import codec.format.Format
 import codec.format.JsonFormat
-import codec.format.Prettify
 import codec.format.YamlFormat
 import codec.schema.SchemaMap
 import migrate.MigrationPath
 import migrate.migration.dataModel.DataModelV2V3Migration
 import migrate.migration.dataModel.DataModelV3GraphSpecMigration
+import migrate.migration.dataModel.GraphSpecV3PrettyMigration
 import model.GraphModel
 import model.Type
 import model.Version
@@ -34,17 +34,12 @@ sealed class GraphSpec(val configuration: GraphSpecConfig, val builder: Format.B
 
     fun encodeToString(
         model: GraphModel,
-        type: String = Type.GRAPH_SPEC,
-        targetVersion: String = Version.LATEST,
         targetType: String = Type.GRAPH_SPEC,
-        pretty: Boolean = true
+        targetVersion: String = Version.LATEST
     ): String {
         val schema = format.encodeToSchema(model)
         var map = schema as? SchemaMap ?: error("Schema format expected")
-        map = path.migrate(map, type, targetVersion, targetType)
-        if (targetVersion == Version.LATEST && pretty) {
-            map = Prettify.transform(map)
-        }
+        map = path.migrate(map, Type.GRAPH_SPEC, targetVersion, targetType)
         return format.encodeToString(map)
     }
 
@@ -65,6 +60,7 @@ private fun defaultConfig(): GraphSpecConfig {
     builder.migrate(DataModelV2V3Migration(Version.DATA_MODEL_V23))
     builder.migrate(DataModelV2V3Migration(Version.DATA_MODEL_V24))
     builder.migrate(DataModelV3GraphSpecMigration())
+    builder.migrate(GraphSpecV3PrettyMigration())
     return builder.build()
 }
 

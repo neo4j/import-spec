@@ -17,7 +17,15 @@
 package model
 
 object Type {
+    // The Aura Data Importer graph data model
     const val DATA_MODEL = "data_model"
+
+    // The Connectors ImportSpec
     const val IMPORT_SPEC = "import_spec"
+
+    // GraphSpec internal
     const val GRAPH_SPEC = "graph_spec"
+
+    // GraphSpec external (prettified)
+    const val GRAPH_SPEC_PRETTY = "graph_spec_pretty"
 }

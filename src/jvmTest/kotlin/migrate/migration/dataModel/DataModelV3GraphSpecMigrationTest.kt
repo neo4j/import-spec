@@ -4,7 +4,6 @@ import GraphSpec
 import codec.format.JsonFormat
 import codec.format.YamlFormat
 import codec.schema.SchemaMap
-import codec.format.Prettify
 import kotlinx.schema.generator.json.JsonSchemaConfig
 import kotlinx.schema.generator.json.serialization.SerializationClassJsonSchemaGenerator
 import kotlinx.schema.json.encodeToString
@@ -27,8 +26,6 @@ class DataModelV3GraphSpecMigrationTest {
 
         val schema = format.decodeFromString(input) as SchemaMap
         var output = migration.migrate(schema)
-
-        output = Prettify.transform(output)
 
         val yaml = JsonFormat.build()
         val element = Json.parseToJsonElement(input)
@@ -71,7 +68,6 @@ class DataModelV3GraphSpecMigrationTest {
             val schema = format.decodeFromString(input) as SchemaMap
 
             var output = migration.migrate(schema)
-            output = Prettify.transform(output)
 
             val yaml = YamlFormat.build()
             val string = yaml.encodeToString(output)
@@ -118,7 +114,6 @@ class DataModelV3GraphSpecMigrationTest {
             var output = migration.migrate(schema)
 
             println(output)
-            output = Prettify.transform(output)
 
             val yaml = YamlFormat.build()
             input.parentFile.resolve("${input.nameWithoutExtension}.yaml").writeText(yaml.encodeToString(output))
