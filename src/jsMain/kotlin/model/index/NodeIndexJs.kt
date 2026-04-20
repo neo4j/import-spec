@@ -17,7 +17,6 @@
 package model.index
 
 import js.objects.Record
-import js.objects.toRecord
 import kotlinx.js.JsPlainObject
 import model.associateBy
 import model.emptyRecord
@@ -25,14 +24,13 @@ import model.extension.ExtensionValueJs
 import model.extension.toClass
 import model.extension.toJs
 import model.jso
-import model.toMap
 
 @JsExport
 @JsPlainObject
 external interface NodeIndexJs {
-    val type: String
-    val labels: Array<String>
-    val properties: Array<String>
+    var type: String
+    var labels: Array<String>
+    var properties: Array<String>
     val options: Record<String, ExtensionValueJs>
     val extensions: Record<String, ExtensionValueJs>
 }

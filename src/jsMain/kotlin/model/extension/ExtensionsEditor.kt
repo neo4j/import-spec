@@ -14,21 +14,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package model.mapping
+package model.extension
 
-import kotlinx.js.JsPlainObject
-import model.jso
+import js.objects.Record
+import model.remove
 
-@JsExport
-@JsPlainObject
-external interface PropertyMappingJs {
-    var field: String
+class ExtensionsEditor {
+    companion object {
+        @JsStatic
+        fun set(extensions: Record<String, ExtensionValueJs>, key: String, value: String) {
+            extensions[key] = stringValueJs(value) // TODO test
+        }
+
+        @JsStatic
+        fun remove(extensions: Record<String, ExtensionValueJs>, key: String) {
+            extensions.remove(key)
+        }
+    }
 }
-
-fun propertyMappingJs(field: String): PropertyMappingJs = jso {
-    this.field = field
-}
-
-fun PropertyMapping.toJs() = propertyMappingJs(field)
-
-fun PropertyMappingJs.toClass() = PropertyMapping(field)

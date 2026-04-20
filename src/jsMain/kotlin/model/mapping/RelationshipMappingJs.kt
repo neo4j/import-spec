@@ -26,14 +26,14 @@ import model.jso
 @JsPlainObject
 external interface RelationshipMappingJs : MappingJs {
     override val type: String
-    val relationship: String
-    val table: String
+    var relationship: String
+    var table: String
     val from: TargetMappingJs
     val to: TargetMappingJs
     val properties: Record<String, PropertyMappingJs>
-    val mode: String
-    val matchLabel: String?
-    val keys: Array<String>
+    var mode: String
+    var matchLabel: String?
+    var keys: Array<String>
 }
 
 fun relationshipMappingJs(

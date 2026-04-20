@@ -30,8 +30,8 @@ import model.toMap
 @JsExport
 @JsPlainObject
 external interface RelationshipIndexJs {
-    val type: String
-    val properties: Array<String>
+    var type: String
+    var properties: Array<String>
     val options: Record<String, ExtensionValueJs>
     val extensions: Record<String, ExtensionValueJs>
 }

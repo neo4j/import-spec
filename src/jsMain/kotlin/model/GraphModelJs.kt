@@ -28,7 +28,7 @@ external interface GraphModelJs {
     val nodes: Record<String, NodeJs>
     val relationships: Record<String, RelationshipJs>
     val tables: Record<String, TableJs>
-    val mappings: Array<MappingJs>
+    var mappings: Array<MappingJs>
 }
 
 fun graphModelJs(

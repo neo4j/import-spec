@@ -25,8 +25,8 @@ import model.jso
 @JsExport
 @JsPlainObject
 external interface TargetMappingJs {
-    val node: String
-    val label: String
+    var node: String
+    var label: String
     val properties: Record<String, PropertyMappingJs>
 }
 

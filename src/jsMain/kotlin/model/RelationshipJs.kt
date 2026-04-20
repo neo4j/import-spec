@@ -32,7 +32,7 @@ import model.index.toJs
 @JsExport
 @JsPlainObject
 external interface RelationshipJs {
-    val type: String
+    var type: String
     val from: RelationshipTargetJs
     val to: RelationshipTargetJs
     val properties: Record<String, PropertyJs>

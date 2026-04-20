@@ -72,8 +72,8 @@ class GraphSpecEditor {
         }
 
         @JsStatic
-        fun addNodeLabelInline(model: GraphModelJs, id: String, label: String) {
-            val node = model.nodes[id] ?: return // TODO how to handle missing nodes
+        fun addNodeImpliedLabel(model: GraphModelJs, node: String, label: String) {
+            val node = model.nodes[node] ?: error("No node found for id '$node'")
             node.labels.implied += label
         }
 

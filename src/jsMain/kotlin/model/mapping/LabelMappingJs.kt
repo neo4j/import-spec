@@ -23,8 +23,8 @@ import model.jso
 @JsPlainObject
 external interface LabelMappingJs : MappingJs {
     override val type: String
-    val table: String
-    val field: String
+    var table: String
+    var field: String
 }
 
 fun labelMappingJs(table: String, field: String): LabelMappingJs = jso {

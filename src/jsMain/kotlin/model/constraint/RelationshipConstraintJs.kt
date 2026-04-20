@@ -28,8 +28,8 @@ import model.jso
 @JsExport
 @JsPlainObject
 external interface RelationshipConstraintJs {
-    val type: String
-    val properties: Array<String>
+    var type: String
+    var properties: Array<String>
     val options: Record<String, ExtensionValueJs>
     val extensions: Record<String, ExtensionValueJs>
 }

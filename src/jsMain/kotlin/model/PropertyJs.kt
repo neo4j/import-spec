@@ -26,16 +26,16 @@ import model.extension.toJs
 @JsExport
 @JsPlainObject
 external interface PropertyJs {
-    val type: String
-    val nullable: Boolean
-    val unique: Boolean
+    var type: String
+    var nullable: Boolean
+    var unique: Boolean
     val extensions: Record<String, ExtensionValueJs>
-    val name: String
+    var name: String
     val id: String
 }
 
 fun propertyJs(
-    type: String,
+    type: String = "ANY",
     nullable: Boolean = false,
     unique: Boolean = false,
     extensions: Record<String, ExtensionValueJs> = emptyRecord(),

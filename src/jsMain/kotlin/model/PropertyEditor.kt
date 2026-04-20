@@ -14,21 +14,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package model.mapping
-
-import kotlinx.js.JsPlainObject
-import model.jso
+package model
 
 @JsExport
-@JsPlainObject
-external interface PropertyMappingJs {
-    var field: String
+class PropertyEditor {
+    companion object {
+
+        @JsStatic
+        fun setType(property: PropertyJs, type: String) { // TODO neo4jtype
+            property.type = type
+        }
+
+        @JsStatic
+        fun setNullable(property: PropertyJs, nullable: Boolean) {
+            property.nullable = nullable
+        }
+
+        @JsStatic
+        fun setUnique(property: PropertyJs, unique: Boolean) {
+            property.unique = unique
+        }
+
+        @JsStatic
+        fun setName(property: PropertyJs, name: String) {
+            property.name = name
+        }
+    }
 }
-
-fun propertyMappingJs(field: String): PropertyMappingJs = jso {
-    this.field = field
-}
-
-fun PropertyMapping.toJs() = propertyMappingJs(field)
-
-fun PropertyMappingJs.toClass() = PropertyMapping(field)

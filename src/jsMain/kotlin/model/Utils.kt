@@ -48,3 +48,26 @@ fun jso(block: dynamic.() -> Unit): dynamic {
     block(js)
     return js
 }
+
+internal inline fun <reified T> Array<T>.dropAt(index: Int): Array<T> = Array(size - 1) {
+    if (it >= index) this[it + 1] else this[it]
+}
+
+internal fun <T> Record<String, T>.getOrThrow(key: String, entityName: String): T =
+    this[key] ?: error("$entityName with id '$key' not found.")
+
+@Suppress("UnusedReceiverParameter", "unused")
+internal fun <T> Record<String, T>.remove(key: String) {
+    js("delete this[key]")
+}
+
+internal fun <T> Record<String, T>.uniqueKey(prefix: String): String {
+    var id = ""
+    for (i in 0 until Int.MAX_VALUE) {
+        if (this["$prefix$i"] == null) {
+            id = "$prefix$i"
+            break
+        }
+    }
+    return id
+}

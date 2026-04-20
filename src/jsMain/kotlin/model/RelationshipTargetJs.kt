@@ -21,9 +21,9 @@ import kotlinx.js.JsPlainObject
 @JsExport
 @JsPlainObject
 external interface RelationshipTargetJs {
-    val node: String
-    val label: String
-    val property: String
+    var node: String
+    var label: String
+    var property: String
 }
 
 fun relationshipTargetJs(node: String, label: String, property: String = ""): RelationshipTargetJs = jso {

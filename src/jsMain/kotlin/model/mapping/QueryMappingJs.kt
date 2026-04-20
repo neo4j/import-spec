@@ -23,8 +23,8 @@ import model.jso
 @JsPlainObject
 external interface QueryMappingJs : MappingJs {
     override val type: String
-    val table: String
-    val query: String
+    var table: String
+    var query: String
 }
 
 fun queryMappingJs(table: String, query: String): QueryMappingJs = jso {
