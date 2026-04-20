@@ -17,10 +17,10 @@ import java.io.File
 import kotlin.test.Test
 
 @Disabled
-class DataModelV3GraphSpecMigrationTest {
+class End2EndMigrationTest {
     @Test
     fun `Test full spec`() {
-        val input = DataModelV3GraphSpecMigrationTest::class.resourceAsString("prod-like/northwind.json")
+        val input = End2EndMigrationTest::class.resourceAsString("prod-like/northwind.json")
         val migration = DataModelV3GraphSpecMigration()
         val format = JsonFormat.build()
 
@@ -61,7 +61,7 @@ class DataModelV3GraphSpecMigrationTest {
             "pandc.json"
         )
         for (name in list) {
-            val input = DataModelV3GraphSpecMigrationTest::class.resourceAsString("prod-like/$name")
+            val input = End2EndMigrationTest::class.resourceAsString("prod-like/$name")
             val migration = DataModelV3GraphSpecMigration()
             val format = JsonFormat.build()
 
@@ -88,7 +88,7 @@ class DataModelV3GraphSpecMigrationTest {
             "ttl/bibo.json",
         )
         for (name in list) {
-            val input = DataModelV3GraphSpecMigrationTest::class.resourceAsString(name)
+            val input = End2EndMigrationTest::class.resourceAsString(name)
 
             val output = GraphSpec.Json.decodeFromString(input)
 
