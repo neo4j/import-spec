@@ -171,8 +171,36 @@ data class SchemaMap(val content: MutableMap<String, SchemaElement> = mutableMap
     private fun path(key: String): String = if (path.isEmpty()) key else "$path.$key"
 }
 
-fun schemaMapOf(vararg pairs: Pair<String, SchemaElement?>) = SchemaMap(
+fun schemaMapOf(vararg pairs: Pair<String, Any?>) = SchemaMap(
     pairs
         .filter { it.second != null }
-        .associate { it.first to it.second!!.repath(it.first) }.toMutableMap()
+        .associate { it.first to it.second!!.toSchemaElement() }.toMutableMap()
 )
+
+infix fun <A> A.toNotEmpty(that: Map<String, Any>?): Pair<A, Map<String, Any>?> = Pair(
+    this,
+    that?.takeIf {
+        it.isNotEmpty()
+    }
+)
+
+infix fun <A> A.toNotEmpty(that: Collection<Any>?): Pair<A, Collection<Any>?> = Pair(
+    this,
+    that?.takeIf {
+        it.isNotEmpty()
+    }
+)
+
+fun buildSchemaMap(block: MutableMap<String, Any?>.() -> Unit): SchemaMap {
+    val map = mutableMapOf<String, Any?>()
+    map.block()
+
+    val schemaData = map
+        .filterValues { it != null }
+        .entries
+        .associate { (key, value) ->
+            key to value.toSchemaElement().repath(key)
+        }
+        .toMutableMap()
+    return SchemaMap(schemaData.toMutableMap())
+}

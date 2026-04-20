@@ -26,3 +26,18 @@ sealed interface SchemaElement {
     val path: String
     fun repath(newPath: String): SchemaElement
 }
+
+/**
+ * Recursively convert anything to a SchemaElement
+ */
+fun Any?.toSchemaElement(): SchemaElement = when (this) {
+    null -> SchemaNull
+    is SchemaElement -> this
+    is Map<*, *> -> SchemaMap(
+        entries.associate { (k, v) ->
+            k.toString() to v.toSchemaElement().repath(k.toString())
+        }.toMutableMap()
+    )
+    is Iterable<*> -> SchemaList(map { it.toSchemaElement() }.toMutableList())
+    else -> SchemaLiteral(toString())
+}
