@@ -22,7 +22,7 @@ import codec.schema.SchemaMap
 import migrate.Migration
 import model.Type
 import model.Version
-import model.constraint.ConstraintType
+import model.type.ConstraintType
 import net.pearx.kasechange.toCamelCase
 
 class GraphSpecV3PrettyMigration : Migration(Type.GRAPH_SPEC, Version.LATEST, Type.GRAPH_SPEC_PRETTY, Version.LATEST) {

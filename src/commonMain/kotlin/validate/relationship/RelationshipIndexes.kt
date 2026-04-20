@@ -17,8 +17,8 @@
 package validate.relationship
 
 import model.GraphModel
-import model.Relationship
-import model.index.RelationshipIndex
+import model.relationship.Relationship
+import model.relationship.RelationshipIndex
 import validate.Issue
 
 object RelationshipIndexes : RelationshipValidation {

@@ -17,9 +17,9 @@
 package validate.relationship.constraint
 
 import model.GraphModel
-import model.Relationship
-import model.constraint.ConstraintType
-import model.constraint.RelationshipConstraint
+import model.relationship.Relationship
+import model.relationship.RelationshipConstraint
+import model.type.ConstraintType
 import validate.Issue
 import validate.node.NodeConstraints
 import validate.relationship.RelationshipValidation

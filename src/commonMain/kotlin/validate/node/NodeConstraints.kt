@@ -17,8 +17,8 @@
 package validate.node
 
 import model.GraphModel
-import model.Node
-import model.constraint.NodeConstraint
+import model.node.Node
+import model.node.NodeConstraint
 import validate.Issue
 import validate.Validation
 import validate.node.NodeValidation

@@ -17,10 +17,10 @@
 package validate.relationship
 
 import model.GraphModel
-import model.Property
-import model.Relationship
-import model.constraint.RelationshipConstraint
-import model.index.RelationshipIndex
+import model.property.Property
+import model.relationship.Relationship
+import model.relationship.RelationshipConstraint
+import model.relationship.RelationshipIndex
 import validate.Issue
 import validate.Validation
 import kotlin.collections.iterator

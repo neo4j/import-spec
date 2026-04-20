@@ -19,9 +19,9 @@ package codec.format
 import codec.schema.SchemaMap
 import codec.schema.SchemaNull
 import model.GraphModel
-import model.Node
 import model.extension.BooleanValue
 import model.extension.StringValue
+import model.node.Node
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith

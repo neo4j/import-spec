@@ -18,7 +18,6 @@ package model.source
 
 import js.objects.Record
 import kotlinx.js.JsPlainObject
-import model.Neo4jType
 import model.associateBy
 import model.emptyRecord
 import model.extension.ExtensionValueJs
@@ -26,6 +25,7 @@ import model.extension.toClass
 import model.extension.toJs
 import model.jso
 import model.mapping.PropertyMapping
+import model.property.Neo4jType
 import kotlin.String
 
 @JsExport

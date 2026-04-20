@@ -1,18 +1,7 @@
 package model.extension
 
-import model.JsMappingTest
-import model.Labels
-import model.LabelsJs
-import model.constraint.RelationshipConstraint
-import model.constraint.RelationshipConstraintJs
-import model.constraint.toClass
-import model.constraint.toJs
-import model.extension.StringValue
-import model.extension.stringValueJs
-import model.toClass
-import model.toJs
+import model.mapping.JsMappingTest
 import kotlin.test.assertEquals
-import kotlin.test.assertTrue
 
 class DoubleValueJsTest : JsMappingTest<DoubleValue, DoubleValueJs>() {
 

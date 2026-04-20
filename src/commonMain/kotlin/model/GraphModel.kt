@@ -19,6 +19,8 @@ package model
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import model.mapping.Mapping
+import model.node.Node
+import model.relationship.Relationship
 import model.source.Table
 import validate.Issue
 import validate.Validation

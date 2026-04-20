@@ -19,6 +19,8 @@ package model
 import js.objects.Record
 import kotlinx.js.JsPlainObject
 import model.mapping.MappingJs
+import model.node.NodeJs
+import model.relationship.RelationshipJs
 import model.source.TableJs
 
 @JsExport

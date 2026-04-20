@@ -24,18 +24,18 @@ import migrate.Migration
 import migrate.migration.dataModel.DataModelV2V3Migration.Companion.unwrap
 import model.Type
 import model.Version
-import model.constraint.ConstraintType
-import model.constraint.ConstraintType.EXISTS
-import model.constraint.ConstraintType.KEY
-import model.constraint.ConstraintType.TYPE
-import model.constraint.ConstraintType.UNIQUE
-import model.index.IndexType
-import model.index.IndexType.FULLTEXT
-import model.index.IndexType.LOOKUP
-import model.index.IndexType.POINT
-import model.index.IndexType.RANGE
-import model.index.IndexType.TEXT
-import model.index.IndexType.VECTOR
+import model.type.ConstraintType
+import model.type.ConstraintType.EXISTS
+import model.type.ConstraintType.KEY
+import model.type.ConstraintType.TYPE
+import model.type.ConstraintType.UNIQUE
+import model.type.IndexType
+import model.type.IndexType.FULLTEXT
+import model.type.IndexType.LOOKUP
+import model.type.IndexType.POINT
+import model.type.IndexType.RANGE
+import model.type.IndexType.TEXT
+import model.type.IndexType.VECTOR
 
 class DataModelV3GraphSpecMigration :
     Migration(

@@ -17,8 +17,8 @@
 package validate.relationship
 
 import model.GraphModel
-import model.Relationship
-import model.constraint.RelationshipConstraint
+import model.relationship.Relationship
+import model.relationship.RelationshipConstraint
 import validate.Issue
 
 object RelationshipConstraints : RelationshipValidation {

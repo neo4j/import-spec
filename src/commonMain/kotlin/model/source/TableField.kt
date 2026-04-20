@@ -18,9 +18,9 @@ package model.source
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import model.Neo4jType
 import model.extension.ExtensionValue
 import model.extension.Extensions
+import model.property.Neo4jType
 import kotlin.js.JsExport
 
 @JsExport
