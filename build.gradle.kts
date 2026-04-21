@@ -21,6 +21,20 @@ repositories { mavenCentral() }
 kotlin {
     // Override target source sets for KMP
     sourceSets {
+        val commonMain by getting
+        val commonTest by getting
+        val bridge by creating {
+            dependsOn(commonMain)
+        }
+        val bridgeTest by creating {
+            dependsOn(commonTest)
+            dependsOn(bridge)
+        }
+        targets.withType<org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget>().configureEach {
+            compilations.getByName("main").defaultSourceSet.dependsOn(bridge)
+            compilations.getByName("test").defaultSourceSet.dependsOn(bridgeTest)
+        }
+
         commonMain.dependencies {
             implementation(libs.kotlinx.schema)
             implementation(libs.kotlinx.serializer.json)
@@ -56,6 +70,16 @@ kotlin {
     compilerOptions {
         freeCompilerArgs.add("-opt-in=kotlin.js.ExperimentalJsExport")
         freeCompilerArgs.add("-opt-in=kotlin.js.ExperimentalJsStatic")
+    }
+
+    // Koltin/Native config
+    macosX64 { binaries.staticLib { baseName = "graphdatamodel" } }
+    macosArm64 { binaries.staticLib { baseName = "graphdatamodel" } }
+    linuxX64 { binaries.staticLib { baseName = "graphdatamodel" } }
+    linuxArm64 { binaries.staticLib { baseName = "graphdatamodel" } }
+    compilerOptions {
+        freeCompilerArgs.add("-Xmulti-dollar-interpolation")
+        freeCompilerArgs.add("-opt-in=kotlin.native.ExperimentalNativeApi")
     }
 }
 
@@ -150,7 +174,9 @@ configure<com.diffplug.gradle.spotless.SpotlessExtension> {
         target(
             project.fileTree("src/commonMain/kotlin"),
             project.fileTree("src/commonTest/kotlin"),
-            project.fileTree("src/jsMain/kotlin")
+            project.fileTree("src/jsMain/kotlin"),
+            project.fileTree("src/bridge/kotlin"),
+            project.fileTree("src/bridgeTest/kotlin")
         )
     }
 }
