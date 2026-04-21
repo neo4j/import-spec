@@ -21,7 +21,6 @@ import codec.schema.SchemaMap
 import codec.schema.schemaMapOf
 import codec.schema.toNotEmpty
 import migrate.Migration
-import migrate.migration.dataModel.DataModelV2V3Migration.Companion.unwrap
 import model.Type
 import model.Version
 import model.type.ConstraintType
@@ -37,6 +36,9 @@ import model.type.IndexType.RANGE
 import model.type.IndexType.TEXT
 import model.type.IndexType.VECTOR
 
+/**
+ * 3.0 -> Graph Spec 1.0
+ */
 class DataModelV3GraphSpecMigration :
     Migration(
         fromType = Type.DATA_MODEL,
@@ -51,29 +53,31 @@ class DataModelV3GraphSpecMigration :
         val (nodeConstraints, relationshipConstraints) = gather(graphSchema, "constraints")
         val (nodeIndexes, relationshipIndexes) = gather(graphSchema, "indexes")
         val nodes = migrateNodes(graphSchema, nodeConstraints, nodeIndexes)
-        visualisation(schema, nodes) // TODO
         return schemaMapOf(
             "version" to schema.literal("version"),
             "nodes" to nodes,
             "relationships" to migrateRelationships(graphSchema, relationshipConstraints, relationshipIndexes),
             "tables" toNotEmpty migrateTables(schema),
-            "mappings" toNotEmpty nodeMappings(schema) + relationshipMappings(schema)
+            "mappings" toNotEmpty nodeMappings(schema) + relationshipMappings(schema),
+            "display" toNotEmpty visualisation(schema, nodes)
         )
     }
 
-    internal fun visualisation(schema: SchemaMap, nodes: MutableMap<String, SchemaMap>) {
-        val visualisation = schema.remove("visualisation") as? SchemaMap ?: return
+    internal fun visualisation(schema: SchemaMap, nodes: MutableMap<String, SchemaMap>): Map<String, SchemaMap>? {
+        val visualisation = schema.remove("visualisation") as? SchemaMap ?: return null
+        val display = mutableMapOf<String, SchemaMap>()
         for (vis in visualisation.listOfMaps("nodes")) {
             val ref = vis.string("id")
+            nodes[ref] ?: error("Unknown node $ref")
             val position = vis.map("position")
             val x = position.literal("x")
             val y = position.literal("y")
-            val node = nodes[ref] ?: error("Unknown node $ref")
-            val extensions = node.mapOrPut("extensions")
-            extensions["x"] = x
-            extensions["y"] = y
+            display[ref] = schemaMapOf(
+                "x" to x,
+                "y" to y
+            )
         }
-        // TODO
+        return display
     }
 
     internal fun gather(
@@ -310,12 +314,6 @@ class DataModelV3GraphSpecMigration :
         }
         return fields
     }
-
-    internal fun SchemaMap.ref() = string("\$ref").removePrefix("#")
-
-    internal fun SchemaMap.ref(key: String) = map(key).ref()
-
-    internal fun SchemaMap.id() = string("\$id")
 
     companion object {
         private fun indexType(name: String): IndexType? = when (name) {

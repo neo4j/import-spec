@@ -18,7 +18,6 @@ package migrate.migration.dataModel
 
 import codec.schema.schemaMapOf
 import codec.schema.toSchemaElement
-import migrate.migration.dataModel.DataModelV2V3Migration.Companion.unwrap
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
@@ -38,7 +37,7 @@ class DataModelV3GraphSpecMigrationTest {
                 "nodes" to listOf(
                     schemaMapOf(
                         "id" to "nonExistentNode",
-                        "position" to mapOf("x" to 10, "y" to 20)
+                        "position" to mapOf("x" to 10.1, "y" to 20.2)
                     )
                 )
             )
@@ -47,6 +46,28 @@ class DataModelV3GraphSpecMigrationTest {
         assertFailsWith<IllegalStateException>("Unknown node nonExistentNode") {
             migration.visualisation(schema, nodes)
         }
+    }
+
+    @Test
+    fun `visualisation transforms to display`() {
+        val nodes = mutableMapOf("nodeA" to schemaMapOf("id" to "nodeA"))
+        val schema = schemaMapOf(
+            "visualisation" to schemaMapOf(
+                "nodes" to listOf(
+                    schemaMapOf(
+                        "id" to "nodeA",
+                        "position" to mapOf("x" to 10.1234, "y" to 20.54321)
+                    )
+                )
+            )
+        )
+
+        val result = migration.visualisation(schema, nodes)
+        assertNotNull(result)
+        val node = result["nodeA"]
+        assertNotNull(node)
+        assertEquals("10.1234", node.string("x"))
+        assertEquals("20.54321", node.string("y"))
     }
 
     @Test
