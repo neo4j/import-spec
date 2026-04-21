@@ -21,15 +21,26 @@ import codec.schema.SchemaMap
 import kotlinx.cinterop.ByteVar
 import kotlinx.cinterop.CPointer
 import kotlinx.cinterop.ExperimentalForeignApi
+import migrate.migration.dataModel.DataModelV2V3Migration
 import migrate.migration.dataModel.DataModelV3GraphSpecMigration
 import kotlin.experimental.ExperimentalNativeApi
 
 @OptIn(ExperimentalForeignApi::class, ExperimentalNativeApi::class)
 @CName("migrate_v3_to_graph_spec")
-fun MigrateV3ToGraphSpec(inputJson: CPointer<ByteVar>?, outBuffer: CPointer<ByteVar>?, bufferSize: Int) =
-    invokeBridge(inputJson, outBuffer, bufferSize) { input ->
+fun MigrateV3ToGraphSpec(inputJson: CPointer<ByteVar>?, outputBuffer: CPointer<ByteVar>?, bufferSize: Int) =
+    invokeBridge(inputJson, outputBuffer = outputBuffer, bufferSize = bufferSize) { input ->
         val format = JsonFormat.build()
-        val schema = format.decodeFromString(input) as SchemaMap
+        val schema = format.decodeFromString(input[0]) as SchemaMap
         val migrated = DataModelV3GraphSpecMigration().migrate(schema)
+        format.encodeToString(migrated)
+    }
+
+@OptIn(ExperimentalForeignApi::class, ExperimentalNativeApi::class)
+@CName("migrate_v2_to_v3")
+fun MigrateV2ToV3(inputJson: CPointer<ByteVar>?, inputVersion: CPointer<ByteVar>?, outputBuffer: CPointer<ByteVar>?, bufferSize: Int) =
+    invokeBridge(inputJson, inputVersion, outputBuffer = outputBuffer, bufferSize = bufferSize) { input ->
+        val format = JsonFormat.build()
+        val schema = format.decodeFromString(input[0]) as SchemaMap
+        val migrated = DataModelV2V3Migration(input[1]).migrate(schema)
         format.encodeToString(migrated)
     }

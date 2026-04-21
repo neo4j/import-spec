@@ -39,15 +39,15 @@ output to the provided output buffer in a memory safe way.
  */
 @OptIn(ExperimentalForeignApi::class)
 fun invokeBridge(
-    input: CPointer<ByteVar>?,
-    outBuffer: CPointer<ByteVar>?,
+    vararg input: CPointer<ByteVar>?,
+    outputBuffer: CPointer<ByteVar>?,
     bufferSize: Int,
-    action: (String) -> String,
+    action: (List<String>) -> String,
 ): Int {
-    if (input == null || outBuffer == null || bufferSize < 1) return -1
+    if (input.any { it == null } || outputBuffer == null || bufferSize < 1) return -1
 
     val response = runCatching {
-        action(input.toKString())
+        action(input.map { it!!.toKString() }.toList())
     }.fold(
         onSuccess = { data ->
             BridgeResponse(data = data)
@@ -72,7 +72,7 @@ fun invokeBridge(
         if (bufferSize < cstr.size) return@memScoped -cstr.size
 
         // write to output buffer
-        memcpy(outBuffer, cstr.getPointer(this), cstr.size.toULong())
+        memcpy(outputBuffer, cstr.getPointer(this), cstr.size.toULong())
 
         // return the number of bytes the caller should actually care about (the JSON length)
         // cstr.size includes the null terminator, so size - 1 is the JSON text length

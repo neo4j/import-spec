@@ -36,7 +36,7 @@ import kotlin.test.assertTrue
 class BridgeTest {
 
     @Test
-    fun testSuccessfulBridgeCall() {
+    fun testSuccessfulBridgeCallWithSingleInput() {
         val input = "{\"version\":\"1\", \"data\":\"test\"}"
         val bufferSize = 1024
 
@@ -45,8 +45,8 @@ class BridgeTest {
             val outputBuffer = allocArray<ByteVar>(bufferSize)
             val format = JsonFormat.build()
 
-            val resultSize = invokeBridge(inputPtr, outputBuffer, bufferSize) {
-                val schema = format.decodeFromString(it) as SchemaMap
+            val resultSize = invokeBridge(inputPtr, outputBuffer = outputBuffer, bufferSize = bufferSize) {
+                val schema = format.decodeFromString(it[0]) as SchemaMap
                 schema["version"] = "2"
                 format.encodeToString(schema)
             }
@@ -62,6 +62,34 @@ class BridgeTest {
     }
 
     @Test
+    fun testSuccessfulBridgeCallWithMultipleInputs() {
+        val inputJson = "{\"version\":\"1\", \"data\":\"test\"}"
+        val inputVersion = "3"
+        val bufferSize = 1024
+
+        memScoped {
+            val inputJsonPtr = inputJson.cstr.getPointer(this)
+            val inputVersionPtr = inputVersion.cstr.getPointer(this)
+            val outputBuffer = allocArray<ByteVar>(bufferSize)
+            val format = JsonFormat.build()
+
+            val resultSize = invokeBridge(inputJsonPtr, inputVersionPtr, outputBuffer = outputBuffer, bufferSize = bufferSize) {
+                val schema = format.decodeFromString(it[0]) as SchemaMap
+                schema["version"] = it[1]
+                format.encodeToString(schema)
+            }
+
+            assertTrue(resultSize > 0)
+            val response = Json.decodeFromString(BridgeResponse.serializer(), outputBuffer.toKString())
+            assertNull(response.error)
+            assertNotNull(response.data)
+            val output = format.decodeFromString(response.data) as SchemaMap
+            assertEquals(output["data"].toString(), "test")
+            assertEquals(output["version"].toString(), inputVersion)
+        }
+    }
+
+    @Test
     fun testNullInputs() {
         val input = "{\"version\":\"1\", \"data\":\"test\"}"
         val bufferSize = 1024
@@ -70,13 +98,16 @@ class BridgeTest {
             val inputPtr = input.cstr.getPointer(this)
             val outputBuffer = allocArray<ByteVar>(bufferSize)
 
-            var resultSize = invokeBridge(null, outputBuffer, bufferSize) { it }
+            var resultSize = invokeBridge(null, outputBuffer = outputBuffer, bufferSize = bufferSize) { it[0] }
             assertEquals(resultSize, -1)
 
-            resultSize = invokeBridge(inputPtr, null, bufferSize) { it }
+            resultSize = invokeBridge(inputPtr, null, outputBuffer = outputBuffer, bufferSize = bufferSize) { it[0] }
             assertEquals(resultSize, -1)
 
-            resultSize = invokeBridge(inputPtr, outputBuffer, -1) { it }
+            resultSize = invokeBridge(inputPtr, outputBuffer = null, bufferSize = bufferSize) { it[0] }
+            assertEquals(resultSize, -1)
+
+            resultSize = invokeBridge(inputPtr, outputBuffer = outputBuffer, bufferSize = -1) { it[0] }
             assertEquals(resultSize, -1)
         }
     }
@@ -90,7 +121,7 @@ class BridgeTest {
             val inputPtr = input.cstr.getPointer(this)
             val outputBuffer = allocArray<ByteVar>(bufferSize)
 
-            val resultSize = invokeBridge(inputPtr, outputBuffer, bufferSize) { it }
+            val resultSize = invokeBridge(inputPtr, outputBuffer = outputBuffer, bufferSize = bufferSize) { it[0] }
 
             // Should return a negative number indicating the required size
             // As the response is wrapped in a BridgeResponse model it is bigger than input
@@ -107,7 +138,7 @@ class BridgeTest {
             val inputPtr = input.cstr.getPointer(this)
             val outputBuffer = allocArray<ByteVar>(bufferSize)
 
-            val resultSize = invokeBridge(inputPtr, outputBuffer, bufferSize) {
+            val resultSize = invokeBridge(inputPtr, outputBuffer = outputBuffer, bufferSize = bufferSize) {
                 throw RuntimeException("Something went wrong")
             }
 
