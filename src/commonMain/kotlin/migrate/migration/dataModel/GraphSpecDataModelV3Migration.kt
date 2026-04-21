@@ -81,22 +81,22 @@ class GraphSpecDataModelV3Migration :
         }.partition { it.first == "node" }
         return schemaMapOf(
             "dataSourceSchema" toNotEmpty convertSourceSchema(schema.mapOfMapsOrNull("tables")),
-            "nodeMappings" toNotEmpty nodeMappings,
-            "relationshipMappings" toNotEmpty relationshipMappings
+            "nodeMappings" toNotEmpty nodeMappings.map { it.second },
+            "relationshipMappings" toNotEmpty relationshipMappings.map { it.second }
         )
     }
 
     /**
      * Recovers the lost relationship ObjectType reference matching the unique combo of (token, from, to)
-      */
+     */
     private fun findRelationshipId(relationships: Map<String, SchemaMap>, mapping: SchemaMap): String? {
         val token = mapping.string("relationship")
         val fromNode = mapping.map("from").string("node")
         val toNode = mapping.map("to").string("node")
         return relationships.entries.firstOrNull { (_, rel) ->
             rel.string("type") == token &&
-                    rel.map("from").string("node") == fromNode &&
-                    rel.map("to").string("node") == toNode
+                rel.map("from").string("node") == fromNode &&
+                rel.map("to").string("node") == toNode
         }?.key
     }
 
@@ -104,7 +104,7 @@ class GraphSpecDataModelV3Migration :
         val typesMap: List<Map<String, Any?>>,
         val objectTypes: List<SchemaMap>,
         val constraints: List<SchemaMap>,
-        val indexes: List<SchemaMap>,
+        val indexes: List<SchemaMap>
     )
 
     private fun convertRelationships(schema: SchemaMap): RelationshipData? {
@@ -146,7 +146,7 @@ class GraphSpecDataModelV3Migration :
                     refKey = "relationshipType",
                     refId = typeId,
                     typeKey = "constraintType",
-                    typeTransform = ::constraintType,
+                    typeTransform = ::constraintType
                 )
             )
             indexes.addAll(
@@ -156,7 +156,7 @@ class GraphSpecDataModelV3Migration :
                     refKey = "relationshipType",
                     refId = typeId,
                     typeKey = "indexType",
-                    typeTransform = ::indexType,
+                    typeTransform = ::indexType
                 )
             )
         }
@@ -164,7 +164,7 @@ class GraphSpecDataModelV3Migration :
             typesMap = relTypesMap.values.map { it.toMap() },
             objectTypes = relationshipObjectTypes,
             constraints = constraints,
-            indexes = indexes,
+            indexes = indexes
         )
     }
 
@@ -221,7 +221,7 @@ class GraphSpecDataModelV3Migration :
                     refKey = "nodeLabel",
                     refId = primaryLabelId,
                     typeKey = "constraintType",
-                    typeTransform = ::constraintType,
+                    typeTransform = ::constraintType
                 )
             )
             indexes.addAll(
@@ -231,7 +231,7 @@ class GraphSpecDataModelV3Migration :
                     refKey = "nodeLabel",
                     refId = primaryLabelId,
                     typeKey = "indexType",
-                    typeTransform = ::indexType,
+                    typeTransform = ::indexType
                 )
             )
         }
@@ -296,7 +296,7 @@ class GraphSpecDataModelV3Migration :
         refKey: String,
         refId: String,
         typeKey: String,
-        typeTransform: (String) -> String,
+        typeTransform: (String) -> String
     ): List<SchemaMap> {
         if (elements.isNullOrEmpty()) {
             return emptyList()
@@ -307,9 +307,11 @@ class GraphSpecDataModelV3Migration :
                 typeKey to typeTransform(element.string("type")),
                 "entityType" to entityType,
                 refKey to schemaMapOf("\$ref" to "#$refId"),
-                "properties" to (element.listOrNull("properties")?.map { propId ->
-                    schemaMapOf("\$ref" to "#$propId")
-                } ?: emptyList())
+                "properties" to (
+                    element.listOrNull("properties")?.map { propId ->
+                        schemaMapOf("\$ref" to "#$propId")
+                    } ?: emptyList()
+                    )
             )
         }
     }
