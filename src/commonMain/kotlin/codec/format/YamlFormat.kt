@@ -73,12 +73,12 @@ class YamlFormat(private val yaml: Yaml, private val json: JsonFormat) : Format 
         SchemaNull -> YamlNull
     }
 
-    companion object Builder : Format.Builder {
-        override fun build() = YamlFormat(
+    companion object {
+        val default = YamlFormat(
             Yaml {
                 encodeDefaultValues = false
             },
-            JsonFormat.build()
+            JsonFormat.default
         )
     }
 }

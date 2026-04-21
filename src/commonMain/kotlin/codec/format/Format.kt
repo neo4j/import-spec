@@ -27,8 +27,4 @@ interface Format {
     fun encodeToSchema(model: GraphModel): SchemaElement
 
     fun decodeFromSchema(element: SchemaElement): GraphModel
-
-    interface Builder {
-        fun build(): Format
-    }
 }

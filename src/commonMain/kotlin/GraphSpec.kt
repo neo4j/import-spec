@@ -31,32 +31,31 @@ import kotlin.js.JsExport
 @JsExport
 sealed class GraphSpec(val configuration: GraphSpecConfig) {
     private val path = MigrationPath(configuration.migrations)
-    private val format = configuration.format.build()
 
     fun encodeToString(
         model: GraphModel,
         targetType: String = Type.GRAPH_SPEC,
         targetVersion: String = Version.LATEST
     ): String {
-        val schema = format.encodeToSchema(model)
+        val schema = configuration.format.encodeToSchema(model)
         var map = schema as? SchemaMap ?: error("Schema format expected")
         map = path.migrate(map, Type.GRAPH_SPEC, targetVersion, targetType)
-        return format.encodeToString(map)
+        return configuration.format.encodeToString(map)
     }
 
     fun decodeFromString(content: String, type: String = Type.GRAPH_SPEC): GraphModel {
-        val schema = format.decodeFromString(content)
+        val schema = configuration.format.decodeFromString(content)
         var map = schema as? SchemaMap ?: error("Schema format expected")
         map = path.migrate(map, type, Version.LATEST, Type.GRAPH_SPEC)
-        return format.decodeFromSchema(map)
+        return configuration.format.decodeFromSchema(map)
     }
 
-    object Json : GraphSpec(defaultConfig(JsonFormat.Builder))
+    object Json : GraphSpec(defaultConfig(JsonFormat.default))
 
-    object Yaml : GraphSpec(defaultConfig(YamlFormat.Builder))
+    object Yaml : GraphSpec(defaultConfig(YamlFormat.default))
 }
 
-internal fun defaultConfig(format: Format.Builder): GraphSpecConfig {
+private fun defaultConfig(format: Format): GraphSpecConfig {
     val builder = GraphSpecConfig.Builder(format)
     builder.migrate(DataModelV2V3Migration(Version.DATA_MODEL_V23))
     builder.migrate(DataModelV2V3Migration(Version.DATA_MODEL_V24))

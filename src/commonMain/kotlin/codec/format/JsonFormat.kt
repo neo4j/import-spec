@@ -67,8 +67,8 @@ class JsonFormat(private val json: Json) : Format {
         SchemaNull -> JsonNull
     }
 
-    companion object Builder : Format.Builder {
-        override fun build() = JsonFormat(
+    companion object {
+        val default = JsonFormat(
             Json {
                 ignoreUnknownKeys = true
                 isLenient = true

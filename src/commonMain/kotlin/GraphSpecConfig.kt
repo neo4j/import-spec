@@ -27,9 +27,9 @@ import kotlin.js.JsName
 class GraphSpecConfig(
     val validators: List<Validation>,
     val migrations: Map<String, List<Migration>>,
-    val format: Format.Builder,
+    val format: Format,
 ) {
-    class Builder(var format: Format.Builder) {
+    class Builder(var format: Format) {
         val validators = mutableListOf<Validation>()
         val migrations = mutableMapOf<String, MutableList<Migration>>()
 
@@ -45,12 +45,10 @@ class GraphSpecConfig(
                 ignoreUnknownKeys = true
                 isLenient = true
             }
-            this.format = object : Format.Builder {
-                override fun build() = JsonFormat(json)
-            }
+            this.format = JsonFormat(json)
         }
 
-        fun format(format: Format.Builder) {
+        fun format(format: Format) {
             this.format = format
         }
 
@@ -65,7 +63,7 @@ class GraphSpecConfig(
         fun build(): GraphSpecConfig = GraphSpecConfig(
             validators = validators,
             migrations = migrations,
-            format = format ?: error("No format provided."),
+            format = format,
         )
     }
 }
