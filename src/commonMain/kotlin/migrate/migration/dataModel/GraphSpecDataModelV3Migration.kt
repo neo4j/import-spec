@@ -52,7 +52,7 @@ class GraphSpecDataModelV3Migration :
                 )
             ),
             "graphMappingRepresentation" to convertGraphMapping(schema),
-            "visualisation" toNotEmpty convertVisualisation(schema.mapOfMapsOrNull("display"))
+            "visualisation" toNotEmpty convertVisualisation(schema.mapOrNull("display")?.mapOfMaps("nodes"))
         )
     }
 
@@ -322,8 +322,8 @@ class GraphSpecDataModelV3Migration :
         }
         return fields.values.map { field ->
             schemaMapOf(
-                "name" to field.literal("name"),
-                "rawType" to field.literalOrNull("rawType"),
+                "name" to field.literalOrNull("name"),
+                "rawType" to field.literalOrNull("type"),
                 "size" to field.literalOrNull("size"),
                 "recommendedType" to field.literalOrNull("suggested")?.let {
                     schemaMapOf("type" to it.string.toCamelCase())

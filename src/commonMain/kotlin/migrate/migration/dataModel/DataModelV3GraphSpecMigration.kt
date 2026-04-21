@@ -63,21 +63,21 @@ class DataModelV3GraphSpecMigration :
         )
     }
 
-    internal fun visualisation(schema: SchemaMap, nodes: MutableMap<String, SchemaMap>): Map<String, SchemaMap>? {
+    internal fun visualisation(schema: SchemaMap, nodes: MutableMap<String, SchemaMap>): SchemaMap? {
         val visualisation = schema.remove("visualisation") as? SchemaMap ?: return null
         val display = mutableMapOf<String, SchemaMap>()
         for (vis in visualisation.listOfMaps("nodes")) {
             val ref = vis.string("id")
             nodes[ref] ?: error("Unknown node $ref")
             val position = vis.map("position")
-            val x = position.literal("x")
-            val y = position.literal("y")
+            val x = position.string("x").toFloat()
+            val y = position.string("y").toFloat()
             display[ref] = schemaMapOf(
                 "x" to x,
                 "y" to y
             )
         }
-        return display
+        return schemaMapOf("nodes" to display)
     }
 
     internal fun gather(
@@ -303,7 +303,7 @@ class DataModelV3GraphSpecMigration :
             val name = field.string("name")
             fields[name] = schemaMapOf(
                 "name" to field.literal("name"),
-                "rawType" to field.literalOrNull("rawType"),
+                "type" to field.literalOrNull("rawType"),
                 "size" to field.literalOrNull("size"),
                 "suggested" to field.mapOrNull("recommendedType")?.string("type")?.uppercase(),
                 "supported" to field.listOfMapsOrNull("supportedTypes")?.map {

@@ -64,7 +64,7 @@ class DataModelV3GraphSpecMigrationTest {
 
         val result = migration.visualisation(schema, nodes)
         assertNotNull(result)
-        val node = result["nodeA"]
+        val node = result.mapOfMaps("nodes")["nodeA"]
         assertNotNull(node)
         assertEquals("10.1234", node.string("x"))
         assertEquals("20.54321", node.string("y"))
