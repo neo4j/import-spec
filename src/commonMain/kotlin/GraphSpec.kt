@@ -29,9 +29,9 @@ import model.Version
 import kotlin.js.JsExport
 
 @JsExport
-sealed class GraphSpec(val configuration: GraphSpecConfig, val builder: Format.Builder) {
+sealed class GraphSpec(val configuration: GraphSpecConfig) {
     private val path = MigrationPath(configuration.migrations)
-    private val format = builder.build()
+    private val format = configuration.format.build()
 
     fun encodeToString(
         model: GraphModel,
@@ -51,13 +51,13 @@ sealed class GraphSpec(val configuration: GraphSpecConfig, val builder: Format.B
         return format.decodeFromSchema(map)
     }
 
-    object Json : GraphSpec(defaultConfig(), JsonFormat.Builder)
+    object Json : GraphSpec(defaultConfig(JsonFormat.Builder))
 
-    object Yaml : GraphSpec(defaultConfig(), YamlFormat.Builder)
+    object Yaml : GraphSpec(defaultConfig(YamlFormat.Builder))
 }
 
-private fun defaultConfig(): GraphSpecConfig {
-    val builder = GraphSpecConfig.Builder()
+internal fun defaultConfig(format: Format.Builder): GraphSpecConfig {
+    val builder = GraphSpecConfig.Builder(format)
     builder.migrate(DataModelV2V3Migration(Version.DATA_MODEL_V23))
     builder.migrate(DataModelV2V3Migration(Version.DATA_MODEL_V24))
     builder.migrate(DataModelV3GraphSpecMigration())
@@ -66,12 +66,12 @@ private fun defaultConfig(): GraphSpecConfig {
     return builder.build()
 }
 
-private class GraphSpecImpl(configuration: GraphSpecConfig, format: Format.Builder) :
-    GraphSpec(configuration, format)
+private class GraphSpecImpl(configuration: GraphSpecConfig) :
+    GraphSpec(configuration)
 
 fun GraphSpec(from: GraphSpec = GraphSpec.Json, builderAction: GraphSpecConfig.Builder.() -> Unit): GraphSpec {
     val builder = GraphSpecConfig.Builder(from.configuration)
     builder.builderAction()
     val conf = builder.build()
-    return GraphSpecImpl(conf, from.builder)
+    return GraphSpecImpl(conf)
 }

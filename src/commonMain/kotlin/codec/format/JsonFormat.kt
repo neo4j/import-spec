@@ -72,6 +72,7 @@ class JsonFormat(private val json: Json) : Format {
             Json {
                 ignoreUnknownKeys = true
                 isLenient = true
+                prettyPrint = true
             }
         )
     }
