@@ -59,16 +59,16 @@ class SchemaElementTest {
     }
 
     @Test
-    fun `SchemaNull always has empty path`() {
-        val repathed = SchemaNull.repath("any.path")
-        assertEquals("", repathed.path)
+    fun `SchemaNull always has a path`() {
+        val repathed = SchemaNull("any.path")
+        assertEquals("any.path", repathed.path)
     }
 
     private val data = SchemaMap().apply {
         this["str"] = "hello"
         this["num"] = "123"
         this["flag"] = "true"
-        this["empty"] = SchemaNull
+        this["empty"] = SchemaNull()
         this["nested_map"] = mapOf("key" to SchemaLiteral("val"))
         this["nested_list"] = listOf(SchemaLiteral("item"))
     }

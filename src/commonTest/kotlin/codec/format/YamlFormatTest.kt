@@ -16,9 +16,9 @@
  */
 package codec.format
 
-import codec.schema.SchemaLiteral
 import codec.schema.SchemaMap
 import codec.schema.SchemaNull
+import codec.schema.SchemaLiteral
 import model.GraphModel
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -116,7 +116,7 @@ class YamlFormatTest {
     fun `test toYaml handles all schema types`() {
         val schemaMap = SchemaMap()
         schemaMap["name"] = "test"
-        schemaMap["items"] = listOf(SchemaLiteral("item1"), SchemaNull)
+        schemaMap["items"] = listOf(SchemaLiteral("item1"), SchemaNull())
 
         val yamlString = yamlFormat.encodeToString(schemaMap)
 

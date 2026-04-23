@@ -71,12 +71,10 @@ class JsonFormatTest {
         val schema = jsonFormat.decodeFromString(json) as SchemaMap
 
         assertIs<SchemaNull>(schema.content["missing"])
-        // In the current implementation, SchemaNull has a hardcoded path of ""
-        assertEquals("", schema.content["missing"]?.path)
+        assertEquals("missing", schema.content["missing"]?.path)
 
-        // Check round-trip consistency
         val backToJson = jsonFormat.encodeToString(schema)
-        assertTrue(backToJson.contains("\"missing\":null"))
+        assertTrue(backToJson.contains("\"missing\": null"))
     }
 
     @Test
@@ -141,8 +139,10 @@ class JsonFormatTest {
         val json = """{ "id": "123", "meta": { "active": true } }"""
         val schema = jsonFormat.decodeFromString(json) as SchemaMap
 
+        println(schema)
         // Try to access a literal as a map
         val ex1 = assertFailsWith<IllegalStateException> { schema.map("id") }
+        println(ex1.message)
         assertTrue(ex1.message!!.contains("Expected map, found invalid type SchemaLiteral at id"))
 
         // Try to access a missing key

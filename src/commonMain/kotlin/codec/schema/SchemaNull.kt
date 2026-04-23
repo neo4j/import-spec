@@ -16,12 +16,13 @@
  */
 package codec.schema
 
-object SchemaNull : SchemaPrimitive() { // TODO data object
-    override fun repath(newPath: String) = SchemaNull
+data class SchemaNull(override val path: String = "") : SchemaPrimitive() {
+    override fun repath(newPath: String) = SchemaNull(newPath)
+
+    override fun toString() = "null"
+
+    override val string: String = "null"
 
     override val isString: Boolean
         get() = false
-
-    override val path: String = ""
-    override val string: String = "null"
 }

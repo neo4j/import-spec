@@ -18,9 +18,9 @@ package codec.format
 
 import codec.schema.SchemaElement
 import codec.schema.SchemaList
-import codec.schema.SchemaLiteral
 import codec.schema.SchemaMap
 import codec.schema.SchemaNull
+import codec.schema.SchemaLiteral
 import model.GraphModel
 import net.mamoe.yamlkt.Yaml
 import net.mamoe.yamlkt.YamlElement
@@ -62,15 +62,16 @@ class YamlFormat(private val yaml: Yaml, private val json: JsonFormat) : Format 
                     .toMutableMap()
             SchemaMap(content, parent)
         }
-        is YamlLiteral -> SchemaLiteral(yaml.content, parent)
-        YamlNull -> SchemaNull
+        is YamlPrimitive -> yaml.content?.let { SchemaLiteral(it, parent, isString = true) } ?: SchemaNull(parent)
+        is YamlLiteral -> SchemaLiteral(yaml.content, parent, isString = false)
+        YamlNull -> SchemaNull(parent)
     }
 
     fun SchemaElement.toYaml(): YamlElement = when (this) {
         is SchemaList -> YamlList(content.map { it.toYaml() })
         is SchemaMap -> YamlMap(content.mapValues { (_, value) -> value.toYaml() })
-        is SchemaLiteral -> YamlPrimitive(string)
-        SchemaNull -> YamlNull
+        is SchemaLiteral -> if (isString) YamlPrimitive(string) else YamlLiteral(string)
+        is SchemaNull -> YamlNull
     }
 
     companion object {

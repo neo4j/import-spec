@@ -32,6 +32,4 @@ data class SchemaList(val content: MutableList<SchemaElement>, override val path
     override fun toString(): String = content.joinToString(prefix = "[", postfix = "]", separator = ",")
 }
 
-fun schemaListOf(vararg elements: SchemaElement): SchemaList = SchemaList(elements.toMutableList())
-
-fun schemaListOf(vararg elements: String): SchemaList = SchemaList(elements.map { SchemaLiteral(it) }.toMutableList())
+fun schemaListOf(vararg elements: Any?): SchemaList = SchemaList(elements.map { it.toSchemaElement() }.toMutableList())

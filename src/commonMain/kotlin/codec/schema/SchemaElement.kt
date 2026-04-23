@@ -30,14 +30,16 @@ sealed interface SchemaElement {
 /**
  * Recursively convert anything to a SchemaElement
  */
-fun Any?.toSchemaElement(): SchemaElement = when (this) {
-    null -> SchemaNull
-    is SchemaElement -> this
+fun Any?.toSchemaElement(path: String = ""): SchemaElement = when (this) {
+    null -> SchemaNull(path)
+    is SchemaElement -> this.repath(path)
     is Map<*, *> -> SchemaMap(
         entries.associate { (k, v) ->
             k.toString() to v.toSchemaElement().repath(k.toString())
-        }.toMutableMap()
+        }.toMutableMap(),
+        path
     )
-    is Iterable<*> -> SchemaList(map { it.toSchemaElement() }.toMutableList())
-    else -> SchemaLiteral(toString())
+    is Iterable<*> -> SchemaList(map { it.toSchemaElement() }.toMutableList(), path)
+    is String -> SchemaLiteral(toString(), path, isString = true)
+    else -> SchemaLiteral(toString(), path, isString = false)
 }

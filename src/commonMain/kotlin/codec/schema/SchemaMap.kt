@@ -47,36 +47,8 @@ data class SchemaMap(val content: MutableMap<String, SchemaElement> = mutableMap
         }
     )
 
-    operator fun set(key: String, value: Boolean) {
-        content[key] = SchemaLiteral(value.toString(), path(key))
-    }
-
-    operator fun set(key: String, value: String) {
-        content[key] = SchemaLiteral(value, path(key))
-    }
-
-    operator fun set(key: String, value: Map<String, SchemaElement>) {
-        put(key, SchemaMap(value.toMutableMap()))
-    }
-
-    operator fun set(key: String, value: List<SchemaElement>) {
-        put(key, SchemaList(value.toMutableList()))
-    }
-
-    operator fun set(key: String, value: SchemaElement) {
-        put(key, value)
-    }
-
-    operator fun set(key: String, value: SchemaMap) {
-        put(key, value)
-    }
-
-    operator fun set(key: String, value: SchemaList) {
-        put(key, value)
-    }
-
-    operator fun set(key: String, value: SchemaLiteral) {
-        put(key, value)
+    operator fun set(key: String, value: Any?) {
+        content[key] = value.toSchemaElement(path(key))
     }
 
     fun remove(key: String) = content.remove(key)
@@ -111,9 +83,9 @@ data class SchemaMap(val content: MutableMap<String, SchemaElement> = mutableMap
 
     fun mapOrPut(key: String): SchemaMap = content.getOrPut(key) { SchemaMap(path = path(key)) } as SchemaMap
 
-    fun literal(key: String): SchemaLiteral {
+    fun literal(key: String): SchemaPrimitive {
         val literal = content[key] ?: error("Missing required literal at ${path(key)}")
-        return literal as? SchemaLiteral
+        return literal as? SchemaPrimitive
             ?: error("Expected literal, found invalid type ${literal::class.simpleName} at ${path(key)}")
     }
 
