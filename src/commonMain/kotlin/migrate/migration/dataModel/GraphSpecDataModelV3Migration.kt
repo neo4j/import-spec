@@ -18,7 +18,6 @@ package migrate.migration.dataModel
 
 import codec.schema.SchemaLiteral
 import codec.schema.SchemaMap
-import codec.schema.buildSchemaMap
 import codec.schema.schemaMapOf
 import codec.schema.toNotEmpty
 import migrate.Migration
@@ -188,16 +187,21 @@ class GraphSpecDataModelV3Migration :
         val indexes = mutableListOf<SchemaMap>()
         val nodes = schema.mapOfMapsOrNull("nodes") ?: return null
         val nodeLabelsMap = mutableMapOf<String, MutableMap<String, Any?>>()
+        var nodeLabelCount = 0
         val nodeObjectTypes = mutableListOf<SchemaMap>()
         for ((nodeId, node) in nodes) {
             val labelsInfo = node.map("labels")
             val primaryLabel = labelsInfo.string("identifier")
             val impliedLabels = labelsInfo.listOrNull("implied")?.map { it.toString() } ?: emptyList()
-            val allLabels = listOf(primaryLabel) + impliedLabels
+            val optionalLabels = labelsInfo.listOrNull("optional")?.map { it.toString() } ?: emptyList()
+            val allLabels = listOf(primaryLabel) + impliedLabels + optionalLabels
 
-            val nodeIndex = nodeId.removePrefix("n:")
+            var primaryLabelId = "nl:null"
             val labelRefs = allLabels.map { label ->
-                val labelId = "nl:$nodeIndex"
+                val labelId = "nl:${nodeLabelCount++}"
+                if (label == primaryLabel) {
+                    primaryLabelId = labelId
+                }
                 if (labelId !in nodeLabelsMap) {
                     nodeLabelsMap[labelId] = mutableMapOf(
                         "\$id" to labelId,
@@ -209,7 +213,6 @@ class GraphSpecDataModelV3Migration :
             }
 
             // Map properties back to the primary label
-            val primaryLabelId = "nl:$nodeIndex"
             val existingProps = nodeLabelsMap[primaryLabelId]!!["properties"] as MutableList<SchemaMap>
             val currentPropIds = existingProps.map { it.id() }.toSet()
 
@@ -282,19 +285,9 @@ class GraphSpecDataModelV3Migration :
                         "y" to pos.literal("y")
                     )
                 )
-            },
-            "tables" to convertTableFields(schema)
+            }
         )
     }
-
-    internal fun convertTableFields(schema: SchemaMap): Map<String, SchemaMap>? =
-        schema.mapOfMapsOrNull("tables")?.mapNotNull { (tableId, table) ->
-            if (table.stringOrNull("expanded") == "true") {
-                tableId to schemaMapOf("expanded" to "true")
-            } else {
-                null
-            }
-        }?.toMap()
 
     internal fun convertProperties(properties: Map<String, SchemaMap>?): List<SchemaMap> {
         if (properties.isNullOrEmpty()) return emptyList()

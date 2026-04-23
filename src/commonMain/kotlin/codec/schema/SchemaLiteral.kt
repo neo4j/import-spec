@@ -16,12 +16,13 @@
  */
 package codec.schema
 
-data class SchemaLiteral(override val string: String, override val path: String = "") : SchemaPrimitive() {
+data class SchemaLiteral(
+    override val string: String,
+    override val path: String = "",
+    override val isString: Boolean = true
+) : SchemaPrimitive() {
 
-    override fun repath(newPath: String) = SchemaLiteral(string, newPath)
-
-    override val isString: Boolean
-        get() = true
+    override fun repath(newPath: String) = SchemaLiteral(string, newPath, isString)
 
     override fun toString(): String = string
 

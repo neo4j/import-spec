@@ -46,10 +46,12 @@ class GraphSpecDataModelV3MigrationTest {
         val result = migration.migrate(input)
 
         // Verify Node Labels
-        val nodeLabels = result.map("graphSchemaRepresentation").map("graphSchema").listOfMaps("nodeLabels")
+        val nodeLabels = result.map(
+            "dataModel"
+        ).map("graphSchemaRepresentation").map("graphSchema").listOfMaps("nodeLabels")
         assertEquals(2, nodeLabels.size)
         val personLabel = nodeLabels.first { it.string("token") == "Person" }
-        assertEquals("nl:Person", personLabel.string("\$id"))
+        assertEquals("nl:0", personLabel.string("\$id"))
 
         // Verify Properties moved to Label
         val props = personLabel.listOfMaps("properties")
@@ -57,10 +59,12 @@ class GraphSpecDataModelV3MigrationTest {
         assertEquals("string", props[0].map("type").string("type"))
 
         // Verify Object Type
-        val nodeObjectTypes = result.map("graphSchemaRepresentation").map("graphSchema").listOfMaps("nodeObjectTypes")
+        val nodeObjectTypes = result.map(
+            "dataModel"
+        ).map("graphSchemaRepresentation").map("graphSchema").listOfMaps("nodeObjectTypes")
         assertEquals("node1", nodeObjectTypes[0].string("\$id"))
         val labelRefs = nodeObjectTypes[0].listOfMaps("labels")
-        assertEquals("#nl:Person", labelRefs[0].string("\$ref"))
+        assertEquals("#nl:0", labelRefs[0].string("\$ref"))
     }
 
     @Test
@@ -80,16 +84,16 @@ class GraphSpecDataModelV3MigrationTest {
         )
 
         val result = migration.migrate(input)
-        val schema = result.map("graphSchemaRepresentation").map("graphSchema")
+        val schema = result.map("dataModel").map("graphSchemaRepresentation").map("graphSchema")
 
         // Verify Relationship Type
         val relTypes = schema.listOfMaps("relationshipTypes")
-        assertEquals("rt:WORKS_AT", relTypes[0].string("\$id"))
+        assertEquals("rt:rel1", relTypes[0].string("\$id"))
 
         // Verify Relationship Object Type (the link between nodes)
         val relObjectTypes = schema.listOfMaps("relationshipObjectTypes")
         assertEquals("rel1", relObjectTypes[0].string("\$id"))
-        assertEquals("#rt:WORKS_AT", relObjectTypes[0].map("type").string("\$ref"))
+        assertEquals("#rt:rel1", relObjectTypes[0].map("type").string("\$ref"))
         assertEquals("#n1", relObjectTypes[0].map("from").string("\$ref"))
     }
 
@@ -110,11 +114,11 @@ class GraphSpecDataModelV3MigrationTest {
         )
 
         val result = migration.migrate(input)
-        val graphSchema = result.map("graphSchemaRepresentation").map("graphSchema")
+        val graphSchema = result.map("dataModel").map("graphSchemaRepresentation").map("graphSchema")
 
         val constraint = graphSchema.listOfMaps("constraints")[0]
         assertEquals("uniqueness", constraint.string("constraintType"))
-        assertEquals("#nl:User", constraint.map("nodeLabel").string("\$ref"))
+        assertEquals("#nl:0", constraint.map("nodeLabel").string("\$ref"))
 
         val index = graphSchema.listOfMaps("indexes")[0]
         assertEquals("range", index.string("indexType"))
@@ -149,7 +153,7 @@ class GraphSpecDataModelV3MigrationTest {
         )
 
         val result = migration.migrate(input)
-        val relMappings = result.map("graphMappingRepresentation").listOfMaps("relationshipMappings")
+        val relMappings = result.map("dataModel").map("graphMappingRepresentation").listOfMaps("relationshipMappings")
 
         assertEquals(1, relMappings.size)
         // Verify that findRelationshipId matched "FOLLOWS" + "User" -> "User" to "actual_rel_id"
@@ -179,8 +183,10 @@ class GraphSpecDataModelV3MigrationTest {
     @Test
     fun `convertVisualisation transforms coordinates correctly`() {
         val display = schemaMapOf(
-            "nodes" to schemaMapOf(
-                "node1" to schemaMapOf("x" to 100.23, "y" to 200.12)
+            "display" to schemaMapOf(
+                "nodes" to schemaMapOf(
+                    "node1" to schemaMapOf("x" to 100.23, "y" to 200.12)
+                )
             )
         )
 

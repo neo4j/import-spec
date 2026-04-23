@@ -25,28 +25,18 @@ import model.extension.ExtensionValueJs
 import model.extension.toClass
 import model.extension.toJs
 import model.jso
-import model.node.LabelsJs
-import model.node.Node
-import model.node.NodeConstraintJs
-import model.node.NodeIndexJs
-import model.node.labelsJs
-import model.node.toClass
-import model.node.toJs
-import model.property.PropertyJs
-import model.property.toClass
-import model.property.toJs
 import kotlin.collections.component1
 import kotlin.collections.component2
 
 @JsExport
 @JsPlainObject
 external interface NodeDisplayJs {
-    var x: Float
-    var y: Float
+    var x: Double
+    var y: Double
     val extensions: Record<String, ExtensionValueJs>
 }
 
-fun nodeDisplayJs(x: Float, y: Float, extensions: Record<String, ExtensionValueJs> = emptyRecord()): NodeDisplayJs =
+fun nodeDisplayJs(x: Double, y: Double, extensions: Record<String, ExtensionValueJs> = emptyRecord()): NodeDisplayJs =
     jso {
         this.x = x
         this.y = y

@@ -70,11 +70,9 @@ class DataModelV3GraphSpecMigration :
             val ref = vis.string("id")
             nodes[ref] ?: error("Unknown node $ref")
             val position = vis.map("position")
-            val x = position.string("x").toFloat()
-            val y = position.string("y").toFloat()
             display[ref] = schemaMapOf(
-                "x" to x,
-                "y" to y
+                "x" to position.literal("x"),
+                "y" to position.literal("y")
             )
         }
         return schemaMapOf("nodes" to display)
