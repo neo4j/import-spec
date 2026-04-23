@@ -49,10 +49,11 @@ class DataModelV3GraphSpecMigration :
 
     override fun migrate(schema: SchemaMap): SchemaMap {
         val schema = unwrap(schema)
+        val extensions = schema.map("graphSchemaExtensionsRepresentation").listOfMapsOrNull("nodeKeyProperties")
         val graphSchema = schema.map("graphSchemaRepresentation").map("graphSchema")
         val (nodeConstraints, relationshipConstraints) = gather(graphSchema, "constraints")
         val (nodeIndexes, relationshipIndexes) = gather(graphSchema, "indexes")
-        val nodes = migrateNodes(graphSchema, nodeConstraints, nodeIndexes)
+        val nodes = migrateNodes(graphSchema, nodeConstraints, nodeIndexes, extensions)
         return schemaMapOf(
             "version" to schema.literal("version"),
             "nodes" to nodes,
@@ -92,10 +93,14 @@ class DataModelV3GraphSpecMigration :
     internal fun migrateNodes(
         schema: SchemaMap,
         constraints: Map<String, List<SchemaMap>>,
-        indexes: Map<String, List<SchemaMap>>
+        indexes: Map<String, List<SchemaMap>>,
+        nodeKeyProperties: List<SchemaMap>?
     ): MutableMap<String, SchemaMap> {
         val nodes = mutableMapOf<String, SchemaMap>()
         val nodeLabels = schema.listOfMaps("nodeLabels").associateBy { it.id() }
+        val nodeKeys = nodeKeyProperties?.associate { nkp ->
+            nkp.ref("node") to nkp.listOfMaps("keyProperties").map { it.ref() }.toSet()
+        } ?: emptyMap()
         for (nodeObject in schema.listOfMaps("nodeObjectTypes")) {
             val labelRefs = nodeObject.listOfMaps("labels").map { it.ref() }
             val labels = labelRefs.map { labelRef ->
@@ -104,7 +109,8 @@ class DataModelV3GraphSpecMigration :
             val tokens = labels.map { it.string("token") }
             val labelRef = labelRefs.firstOrNull() // TODO loop all
             val primaryLabel = tokens.first()
-            nodes[nodeObject.id()] = schemaMapOf(
+            val id = nodeObject.id()
+            nodes[id] = schemaMapOf(
                 "labels" to schemaMapOf(
                     "identifier" to primaryLabel,
                     "implied" toNotEmpty tokens.drop(1)
@@ -112,7 +118,7 @@ class DataModelV3GraphSpecMigration :
                 ),
                 "constraints" toNotEmpty convertConstraints(constraints, labelRef, primaryLabel),
                 "indexes" toNotEmpty convertIndexes(indexes, labelRef, primaryLabel),
-                "properties" toNotEmpty convertProperties(labels),
+                "properties" toNotEmpty convertProperties(labels, nodeKeys[id] ?: emptySet()),
                 "name" to tokens.firstOrNull()
             )
         }
@@ -193,16 +199,25 @@ class DataModelV3GraphSpecMigration :
         return relationships
     }
 
-    internal fun convertProperties(labels: List<SchemaMap>): Map<String, SchemaMap> = labels
+    internal fun convertProperties(
+        labels: List<SchemaMap>,
+        keyProperties: Set<String> = emptySet()
+    ): Map<String, SchemaMap> = labels
         .flatMap { label -> label.listOfMaps("properties") }
         .associate { property ->
             val typeObj = property.map("type") // TODO arrays
             // TODO constraints
-            property.id() to schemaMapOf(
+            val map = schemaMapOf(
                 "name" to property.literalOrNull("token"),
                 "type" to typeObj.string("type").uppercase(),
                 "nullable" to typeObj.literalOrNull("nullable")
             )
+            val id = property.id()
+            if (keyProperties.contains(id)) {
+                map["nullable"] = false
+                map["unique"] = true
+            }
+            id to map
         }
 
     internal fun relationshipMappings(schema: SchemaMap): List<SchemaMap> {

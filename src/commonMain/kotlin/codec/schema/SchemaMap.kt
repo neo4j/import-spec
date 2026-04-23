@@ -93,7 +93,7 @@ data class SchemaMap(val content: MutableMap<String, SchemaElement> = mutableMap
 
     fun bool(key: String) = string(key).toBooleanStrict()
 
-    fun boolOrNull(key: String) = string(key).toBooleanStrictOrNull()
+    fun boolOrNull(key: String) = stringOrNull(key)?.toBooleanStrictOrNull()
 
     fun string(key: String) = literal(key).string
 

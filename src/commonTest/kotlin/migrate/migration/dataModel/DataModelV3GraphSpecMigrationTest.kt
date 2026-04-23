@@ -111,7 +111,7 @@ class DataModelV3GraphSpecMigrationTest {
             )
         )
 
-        val nodes = migration.migrateNodes(graphSchema, emptyMap(), emptyMap())
+        val nodes = migration.migrateNodes(graphSchema, emptyMap(), emptyMap(), emptyList())
 
         val node = nodes["nodeObj"]
         assertNotNull(node)
@@ -147,7 +147,7 @@ class DataModelV3GraphSpecMigrationTest {
             )
         )
 
-        val nodes = migration.migrateNodes(graphSchema, emptyMap(), emptyMap())
+        val nodes = migration.migrateNodes(graphSchema, emptyMap(), emptyMap(), emptyList())
 
         val migratedNode = nodes["nodeObj1"]
         assertNotNull(migratedNode)
@@ -326,7 +326,7 @@ class DataModelV3GraphSpecMigrationTest {
             )
         )
 
-        val result = migration.convertProperties(labels)
+        val result = migration.convertProperties(labels, emptySet())
 
         assertEquals("STRING", result["p1"]?.string("type"))
         assertEquals("INT", result["p2"]?.string("type"))

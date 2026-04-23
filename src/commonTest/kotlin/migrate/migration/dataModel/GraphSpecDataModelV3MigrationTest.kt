@@ -17,10 +17,14 @@
 package migrate.migration.dataModel
 
 import codec.schema.SchemaLiteral
+import codec.schema.SchemaNull
 import codec.schema.schemaMapOf
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
+import kotlin.test.assertNull
+import kotlin.test.assertTrue
 
 class GraphSpecDataModelV3MigrationTest {
 
@@ -68,6 +72,32 @@ class GraphSpecDataModelV3MigrationTest {
     }
 
     @Test
+    fun `migrate deduplicates properties when multiple nodes share the same primary label`() {
+        val input = schemaMapOf(
+            "nodes" to schemaMapOf(
+                "n1" to schemaMapOf(
+                    "labels" to schemaMapOf("identifier" to "Person"),
+                    "properties" to schemaMapOf("p1" to schemaMapOf("name" to "name", "type" to "STRING"))
+                ),
+                "n2" to schemaMapOf(
+                    "labels" to schemaMapOf("identifier" to "Person"),
+                    "properties" to schemaMapOf("p1" to schemaMapOf("name" to "name", "type" to "STRING"))
+                )
+            )
+        )
+
+        val result = migration.migrate(input)
+        val nodeLabels = result.map("dataModel").map("graphSchemaRepresentation")
+            .map("graphSchema").listOfMaps("nodeLabels")
+
+        // The logic creates a new ID nl:0, nl:1 for every label found in the loop.
+        // However, the test verifies if the properties list for a specific label ID remains unique.
+        val personLabel = nodeLabels.first { it.string("token") == "Person" }
+        val props = personLabel.listOfMaps("properties")
+        assertEquals(1, props.size, "Property p1 should not be duplicated in the label definition")
+    }
+
+    @Test
     fun `migrate converts relationships and handles ObjectType references`() {
         val input = schemaMapOf(
             "nodes" to schemaMapOf("n1" to schemaMapOf("labels" to schemaMapOf("identifier" to "A"))),
@@ -95,6 +125,33 @@ class GraphSpecDataModelV3MigrationTest {
         assertEquals("rel1", relObjectTypes[0].string("\$id"))
         assertEquals("#rt:rel1", relObjectTypes[0].map("type").string("\$ref"))
         assertEquals("#n1", relObjectTypes[0].map("from").string("\$ref"))
+    }
+
+    @Test
+    fun `migrate handles relationship constraints and sets relationshipType ref`() {
+        val input = schemaMapOf(
+            "relationships" to schemaMapOf(
+                "r:1" to schemaMapOf(
+                    "type" to "LIVES_IN",
+                    "from" to schemaMapOf("node" to "n1"),
+                    "to" to schemaMapOf("node" to "n2"),
+                    "constraints" to schemaMapOf(
+                        "rel_uniq" to schemaMapOf("type" to "UNIQUE", "properties" to listOf("p1"))
+                    )
+                )
+            )
+        )
+
+        val result = migration.migrate(input)
+        val constraints = result.map("dataModel").map("graphSchemaRepresentation")
+            .map("graphSchema").listOfMaps("constraints")
+
+        val relConstraint = constraints[0]
+        assertEquals("c:1", relConstraint.string("\$id"))
+        assertEquals("relationship", relConstraint.string("entityType"))
+        assertEquals("#rt:1", relConstraint.map("relationshipType").string("\$ref"))
+        // Ensure nodeLabel is specifically SchemaNull
+        assertTrue(relConstraint["nodeLabel"] is SchemaNull)
     }
 
     @Test
@@ -162,6 +219,85 @@ class GraphSpecDataModelV3MigrationTest {
     }
 
     @Test
+    fun `convertGraphMapping ignores relationship mappings that cannot be resolved`() {
+        val input = schemaMapOf(
+            "relationships" to schemaMapOf(), // Empty
+            "mappings" to listOf(
+                schemaMapOf(
+                    "relationship" to "NON_EXISTENT",
+                    "from" to schemaMapOf("node" to "A"),
+                    "to" to schemaMapOf("node" to "B")
+                )
+            )
+        )
+
+        val result = migration.migrate(input)
+        val relMappings = result.map(
+            "dataModel"
+        ).map("graphMappingRepresentation").listOfMapsOrNull("relationshipMappings")
+        assertNull(relMappings)
+    }
+
+    @Test
+    fun `convertExtensions identifies key properties only when non-nullable and unique`() {
+        val input = schemaMapOf(
+            "nodes" to schemaMapOf(
+                "n1" to schemaMapOf(
+                    "properties" to schemaMapOf(
+                        "p1" to schemaMapOf("nullable" to false, "unique" to true), // Key
+                        "p2" to schemaMapOf("nullable" to true, "unique" to true), // Not Key (nullable)
+                        "p3" to schemaMapOf("nullable" to false, "unique" to false) // Not Key (not unique)
+                    )
+                )
+            )
+        )
+
+        val result = migration.convertExtensions(input)
+        assertNotNull(result)
+        val nodeKeyProps = result.listOfMaps("nodeKeyProperties")
+
+        assertEquals(1, nodeKeyProps.size)
+        assertEquals("#n1", nodeKeyProps[0].map("node").string("\$ref"))
+        val keys = nodeKeyProps[0].listOfMaps("keyProperties")
+        assertEquals(1, keys.size)
+        assertEquals("#p1", keys[0].string("\$ref"))
+    }
+
+    @Test
+    fun `convertSourceSchema handles complex foreign keys correctly`() {
+        val input = schemaMapOf(
+            "tables" to schemaMapOf(
+                "Orders" to schemaMapOf(
+                    "source" to "SQL",
+                    "foreignKeys" to schemaMapOf(
+                        "fk_customer" to schemaMapOf(
+                            "fields" to listOf("cust_id", "region_id"),
+                            "references" to schemaMapOf(
+                                "table" to "Customers",
+                                "fields" to listOf("id", "reg_id")
+                            )
+                        )
+                    )
+                )
+            )
+        )
+
+        val result = migration.migrate(input)
+        val tableSchemas = result.map("dataModel").map("graphMappingRepresentation")
+            .map("dataSourceSchema").listOfMaps("tableSchemas")
+
+        val fk = tableSchemas[0].listOfMaps("foreignKeys")[0]
+        assertEquals("Customers", fk.string("referencedTable"))
+
+        val fields = fk.listOfMaps("fields")
+        assertEquals(2, fields.size)
+        assertEquals("cust_id", fields[0].string("field"))
+        assertEquals("id", fields[0].string("referencedField"))
+        assertEquals("region_id", fields[1].string("field"))
+        assertEquals("reg_id", fields[1].string("referencedField"))
+    }
+
+    @Test
     fun `convertFields transforms raw types to camelCase recommended types`() {
         val fieldsInput = mapOf(
             "f1" to schemaMapOf(
@@ -197,5 +333,20 @@ class GraphSpecDataModelV3MigrationTest {
         assertEquals("node1", nodes[0].string("id"))
         assertEquals(100.23, nodes[0].map("position").string("x").toDouble())
         assertEquals(200.12, nodes[0].map("position").string("y").toDouble())
+    }
+
+    @Test
+    fun `migrate handles completely empty schema without crashing`() {
+        val emptyInput = schemaMapOf("version" to "2.0")
+
+        val result = migration.migrate(emptyInput)
+
+        val graphSchema = result.map("dataModel").map("graphSchemaRepresentation").map("graphSchema")
+
+        // toNotEmpty should cause these to be missing or empty depending on implementation
+        assertFalse(graphSchema.containsKey("nodeLabels"))
+        assertFalse(graphSchema.containsKey("relationshipTypes"))
+        assertEquals(0, graphSchema.listOfMaps("constraints").size)
+        assertEquals(0, graphSchema.listOfMaps("indexes").size)
     }
 }

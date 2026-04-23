@@ -17,6 +17,7 @@
 package migrate.migration.dataModel
 
 import codec.schema.SchemaMap
+import codec.schema.schemaMapOf
 
 internal fun SchemaMap.ref() = string("\$ref").removePrefix("#")
 
@@ -34,3 +35,5 @@ internal fun unwrap(schema: SchemaMap): SchemaMap {
     }
     return schema
 }
+
+internal fun refOf(id: String) = schemaMapOf("\$ref" to "#${id.removePrefix("#")}")

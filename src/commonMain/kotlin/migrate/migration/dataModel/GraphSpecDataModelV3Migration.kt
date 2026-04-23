@@ -18,6 +18,7 @@ package migrate.migration.dataModel
 
 import codec.schema.SchemaLiteral
 import codec.schema.SchemaMap
+import codec.schema.SchemaNull
 import codec.schema.schemaMapOf
 import codec.schema.toNotEmpty
 import migrate.Migration
@@ -50,11 +51,12 @@ class GraphSpecDataModelV3Migration :
                         "relationshipTypes" toNotEmpty relData?.typesMap,
                         "nodeObjectTypes" toNotEmpty nodeData?.objectTypes,
                         "relationshipObjectTypes" toNotEmpty relData?.objectTypes,
-                        "constraints" toNotEmpty (nodeData?.constraints.orEmpty() + relData?.constraints.orEmpty()),
-                        "indexes" toNotEmpty (nodeData?.indexes.orEmpty() + relData?.indexes.orEmpty())
+                        "constraints" to (nodeData?.constraints.orEmpty() + relData?.constraints.orEmpty()),
+                        "indexes" to (nodeData?.indexes.orEmpty() + relData?.indexes.orEmpty())
                     )
                 ),
-                "graphMappingRepresentation" to convertGraphMapping(schema)
+                "graphMappingRepresentation" to convertGraphMapping(schema),
+                "graphSchemaExtensionsRepresentation" to convertExtensions(schema)
             ),
             "visualisation" toNotEmpty convertVisualisation(schema)
         )
@@ -66,27 +68,56 @@ class GraphSpecDataModelV3Migration :
         val (nodeMappings, relationshipMappings) = mappings.mapNotNull { mapping ->
             when {
                 mapping.containsKey("node") -> "node" to schemaMapOf(
-                    "node" to schemaMapOf("\$ref" to "#${mapping.string("node")}"),
+                    "node" to refOf(mapping.string("node")),
                     "tableName" to mapping.literal("table"),
-                    "propertyMappings" toNotEmpty convertPropertyMappings(mapping.mapOfMapsOrNull("properties"))
+                    "propertyMappings" to convertPropertyMappings(mapping.mapOfMapsOrNull("properties"))
                 )
                 mapping.containsKey("relationship") -> {
                     val relId = findRelationshipId(relationships, mapping) ?: return@mapNotNull null
                     "rel" to schemaMapOf(
-                        "relationship" to schemaMapOf("\$ref" to "#$relId"),
+                        "relationship" to refOf(relId),
                         "tableName" to mapping.literal("table"),
-                        "propertyMappings" toNotEmpty convertPropertyMappings(mapping.mapOfMapsOrNull("properties")),
                         "fromMappings" toNotEmpty convertEntityMap(mapping.map("from").mapOfMapsOrNull("properties")),
-                        "toMappings" toNotEmpty convertEntityMap(mapping.map("to").mapOfMapsOrNull("properties"))
+                        "toMappings" toNotEmpty convertEntityMap(mapping.map("to").mapOfMapsOrNull("properties")),
+                        "propertyMappings" to convertPropertyMappings(mapping.mapOfMapsOrNull("properties"))
                     )
                 }
-                else -> null
+                else -> error("Invalid mapping type, must be node or relationship.")
             }
         }.partition { it.first == "node" }
         return schemaMapOf(
             "dataSourceSchema" toNotEmpty convertSourceSchema(schema.mapOfMapsOrNull("tables")),
             "nodeMappings" toNotEmpty nodeMappings.map { it.second },
             "relationshipMappings" toNotEmpty relationshipMappings.map { it.second }
+        )
+    }
+
+    internal fun convertExtensions(schema: SchemaMap): SchemaMap? {
+        val nodes = schema.mapOfMapsOrNull("nodes") ?: return null
+        val nodeKeyProperties = mutableListOf<SchemaMap>()
+        for ((nodeId, node) in nodes) {
+            val properties = node.mapOfMapsOrNull("properties") ?: continue
+            val keyProperties = mutableSetOf<String>()
+            for ((propertyId, property) in properties) {
+                val nullable = property.boolOrNull("nullable") == true
+                val unique = property.boolOrNull("unique") == true
+                if (!nullable && unique) {
+                    keyProperties.add(propertyId)
+                }
+            }
+            if (keyProperties.isNotEmpty()) {
+                nodeKeyProperties.add(
+                    schemaMapOf(
+                        "node" to refOf(nodeId),
+                        "keyProperties" to keyProperties.map { id ->
+                            refOf(id)
+                        }
+                    )
+                )
+            }
+        }
+        return schemaMapOf(
+            "nodeKeyProperties" toNotEmpty nodeKeyProperties
         )
     }
 
@@ -138,9 +169,9 @@ class GraphSpecDataModelV3Migration :
             relationshipObjectTypes.add(
                 schemaMapOf(
                     "\$id" to relId,
-                    "type" to schemaMapOf("\$ref" to "#$typeId"),
-                    "from" to schemaMapOf("\$ref" to "#${rel.map("from").string("node")}"),
-                    "to" to schemaMapOf("\$ref" to "#${rel.map("to").string("node")}")
+                    "type" to refOf(typeId),
+                    "from" to refOf(rel.map("from").string("node")),
+                    "to" to refOf(rel.map("to").string("node"))
                 )
             )
 
@@ -149,7 +180,6 @@ class GraphSpecDataModelV3Migration :
                     id = relId.replace("r:", "c:"),
                     elements = rel.mapOfMapsOrNull("constraints"),
                     entityType = "relationship",
-                    refKey = "relationshipType",
                     refId = typeId,
                     typeKey = "constraintType",
                     typeTransform = ::constraintType
@@ -160,7 +190,6 @@ class GraphSpecDataModelV3Migration :
                     id = relId.replace("r:", "i:"),
                     elements = rel.mapOfMapsOrNull("indexes"),
                     entityType = "relationship",
-                    refKey = "relationshipType",
                     refId = typeId,
                     typeKey = "indexType",
                     typeTransform = ::indexType
@@ -209,7 +238,7 @@ class GraphSpecDataModelV3Migration :
                         "properties" to mutableListOf<SchemaMap>()
                     )
                 }
-                schemaMapOf("\$ref" to "#$labelId")
+                refOf(labelId)
             }
 
             // Map properties back to the primary label
@@ -231,7 +260,6 @@ class GraphSpecDataModelV3Migration :
                     id = nodeId.replace("n:", "c:"),
                     elements = node.mapOfMapsOrNull("constraints"),
                     entityType = "node",
-                    refKey = "nodeLabel",
                     refId = primaryLabelId,
                     typeKey = "constraintType",
                     typeTransform = ::constraintType
@@ -242,7 +270,6 @@ class GraphSpecDataModelV3Migration :
                     id = nodeId.replace("n:", "i:"),
                     elements = node.mapOfMapsOrNull("indexes"),
                     entityType = "node",
-                    refKey = "nodeLabel",
                     refId = primaryLabelId,
                     typeKey = "indexType",
                     typeTransform = ::indexType
@@ -263,8 +290,8 @@ class GraphSpecDataModelV3Migration :
                 schemaMapOf(
                     "name" to tableName,
                     "fields" to convertFields(table.mapOfMapsOrNull("fields")),
-                    "primaryKeys" toNotEmpty table.listOrNull("primaryKeys"),
-                    "foreignKeys" toNotEmpty convertForeignKeys(table.mapOfMapsOrNull("foreignKeys"))
+                    "primaryKeys" to table.listOrNull("primaryKeys"),
+                    "foreignKeys" to convertForeignKeys(table.mapOfMapsOrNull("foreignKeys"))
                 )
             )
         }
@@ -307,7 +334,6 @@ class GraphSpecDataModelV3Migration :
         id: String,
         elements: Map<String, SchemaMap>?,
         entityType: String,
-        refKey: String,
         refId: String,
         typeKey: String,
         typeTransform: (String) -> String
@@ -315,19 +341,18 @@ class GraphSpecDataModelV3Migration :
         if (elements.isNullOrEmpty()) {
             return emptyList()
         }
-        // FIXME needs both nodeLabel and relationshipType
         return elements.map { (name, element) ->
+            val properties = element.listOrNull("properties")?.map { propId ->
+                refOf((propId as SchemaLiteral).string)
+            } ?: emptyList()
             schemaMapOf(
                 "\$id" to id,
                 "name" to name,
                 typeKey to typeTransform(element.string("type")),
                 "entityType" to entityType,
-                refKey to schemaMapOf("\$ref" to "#$refId"),
-                "properties" to (
-                    element.listOrNull("properties")?.map { propId ->
-                        schemaMapOf("\$ref" to "#$propId")
-                    } ?: emptyList()
-                    )
+                "nodeLabel" to if (entityType == "node") refOf(refId) else SchemaNull(),
+                "properties" to properties,
+                "relationshipType" to if (entityType == "relationship") refOf(refId) else SchemaNull()
             )
         }
     }
@@ -380,8 +405,8 @@ class GraphSpecDataModelV3Migration :
         }
         return properties.map { (propId, propDef) ->
             schemaMapOf(
-                "property" to schemaMapOf("\$ref" to "#$propId"),
-                "fieldName" to propDef.literal("field")
+                "fieldName" to propDef.literal("field"),
+                "property" to refOf(propId)
             )
         }
     }
