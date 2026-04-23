@@ -18,9 +18,9 @@ package codec.format
 
 import codec.schema.SchemaElement
 import codec.schema.SchemaList
+import codec.schema.SchemaLiteral
 import codec.schema.SchemaMap
 import codec.schema.SchemaNull
-import codec.schema.SchemaLiteral
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement

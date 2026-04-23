@@ -31,16 +31,14 @@ external interface DisplayJs {
     val nodes: Record<String, NodeDisplayJs>
 }
 
-fun displayJs(
-    nodes: Record<String, NodeDisplayJs> = emptyRecord(),
-): DisplayJs = jso {
+fun displayJs(nodes: Record<String, NodeDisplayJs> = emptyRecord()): DisplayJs = jso {
     this.nodes = nodes
 }
 
 fun Display.toJs() = displayJs(
-    nodes = nodes.mapValues { (_, node) -> node.toJs() }.toRecord(),
+    nodes = nodes.mapValues { (_, node) -> node.toJs() }.toRecord()
 )
 
 fun DisplayJs.toClass(): Display = Display(
-    nodes = nodes.associateBy { _, value -> value.toClass() },
+    nodes = nodes.associateBy { _, value -> value.toClass() }
 )

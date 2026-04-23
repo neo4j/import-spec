@@ -18,9 +18,9 @@ package codec.format
 
 import codec.schema.SchemaElement
 import codec.schema.SchemaList
+import codec.schema.SchemaLiteral
 import codec.schema.SchemaMap
 import codec.schema.SchemaNull
-import codec.schema.SchemaLiteral
 import model.GraphModel
 import net.mamoe.yamlkt.Yaml
 import net.mamoe.yamlkt.YamlElement

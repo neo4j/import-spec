@@ -16,9 +16,9 @@
  */
 package codec.format
 
+import codec.schema.SchemaLiteral
 import codec.schema.SchemaMap
 import codec.schema.SchemaNull
-import codec.schema.SchemaLiteral
 import model.GraphModel
 import kotlin.test.Test
 import kotlin.test.assertEquals
