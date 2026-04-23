@@ -178,8 +178,10 @@ class GraphSpecDataModelV3MigrationTest {
 
     @Test
     fun `convertVisualisation transforms coordinates correctly`() {
-        val display = mapOf(
-            "node1" to schemaMapOf("x" to 100.23, "y" to 200.12)
+        val display = schemaMapOf(
+            "nodes" to schemaMapOf(
+                "node1" to schemaMapOf("x" to 100.23, "y" to 200.12)
+            )
         )
 
         val result = migration.convertVisualisation(display)

@@ -30,7 +30,7 @@ import kotlin.test.assertTrue
 
 class JsonFormatTest {
 
-    private val jsonFormat: Format = JsonFormat.build()
+    private val jsonFormat: Format = JsonFormat.default
 
     @Test
     fun `test nested path generation for maps and lists`() {

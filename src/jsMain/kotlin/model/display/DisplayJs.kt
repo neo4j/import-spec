@@ -21,20 +21,7 @@ import js.objects.toRecord
 import kotlinx.js.JsPlainObject
 import model.associateBy
 import model.emptyRecord
-import model.extension.ExtensionValueJs
-import model.extension.toClass
-import model.extension.toJs
 import model.jso
-import model.node.LabelsJs
-import model.node.Node
-import model.node.NodeConstraintJs
-import model.node.NodeIndexJs
-import model.node.labelsJs
-import model.node.toClass
-import model.node.toJs
-import model.property.PropertyJs
-import model.property.toClass
-import model.property.toJs
 import kotlin.collections.component1
 import kotlin.collections.component2
 
@@ -44,14 +31,16 @@ external interface DisplayJs {
     val nodes: Record<String, NodeDisplayJs>
 }
 
-fun displayJs(nodes: Record<String, NodeDisplayJs> = emptyRecord()): DisplayJs = jso {
+fun displayJs(
+    nodes: Record<String, NodeDisplayJs> = emptyRecord(),
+): DisplayJs = jso {
     this.nodes = nodes
 }
 
 fun Display.toJs() = displayJs(
-    nodes = nodes.mapValues { (_, property) -> property.toJs() }.toRecord()
+    nodes = nodes.mapValues { (_, node) -> node.toJs() }.toRecord(),
 )
 
 fun DisplayJs.toClass(): Display = Display(
-    nodes = nodes.associateBy { _, value -> value.toClass() }
+    nodes = nodes.associateBy { _, value -> value.toClass() },
 )

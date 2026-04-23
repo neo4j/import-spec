@@ -27,9 +27,12 @@ import kotlin.js.JsName
 class GraphSpecConfig(
     val validators: List<Validation>,
     val migrations: Map<String, List<Migration>>,
-    val format: Format,
+    val format: Format
 ) {
-    class Builder(var format: Format) {
+    class Builder(
+        @JsName("builderFormat")
+        var format: Format
+    ) {
         val validators = mutableListOf<Validation>()
         val migrations = mutableMapOf<String, MutableList<Migration>>()
 
@@ -63,7 +66,7 @@ class GraphSpecConfig(
         fun build(): GraphSpecConfig = GraphSpecConfig(
             validators = validators,
             migrations = migrations,
-            format = format,
+            format = format
         )
     }
 }

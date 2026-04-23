@@ -24,7 +24,7 @@ import kotlin.js.JsExport
 
 @JsExport
 @Serializable
-@SerialName("Display")
+@SerialName("NodeDisplay")
 data class NodeDisplay(
     val x: Float,
     val y: Float,

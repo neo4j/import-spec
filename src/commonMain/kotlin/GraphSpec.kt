@@ -65,8 +65,7 @@ private fun defaultConfig(format: Format): GraphSpecConfig {
     return builder.build()
 }
 
-private class GraphSpecImpl(configuration: GraphSpecConfig) :
-    GraphSpec(configuration)
+private class GraphSpecImpl(configuration: GraphSpecConfig) : GraphSpec(configuration)
 
 fun GraphSpec(from: GraphSpec = GraphSpec.Json, builderAction: GraphSpecConfig.Builder.() -> Unit): GraphSpec {
     val builder = GraphSpecConfig.Builder(from.configuration)

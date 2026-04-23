@@ -27,7 +27,7 @@ import kotlin.test.assertTrue
 
 class YamlFormatTest {
 
-    private val yamlFormat = YamlFormat.build()
+    private val yamlFormat = YamlFormat.default
 
     @Test
     fun `test yaml path generation matches json logic`() {
