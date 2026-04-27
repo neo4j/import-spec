@@ -330,7 +330,7 @@
         {
           "$id": "i:0",
           "name": "categories",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:0"
@@ -345,7 +345,7 @@
         {
           "$id": "i:1",
           "name": "products",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:1"
@@ -360,7 +360,7 @@
         {
           "$id": "i:2",
           "name": "suppliers",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:2"

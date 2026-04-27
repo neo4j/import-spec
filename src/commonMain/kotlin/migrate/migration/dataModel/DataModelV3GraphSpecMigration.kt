@@ -209,7 +209,7 @@ class DataModelV3GraphSpecMigration :
             // TODO constraints
             val map = schemaMapOf(
                 "name" to property.literalOrNull("token"),
-                "type" to typeObj.string("type").uppercase(),
+                "type" to propertyType(typeObj.string("type")),
                 "nullable" to typeObj.literalOrNull("nullable")
             )
             val id = property.id()
@@ -307,6 +307,7 @@ class DataModelV3GraphSpecMigration :
                 )
             )
         }
+        println(foreignKeys)
         return foreignKeys
     }
 
@@ -318,10 +319,10 @@ class DataModelV3GraphSpecMigration :
                 "name" to field.literal("name"),
                 "type" to field.literalOrNull("rawType"),
                 "size" to field.literalOrNull("size"),
-                "suggested" to field.mapOrNull("recommendedType")?.string("type")?.uppercase(),
+                "suggested" to propertyType(field.mapOrNull("recommendedType")?.string("type")),
                 "supported" to field.listOfMapsOrNull("supportedTypes")?.map {
                     // FIXME array types
-                    it.string("type").uppercase()
+                    propertyType(it.string("type"))
                 }
             )
         }
@@ -329,6 +330,17 @@ class DataModelV3GraphSpecMigration :
     }
 
     companion object {
+        private fun propertyType(string: String?): String? = when (string) {
+            "localdatetime" -> "LOCAL DATETIME"
+            "datetime" -> "ZONED DATETIME"
+            "string" -> "STRING"
+            "integer" -> "INTEGER"
+            "float" -> "FLOAT"
+            "date" -> "DATE"
+            "boolean" -> "BOOLEAN"
+            else -> string
+        }
+
         private fun indexType(name: String): IndexType? = when (name) {
             "lookup" -> LOOKUP
             "range" -> RANGE

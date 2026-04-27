@@ -1250,7 +1250,7 @@
         {
           "$id": "i:0",
           "name": "Comment",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:0"
@@ -1265,7 +1265,7 @@
         {
           "$id": "i:1",
           "name": "Forum",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:1"
@@ -1280,7 +1280,7 @@
         {
           "$id": "i:2",
           "name": "Organisation",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:2"
@@ -1295,7 +1295,7 @@
         {
           "$id": "i:3",
           "name": "Person",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:3"
@@ -1310,7 +1310,7 @@
         {
           "$id": "i:4",
           "name": "Place",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:4"
@@ -1325,7 +1325,7 @@
         {
           "$id": "i:5",
           "name": "Post",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:5"
@@ -1340,7 +1340,7 @@
         {
           "$id": "i:6",
           "name": "Tag",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:6"
@@ -1355,7 +1355,7 @@
         {
           "$id": "i:7",
           "name": "TagClass",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:7"

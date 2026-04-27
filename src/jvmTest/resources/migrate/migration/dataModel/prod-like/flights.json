@@ -485,7 +485,7 @@
         {
           "$id": "i:3",
           "name": "flights",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:3"

@@ -1180,7 +1180,7 @@
         {
           "$id": "i:0",
           "name": "actor",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:0"
@@ -1195,7 +1195,7 @@
         {
           "$id": "i:1",
           "name": "address",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:1"
@@ -1210,7 +1210,7 @@
         {
           "$id": "i:2",
           "name": "category",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:2"
@@ -1225,7 +1225,7 @@
         {
           "$id": "i:3",
           "name": "city",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:3"
@@ -1240,7 +1240,7 @@
         {
           "$id": "i:4",
           "name": "country",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:4"
@@ -1255,7 +1255,7 @@
         {
           "$id": "i:5",
           "name": "customer",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:5"
@@ -1270,7 +1270,7 @@
         {
           "$id": "i:6",
           "name": "film",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:6"
@@ -1285,7 +1285,7 @@
         {
           "$id": "i:7",
           "name": "inventory",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:7"
@@ -1300,7 +1300,7 @@
         {
           "$id": "i:8",
           "name": "language",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:8"
@@ -1315,7 +1315,7 @@
         {
           "$id": "i:9",
           "name": "payment",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:9"
@@ -1330,7 +1330,7 @@
         {
           "$id": "i:10",
           "name": "rental",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:10"
@@ -1345,7 +1345,7 @@
         {
           "$id": "i:11",
           "name": "staff",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:11"
@@ -1360,7 +1360,7 @@
         {
           "$id": "i:12",
           "name": "store",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:12"

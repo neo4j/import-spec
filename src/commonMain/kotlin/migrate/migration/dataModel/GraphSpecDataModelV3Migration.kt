@@ -45,7 +45,7 @@ class GraphSpecDataModelV3Migration :
         return schemaMapOf(
             "version" to "3.0.0",
             "dataModel" to schemaMapOf(
-                "version" to "3.0",
+                "version" to "3.0.0",
                 "graphSchemaRepresentation" to schemaMapOf(
                     "version" to "1.0.0",
                     "graphSchema" to schemaMapOf(
@@ -219,8 +219,8 @@ class GraphSpecDataModelV3Migration :
         indexes: MutableList<SchemaMap>
     ): NodeData? {
         val nodes = schema.mapOfMapsOrNull("nodes") ?: return null
-        val nodeLabelsMap = mutableMapOf<String, MutableMap<String, Any?>>()
-        var nodeLabelCount = 0
+        val nodeLabelsMap = mutableMapOf<String, String>()
+        val nodeLabels = mutableListOf<SchemaMap>()
         val nodeObjectTypes = mutableListOf<SchemaMap>()
         for ((nodeId, node) in nodes) {
             val labelsInfo = node.map("labels")
@@ -231,34 +231,29 @@ class GraphSpecDataModelV3Migration :
 
             var primaryLabelId = "nl:null"
             val labelRefs = allLabels.map { label ->
-                val labelId = "nl:${nodeLabelCount++}"
+                var labelId = nodeLabelsMap[label]
+                if (labelId == null) {
+                    labelId = "nl:${nodeLabels.size}"
+                    nodeLabelsMap[label] = labelId
+                    nodeLabels.add(
+                        schemaMapOf(
+                            "\$id" to labelId,
+                            "token" to label,
+                            "properties" to convertProperties(node.mapOfMapsOrNull("properties"))
+                        )
+                    )
+                }
                 if (label == primaryLabel) {
                     primaryLabelId = labelId
                 }
-                if (labelId !in nodeLabelsMap) {
-                    nodeLabelsMap[labelId] = mutableMapOf(
-                        "\$id" to labelId,
-                        "token" to label,
-                        "properties" to mutableListOf<SchemaMap>()
-                    )
-                }
                 refOf(labelId)
             }
-
-            // Map properties back to the primary label
-            val existingProps = nodeLabelsMap[primaryLabelId]!!["properties"] as MutableList<SchemaMap>
-            val currentPropIds = existingProps.map { it.id() }.toSet()
-
-            val nodeProps = convertProperties(node.mapOfMapsOrNull("properties"))
-            existingProps.addAll(nodeProps.filter { it.id() !in currentPropIds })
-
             nodeObjectTypes.add(
                 schemaMapOf(
                     "\$id" to nodeId,
                     "labels" to labelRefs
                 )
             )
-
             constraints.addAll(
                 convertElements(
                     id = "c:${constraints.size}",
@@ -280,7 +275,7 @@ class GraphSpecDataModelV3Migration :
                 )
             )
         }
-        return NodeData(nodeLabelsMap.values.map { it.toMap() }, nodeObjectTypes, constraints, indexes)
+        return NodeData(nodeLabels, nodeObjectTypes, constraints, indexes)
     }
 
     private fun convertSourceSchema(tables: Map<String, SchemaMap>?): SchemaMap? {
@@ -327,7 +322,7 @@ class GraphSpecDataModelV3Migration :
                 "\$id" to propId,
                 "token" to prop.literalOrNull("name"),
                 "type" to schemaMapOf(
-                    "type" to prop.string("type").lowercase()
+                    "type" to propertyType(prop.string("type"))
                 ),
                 "nullable" to prop.literalOrNull("nullable")
             )
@@ -371,10 +366,15 @@ class GraphSpecDataModelV3Migration :
                 "rawType" to field.literalOrNull("type"),
                 "size" to field.literalOrNull("size"),
                 "recommendedType" to field.literalOrNull("suggested")?.let {
-                    schemaMapOf("type" to it.string.toCamelCase())
+                    val propertyType = propertyType(it.string)
+                    if (propertyType == null) {
+                        SchemaNull()
+                    } else {
+                        schemaMapOf("type" to propertyType)
+                    }
                 },
                 "supportedTypes" to field.listOrNull("supported")?.map {
-                    schemaMapOf("type" to (it as SchemaLiteral).string.toCamelCase())
+                    schemaMapOf("type" to propertyType((it as SchemaLiteral).string))
                 }
             )
         }
@@ -392,7 +392,8 @@ class GraphSpecDataModelV3Migration :
             val fieldMaps = fields.indices.map { i ->
                 schemaMapOf(
                     "field" to fields[i],
-                    "referencedField" to referencedFields[i]
+                    "referencedField" to (referencedFields.getOrNull(i) ?: referencedFields.last())
+                    // TODO set or list with duplicates?
                 )
             }
 
@@ -425,6 +426,18 @@ class GraphSpecDataModelV3Migration :
     }
 
     companion object {
+        private fun propertyType(string: String?): String? = when (string) {
+            "LOCAL DATETIME" -> "localdatetime"
+            "ZONED DATETIME" -> "datetime"
+            "STRING" -> "string"
+            "INTEGER" -> "integer"
+            "FLOAT" -> "float"
+            "DATE" -> "date"
+            "BOOLEAN" -> "boolean"
+            "ANY" -> null
+            else -> string
+        }
+
         private fun constraintType(name: String): String = when (name) {
             "UNIQUE" -> "uniqueness"
             "EXISTS" -> "propertyExistence"

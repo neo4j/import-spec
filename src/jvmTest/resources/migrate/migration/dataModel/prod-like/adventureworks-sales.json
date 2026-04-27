@@ -1120,7 +1120,7 @@
         {
           "$id": "i:0",
           "name": "creditcard",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:0"
@@ -1150,7 +1150,7 @@
         {
           "$id": "i:2",
           "name": "currencyrate",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:2"
@@ -1165,7 +1165,7 @@
         {
           "$id": "i:3",
           "name": "customer",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:3"
@@ -1180,7 +1180,7 @@
         {
           "$id": "i:4",
           "name": "salesorderheader",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:4"
@@ -1195,7 +1195,7 @@
         {
           "$id": "i:5",
           "name": "salesperson",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:5"
@@ -1210,7 +1210,7 @@
         {
           "$id": "i:6",
           "name": "salesreason",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:6"
@@ -1225,7 +1225,7 @@
         {
           "$id": "i:7",
           "name": "salestaxrate",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:7"
@@ -1240,7 +1240,7 @@
         {
           "$id": "i:8",
           "name": "salesterritory",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:8"
@@ -1255,7 +1255,7 @@
         {
           "$id": "i:9",
           "name": "shoppingcartitem",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:9"
@@ -1270,7 +1270,7 @@
         {
           "$id": "i:10",
           "name": "specialoffer",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:10"
@@ -1285,7 +1285,7 @@
         {
           "$id": "i:11",
           "name": "store",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:11"

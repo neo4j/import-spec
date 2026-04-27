@@ -901,7 +901,7 @@
         {
           "$id": "i:0",
           "name": "album",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:0"
@@ -916,7 +916,7 @@
         {
           "$id": "i:1",
           "name": "artist",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:1"
@@ -931,7 +931,7 @@
         {
           "$id": "i:2",
           "name": "customer",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:2"
@@ -946,7 +946,7 @@
         {
           "$id": "i:3",
           "name": "employee",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:3"
@@ -961,7 +961,7 @@
         {
           "$id": "i:4",
           "name": "genre",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:4"
@@ -976,7 +976,7 @@
         {
           "$id": "i:5",
           "name": "invoice",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:5"
@@ -991,7 +991,7 @@
         {
           "$id": "i:6",
           "name": "invoice_line",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:6"
@@ -1006,7 +1006,7 @@
         {
           "$id": "i:7",
           "name": "media_type",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:7"
@@ -1021,7 +1021,7 @@
         {
           "$id": "i:8",
           "name": "playlist",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:8"
@@ -1036,7 +1036,7 @@
         {
           "$id": "i:9",
           "name": "track",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:9"

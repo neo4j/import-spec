@@ -10072,7 +10072,7 @@
         {
           "$id": "i:0",
           "name": "ACCOUNT",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:0"
@@ -10087,7 +10087,7 @@
         {
           "$id": "i:1",
           "name": "ADMINISTRATIVE_ORGANIZATION_UNIT",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:1"
@@ -10102,7 +10102,7 @@
         {
           "$id": "i:2",
           "name": "AGENCY_CONTRACT",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:2"
@@ -10117,7 +10117,7 @@
         {
           "$id": "i:3",
           "name": "AGREEMENT",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:3"
@@ -10132,7 +10132,7 @@
         {
           "$id": "i:4",
           "name": "ANIMAL",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:4"
@@ -10147,7 +10147,7 @@
         {
           "$id": "i:5",
           "name": "APPROVAL",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:5"
@@ -10162,7 +10162,7 @@
         {
           "$id": "i:6",
           "name": "ARBITRATION",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:6"
@@ -10177,7 +10177,7 @@
         {
           "$id": "i:7",
           "name": "ASSESSMENT",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:7"
@@ -10192,7 +10192,7 @@
         {
           "$id": "i:8",
           "name": "ASSESSMENT_RESULT",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:8"
@@ -10207,7 +10207,7 @@
         {
           "$id": "i:9",
           "name": "ASSUMED_CLAIM_AMOUNT",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:9"
@@ -10222,7 +10222,7 @@
         {
           "$id": "i:10",
           "name": "ASSUMED_POLICY_AMOUNT",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:10"
@@ -10237,7 +10237,7 @@
         {
           "$id": "i:11",
           "name": "AUTOMOBILE",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:11"
@@ -10252,7 +10252,7 @@
         {
           "$id": "i:12",
           "name": "AUTO_REPAIR_SHOP_CONTRACT",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:12"
@@ -10267,7 +10267,7 @@
         {
           "$id": "i:13",
           "name": "BINDING",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:13"
@@ -10282,7 +10282,7 @@
         {
           "$id": "i:14",
           "name": "BOAT",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:14"
@@ -10297,7 +10297,7 @@
         {
           "$id": "i:15",
           "name": "BODY_OBJECT",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:15"
@@ -10312,7 +10312,7 @@
         {
           "$id": "i:16",
           "name": "BROKERAGE_CONTRACT",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:16"
@@ -10327,7 +10327,7 @@
         {
           "$id": "i:17",
           "name": "BUS",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:17"
@@ -10342,7 +10342,7 @@
         {
           "$id": "i:18",
           "name": "BUSINESS_EVENT",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:18"
@@ -10357,7 +10357,7 @@
         {
           "$id": "i:19",
           "name": "CANCEL",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:19"
@@ -10372,7 +10372,7 @@
         {
           "$id": "i:20",
           "name": "CATASTROPHE",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:20"
@@ -10387,7 +10387,7 @@
         {
           "$id": "i:21",
           "name": "CEDED_CLAIM_AMOUNT",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:21"
@@ -10402,7 +10402,7 @@
         {
           "$id": "i:22",
           "name": "CEDED_POLICY_AMOUNT",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:22"
@@ -10417,7 +10417,7 @@
         {
           "$id": "i:23",
           "name": "CHANNEL_SCORE",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:23"
@@ -10432,7 +10432,7 @@
         {
           "$id": "i:24",
           "name": "CLAIM",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:24"
@@ -10447,7 +10447,7 @@
         {
           "$id": "i:25",
           "name": "CLAIM_AMOUNT",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:25"
@@ -10462,7 +10462,7 @@
         {
           "$id": "i:26",
           "name": "CLAIM_EVALUATION_RESULT",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:26"
@@ -10477,7 +10477,7 @@
         {
           "$id": "i:27",
           "name": "CLAIM_EVENT",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:27"
@@ -10492,7 +10492,7 @@
         {
           "$id": "i:28",
           "name": "CLAIM_FOLDER",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:28"
@@ -10507,7 +10507,7 @@
         {
           "$id": "i:29",
           "name": "CLAIM_OFFER",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:29"
@@ -10522,7 +10522,7 @@
         {
           "$id": "i:30",
           "name": "CLAIM_PAYMENT",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:30"
@@ -10537,7 +10537,7 @@
         {
           "$id": "i:31",
           "name": "CLAIM_RESERVE",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:31"
@@ -10552,7 +10552,7 @@
         {
           "$id": "i:32",
           "name": "COMBINATION_STRUCTURE",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:32"
@@ -10567,7 +10567,7 @@
         {
           "$id": "i:33",
           "name": "COMBINE",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:33"
@@ -10582,7 +10582,7 @@
         {
           "$id": "i:34",
           "name": "COMMERCIAL_AGREEMENT",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:34"
@@ -10597,7 +10597,7 @@
         {
           "$id": "i:35",
           "name": "COMMERCIAL_STRUCTURE",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:35"
@@ -10612,7 +10612,7 @@
         {
           "$id": "i:36",
           "name": "COMMUNICATION_IDENTITY",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:36"
@@ -10627,7 +10627,7 @@
         {
           "$id": "i:37",
           "name": "COMMUTATION_AGREEMENT",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:37"
@@ -10642,7 +10642,7 @@
         {
           "$id": "i:38",
           "name": "COMPANY",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:38"
@@ -10657,7 +10657,7 @@
         {
           "$id": "i:39",
           "name": "CONSTRUCTION_VEHICLE",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:39"
@@ -10672,7 +10672,7 @@
         {
           "$id": "i:40",
           "name": "CONSULTANT_CONTRACT",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:40"
@@ -10687,7 +10687,7 @@
         {
           "$id": "i:41",
           "name": "COVERAGE",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:41"
@@ -10702,7 +10702,7 @@
         {
           "$id": "i:42",
           "name": "COVERAGE_GROUP",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:42"
@@ -10717,7 +10717,7 @@
         {
           "$id": "i:43",
           "name": "COVERAGE_LIMIT_TYPE",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:43"
@@ -10747,7 +10747,7 @@
         {
           "$id": "i:45",
           "name": "COVERAGE_TYPE",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:45"
@@ -10762,7 +10762,7 @@
         {
           "$id": "i:46",
           "name": "CREDIT_CLAIM_AMOUNT",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:46"
@@ -10777,7 +10777,7 @@
         {
           "$id": "i:47",
           "name": "CREDIT_POLICY_AMOUNT",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:47"
@@ -10792,7 +10792,7 @@
         {
           "$id": "i:48",
           "name": "CREDIT_RATING",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:48"
@@ -10807,7 +10807,7 @@
         {
           "$id": "i:49",
           "name": "CUSTOMER_SCORE",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:49"
@@ -10822,7 +10822,7 @@
         {
           "$id": "i:50",
           "name": "DEBIT_CLAIM_AMOUNT",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:50"
@@ -10837,7 +10837,7 @@
         {
           "$id": "i:51",
           "name": "DEBIT_POLICY_AMOUNT",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:51"
@@ -10852,7 +10852,7 @@
         {
           "$id": "i:52",
           "name": "DEDUCTIBLE_RECOVERY",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:52"
@@ -10867,7 +10867,7 @@
         {
           "$id": "i:53",
           "name": "DEMOGRAPHIC_SCORE",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:53"
@@ -10882,7 +10882,7 @@
         {
           "$id": "i:54",
           "name": "DERIVATIVE_CONTRACT",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:54"
@@ -10897,7 +10897,7 @@
         {
           "$id": "i:55",
           "name": "DIRECT_CLAIM_AMOUNT",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:55"
@@ -10912,7 +10912,7 @@
         {
           "$id": "i:56",
           "name": "DIRECT_POLICY_AMOUNT",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:56"
@@ -10927,7 +10927,7 @@
         {
           "$id": "i:57",
           "name": "DWELLING",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:57"
@@ -10942,7 +10942,7 @@
         {
           "$id": "i:58",
           "name": "EMPLOYMENT_AGREEMENT",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:58"
@@ -10957,7 +10957,7 @@
         {
           "$id": "i:59",
           "name": "ENDORSEMENT",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:59"
@@ -10972,7 +10972,7 @@
         {
           "$id": "i:60",
           "name": "EVENT",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:60"
@@ -10987,7 +10987,7 @@
         {
           "$id": "i:61",
           "name": "EXPENSE_PAYMENT",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:61"
@@ -11002,7 +11002,7 @@
         {
           "$id": "i:62",
           "name": "EXPENSE_RECOVERY",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:62"
@@ -11017,7 +11017,7 @@
         {
           "$id": "i:63",
           "name": "EXPENSE_RESERVE",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:63"
@@ -11032,7 +11032,7 @@
         {
           "$id": "i:64",
           "name": "FARM_EQUIPMENT",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:64"
@@ -11047,7 +11047,7 @@
         {
           "$id": "i:65",
           "name": "FEE",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:65"
@@ -11062,7 +11062,7 @@
         {
           "$id": "i:66",
           "name": "FIELD_ORGANIZATION_UNIT",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:66"
@@ -11077,7 +11077,7 @@
         {
           "$id": "i:67",
           "name": "FINANCIAL_ACCOUNT_AGREEMENT",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:67"
@@ -11092,7 +11092,7 @@
         {
           "$id": "i:68",
           "name": "FINANCIAL_SERVICES_ASSESSMENT",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:68"
@@ -11107,7 +11107,7 @@
         {
           "$id": "i:69",
           "name": "FINANCIAL_VALUATION",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:69"
@@ -11122,7 +11122,7 @@
         {
           "$id": "i:70",
           "name": "FLAT",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:70"
@@ -11137,7 +11137,7 @@
         {
           "$id": "i:71",
           "name": "FOR_PROFIT_ORGANIZATION",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:71"
@@ -11152,7 +11152,7 @@
         {
           "$id": "i:72",
           "name": "FRAUD_ASSESSMENT",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:72"
@@ -11167,7 +11167,7 @@
         {
           "$id": "i:73",
           "name": "FREIGHT_GROUP",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:73"
@@ -11182,7 +11182,7 @@
         {
           "$id": "i:74",
           "name": "FULL_TERM",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:74"
@@ -11197,7 +11197,7 @@
         {
           "$id": "i:75",
           "name": "GEOGRAPHIC_LOCATION",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:75"
@@ -11212,7 +11212,7 @@
         {
           "$id": "i:76",
           "name": "GOVERNMENT_ORGANIZATION",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:76"
@@ -11227,7 +11227,7 @@
         {
           "$id": "i:77",
           "name": "GROUPING",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:77"
@@ -11242,7 +11242,7 @@
         {
           "$id": "i:78",
           "name": "GROUP_AGREEMENT",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:78"
@@ -11257,7 +11257,7 @@
         {
           "$id": "i:79",
           "name": "HOUSEHOLD",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:79"
@@ -11272,7 +11272,7 @@
         {
           "$id": "i:80",
           "name": "HOUSEHOLD_CONTENT",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:80"
@@ -11287,7 +11287,7 @@
         {
           "$id": "i:81",
           "name": "INDIVIDUAL_AGREEMENT",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:81"
@@ -11302,7 +11302,7 @@
         {
           "$id": "i:82",
           "name": "INSURABLE_OBJECT",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:82"
@@ -11317,7 +11317,7 @@
         {
           "$id": "i:83",
           "name": "INSURANCE_CLASS",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:83"
@@ -11332,7 +11332,7 @@
         {
           "$id": "i:84",
           "name": "INSURED_ACCOUNT",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:84"
@@ -11347,7 +11347,7 @@
         {
           "$id": "i:85",
           "name": "INTERMEDIARY_AGREEMENT",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:85"
@@ -11362,7 +11362,7 @@
         {
           "$id": "i:86",
           "name": "LEGAL_JURISDICTION",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:86"
@@ -11377,7 +11377,7 @@
         {
           "$id": "i:87",
           "name": "LIFE_EVENT",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:87"
@@ -11392,7 +11392,7 @@
         {
           "$id": "i:88",
           "name": "LINE_OF_BUSINESS",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:88"
@@ -11407,7 +11407,7 @@
         {
           "$id": "i:89",
           "name": "LINE_OF_BUSINESS_GROUP",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:89"
@@ -11422,7 +11422,7 @@
         {
           "$id": "i:90",
           "name": "LITIGATION",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:90"
@@ -11437,7 +11437,7 @@
         {
           "$id": "i:91",
           "name": "LOCATION_ADDRESS",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:91"
@@ -11452,7 +11452,7 @@
         {
           "$id": "i:92",
           "name": "LOSS_PAYMENT",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:92"
@@ -11467,7 +11467,7 @@
         {
           "$id": "i:93",
           "name": "LOSS_RECOVERY",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:93"
@@ -11482,7 +11482,7 @@
         {
           "$id": "i:94",
           "name": "LOSS_RESERVE",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:94"
@@ -11497,7 +11497,7 @@
         {
           "$id": "i:95",
           "name": "MANUFACTURED_OBJECT",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:95"
@@ -11512,7 +11512,7 @@
         {
           "$id": "i:96",
           "name": "MEDICAL_CONDITION",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:96"
@@ -11527,7 +11527,7 @@
         {
           "$id": "i:97",
           "name": "MID_TERM",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:97"
@@ -11542,7 +11542,7 @@
         {
           "$id": "i:98",
           "name": "MILKING_MACHINE",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:98"
@@ -11557,7 +11557,7 @@
         {
           "$id": "i:99",
           "name": "MOBILE_HOME",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:99"
@@ -11572,7 +11572,7 @@
         {
           "$id": "i:100",
           "name": "MOTORCYCLE",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:100"
@@ -11587,7 +11587,7 @@
         {
           "$id": "i:101",
           "name": "NEW_BUSINESS",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:101"
@@ -11602,7 +11602,7 @@
         {
           "$id": "i:102",
           "name": "NOT_FOR_PROFIT_ORGANIZATION",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:102"
@@ -11617,7 +11617,7 @@
         {
           "$id": "i:103",
           "name": "OCCURRENCE",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:103"
@@ -11632,7 +11632,7 @@
         {
           "$id": "i:104",
           "name": "ORGANIZATION",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:104"
@@ -11647,7 +11647,7 @@
         {
           "$id": "i:105",
           "name": "ORGANIZATION_UNIT",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:105"
@@ -11662,7 +11662,7 @@
         {
           "$id": "i:106",
           "name": "OTHER_ASSESSMENT_RESULT",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:106"
@@ -11677,7 +11677,7 @@
         {
           "$id": "i:107",
           "name": "PARTY",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:107"
@@ -11692,7 +11692,7 @@
         {
           "$id": "i:108",
           "name": "PARTY_PREFERENCE",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:108"
@@ -11722,7 +11722,7 @@
         {
           "$id": "i:110",
           "name": "PERSON",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:110"
@@ -11737,7 +11737,7 @@
         {
           "$id": "i:111",
           "name": "PERSON_PROFESSION",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:111"
@@ -11752,7 +11752,7 @@
         {
           "$id": "i:112",
           "name": "PHYSICAL_LOCATION",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:112"
@@ -11767,7 +11767,7 @@
         {
           "$id": "i:113",
           "name": "PHYSICAL_OBJECT_ASSESSMENT",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:113"
@@ -11782,7 +11782,7 @@
         {
           "$id": "i:114",
           "name": "PLACE_ASSESSMENT",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:114"
@@ -11797,7 +11797,7 @@
         {
           "$id": "i:115",
           "name": "POLICY",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:115"
@@ -11812,7 +11812,7 @@
         {
           "$id": "i:116",
           "name": "POLICY_AMOUNT",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:116"
@@ -11827,7 +11827,7 @@
         {
           "$id": "i:117",
           "name": "POLICY_DEDUCTIBLE",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:117"
@@ -11842,7 +11842,7 @@
         {
           "$id": "i:118",
           "name": "POLICY_EVENT",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:118"
@@ -11857,7 +11857,7 @@
         {
           "$id": "i:119",
           "name": "POLICY_LIMIT",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:119"
@@ -11872,7 +11872,7 @@
         {
           "$id": "i:120",
           "name": "PREMIUM",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:120"
@@ -11887,7 +11887,7 @@
         {
           "$id": "i:121",
           "name": "PRE_QUALIFICATION",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:121"
@@ -11902,7 +11902,7 @@
         {
           "$id": "i:122",
           "name": "PRODUCT",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:122"
@@ -11917,7 +11917,7 @@
         {
           "$id": "i:123",
           "name": "PROFESSIONAL_GROUP",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:123"
@@ -11932,7 +11932,7 @@
         {
           "$id": "i:124",
           "name": "PROJECT",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:124"
@@ -11947,7 +11947,7 @@
         {
           "$id": "i:125",
           "name": "PROPERTY_IN_TRANSIT",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:125"
@@ -11962,7 +11962,7 @@
         {
           "$id": "i:126",
           "name": "PROVIDER_AGREEMENT",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:126"
@@ -11977,7 +11977,7 @@
         {
           "$id": "i:127",
           "name": "PRO_RATA",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:127"
@@ -11992,7 +11992,7 @@
         {
           "$id": "i:128",
           "name": "QUOTE",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:128"
@@ -12007,7 +12007,7 @@
         {
           "$id": "i:129",
           "name": "RATING_TERRITORY",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:129"
@@ -12022,7 +12022,7 @@
         {
           "$id": "i:130",
           "name": "RECOVERY",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:130"
@@ -12037,7 +12037,7 @@
         {
           "$id": "i:131",
           "name": "RECREATIONAL_VEHICLE",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:131"
@@ -12052,7 +12052,7 @@
         {
           "$id": "i:132",
           "name": "REINSTATEMENT",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:132"
@@ -12067,7 +12067,7 @@
         {
           "$id": "i:133",
           "name": "REINSURANCE_AGREEMENT",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:133"
@@ -12082,7 +12082,7 @@
         {
           "$id": "i:134",
           "name": "REINSURANCE_RECOVERY",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:134"
@@ -12097,7 +12097,7 @@
         {
           "$id": "i:135",
           "name": "RENEWAL",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:135"
@@ -12112,7 +12112,7 @@
         {
           "$id": "i:136",
           "name": "RESIDENTIAL_STRUCTURE",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:136"
@@ -12127,7 +12127,7 @@
         {
           "$id": "i:137",
           "name": "RISK_FACTOR_SCORE",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:137"
@@ -12142,7 +12142,7 @@
         {
           "$id": "i:138",
           "name": "SALVAGE",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:138"
@@ -12157,7 +12157,7 @@
         {
           "$id": "i:139",
           "name": "SCHEDULED_ITEM",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:139"
@@ -12172,7 +12172,7 @@
         {
           "$id": "i:140",
           "name": "SHORT_RATE",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:140"
@@ -12187,7 +12187,7 @@
         {
           "$id": "i:141",
           "name": "STAFFING_AGREEMENT",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:141"
@@ -12217,7 +12217,7 @@
         {
           "$id": "i:143",
           "name": "STAFF_POSITION",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:143"
@@ -12247,7 +12247,7 @@
         {
           "$id": "i:145",
           "name": "STRUCTURE",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:145"
@@ -12262,7 +12262,7 @@
         {
           "$id": "i:146",
           "name": "SUBROGATION",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:146"
@@ -12277,7 +12277,7 @@
         {
           "$id": "i:147",
           "name": "SURCHARGE",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:147"
@@ -12292,7 +12292,7 @@
         {
           "$id": "i:148",
           "name": "TAX",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:148"
@@ -12307,7 +12307,7 @@
         {
           "$id": "i:149",
           "name": "TEAM",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:149"
@@ -12322,7 +12322,7 @@
         {
           "$id": "i:150",
           "name": "THIRD_PARTY_STAFFING_AGREEMENT",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:150"
@@ -12337,7 +12337,7 @@
         {
           "$id": "i:151",
           "name": "TRACTOR",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:151"
@@ -12352,7 +12352,7 @@
         {
           "$id": "i:152",
           "name": "TRAILER",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:152"
@@ -12367,7 +12367,7 @@
         {
           "$id": "i:153",
           "name": "TRANSPORTATION_CLASS",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:153"
@@ -12382,7 +12382,7 @@
         {
           "$id": "i:154",
           "name": "TRUCK",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:154"
@@ -12397,7 +12397,7 @@
         {
           "$id": "i:155",
           "name": "UNDERWRITING_ASSESSMENT",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:155"
@@ -12412,7 +12412,7 @@
         {
           "$id": "i:156",
           "name": "VAN",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:156"
@@ -12427,7 +12427,7 @@
         {
           "$id": "i:157",
           "name": "VEHICLE",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:157"
@@ -12442,7 +12442,7 @@
         {
           "$id": "i:158",
           "name": "WATERCRAFT",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:158"
@@ -12457,7 +12457,7 @@
         {
           "$id": "i:159",
           "name": "WORKERS_COMP_CLASS",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:159"
@@ -12472,7 +12472,7 @@
         {
           "$id": "i:160",
           "name": "audit",
-          "indexType": "default",
+          "indexType": "text",
           "entityType": "node",
           "nodeLabel": {
             "$ref": "#nl:160"
