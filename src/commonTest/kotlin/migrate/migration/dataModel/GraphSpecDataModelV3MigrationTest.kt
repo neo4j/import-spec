@@ -50,9 +50,10 @@ class GraphSpecDataModelV3MigrationTest {
         val result = migration.migrate(input)
 
         // Verify Node Labels
-        val nodeLabels = result.map(
-            "dataModel"
-        ).map("graphSchemaRepresentation").map("graphSchema").listOfMaps("nodeLabels")
+        val nodeLabels = result.map("dataModel")
+            .map("graphSchemaRepresentation")
+            .map("graphSchema")
+            .listOfMaps("nodeLabels")
         assertEquals(2, nodeLabels.size)
         val personLabel = nodeLabels.first { it.string("token") == "Person" }
         assertEquals("nl:0", personLabel.string("\$id"))
@@ -63,9 +64,10 @@ class GraphSpecDataModelV3MigrationTest {
         assertEquals("string", props[0].map("type").string("type"))
 
         // Verify Object Type
-        val nodeObjectTypes = result.map(
-            "dataModel"
-        ).map("graphSchemaRepresentation").map("graphSchema").listOfMaps("nodeObjectTypes")
+        val nodeObjectTypes = result.map("dataModel")
+            .map("graphSchemaRepresentation")
+            .map("graphSchema")
+            .listOfMaps("nodeObjectTypes")
         assertEquals("node1", nodeObjectTypes[0].string("\$id"))
         val labelRefs = nodeObjectTypes[0].listOfMaps("labels")
         assertEquals("#nl:0", labelRefs[0].string("\$ref"))
@@ -87,8 +89,11 @@ class GraphSpecDataModelV3MigrationTest {
         )
 
         val result = migration.migrate(input)
-        val nodeLabels = result.map("dataModel").map("graphSchemaRepresentation")
-            .map("graphSchema").listOfMaps("nodeLabels")
+        val nodeLabels = result
+            .map("dataModel")
+            .map("graphSchemaRepresentation")
+            .map("graphSchema")
+            .listOfMaps("nodeLabels")
 
         // The logic creates a new ID nl:0, nl:1 for every label found in the loop.
         // However, the test verifies if the properties list for a specific label ID remains unique.
@@ -118,12 +123,12 @@ class GraphSpecDataModelV3MigrationTest {
 
         // Verify Relationship Type
         val relTypes = schema.listOfMaps("relationshipTypes")
-        assertEquals("rt:rel1", relTypes[0].string("\$id"))
+        assertEquals("rt:0", relTypes[0].string("\$id"))
 
         // Verify Relationship Object Type (the link between nodes)
         val relObjectTypes = schema.listOfMaps("relationshipObjectTypes")
         assertEquals("rel1", relObjectTypes[0].string("\$id"))
-        assertEquals("#rt:rel1", relObjectTypes[0].map("type").string("\$ref"))
+        assertEquals("#rt:0", relObjectTypes[0].map("type").string("\$ref"))
         assertEquals("#n1", relObjectTypes[0].map("from").string("\$ref"))
     }
 
@@ -147,9 +152,9 @@ class GraphSpecDataModelV3MigrationTest {
             .map("graphSchema").listOfMaps("constraints")
 
         val relConstraint = constraints[0]
-        assertEquals("c:1", relConstraint.string("\$id"))
+        assertEquals("c:0", relConstraint.string("\$id"))
         assertEquals("relationship", relConstraint.string("entityType"))
-        assertEquals("#rt:1", relConstraint.map("relationshipType").string("\$ref"))
+        assertEquals("#rt:0", relConstraint.map("relationshipType").string("\$ref"))
         // Ensure nodeLabel is specifically SchemaNull
         assertTrue(relConstraint["nodeLabel"] is SchemaNull)
     }
@@ -210,7 +215,10 @@ class GraphSpecDataModelV3MigrationTest {
         )
 
         val result = migration.migrate(input)
-        val relMappings = result.map("dataModel").map("graphMappingRepresentation").listOfMaps("relationshipMappings")
+        val relMappings = result
+            .map("dataModel")
+            .map("graphMappingRepresentation")
+            .listOfMaps("relationshipMappings")
 
         assertEquals(1, relMappings.size)
         // Verify that findRelationshipId matched "FOLLOWS" + "User" -> "User" to "actual_rel_id"
@@ -232,9 +240,9 @@ class GraphSpecDataModelV3MigrationTest {
         )
 
         val result = migration.migrate(input)
-        val relMappings = result.map(
-            "dataModel"
-        ).map("graphMappingRepresentation").listOfMapsOrNull("relationshipMappings")
+        val relMappings = result.map("dataModel")
+            .map("graphMappingRepresentation")
+            .listOfMapsOrNull("relationshipMappings")
         assertNull(relMappings)
     }
 
@@ -283,8 +291,11 @@ class GraphSpecDataModelV3MigrationTest {
         )
 
         val result = migration.migrate(input)
-        val tableSchemas = result.map("dataModel").map("graphMappingRepresentation")
-            .map("dataSourceSchema").listOfMaps("tableSchemas")
+        val tableSchemas = result
+            .map("dataModel")
+            .map("graphMappingRepresentation")
+            .map("dataSourceSchema")
+            .listOfMaps("tableSchemas")
 
         val fk = tableSchemas[0].listOfMaps("foreignKeys")[0]
         assertEquals("Customers", fk.string("referencedTable"))
@@ -341,7 +352,10 @@ class GraphSpecDataModelV3MigrationTest {
 
         val result = migration.migrate(emptyInput)
 
-        val graphSchema = result.map("dataModel").map("graphSchemaRepresentation").map("graphSchema")
+        val graphSchema = result
+            .map("dataModel")
+            .map("graphSchemaRepresentation")
+            .map("graphSchema")
 
         // toNotEmpty should cause these to be missing or empty depending on implementation
         assertFalse(graphSchema.containsKey("nodeLabels"))

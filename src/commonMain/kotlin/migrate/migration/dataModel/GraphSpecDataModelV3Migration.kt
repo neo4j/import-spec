@@ -38,8 +38,10 @@ class GraphSpecDataModelV3Migration :
     ) {
 
     override fun migrate(schema: SchemaMap): SchemaMap {
-        val nodeData = convertNodes(schema)
-        val relData = convertRelationships(schema)
+        val constraints = mutableListOf<SchemaMap>()
+        val indexes = mutableListOf<SchemaMap>()
+        val nodeData = convertNodes(schema, constraints, indexes)
+        val relData = convertRelationships(schema, constraints, indexes)
         return schemaMapOf(
             "version" to "3.0.0",
             "dataModel" to schemaMapOf(
@@ -51,8 +53,8 @@ class GraphSpecDataModelV3Migration :
                         "relationshipTypes" toNotEmpty relData?.typesMap,
                         "nodeObjectTypes" toNotEmpty nodeData?.objectTypes,
                         "relationshipObjectTypes" toNotEmpty relData?.objectTypes,
-                        "constraints" to (nodeData?.constraints.orEmpty() + relData?.constraints.orEmpty()),
-                        "indexes" to (nodeData?.indexes.orEmpty() + relData?.indexes.orEmpty())
+                        "constraints" to constraints,
+                        "indexes" to indexes
                     )
                 ),
                 "graphMappingRepresentation" to convertGraphMapping(schema),
@@ -136,35 +138,35 @@ class GraphSpecDataModelV3Migration :
     }
 
     private data class RelationshipData(
-        val typesMap: List<Map<String, Any?>>,
+        val typesMap: List<SchemaMap>,
         val objectTypes: List<SchemaMap>,
         val constraints: List<SchemaMap>,
         val indexes: List<SchemaMap>
     )
 
-    private fun convertRelationships(schema: SchemaMap): RelationshipData? {
-        val constraints = mutableListOf<SchemaMap>()
-        val indexes = mutableListOf<SchemaMap>()
+    private fun convertRelationships(
+        schema: SchemaMap,
+        constraints: MutableList<SchemaMap>,
+        indexes: MutableList<SchemaMap>
+    ): RelationshipData? {
         val relationships = schema.mapOfMapsOrNull("relationships") ?: return null
-        val relTypesMap = mutableMapOf<String, MutableMap<String, Any?>>()
+        val relTypes = mutableMapOf<String, String>()
+        val relationTypes = mutableListOf<SchemaMap>()
         val relationshipObjectTypes = mutableListOf<SchemaMap>()
         for ((relId, rel) in relationships) {
             val typeToken = rel.string("type")
-            val relIndex = relId.removePrefix("r:")
-            val typeId = "rt:$relIndex"
-            if (typeId !in relTypesMap) {
-                relTypesMap[typeId] = mutableMapOf(
-                    "\$id" to typeId,
-                    "token" to typeToken,
-                    "properties" to mutableListOf<SchemaMap>()
+            var typeId = relTypes[typeToken]
+            if (typeId == null) {
+                typeId = "rt:${relationTypes.size}"
+                relTypes[typeToken] = typeId // TODO this doesn't allow same tokens with differing properties
+                relationTypes.add(
+                    schemaMapOf(
+                        "\$id" to typeId,
+                        "token" to typeToken,
+                        "properties" to convertProperties(rel.mapOfMapsOrNull("properties"))
+                    )
                 )
             }
-
-            val existingProps = relTypesMap[typeId]!!["properties"] as MutableList<SchemaMap>
-            val currentPropIds = existingProps.map { it.id() }.toSet()
-
-            val relProps = convertProperties(rel.mapOfMapsOrNull("properties"))
-            existingProps.addAll(relProps.filter { it.id() !in currentPropIds })
 
             relationshipObjectTypes.add(
                 schemaMapOf(
@@ -177,7 +179,7 @@ class GraphSpecDataModelV3Migration :
 
             constraints.addAll(
                 convertElements(
-                    id = relId.replace("r:", "c:"),
+                    id = "c:${constraints.size}",
                     elements = rel.mapOfMapsOrNull("constraints"),
                     entityType = "relationship",
                     refId = typeId,
@@ -187,7 +189,7 @@ class GraphSpecDataModelV3Migration :
             )
             indexes.addAll(
                 convertElements(
-                    id = relId.replace("r:", "i:"),
+                    id = "i:${indexes.size}",
                     elements = rel.mapOfMapsOrNull("indexes"),
                     entityType = "relationship",
                     refId = typeId,
@@ -197,7 +199,7 @@ class GraphSpecDataModelV3Migration :
             )
         }
         return RelationshipData(
-            typesMap = relTypesMap.values.map { it.toMap() },
+            typesMap = relationTypes,
             objectTypes = relationshipObjectTypes,
             constraints = constraints,
             indexes = indexes
@@ -211,9 +213,11 @@ class GraphSpecDataModelV3Migration :
         val indexes: List<SchemaMap>
     )
 
-    private fun convertNodes(schema: SchemaMap): NodeData? {
-        val constraints = mutableListOf<SchemaMap>()
-        val indexes = mutableListOf<SchemaMap>()
+    private fun convertNodes(
+        schema: SchemaMap,
+        constraints: MutableList<SchemaMap>,
+        indexes: MutableList<SchemaMap>
+    ): NodeData? {
         val nodes = schema.mapOfMapsOrNull("nodes") ?: return null
         val nodeLabelsMap = mutableMapOf<String, MutableMap<String, Any?>>()
         var nodeLabelCount = 0
@@ -257,7 +261,7 @@ class GraphSpecDataModelV3Migration :
 
             constraints.addAll(
                 convertElements(
-                    id = nodeId.replace("n:", "c:"),
+                    id = "c:${constraints.size}",
                     elements = node.mapOfMapsOrNull("constraints"),
                     entityType = "node",
                     refId = primaryLabelId,
@@ -267,7 +271,7 @@ class GraphSpecDataModelV3Migration :
             )
             indexes.addAll(
                 convertElements(
-                    id = nodeId.replace("n:", "i:"),
+                    id = "i:${indexes.size}",
                     elements = node.mapOfMapsOrNull("indexes"),
                     entityType = "node",
                     refId = primaryLabelId,
