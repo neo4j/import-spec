@@ -23,40 +23,46 @@ import model.Type
 import model.Version
 
 /**
- * 2.0 -> 3.0 adds support for multiple keys properties
+ * 2.X -> 3.0 adds support for multiple keys properties
  */
 class DataModelV2V3Migration(version: String) :
-    Migration(Type.DATA_MODEL, version, Type.DATA_MODEL, Version.DATA_MODEL_V30) {
+    Migration(
+        fromType = Type.DATA_MODEL,
+        from = version,
+        toType = Type.DATA_MODEL,
+        to = Version.DATA_MODEL_V30
+    ) {
+
     override fun migrate(schema: SchemaMap): SchemaMap {
         val schema = unwrap(schema)
         // Replace singular keyProperty with a list keyProperties
-        val extensions = schema.map("graphSchemaExtensionsRepresentation")
-        val nodeKeyProperties = extensions.listOfMaps("nodeKeyProperties")
+        val nodeKeyProperties = schema
+            .map("graphSchemaExtensionsRepresentation")
+            .listOfMaps("nodeKeyProperties")
         val references = mutableMapOf<String, String>()
         for (property in nodeKeyProperties) {
             val key = property.removeMap("keyProperty")
             property["keyProperties"] = mutableListOf(key)
             // Store refs for node -> property
-            val nodeRef = property.map("node").string("\$ref")
-            val keyRef = key.string("\$ref")
-            references[nodeRef] = keyRef
+            val nodeRef = property.ref("node")
+            references[nodeRef] = key.ref()
         }
 
         // Replace from/toMapping with from/toMappings
-        val mappings = schema.map("graphMappingRepresentation")
-        val relationshipMappings = mappings.listOfMaps("relationshipMappings")
         val relationshipObjectTypes = schema
             .map("graphSchemaRepresentation")
             .map("graphSchema")
             .listOfMaps("relationshipObjectTypes")
-        for (mapping in relationshipMappings) {
+            .associateBy { it.id() }
+        for (mapping in schema
+            .map("graphMappingRepresentation")
+            .listOfMaps("relationshipMappings")) {
             // Find relationship object and it's node refs
-            val relationshipRef = mapping.map("relationship").string("\$ref").removePrefix("#")
-            val objectType = relationshipObjectTypes
-                .firstOrNull { it.string("\$id") == relationshipRef }
+            val relationshipRef = mapping.ref("relationship")
+            val objectType = relationshipObjectTypes[relationshipRef]
                 ?: error("Could not find relationship object $relationshipRef")
-            val fromNodeRef = objectType.map("from").string("\$ref")
-            val toNodeRef = objectType.map("to").string("\$ref")
+            val fromNodeRef = objectType.ref("from")
+            val toNodeRef = objectType.ref("to")
 
             // Resolve nodeKeyProperties and convert mapping into mappings
             updateMapping(references, mapping, fromNodeRef, "fromMapping")
@@ -76,18 +82,5 @@ class DataModelV2V3Migration(version: String) :
         val toFieldName = mapping.map(key).literal("fieldName")
         mapping["${key}s"] = mutableListOf(schemaMapOf(toPropertyRef to toFieldName))
         mapping.remove(key)
-    }
-
-    companion object {
-        fun unwrap(schema: SchemaMap): SchemaMap {
-            if (schema.containsKey("dataModel")) {
-                val model = schema.map("dataModel")
-                schema.remove("dataModel")
-                schema.remove("version")
-                model.putAll(schema)
-                return model
-            }
-            return schema
-        }
     }
 }

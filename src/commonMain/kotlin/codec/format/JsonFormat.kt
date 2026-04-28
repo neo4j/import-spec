@@ -27,6 +27,7 @@ import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.JsonUnquotedLiteral
 import kotlinx.serialization.json.contentOrNull
 import kotlinx.serialization.json.decodeFromJsonElement
 import kotlinx.serialization.json.encodeToJsonElement
@@ -56,22 +57,25 @@ class JsonFormat(private val json: Json) : Format {
             }.toMutableMap(),
             parent
         )
-        is JsonPrimitive -> json.contentOrNull?.let { SchemaLiteral(it, parent) } ?: SchemaNull
-        JsonNull -> SchemaNull
+        is JsonPrimitive -> json.contentOrNull?.let {
+            SchemaLiteral(it, parent, json.isString)
+        } ?: SchemaNull(parent)
+        JsonNull -> SchemaNull(parent)
     }
 
     private fun SchemaElement.toJson(): JsonElement = when (this) {
         is SchemaList -> JsonArray(content.map { it.toJson() })
         is SchemaMap -> JsonObject(content.mapValues { (_, value) -> value.toJson() })
-        is SchemaLiteral -> JsonPrimitive(string)
-        SchemaNull -> JsonNull
+        is SchemaLiteral -> if (isString) JsonPrimitive(string) else JsonUnquotedLiteral(string)
+        is SchemaNull -> JsonNull
     }
 
-    companion object Builder : Format.Builder {
-        override fun build() = JsonFormat(
+    companion object {
+        val default = JsonFormat(
             Json {
                 ignoreUnknownKeys = true
                 isLenient = true
+                prettyPrint = true
             }
         )
     }

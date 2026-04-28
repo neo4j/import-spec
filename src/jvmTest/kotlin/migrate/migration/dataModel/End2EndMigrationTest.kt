@@ -22,15 +22,15 @@ class End2EndMigrationTest {
     fun `Test full spec`() {
         val input = End2EndMigrationTest::class.resourceAsString("prod-like/northwind.json")
         val migration = DataModelV3GraphSpecMigration()
-        val format = JsonFormat.build()
+        val format = JsonFormat.default
 
         val schema = format.decodeFromString(input) as SchemaMap
         var output = migration.migrate(schema)
 
-        val yaml = JsonFormat.build()
+        val yaml = JsonFormat.default
         val element = Json.parseToJsonElement(input)
         println(element)
-        println(YamlFormat.build().encodeToString(output))
+        println(YamlFormat.default.encodeToString(output))
     }
 
     @Test
@@ -63,13 +63,13 @@ class End2EndMigrationTest {
         for (name in list) {
             val input = End2EndMigrationTest::class.resourceAsString("prod-like/$name")
             val migration = DataModelV3GraphSpecMigration()
-            val format = JsonFormat.build()
+            val format = JsonFormat.default
 
             val schema = format.decodeFromString(input) as SchemaMap
 
             var output = migration.migrate(schema)
 
-            val yaml = YamlFormat.build()
+            val yaml = YamlFormat.default
             val string = yaml.encodeToString(output)
 
             File("./${name.replace(".json", ".yaml")}").writeText(string)
@@ -107,7 +107,7 @@ class End2EndMigrationTest {
                 continue
             }
             val migration = DataModelV3GraphSpecMigration()
-            val format = JsonFormat.build()
+            val format = JsonFormat.default
 
             val schema = format.decodeFromString(input.readText()) as SchemaMap
             println(schema)
@@ -115,7 +115,7 @@ class End2EndMigrationTest {
 
             println(output)
 
-            val yaml = YamlFormat.build()
+            val yaml = YamlFormat.default
             input.parentFile.resolve("${input.nameWithoutExtension}.yaml").writeText(yaml.encodeToString(output))
         }
     }

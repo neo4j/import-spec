@@ -21,6 +21,7 @@ import codec.schema.SchemaMap
 import migrate.MigrationPath
 import migrate.migration.dataModel.DataModelV2V3Migration
 import migrate.migration.dataModel.DataModelV3GraphSpecMigration
+import migrate.migration.dataModel.GraphSpecDataModelV3Migration
 import migrate.migration.dataModel.GraphSpecV3PrettyMigration
 import model.GraphModel
 import model.Type
@@ -28,48 +29,47 @@ import model.Version
 import kotlin.js.JsExport
 
 @JsExport
-sealed class GraphSpec(val configuration: GraphSpecConfig, val builder: Format.Builder) {
+sealed class GraphSpec(val configuration: GraphSpecConfig) {
     private val path = MigrationPath(configuration.migrations)
-    private val format = builder.build()
 
     fun encodeToString(
         model: GraphModel,
         targetType: String = Type.GRAPH_SPEC,
         targetVersion: String = Version.LATEST
     ): String {
-        val schema = format.encodeToSchema(model)
+        val schema = configuration.format.encodeToSchema(model)
         var map = schema as? SchemaMap ?: error("Schema format expected")
         map = path.migrate(map, Type.GRAPH_SPEC, targetVersion, targetType)
-        return format.encodeToString(map)
+        return configuration.format.encodeToString(map)
     }
 
     fun decodeFromString(content: String, type: String = Type.GRAPH_SPEC): GraphModel {
-        val schema = format.decodeFromString(content)
+        val schema = configuration.format.decodeFromString(content)
         var map = schema as? SchemaMap ?: error("Schema format expected")
         map = path.migrate(map, type, Version.LATEST, Type.GRAPH_SPEC)
-        return format.decodeFromSchema(map)
+        return configuration.format.decodeFromSchema(map)
     }
 
-    object Json : GraphSpec(defaultConfig(), JsonFormat.Builder)
+    object Json : GraphSpec(defaultConfig(JsonFormat.default))
 
-    object Yaml : GraphSpec(defaultConfig(), YamlFormat.Builder)
+    object Yaml : GraphSpec(defaultConfig(YamlFormat.default))
 }
 
-private fun defaultConfig(): GraphSpecConfig {
-    val builder = GraphSpecConfig.Builder()
+private fun defaultConfig(format: Format): GraphSpecConfig {
+    val builder = GraphSpecConfig.Builder(format)
     builder.migrate(DataModelV2V3Migration(Version.DATA_MODEL_V23))
     builder.migrate(DataModelV2V3Migration(Version.DATA_MODEL_V24))
     builder.migrate(DataModelV3GraphSpecMigration())
+    builder.migrate(GraphSpecDataModelV3Migration())
     builder.migrate(GraphSpecV3PrettyMigration())
     return builder.build()
 }
 
-private class GraphSpecImpl(configuration: GraphSpecConfig, format: Format.Builder) :
-    GraphSpec(configuration, format)
+private class GraphSpecImpl(configuration: GraphSpecConfig) : GraphSpec(configuration)
 
 fun GraphSpec(from: GraphSpec = GraphSpec.Json, builderAction: GraphSpecConfig.Builder.() -> Unit): GraphSpec {
     val builder = GraphSpecConfig.Builder(from.configuration)
     builder.builderAction()
     val conf = builder.build()
-    return GraphSpecImpl(conf, from.builder)
+    return GraphSpecImpl(conf)
 }

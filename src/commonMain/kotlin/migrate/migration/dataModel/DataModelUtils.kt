@@ -14,26 +14,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package codec.schema
+package migrate.migration.dataModel
 
-data class SchemaLiteral(
-    override val string: String,
-    override val path: String = "",
-    override val isString: Boolean = true
-) : SchemaPrimitive() {
+import codec.schema.SchemaMap
+import codec.schema.schemaMapOf
 
-    override fun repath(newPath: String) = SchemaLiteral(string, newPath, isString)
+internal fun SchemaMap.ref() = string("\$ref").removePrefix("#")
 
-    override fun toString(): String = string
+internal fun SchemaMap.ref(key: String) = map(key).ref()
 
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other == null || this::class != other::class) return false
+internal fun SchemaMap.id() = string("\$id")
 
-        other as SchemaLiteral
-
-        return string == other.string
+internal fun unwrap(schema: SchemaMap): SchemaMap {
+    if (schema.containsKey("dataModel")) {
+        val model = schema.map("dataModel")
+        schema.remove("dataModel")
+        schema.remove("version")
+        model.putAll(schema)
+        return model
     }
-
-    override fun hashCode(): Int = string.hashCode()
+    return schema
 }
+
+internal fun refOf(id: String) = schemaMapOf("\$ref" to "#${id.removePrefix("#")}")

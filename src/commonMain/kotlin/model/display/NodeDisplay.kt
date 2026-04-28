@@ -14,26 +14,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package codec.schema
+package model.display
 
-data class SchemaLiteral(
-    override val string: String,
-    override val path: String = "",
-    override val isString: Boolean = true
-) : SchemaPrimitive() {
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+import model.extension.ExtensionValue
+import model.extension.Extensions
+import kotlin.js.JsExport
 
-    override fun repath(newPath: String) = SchemaLiteral(string, newPath, isString)
-
-    override fun toString(): String = string
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other == null || this::class != other::class) return false
-
-        other as SchemaLiteral
-
-        return string == other.string
-    }
-
-    override fun hashCode(): Int = string.hashCode()
-}
+@JsExport
+@Serializable
+@SerialName("NodeDisplay")
+data class NodeDisplay(
+    val x: Double,
+    val y: Double,
+    override val extensions: MutableMap<String, ExtensionValue> = mutableMapOf()
+) : Extensions

@@ -1,0 +1,1128 @@
+{
+    "version": "3.0.0",
+    "importModelId": "mV07qlaRSyGVJDUMwGCD",
+    "dataModel": {
+        "version": "3.0",
+        "graphSchemaRepresentation": {
+            "version": "1.0.0",
+            "graphSchema": {
+                "nodeLabels": [
+                    {
+                        "$id": "nl:0",
+                        "token": "categories",
+                        "properties": [
+                            {
+                                "$id": "p:0_0",
+                                "token": "categoryid",
+                                "type": {
+                                    "type": "integer"
+                                },
+                                "nullable": false
+                            },
+                            {
+                                "$id": "p:0_1",
+                                "token": "categoryname",
+                                "type": {
+                                    "type": "string"
+                                },
+                                "nullable": false
+                            },
+                            {
+                                "$id": "p:0_2",
+                                "token": "description",
+                                "type": {
+                                    "type": "string"
+                                },
+                                "nullable": false
+                            },
+                            {
+                                "$id": "p:0_3",
+                                "token": "picture",
+                                "type": {
+                                    "type": "string"
+                                },
+                                "nullable": false
+                            }
+                        ]
+                    },
+                    {
+                        "$id": "nl:1",
+                        "token": "products",
+                        "properties": [
+                            {
+                                "$id": "p:1_0",
+                                "token": "productid",
+                                "type": {
+                                    "type": "integer"
+                                },
+                                "nullable": false
+                            },
+                            {
+                                "$id": "p:1_1",
+                                "token": "productname",
+                                "type": {
+                                    "type": "string"
+                                },
+                                "nullable": false
+                            },
+                            {
+                                "$id": "p:1_4",
+                                "token": "quantityperunit",
+                                "type": {
+                                    "type": "string"
+                                },
+                                "nullable": false
+                            },
+                            {
+                                "$id": "p:1_5",
+                                "token": "unitprice",
+                                "type": {
+                                    "type": "float"
+                                },
+                                "nullable": false
+                            },
+                            {
+                                "$id": "p:1_6",
+                                "token": "unitsinstock",
+                                "type": {
+                                    "type": "integer"
+                                },
+                                "nullable": false
+                            },
+                            {
+                                "$id": "p:1_7",
+                                "token": "unitsonorder",
+                                "type": {
+                                    "type": "integer"
+                                },
+                                "nullable": false
+                            },
+                            {
+                                "$id": "p:1_8",
+                                "token": "reorderlevel",
+                                "type": {
+                                    "type": "integer"
+                                },
+                                "nullable": false
+                            },
+                            {
+                                "$id": "p:1_9",
+                                "token": "discontinued",
+                                "type": {
+                                    "type": "boolean"
+                                },
+                                "nullable": false
+                            }
+                        ]
+                    },
+                    {
+                        "$id": "nl:2",
+                        "token": "suppliers",
+                        "properties": [
+                            {
+                                "$id": "p:2_0",
+                                "token": "supplierid",
+                                "type": {
+                                    "type": "integer"
+                                },
+                                "nullable": false
+                            },
+                            {
+                                "$id": "p:2_1",
+                                "token": "companyname",
+                                "type": {
+                                    "type": "string"
+                                },
+                                "nullable": false
+                            },
+                            {
+                                "$id": "p:2_2",
+                                "token": "contactname",
+                                "type": {
+                                    "type": "string"
+                                },
+                                "nullable": false
+                            },
+                            {
+                                "$id": "p:2_3",
+                                "token": "contacttitle",
+                                "type": {
+                                    "type": "string"
+                                },
+                                "nullable": false
+                            },
+                            {
+                                "$id": "p:2_4",
+                                "token": "address",
+                                "type": {
+                                    "type": "string"
+                                },
+                                "nullable": false
+                            },
+                            {
+                                "$id": "p:2_5",
+                                "token": "city",
+                                "type": {
+                                    "type": "string"
+                                },
+                                "nullable": false
+                            },
+                            {
+                                "$id": "p:2_6",
+                                "token": "region",
+                                "type": {
+                                    "type": "string"
+                                },
+                                "nullable": false
+                            },
+                            {
+                                "$id": "p:2_7",
+                                "token": "postalcode",
+                                "type": {
+                                    "type": "string"
+                                },
+                                "nullable": false
+                            },
+                            {
+                                "$id": "p:2_8",
+                                "token": "country",
+                                "type": {
+                                    "type": "string"
+                                },
+                                "nullable": false
+                            },
+                            {
+                                "$id": "p:2_9",
+                                "token": "phone",
+                                "type": {
+                                    "type": "string"
+                                },
+                                "nullable": false
+                            },
+                            {
+                                "$id": "p:2_10",
+                                "token": "fax",
+                                "type": {
+                                    "type": "string"
+                                },
+                                "nullable": false
+                            },
+                            {
+                                "$id": "p:2_11",
+                                "token": "homepage",
+                                "type": {
+                                    "type": "string"
+                                },
+                                "nullable": false
+                            }
+                        ]
+                    }
+                ],
+                "relationshipTypes": [
+                    {
+                        "$id": "rt:0",
+                        "token": "CATEGORIES",
+                        "properties": []
+                    },
+                    {
+                        "$id": "rt:1",
+                        "token": "SUPPLIERS",
+                        "properties": []
+                    }
+                ],
+                "nodeObjectTypes": [
+                    {
+                        "$id": "n:0",
+                        "labels": [
+                            {
+                                "$ref": "#nl:0"
+                            }
+                        ]
+                    },
+                    {
+                        "$id": "n:1",
+                        "labels": [
+                            {
+                                "$ref": "#nl:1"
+                            }
+                        ]
+                    },
+                    {
+                        "$id": "n:2",
+                        "labels": [
+                            {
+                                "$ref": "#nl:2"
+                            }
+                        ]
+                    }
+                ],
+                "relationshipObjectTypes": [
+                    {
+                        "$id": "r:0",
+                        "type": {
+                            "$ref": "#rt:0"
+                        },
+                        "from": {
+                            "$ref": "#n:1"
+                        },
+                        "to": {
+                            "$ref": "#n:0"
+                        }
+                    },
+                    {
+                        "$id": "r:1",
+                        "type": {
+                            "$ref": "#rt:1"
+                        },
+                        "from": {
+                            "$ref": "#n:1"
+                        },
+                        "to": {
+                            "$ref": "#n:2"
+                        }
+                    }
+                ],
+                "constraints": [
+                    {
+                        "$id": "c:0",
+                        "name": "categoryid_categories_key",
+                        "constraintType": "key",
+                        "entityType": "node",
+                        "nodeLabel": {
+                            "$ref": "#nl:0"
+                        },
+                        "properties": [
+                            {
+                                "$ref": "#p:0_0"
+                            }
+                        ],
+                        "relationshipType": null
+                    },
+                    {
+                        "$id": "c:1",
+                        "name": "productid_products_key",
+                        "constraintType": "key",
+                        "entityType": "node",
+                        "nodeLabel": {
+                            "$ref": "#nl:1"
+                        },
+                        "properties": [
+                            {
+                                "$ref": "#p:1_0"
+                            }
+                        ],
+                        "relationshipType": null
+                    },
+                    {
+                        "$id": "c:2",
+                        "name": "supplierid_suppliers_key",
+                        "constraintType": "key",
+                        "entityType": "node",
+                        "nodeLabel": {
+                            "$ref": "#nl:2"
+                        },
+                        "properties": [
+                            {
+                                "$ref": "#p:2_0"
+                            }
+                        ],
+                        "relationshipType": null
+                    }
+                ],
+                "indexes": []
+            }
+        },
+        "graphMappingRepresentation": {
+            "dataSourceSchema": {
+                "type": "cloud",
+                "tableSchemas": [
+                    {
+                        "name": "categories",
+                        "fields": [
+                            {
+                                "name": "categoryid",
+                                "rawType": "int4",
+                                "recommendedType": {
+                                    "type": "integer"
+                                },
+                                "supportedTypes": [
+                                    {
+                                        "type": "integer"
+                                    },
+                                    {
+                                        "type": "string"
+                                    },
+                                    {
+                                        "type": "float"
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "categoryname",
+                                "rawType": "varchar",
+                                "recommendedType": {
+                                    "type": "string"
+                                },
+                                "supportedTypes": [
+                                    {
+                                        "type": "string"
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "description",
+                                "rawType": "text",
+                                "recommendedType": {
+                                    "type": "string"
+                                },
+                                "supportedTypes": [
+                                    {
+                                        "type": "string"
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "picture",
+                                "rawType": "text",
+                                "recommendedType": {
+                                    "type": "string"
+                                },
+                                "supportedTypes": [
+                                    {
+                                        "type": "string"
+                                    }
+                                ]
+                            }
+                        ],
+                        "primaryKeys": [
+                            "categoryid"
+                        ],
+                        "foreignKeys": []
+                    },
+                    {
+                        "name": "orders",
+                        "fields": [
+                            {
+                                "name": "orderid",
+                                "rawType": "int4",
+                                "recommendedType": {
+                                    "type": "integer"
+                                },
+                                "supportedTypes": [
+                                    {
+                                        "type": "integer"
+                                    },
+                                    {
+                                        "type": "string"
+                                    },
+                                    {
+                                        "type": "float"
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "productid",
+                                "rawType": "int4",
+                                "recommendedType": {
+                                    "type": "integer"
+                                },
+                                "supportedTypes": [
+                                    {
+                                        "type": "integer"
+                                    },
+                                    {
+                                        "type": "string"
+                                    },
+                                    {
+                                        "type": "float"
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "unitprice",
+                                "rawType": "float8",
+                                "recommendedType": {
+                                    "type": "float"
+                                },
+                                "supportedTypes": [
+                                    {
+                                        "type": "integer"
+                                    },
+                                    {
+                                        "type": "string"
+                                    },
+                                    {
+                                        "type": "float"
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "quantity",
+                                "rawType": "int4",
+                                "recommendedType": {
+                                    "type": "integer"
+                                },
+                                "supportedTypes": [
+                                    {
+                                        "type": "integer"
+                                    },
+                                    {
+                                        "type": "string"
+                                    },
+                                    {
+                                        "type": "float"
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "discount",
+                                "rawType": "float8",
+                                "recommendedType": {
+                                    "type": "float"
+                                },
+                                "supportedTypes": [
+                                    {
+                                        "type": "integer"
+                                    },
+                                    {
+                                        "type": "string"
+                                    },
+                                    {
+                                        "type": "float"
+                                    }
+                                ]
+                            }
+                        ],
+                        "primaryKeys": [
+                            "orderid",
+                            "productid"
+                        ],
+                        "foreignKeys": [
+                            {
+                                "referencedTable": "products",
+                                "fields": [
+                                    {
+                                        "field": "productid",
+                                        "referencedField": "productid"
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "name": "products",
+                        "fields": [
+                            {
+                                "name": "productid",
+                                "rawType": "int4",
+                                "recommendedType": {
+                                    "type": "integer"
+                                },
+                                "supportedTypes": [
+                                    {
+                                        "type": "integer"
+                                    },
+                                    {
+                                        "type": "string"
+                                    },
+                                    {
+                                        "type": "float"
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "productname",
+                                "rawType": "varchar",
+                                "recommendedType": {
+                                    "type": "string"
+                                },
+                                "supportedTypes": [
+                                    {
+                                        "type": "string"
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "supplierid",
+                                "rawType": "int4",
+                                "recommendedType": {
+                                    "type": "integer"
+                                },
+                                "supportedTypes": [
+                                    {
+                                        "type": "integer"
+                                    },
+                                    {
+                                        "type": "string"
+                                    },
+                                    {
+                                        "type": "float"
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "categoryid",
+                                "rawType": "int4",
+                                "recommendedType": {
+                                    "type": "integer"
+                                },
+                                "supportedTypes": [
+                                    {
+                                        "type": "integer"
+                                    },
+                                    {
+                                        "type": "string"
+                                    },
+                                    {
+                                        "type": "float"
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "quantityperunit",
+                                "rawType": "varchar",
+                                "recommendedType": {
+                                    "type": "string"
+                                },
+                                "supportedTypes": [
+                                    {
+                                        "type": "string"
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "unitprice",
+                                "rawType": "float8",
+                                "recommendedType": {
+                                    "type": "float"
+                                },
+                                "supportedTypes": [
+                                    {
+                                        "type": "integer"
+                                    },
+                                    {
+                                        "type": "string"
+                                    },
+                                    {
+                                        "type": "float"
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "unitsinstock",
+                                "rawType": "int4",
+                                "recommendedType": {
+                                    "type": "integer"
+                                },
+                                "supportedTypes": [
+                                    {
+                                        "type": "integer"
+                                    },
+                                    {
+                                        "type": "string"
+                                    },
+                                    {
+                                        "type": "float"
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "unitsonorder",
+                                "rawType": "int4",
+                                "recommendedType": {
+                                    "type": "integer"
+                                },
+                                "supportedTypes": [
+                                    {
+                                        "type": "integer"
+                                    },
+                                    {
+                                        "type": "string"
+                                    },
+                                    {
+                                        "type": "float"
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "reorderlevel",
+                                "rawType": "int4",
+                                "recommendedType": {
+                                    "type": "integer"
+                                },
+                                "supportedTypes": [
+                                    {
+                                        "type": "integer"
+                                    },
+                                    {
+                                        "type": "string"
+                                    },
+                                    {
+                                        "type": "float"
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "discontinued",
+                                "rawType": "bool",
+                                "recommendedType": {
+                                    "type": "boolean"
+                                },
+                                "supportedTypes": [
+                                    {
+                                        "type": "string"
+                                    },
+                                    {
+                                        "type": "boolean"
+                                    }
+                                ]
+                            }
+                        ],
+                        "primaryKeys": [
+                            "productid"
+                        ],
+                        "foreignKeys": [
+                            {
+                                "referencedTable": "categories",
+                                "fields": [
+                                    {
+                                        "field": "categoryid",
+                                        "referencedField": "categoryid"
+                                    }
+                                ]
+                            },
+                            {
+                                "referencedTable": "suppliers",
+                                "fields": [
+                                    {
+                                        "field": "supplierid",
+                                        "referencedField": "supplierid"
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "name": "suppliers",
+                        "fields": [
+                            {
+                                "name": "supplierid",
+                                "rawType": "int4",
+                                "recommendedType": {
+                                    "type": "integer"
+                                },
+                                "supportedTypes": [
+                                    {
+                                        "type": "integer"
+                                    },
+                                    {
+                                        "type": "string"
+                                    },
+                                    {
+                                        "type": "float"
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "companyname",
+                                "rawType": "varchar",
+                                "recommendedType": {
+                                    "type": "string"
+                                },
+                                "supportedTypes": [
+                                    {
+                                        "type": "string"
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "contactname",
+                                "rawType": "varchar",
+                                "recommendedType": {
+                                    "type": "string"
+                                },
+                                "supportedTypes": [
+                                    {
+                                        "type": "string"
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "contacttitle",
+                                "rawType": "varchar",
+                                "recommendedType": {
+                                    "type": "string"
+                                },
+                                "supportedTypes": [
+                                    {
+                                        "type": "string"
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "address",
+                                "rawType": "text",
+                                "recommendedType": {
+                                    "type": "string"
+                                },
+                                "supportedTypes": [
+                                    {
+                                        "type": "string"
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "city",
+                                "rawType": "varchar",
+                                "recommendedType": {
+                                    "type": "string"
+                                },
+                                "supportedTypes": [
+                                    {
+                                        "type": "string"
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "region",
+                                "rawType": "varchar",
+                                "recommendedType": {
+                                    "type": "string"
+                                },
+                                "supportedTypes": [
+                                    {
+                                        "type": "string"
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "postalcode",
+                                "rawType": "varchar",
+                                "recommendedType": {
+                                    "type": "string"
+                                },
+                                "supportedTypes": [
+                                    {
+                                        "type": "string"
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "country",
+                                "rawType": "varchar",
+                                "recommendedType": {
+                                    "type": "string"
+                                },
+                                "supportedTypes": [
+                                    {
+                                        "type": "string"
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "phone",
+                                "rawType": "varchar",
+                                "recommendedType": {
+                                    "type": "string"
+                                },
+                                "supportedTypes": [
+                                    {
+                                        "type": "string"
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "fax",
+                                "rawType": "varchar",
+                                "recommendedType": {
+                                    "type": "string"
+                                },
+                                "supportedTypes": [
+                                    {
+                                        "type": "string"
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "homepage",
+                                "rawType": "text",
+                                "recommendedType": {
+                                    "type": "string"
+                                },
+                                "supportedTypes": [
+                                    {
+                                        "type": "string"
+                                    }
+                                ]
+                            }
+                        ],
+                        "primaryKeys": [
+                            "supplierid"
+                        ],
+                        "foreignKeys": []
+                    }
+                ]
+            },
+            "nodeMappings": [
+                {
+                    "node": {
+                        "$ref": "#n:0"
+                    },
+                    "tableName": "categories",
+                    "propertyMappings": [
+                        {
+                            "fieldName": "categoryid",
+                            "property": {
+                                "$ref": "#p:0_0"
+                            }
+                        },
+                        {
+                            "fieldName": "categoryname",
+                            "property": {
+                                "$ref": "#p:0_1"
+                            }
+                        },
+                        {
+                            "fieldName": "description",
+                            "property": {
+                                "$ref": "#p:0_2"
+                            }
+                        },
+                        {
+                            "fieldName": "picture",
+                            "property": {
+                                "$ref": "#p:0_3"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "node": {
+                        "$ref": "#n:1"
+                    },
+                    "tableName": "products",
+                    "propertyMappings": [
+                        {
+                            "fieldName": "productid",
+                            "property": {
+                                "$ref": "#p:1_0"
+                            }
+                        },
+                        {
+                            "fieldName": "productname",
+                            "property": {
+                                "$ref": "#p:1_1"
+                            }
+                        },
+                        {
+                            "fieldName": "quantityperunit",
+                            "property": {
+                                "$ref": "#p:1_4"
+                            }
+                        },
+                        {
+                            "fieldName": "unitprice",
+                            "property": {
+                                "$ref": "#p:1_5"
+                            }
+                        },
+                        {
+                            "fieldName": "unitsinstock",
+                            "property": {
+                                "$ref": "#p:1_6"
+                            }
+                        },
+                        {
+                            "fieldName": "unitsonorder",
+                            "property": {
+                                "$ref": "#p:1_7"
+                            }
+                        },
+                        {
+                            "fieldName": "reorderlevel",
+                            "property": {
+                                "$ref": "#p:1_8"
+                            }
+                        },
+                        {
+                            "fieldName": "discontinued",
+                            "property": {
+                                "$ref": "#p:1_9"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "node": {
+                        "$ref": "#n:2"
+                    },
+                    "tableName": "suppliers",
+                    "propertyMappings": [
+                        {
+                            "fieldName": "supplierid",
+                            "property": {
+                                "$ref": "#p:2_0"
+                            }
+                        },
+                        {
+                            "fieldName": "companyname",
+                            "property": {
+                                "$ref": "#p:2_1"
+                            }
+                        },
+                        {
+                            "fieldName": "contactname",
+                            "property": {
+                                "$ref": "#p:2_2"
+                            }
+                        },
+                        {
+                            "fieldName": "contacttitle",
+                            "property": {
+                                "$ref": "#p:2_3"
+                            }
+                        },
+                        {
+                            "fieldName": "address",
+                            "property": {
+                                "$ref": "#p:2_4"
+                            }
+                        },
+                        {
+                            "fieldName": "city",
+                            "property": {
+                                "$ref": "#p:2_5"
+                            }
+                        },
+                        {
+                            "fieldName": "region",
+                            "property": {
+                                "$ref": "#p:2_6"
+                            }
+                        },
+                        {
+                            "fieldName": "postalcode",
+                            "property": {
+                                "$ref": "#p:2_7"
+                            }
+                        },
+                        {
+                            "fieldName": "country",
+                            "property": {
+                                "$ref": "#p:2_8"
+                            }
+                        },
+                        {
+                            "fieldName": "phone",
+                            "property": {
+                                "$ref": "#p:2_9"
+                            }
+                        },
+                        {
+                            "fieldName": "fax",
+                            "property": {
+                                "$ref": "#p:2_10"
+                            }
+                        },
+                        {
+                            "fieldName": "homepage",
+                            "property": {
+                                "$ref": "#p:2_11"
+                            }
+                        }
+                    ]
+                }
+            ],
+            "relationshipMappings": [
+                {
+                    "relationship": {
+                        "$ref": "#r:0"
+                    },
+                    "tableName": "products",
+                    "fromMappings": {
+                        "#p:1_0": "productid"
+                    },
+                    "toMappings": {
+                        "#p:0_0": "categoryid"
+                    },
+                    "propertyMappings": []
+                },
+                {
+                    "relationship": {
+                        "$ref": "#r:1"
+                    },
+                    "tableName": "products",
+                    "fromMappings": {
+                        "#p:1_0": "productid"
+                    },
+                    "toMappings": {
+                        "#p:2_0": "supplierid"
+                    },
+                    "propertyMappings": []
+                }
+            ]
+        },
+        "graphSchemaExtensionsRepresentation": {
+            "nodeKeyProperties": [
+                {
+                    "node": {
+                        "$ref": "#n:0"
+                    },
+                    "keyProperties": [
+                        {
+                            "$ref": "#p:0_0"
+                        }
+                    ]
+                },
+                {
+                    "node": {
+                        "$ref": "#n:1"
+                    },
+                    "keyProperties": [
+                        {
+                            "$ref": "#p:1_0"
+                        }
+                    ]
+                },
+                {
+                    "node": {
+                        "$ref": "#n:2"
+                    },
+                    "keyProperties": [
+                        {
+                            "$ref": "#p:2_0"
+                        }
+                    ]
+                }
+            ]
+        },
+        "configurations": {
+            "idsToIgnore": []
+        }
+    },
+    "visualisation": {
+        "nodes": [
+            {
+                "id": "n:0",
+                "position": {
+                    "x": -135.42191903733703,
+                    "y": 111.04048253906433
+                }
+            },
+            {
+                "id": "n:1",
+                "position": {
+                    "x": -93.1435152100533,
+                    "y": -146.87167921815774
+                }
+            },
+            {
+                "id": "n:2",
+                "position": {
+                    "x": 158.21764236330682,
+                    "y": -74.6776648993597
+                }
+            }
+        ]
+    }
+}

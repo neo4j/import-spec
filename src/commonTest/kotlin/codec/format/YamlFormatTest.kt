@@ -27,7 +27,7 @@ import kotlin.test.assertTrue
 
 class YamlFormatTest {
 
-    private val yamlFormat = YamlFormat.build()
+    private val yamlFormat = YamlFormat.default
 
     @Test
     fun `test yaml path generation matches json logic`() {
@@ -116,7 +116,7 @@ class YamlFormatTest {
     fun `test toYaml handles all schema types`() {
         val schemaMap = SchemaMap()
         schemaMap["name"] = "test"
-        schemaMap["items"] = listOf(SchemaLiteral("item1"), SchemaNull)
+        schemaMap["items"] = listOf(SchemaLiteral("item1"), SchemaNull())
 
         val yamlString = yamlFormat.encodeToString(schemaMap)
 

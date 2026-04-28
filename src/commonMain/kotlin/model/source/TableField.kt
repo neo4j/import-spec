@@ -31,5 +31,6 @@ data class TableField(
     val size: Int = -1,
     val suggested: Neo4jType = Neo4jType.ANY,
     val supported: Set<Neo4jType> = emptySet(),
-    override val extensions: MutableMap<String, ExtensionValue> = mutableMapOf()
+    override val extensions: MutableMap<String, ExtensionValue> = mutableMapOf(),
+    val name: String? = null
 ) : Extensions

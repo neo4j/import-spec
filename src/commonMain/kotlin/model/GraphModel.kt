@@ -18,6 +18,7 @@ package model
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import model.display.Display
 import model.mapping.Mapping
 import model.node.Node
 import model.relationship.Relationship
@@ -36,7 +37,8 @@ data class GraphModel(
     val nodes: Map<String, Node> = emptyMap(),
     val relationships: Map<String, Relationship> = emptyMap(),
     val tables: Map<String, Table> = emptyMap(),
-    val mappings: List<Mapping> = emptyList()
+    val mappings: List<Mapping> = emptyList(),
+    val display: Display = Display()
 ) {
     @JsExport.Ignore
     fun validate(validators: List<Validation>): List<Issue> {

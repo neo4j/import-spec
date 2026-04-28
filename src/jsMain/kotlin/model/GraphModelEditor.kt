@@ -19,6 +19,8 @@ package model
 import js.objects.Record
 import js.objects.buildRecord
 import js.objects.toRecord
+import model.display.toClass
+import model.display.toJs
 import model.mapping.toClass
 import model.mapping.toJs
 import model.node.NodeJs
@@ -44,7 +46,8 @@ class GraphModelEditor {
             nodes = model.nodes.mapValues { (key, node) -> node.toJs(key) }.toRecord(),
             relationships = model.relationships.mapValues { (id, relationship) -> relationship.toJs(id) }.toRecord(),
             tables = model.tables.mapValues { (_, table) -> table.toJs() }.toRecord(),
-            mappings = model.mappings.map { mapping -> mapping.toJs() }.toTypedArray()
+            mappings = model.mappings.map { mapping -> mapping.toJs() }.toTypedArray(),
+            display = model.display.toJs()
         )
 
         @JsStatic
@@ -53,19 +56,12 @@ class GraphModelEditor {
             nodes = model.nodes.associateBy { id, js -> js.toClass(id) },
             relationships = model.relationships.associateBy { id, js -> js.toClass(id) },
             tables = model.tables.associateBy { _, js -> js.toClass() },
-            mappings = model.mappings.map { it.toClass() }
+            mappings = model.mappings.map { it.toClass() },
+            display = model.display.toClass()
         )
 
         @JsStatic
-        fun addNode(nodes: Record<String, NodeJs>, id: String) = buildRecord {
-            for ((key, value) in nodes.toMap()) {
-                set(key, value) // TODO does it need to be a deep copy? - Yes
-            }
-            set(id, nodeJs(id = id, name = id))
-        }
-
-        @JsStatic
-        fun addNodeInline(model: GraphModelJs, id: String) {
+        fun addNode(model: GraphModelJs, id: String) {
             // TODO use id given or generate id separate from name?
             model.nodes[id] = nodeJs(id = id, name = id)
         }
@@ -74,18 +70,6 @@ class GraphModelEditor {
         fun addNodeImpliedLabel(model: GraphModelJs, node: String, label: String) {
             val node = model.nodes[node] ?: error("No node found for id '$node'")
             node.labels.implied += label
-        }
-
-        @JsStatic
-        fun addNodeLabel(model: GraphModelJs, id: String, label: String): GraphModelJs {
-            val copy = model.nodes.toMap().toMutableMap()
-            return graphModelJs(
-                version = model.version,
-                nodes = copy.toRecord(),
-                relationships = model.relationships,
-                tables = model.tables,
-                mappings = model.mappings
-            )
         }
     }
 }
