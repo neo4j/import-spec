@@ -32,7 +32,7 @@ import kotlin.experimental.ExperimentalNativeApi
 fun migrateToGraphSpec(inputJson: CPointer<ByteVar>?, inputType: CPointer<ByteVar>?, outputBuffer: CPointer<ByteVar>?, bufferSize: Int) =
     invokeBridge(inputJson, inputType, outputBuffer = outputBuffer, bufferSize = bufferSize) { input ->
         val path = MigrationPath(GraphSpec.Json.configuration.migrations)
-        val format = JsonFormat.build()
+        val format = JsonFormat.default
         val schema = format.decodeFromString(input[0])
         var map = schema as? SchemaMap ?: error("Schema format expected")
         map = path.migrate(map, input[1], Version.LATEST, Type.GRAPH_SPEC)

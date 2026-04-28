@@ -43,7 +43,7 @@ class BridgeTest {
         memScoped {
             val inputPtr = input.cstr.getPointer(this)
             val outputBuffer = allocArray<ByteVar>(bufferSize)
-            val format = JsonFormat.build()
+            val format = JsonFormat.default
 
             val resultSize = invokeBridge(inputPtr, outputBuffer = outputBuffer, bufferSize = bufferSize) {
                 val schema = format.decodeFromString(it[0]) as SchemaMap
@@ -71,7 +71,7 @@ class BridgeTest {
             val inputJsonPtr = inputJson.cstr.getPointer(this)
             val inputVersionPtr = inputVersion.cstr.getPointer(this)
             val outputBuffer = allocArray<ByteVar>(bufferSize)
-            val format = JsonFormat.build()
+            val format = JsonFormat.default
 
             val resultSize = invokeBridge(inputJsonPtr, inputVersionPtr, outputBuffer = outputBuffer, bufferSize = bufferSize) {
                 val schema = format.decodeFromString(it[0]) as SchemaMap
