@@ -303,7 +303,7 @@ class DataModelV3GraphSpecMigrationTest {
         assertNotNull(rel)
         assertEquals("FOLLOWS", rel.string("type"))
         assertEquals("nodeA", rel.map("from").string("node"))
-        assertEquals("DATETIME", rel.map("properties").map("p1").string("type"))
+        assertEquals("ZONED DATETIME", rel.map("properties").map("p1").string("type"))
         assertNotNull(rel.map("constraints")["c1"])
     }
 
@@ -320,7 +320,7 @@ class DataModelV3GraphSpecMigrationTest {
                     schemaMapOf(
                         "\$id" to "p2",
                         "token" to "age",
-                        "type" to mapOf("type" to "Int")
+                        "type" to mapOf("type" to "Integer")
                     )
                 )
             )
@@ -329,7 +329,7 @@ class DataModelV3GraphSpecMigrationTest {
         val result = migration.convertProperties(labels, emptySet())
 
         assertEquals("STRING", result["p1"]?.string("type"))
-        assertEquals("INT", result["p2"]?.string("type"))
+        assertEquals("INTEGER", result["p2"]?.string("type"))
     }
 
     @Test

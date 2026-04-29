@@ -80,7 +80,7 @@ class DataModelV2V3Migration(version: String) :
         val toPropertyRef =
             references[nodeRef] ?: error("Unable to resolve nodeKeyProperties to node ref $nodeRef")
         val toFieldName = mapping.map(key).literal("fieldName")
-        mapping["${key}s"] = mutableListOf(schemaMapOf(toPropertyRef to toFieldName))
+        mapping["${key}s"] = schemaMapOf(toPropertyRef to toFieldName)
         mapping.remove(key)
     }
 }

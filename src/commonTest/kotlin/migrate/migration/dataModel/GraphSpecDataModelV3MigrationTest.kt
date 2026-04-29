@@ -313,18 +313,18 @@ class GraphSpecDataModelV3MigrationTest {
         val fieldsInput = mapOf(
             "f1" to schemaMapOf(
                 "name" to "first_name",
-                "suggested" to "STRING_TYPE",
-                "supported" to listOf(SchemaLiteral("STRING_TYPE"), SchemaLiteral("LONG_TEXT"))
+                "suggested" to "STRING",
+                "supported" to listOf(SchemaLiteral("STRING"), SchemaLiteral("INTEGER"))
             )
         )
 
         val fields = migration.convertFields(fieldsInput)
 
         assertEquals("first_name", fields[0].string("name"))
-        assertEquals("stringType", fields[0].map("recommendedType").string("type"))
+        assertEquals("string", fields[0].map("recommendedType").string("type"))
         val supported = fields[0].listOfMaps("supportedTypes")
-        assertEquals("stringType", supported[0].string("type"))
-        assertEquals("longText", supported[1].string("type"))
+        assertEquals("string", supported[0].string("type"))
+        assertEquals("integer", supported[1].string("type"))
     }
 
     @Test

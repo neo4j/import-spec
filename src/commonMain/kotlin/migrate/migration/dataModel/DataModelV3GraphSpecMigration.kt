@@ -210,7 +210,7 @@ class DataModelV3GraphSpecMigration :
             val map = schemaMapOf(
                 "name" to property.literalOrNull("token"),
                 "type" to propertyType(typeObj.string("type")),
-                "nullable" to typeObj.literalOrNull("nullable")
+                "nullable" to property.literalOrNull("nullable")
             )
             val id = property.id()
             if (keyProperties.contains(id)) {
@@ -251,9 +251,9 @@ class DataModelV3GraphSpecMigration :
         return mappings
     }
 
-    internal fun SchemaMap.entityMap(key: String) = map(key).map { (key, value) ->
+    internal fun SchemaMap.entityMap(key: String) = mapOrNull(key)?.map { (key, value) ->
         key.removePrefix("#") to schemaMapOf("field" to value)
-    }.toMap()
+    }?.toMap() ?: emptyMap()
 
     internal fun nodeMappings(schema: SchemaMap): List<SchemaMap> {
         val nodeMappings = schema
@@ -307,7 +307,6 @@ class DataModelV3GraphSpecMigration :
                 )
             )
         }
-        println(foreignKeys)
         return foreignKeys
     }
 
@@ -330,7 +329,7 @@ class DataModelV3GraphSpecMigration :
     }
 
     companion object {
-        private fun propertyType(string: String?): String? = when (string) {
+        private fun propertyType(string: String?): String? = when (string?.lowercase()) {
             "localdatetime" -> "LOCAL DATETIME"
             "datetime" -> "ZONED DATETIME"
             "string" -> "STRING"
@@ -338,6 +337,9 @@ class DataModelV3GraphSpecMigration :
             "float" -> "FLOAT"
             "date" -> "DATE"
             "boolean" -> "BOOLEAN"
+            "time" -> "ZONED TIME"
+            "point" -> "POINT"
+            "localtime" -> "LOCAL TIME"
             else -> string
         }
 

@@ -150,23 +150,24 @@ class GraphSpecDataModelV3Migration :
         indexes: MutableList<SchemaMap>
     ): RelationshipData? {
         val relationships = schema.mapOfMapsOrNull("relationships") ?: return null
-        val relTypes = mutableMapOf<String, String>()
         val relationTypes = mutableListOf<SchemaMap>()
         val relationshipObjectTypes = mutableListOf<SchemaMap>()
         for ((relId, rel) in relationships) {
             val typeToken = rel.string("type")
-            var typeId = relTypes[typeToken]
-            if (typeId == null) {
-                typeId = "rt:${relationTypes.size}"
-                relTypes[typeToken] = typeId // TODO this doesn't allow same tokens with differing properties
-                relationTypes.add(
-                    schemaMapOf(
-                        "\$id" to typeId,
-                        "token" to typeToken,
-                        "properties" to convertProperties(rel.mapOfMapsOrNull("properties"))
-                    )
+//            var typeId = relTypes[typeToken]
+//            if (typeId == null) {
+            // TODO if we look-up existing tokens then all relationships get combined
+            //      if do don't then joint relationships always get separated
+            val typeId = "rt:${relationTypes.size}"
+//                relTypes[typeToken] = typeId
+            relationTypes.add(
+                schemaMapOf(
+                    "\$id" to typeId,
+                    "token" to typeToken,
+                    "properties" to convertProperties(rel.mapOfMapsOrNull("properties"))
                 )
-            }
+            )
+//            }
 
             relationshipObjectTypes.add(
                 schemaMapOf(
@@ -426,7 +427,7 @@ class GraphSpecDataModelV3Migration :
     }
 
     companion object {
-        private fun propertyType(string: String?): String? = when (string) {
+        private fun propertyType(string: String?): String? = when (string?.uppercase()) {
             "LOCAL DATETIME" -> "localdatetime"
             "ZONED DATETIME" -> "datetime"
             "STRING" -> "string"
@@ -435,6 +436,9 @@ class GraphSpecDataModelV3Migration :
             "DATE" -> "date"
             "BOOLEAN" -> "boolean"
             "ANY" -> null
+            "LOCAL TIME" -> "localtime"
+            "ZONED TIME" -> "time"
+            "POINT" -> "point"
             else -> string
         }
 
