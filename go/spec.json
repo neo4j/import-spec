@@ -1,0 +1,844 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "GraphModel",
+  "type": "object",
+  "properties": {
+    "version": {
+      "type": "string"
+    },
+    "nodes": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#/$defs/Node"
+      }
+    },
+    "relationships": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#/$defs/Relationship"
+      }
+    },
+    "tables": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#/$defs/Table"
+      }
+    },
+    "mappings": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/Mapping"
+      }
+    },
+    "display": {
+      "$ref": "#/$defs/Display"
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "version"
+  ],
+  "$defs": {
+    "Node": {
+      "type": "object",
+      "properties": {
+        "labels": {
+          "$ref": "#/$defs/Labels"
+        },
+        "properties": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/Property"
+          }
+        },
+        "constraints": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/NodeConstraint"
+          }
+        },
+        "indexes": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/NodeIndex"
+          }
+        },
+        "extensions": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/ExtensionValue"
+          }
+        },
+        "name": {
+          "type": "string",
+          "nullable": true
+        }
+      },
+      "required": [],
+      "additionalProperties": false
+    },
+    "Labels": {
+      "type": "object",
+      "properties": {
+        "identifier": {
+          "type": "string"
+        },
+        "implied": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "optional": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "extensions": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/ExtensionValue"
+          }
+        }
+      },
+      "required": [],
+      "additionalProperties": false
+    },
+    "ExtensionValue": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/String"
+        },
+        {
+          "$ref": "#/$defs/Boolean"
+        },
+        {
+          "$ref": "#/$defs/Long"
+        },
+        {
+          "$ref": "#/$defs/Double"
+        },
+        {
+          "$ref": "#/$defs/List"
+        },
+        {
+          "$ref": "#/$defs/Map"
+        }
+      ],
+      "discriminator": {
+        "propertyName": "type"
+      }
+    },
+    "String": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "const": "String"
+        },
+        "value": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "type",
+        "value"
+      ],
+      "additionalProperties": false
+    },
+    "Boolean": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "const": "Boolean"
+        },
+        "value": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "type",
+        "value"
+      ],
+      "additionalProperties": false
+    },
+    "Long": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "const": "Long"
+        },
+        "value": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "type",
+        "value"
+      ],
+      "additionalProperties": false
+    },
+    "Double": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "const": "Double"
+        },
+        "value": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "type",
+        "value"
+      ],
+      "additionalProperties": false
+    },
+    "List": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "const": "List"
+        },
+        "value": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ExtensionValue"
+          }
+        }
+      },
+      "required": [
+        "type",
+        "value"
+      ],
+      "additionalProperties": false
+    },
+    "Map": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "const": "Map"
+        },
+        "value": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/ExtensionValue"
+          }
+        }
+      },
+      "required": [
+        "type",
+        "value"
+      ],
+      "additionalProperties": false
+    },
+    "Property": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "$ref": "#/$defs/Neo4jType"
+        },
+        "nullable": {
+          "type": "boolean"
+        },
+        "unique": {
+          "type": "boolean"
+        },
+        "extensions": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/ExtensionValue"
+          }
+        },
+        "name": {
+          "type": "string",
+          "nullable": true
+        }
+      },
+      "required": [],
+      "additionalProperties": false
+    },
+    "Neo4jType": {
+      "type": "string",
+      "enum": [
+        "ANY",
+        "BOOLEAN",
+        "LIST<BOOLEAN>",
+        "DATE",
+        "LIST<DATE>",
+        "DURATION",
+        "LIST<DURATION>",
+        "FLOAT32",
+        "LIST<FLOAT32>",
+        "FLOAT",
+        "LIST<FLOAT>",
+        "INTEGER8",
+        "LIST<INTEGER8>",
+        "INTEGER16",
+        "LIST<INTEGER16>",
+        "INTEGER32",
+        "LIST<INTEGER32>",
+        "INTEGER",
+        "LIST<INTEGER>",
+        "LOCAL DATETIME",
+        "LIST<LOCAL DATETIME>",
+        "LOCAL TIME",
+        "LIST<LOCAL TIME>",
+        "POINT",
+        "LIST<POINT>",
+        "STRING",
+        "LIST<STRING>",
+        "VECTOR<FLOAT>",
+        "VECTOR<FLOAT32>",
+        "VECTOR<INTEGER>",
+        "VECTOR<INTEGER32>",
+        "VECTOR<INTEGER16>",
+        "VECTOR<INTEGER8>",
+        "ZONED DATETIME",
+        "LIST<ZONED DATETIME>",
+        "ZONED TIME",
+        "LIST<ZONED TIME>",
+        "UUID"
+      ]
+    },
+    "NodeConstraint": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string"
+        },
+        "label": {
+          "type": "string"
+        },
+        "properties": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "extensions": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/ExtensionValue"
+          }
+        }
+      },
+      "required": [
+        "type",
+        "label",
+        "properties"
+      ],
+      "additionalProperties": false
+    },
+    "NodeIndex": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string"
+        },
+        "labels": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "properties": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "options": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/ExtensionValue"
+          }
+        },
+        "extensions": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/ExtensionValue"
+          }
+        }
+      },
+      "required": [
+        "type",
+        "labels",
+        "properties"
+      ],
+      "additionalProperties": false
+    },
+    "Relationship": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string"
+        },
+        "from": {
+          "$ref": "#/$defs/RelationshipTarget"
+        },
+        "to": {
+          "$ref": "#/$defs/RelationshipTarget"
+        },
+        "properties": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/Property"
+          }
+        },
+        "constraints": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/RelationshipConstraint"
+          }
+        },
+        "indexes": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/RelationshipIndex"
+          }
+        },
+        "extensions": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/ExtensionValue"
+          }
+        },
+        "name": {
+          "type": "string",
+          "nullable": true
+        }
+      },
+      "required": [
+        "type",
+        "from",
+        "to"
+      ],
+      "additionalProperties": false
+    },
+    "RelationshipTarget": {
+      "type": "object",
+      "properties": {
+        "node": {
+          "type": "string"
+        },
+        "label": {
+          "type": "string"
+        },
+        "property": {
+          "type": "string"
+        }
+      },
+      "required": [],
+      "additionalProperties": false
+    },
+    "RelationshipConstraint": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string"
+        },
+        "properties": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "options": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/ExtensionValue"
+          }
+        },
+        "extensions": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/ExtensionValue"
+          }
+        }
+      },
+      "required": [
+        "type",
+        "properties"
+      ],
+      "additionalProperties": false
+    },
+    "RelationshipIndex": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string"
+        },
+        "properties": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "options": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/ExtensionValue"
+          }
+        },
+        "extensions": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/ExtensionValue"
+          }
+        }
+      },
+      "required": [
+        "type",
+        "properties"
+      ],
+      "additionalProperties": false
+    },
+    "Table": {
+      "type": "object",
+      "properties": {
+        "source": {
+          "type": "string"
+        },
+        "fields": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/TableField"
+          }
+        },
+        "primaryKeys": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "foreignKeys": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/ForeignKey"
+          }
+        },
+        "extensions": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/ExtensionValue"
+          }
+        }
+      },
+      "required": [
+        "source"
+      ],
+      "additionalProperties": false
+    },
+    "TableField": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string"
+        },
+        "size": {
+          "type": "integer"
+        },
+        "suggested": {
+          "$ref": "#/$defs/Neo4jType"
+        },
+        "supported": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Neo4jType"
+          }
+        },
+        "extensions": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/ExtensionValue"
+          }
+        },
+        "name": {
+          "type": "string",
+          "nullable": true
+        }
+      },
+      "required": [],
+      "additionalProperties": false
+    },
+    "ForeignKey": {
+      "type": "object",
+      "properties": {
+        "fields": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "references": {
+          "$ref": "#/$defs/ForeignKeyReference"
+        },
+        "extensions": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/ExtensionValue"
+          }
+        }
+      },
+      "required": [
+        "fields",
+        "references"
+      ],
+      "additionalProperties": false
+    },
+    "ForeignKeyReference": {
+      "type": "object",
+      "properties": {
+        "table": {
+          "type": "string"
+        },
+        "fields": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "extensions": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/ExtensionValue"
+          }
+        }
+      },
+      "required": [
+        "table"
+      ],
+      "additionalProperties": false
+    },
+    "Mapping": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/NodeMapping"
+        },
+        {
+          "$ref": "#/$defs/RelationshipMapping"
+        },
+        {
+          "$ref": "#/$defs/QueryMapping"
+        },
+        {
+          "$ref": "#/$defs/LabelMapping"
+        }
+      ],
+      "discriminator": {
+        "propertyName": "type"
+      }
+    },
+    "PropertyMapping": {
+      "type": "object",
+      "properties": {
+        "field": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "field"
+      ],
+      "additionalProperties": false
+    },
+    "MappingMode": {
+      "type": "string",
+      "enum": [
+        "MERGE",
+        "CREATE"
+      ]
+    },
+    "NodeMapping": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "const": "NodeMapping"
+        },
+        "node": {
+          "type": "string"
+        },
+        "table": {
+          "type": "string"
+        },
+        "properties": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/PropertyMapping"
+          }
+        },
+        "mode": {
+          "$ref": "#/$defs/MappingMode"
+        },
+        "matchLabel": {
+          "type": "string",
+          "nullable": true
+        },
+        "keys": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "type",
+        "node",
+        "table",
+        "properties"
+      ],
+      "additionalProperties": false
+    },
+    "TargetMapping": {
+      "type": "object",
+      "properties": {
+        "node": {
+          "type": "string"
+        },
+        "label": {
+          "type": "string"
+        },
+        "properties": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/PropertyMapping"
+          }
+        }
+      },
+      "required": [],
+      "additionalProperties": false
+    },
+    "RelationshipMapping": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "const": "RelationshipMapping"
+        },
+        "relationship": {
+          "type": "string"
+        },
+        "table": {
+          "type": "string"
+        },
+        "from": {
+          "$ref": "#/$defs/TargetMapping"
+        },
+        "to": {
+          "$ref": "#/$defs/TargetMapping"
+        },
+        "matchLabel": {
+          "type": "string",
+          "nullable": true
+        },
+        "properties": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/PropertyMapping"
+          }
+        },
+        "mode": {
+          "$ref": "#/$defs/MappingMode"
+        },
+        "keys": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "type",
+        "relationship",
+        "table",
+        "from",
+        "to"
+      ],
+      "additionalProperties": false
+    },
+    "QueryMapping": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "const": "QueryMapping"
+        },
+        "table": {
+          "type": "string"
+        },
+        "query": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "type",
+        "table",
+        "query"
+      ],
+      "additionalProperties": false
+    },
+    "LabelMapping": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "const": "LabelMapping"
+        },
+        "table": {
+          "type": "string"
+        },
+        "field": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "type",
+        "table",
+        "field"
+      ],
+      "additionalProperties": false
+    },
+    "Display": {
+      "type": "object",
+      "properties": {
+        "nodes": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/NodeDisplay"
+          }
+        }
+      },
+      "required": [],
+      "additionalProperties": false
+    },
+    "NodeDisplay": {
+      "type": "object",
+      "properties": {
+        "x": {
+          "type": "number"
+        },
+        "y": {
+          "type": "number"
+        },
+        "extensions": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/ExtensionValue"
+          }
+        }
+      },
+      "required": [
+        "x",
+        "y"
+      ],
+      "additionalProperties": false
+    }
+  }
+}

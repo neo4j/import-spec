@@ -1,3 +1,4 @@
+import org.gradle.api.tasks.JavaExec
 import org.jetbrains.kotlin.gradle.dsl.JsModuleKind
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.Kotlin2JsCompile
@@ -107,6 +108,20 @@ tasks.register("generateTsUnions", TypeScriptModifierTask::class.java) {
 
 tasks.named("jsBrowserProductionLibraryDistribution") {
     finalizedBy("generateTsUnions")
+}
+
+tasks.register<JavaExec>("generateGraphModelJsonSchema") {
+    description = "Writes JSON Schema for GraphModel Go type generation"
+    val compilation = kotlin.jvm().compilations.getByName("main")
+    dependsOn(compilation.compileTaskProvider)
+    classpath = compilation.output.classesDirs + compilation.compileDependencyFiles
+    mainClass.set("schema.GenerateGraphModelJsonSchemaKt")
+    workingDir = layout.projectDirectory.asFile
+    doFirst {
+        val outputFile = layout.projectDirectory.file("go/spec.json").asFile
+        outputFile.parentFile.mkdirs()
+        args(outputFile.absolutePath)
+    }
 }
 
 scmVersion {
