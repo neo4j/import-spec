@@ -13,8 +13,3 @@ targets:
           target_property: embeddings
           target_property_type:
             name: FLOAT_VECTOR
-      schema:
-        type_constraints:
-          - name: type_constraint_1
-            label: ALabel
-            property: embeddings
