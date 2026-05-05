@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/neo-technology/go-graph-spec-test/go/internal/bridge"
-	"github.com/neo-technology/go-graph-spec-test/go/model"
+	"github.com/neo4j/graph-spec/go/internal/bridge"
+	"github.com/neo4j/graph-spec/go/model"
 )
 
 type ModelType string

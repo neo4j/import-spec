@@ -1,4 +1,4 @@
-module github.com/neo-technology/go-graph-spec-test/go
+module github.com/neo4j/graph-spec/go
 
 go 1.24.4
 

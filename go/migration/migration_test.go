@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/neo-technology/go-graph-spec-test/go/migration"
-	"github.com/neo-technology/go-graph-spec-test/go/model"
+	"github.com/neo4j/graph-spec/go/migration"
+	"github.com/neo4j/graph-spec/go/model"
 	"github.com/stretchr/testify/require"
 )
 
