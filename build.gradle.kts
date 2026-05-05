@@ -74,7 +74,6 @@ kotlin {
     }
 
     // Koltin/Native config
-    macosX64 { binaries.staticLib { baseName = "graphdatamodel" } }
     macosArm64 { binaries.staticLib { baseName = "graphdatamodel" } }
     linuxX64 { binaries.staticLib { baseName = "graphdatamodel" } }
     linuxArm64 { binaries.staticLib { baseName = "graphdatamodel" } }
