@@ -29,14 +29,14 @@ import model.jso
 @JsPlainObject
 external interface NodeConstraintJs {
     var type: String
-    var label: String
+    var label: String?
     var properties: Array<String>
     val extensions: Record<String, ExtensionValueJs>
 }
 
 fun nodeConstraintJs(
     type: String,
-    label: String,
+    label: String? = null,
     properties: Array<String> = emptyArray(),
     extensions: Record<String, ExtensionValueJs> = emptyRecord()
 ): NodeConstraintJs = jso {

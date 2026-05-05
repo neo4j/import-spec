@@ -19,6 +19,7 @@ package model
 import js.objects.Record
 import kotlinx.js.JsPlainObject
 import model.display.DisplayJs
+import model.display.displayJs
 import model.mapping.MappingJs
 import model.node.NodeJs
 import model.relationship.RelationshipJs
@@ -37,11 +38,11 @@ external interface GraphModelJs {
 
 fun graphModelJs(
     version: String,
-    nodes: Record<String, NodeJs>,
-    relationships: Record<String, RelationshipJs>,
-    tables: Record<String, TableJs>,
-    mappings: Array<MappingJs>,
-    display: DisplayJs
+    nodes: Record<String, NodeJs> = emptyRecord(),
+    relationships: Record<String, RelationshipJs> = emptyRecord(),
+    tables: Record<String, TableJs> = emptyRecord(),
+    mappings: Array<MappingJs> = emptyArray(),
+    display: DisplayJs = displayJs()
 ): GraphModelJs = jso {
     this.version = version
     this.nodes = nodes

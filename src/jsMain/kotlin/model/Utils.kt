@@ -20,6 +20,7 @@ import js.objects.Object
 import js.objects.Record
 import js.objects.toRecord
 import js.string.JsStrings.toKotlinString
+import kotlin.collections.plus
 import kotlin.collections.set
 
 fun <T> Record<String, T>.toMap(): Map<String, T> = buildMap {
@@ -56,12 +57,19 @@ internal inline fun <reified T> Array<T>.dropAt(index: Int): Array<T> = Array(si
 internal fun <T> Record<String, T>.getOrThrow(key: String, entityName: String): T =
     this[key] ?: error("$entityName with id '$key' not found.")
 
-@Suppress("UnusedReceiverParameter", "unused")
+@Suppress("unused", "UnusedVariable")
 internal fun <T> Record<String, T>.remove(key: String) {
-    js("delete this[key]")
+    val self = this // Capture the Kotlin receiver
+    js("delete self[key]")
 }
 
-internal fun <T> Record<String, T>.uniqueKey(prefix: String): String {
+internal fun <T> Record<String, T>.addUnique(prefix: String, value: (String) -> T): String {
+    val id = uniqueKey(prefix)
+    set(id, value(id))
+    return id
+}
+
+private fun <T> Record<String, T>.uniqueKey(prefix: String): String {
     var id = ""
     for (i in 0 until Int.MAX_VALUE) {
         if (this["$prefix$i"] == null) {

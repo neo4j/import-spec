@@ -16,14 +16,11 @@
  */
 package model
 
-import js.objects.Record
-import js.objects.buildRecord
 import js.objects.toRecord
 import model.display.toClass
 import model.display.toJs
 import model.mapping.toClass
 import model.mapping.toJs
-import model.node.NodeJs
 import model.node.nodeJs
 import model.node.toClass
 import model.node.toJs
@@ -31,7 +28,6 @@ import model.relationship.toClass
 import model.relationship.toJs
 import model.source.toClass
 import model.source.toJs
-import kotlin.collections.iterator
 
 /**
  * We have duplicate model built on external interfaces with conversion to and from classes in order
@@ -61,15 +57,16 @@ class GraphModelEditor {
         )
 
         @JsStatic
-        fun addNode(model: GraphModelJs, id: String) {
-            // TODO use id given or generate id separate from name?
-            model.nodes[id] = nodeJs(id = id, name = id)
+        fun addNode(model: GraphModelJs, name: String?): String {
+            return model.nodes.addUnique("node") { nodeId ->
+                nodeJs(id = nodeId, name = name ?: nodeId)
+            }
         }
 
         @JsStatic
-        fun addNodeImpliedLabel(model: GraphModelJs, node: String, label: String) {
-            val node = model.nodes[node] ?: error("No node found for id '$node'")
-            node.labels.implied += label
+        fun removeNode(model: GraphModelJs, nodeId: String) {
+            model.nodes.remove(nodeId)
         }
+
     }
 }
