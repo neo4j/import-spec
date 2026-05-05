@@ -1,0 +1,31 @@
+{
+  "version": "1.0.0",
+  "nodes": {
+    "Person": {
+      "labels": {
+        "identifier": "Person",
+        "implied": [],
+        "optional": []
+      },
+      "properties": {},
+      "constraints": {
+        "typeConstraint": {
+          "type": "TYPE",
+          "label": "Person",
+          "properties": []
+        },
+        "existenceConstraint": {
+          "type": "EXISTS",
+          "label": "Person",
+          "properties": []
+        }
+      },
+      "indexes": {},
+      "extensions": {}
+    }
+  },
+  "relationships": {},
+  "tables": {},
+  "mappings": [],
+  "display": {}
+}

@@ -1,3 +1,4 @@
+import org.gradle.api.tasks.JavaExec
 import org.jetbrains.kotlin.gradle.dsl.JsModuleKind
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.Kotlin2JsCompile
@@ -21,6 +22,20 @@ repositories { mavenCentral() }
 kotlin {
     // Override target source sets for KMP
     sourceSets {
+        val commonMain by getting
+        val commonTest by getting
+        val bridge by creating {
+            dependsOn(commonMain)
+        }
+        val bridgeTest by creating {
+            dependsOn(commonTest)
+            dependsOn(bridge)
+        }
+        targets.withType<org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget>().configureEach {
+            compilations.getByName("main").defaultSourceSet.dependsOn(bridge)
+            compilations.getByName("test").defaultSourceSet.dependsOn(bridgeTest)
+        }
+
         commonMain.dependencies {
             implementation(libs.kotlinx.schema)
             implementation(libs.kotlinx.serializer.json)
@@ -57,6 +72,15 @@ kotlin {
         freeCompilerArgs.add("-opt-in=kotlin.js.ExperimentalJsExport")
         freeCompilerArgs.add("-opt-in=kotlin.js.ExperimentalJsStatic")
     }
+
+    // Koltin/Native config
+    macosArm64 { binaries.staticLib { baseName = "graphdatamodel" } }
+    linuxX64 { binaries.staticLib { baseName = "graphdatamodel" } }
+    linuxArm64 { binaries.staticLib { baseName = "graphdatamodel" } }
+    compilerOptions {
+        freeCompilerArgs.add("-Xmulti-dollar-interpolation")
+        freeCompilerArgs.add("-opt-in=kotlin.native.ExperimentalNativeApi")
+    }
 }
 
 tasks.withType<Kotlin2JsCompile>().configureEach {
@@ -83,6 +107,20 @@ tasks.register("generateTsUnions", TypeScriptModifierTask::class.java) {
 
 tasks.named("jsBrowserProductionLibraryDistribution") {
     finalizedBy("generateTsUnions")
+}
+
+tasks.register<JavaExec>("generateGraphModelJsonSchema") {
+    description = "Writes JSON Schema for GraphModel Go type generation"
+    val compilation = kotlin.jvm().compilations.getByName("main")
+    dependsOn(compilation.compileTaskProvider)
+    classpath = compilation.output.classesDirs + compilation.compileDependencyFiles
+    mainClass.set("schema.GenerateGraphModelJsonSchemaKt")
+    workingDir = layout.projectDirectory.asFile
+    doFirst {
+        val outputFile = layout.projectDirectory.file("go/spec.json").asFile
+        outputFile.parentFile.mkdirs()
+        args(outputFile.absolutePath)
+    }
 }
 
 scmVersion {
@@ -150,7 +188,9 @@ configure<com.diffplug.gradle.spotless.SpotlessExtension> {
         target(
             project.fileTree("src/commonMain/kotlin"),
             project.fileTree("src/commonTest/kotlin"),
-            project.fileTree("src/jsMain/kotlin")
+            project.fileTree("src/jsMain/kotlin"),
+            project.fileTree("src/bridge/kotlin"),
+            project.fileTree("src/bridgeTest/kotlin")
         )
     }
 }

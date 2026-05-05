@@ -17,12 +17,14 @@
 package migrate.migration.dataModel
 
 import codec.schema.SchemaElement
+import codec.schema.SchemaLiteral
 import codec.schema.SchemaMap
 import codec.schema.schemaMapOf
 import codec.schema.toNotEmpty
 import migrate.Migration
 import model.Type
 import model.Version
+import model.mapping.MappingType
 import model.type.ConstraintType
 import model.type.ConstraintType.EXISTS
 import model.type.ConstraintType.KEY
@@ -235,6 +237,7 @@ class DataModelV3GraphSpecMigration :
             val type = relTypes[typeRef] ?: error("Relationship type $typeRef not found")
             // ref is lost, and we know type isn't unique; so we are assuming type + property id are unique
             mappings += schemaMapOf(
+                "type" to SchemaLiteral(MappingType.RELATIONSHIP), // needed for Kotlin/Native migrations
                 "relationship" to type.string("token"),
                 "from" to mapOf(
                     "node" to obj.ref("from"),
@@ -262,6 +265,7 @@ class DataModelV3GraphSpecMigration :
         val mappings = mutableListOf<SchemaMap>()
         for (nodeMapping in nodeMappings) {
             mappings += schemaMapOf(
+                "type" to SchemaLiteral(MappingType.NODE), // needed for Kotlin/Native migrations
                 "node" to nodeMapping.ref("node"),
                 "table" to nodeMapping.literal("tableName"),
                 "properties" toNotEmpty migratePropertyMappings(nodeMapping)

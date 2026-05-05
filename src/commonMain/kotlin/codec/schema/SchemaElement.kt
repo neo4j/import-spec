@@ -25,6 +25,7 @@ package codec.schema
 sealed interface SchemaElement {
     val path: String
     fun repath(newPath: String): SchemaElement
+    override fun toString(): String
 }
 
 /**
