@@ -2375,6 +2375,18 @@ class ImportSpecificationDeserializerTest {
 
     @ParameterizedTest
     @EnumSource(SpecFormat.class)
+    void does_not_fail_if_dimension_is_null_on_non_vector_property(SpecFormat format, TestInfo testInfo) {
+
+        assertThatCode(() -> {
+                    try (var reader = specReader(format, testInfo)) {
+                        deserialize(reader);
+                    }
+                })
+                .doesNotThrowAnyException();
+    }
+
+    @ParameterizedTest
+    @EnumSource(SpecFormat.class)
     void fails_if_vector_type_has_null_dimension(SpecFormat format, TestInfo testInfo) {
 
         assertThatThrownBy(() -> {

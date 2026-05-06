@@ -1,0 +1,15 @@
+version: "1"
+sources:
+  - type: bigquery
+    name: my-bigquery-source
+    query: SELECT id, title FROM my.table
+targets:
+  nodes:
+    - name: my-node
+      source: my-bigquery-source
+      labels: [ALabel]
+      properties:
+        - source_field: title
+          target_property: title
+          target_property_type:
+            name: STRING
