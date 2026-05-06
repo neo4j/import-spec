@@ -2,6 +2,7 @@ package builds
 
 import jetbrains.buildServer.configs.kotlin.*
 import jetbrains.buildServer.configs.kotlin.buildFeatures.PullRequests
+import jetbrains.buildServer.configs.kotlin.buildFeatures.buildCache
 import jetbrains.buildServer.configs.kotlin.buildFeatures.commitStatusPublisher
 import jetbrains.buildServer.configs.kotlin.buildFeatures.dockerRegistryConnections
 import jetbrains.buildServer.configs.kotlin.buildFeatures.pullRequests
@@ -47,6 +48,14 @@ enum class JavaVersion(val version: String, val dockerImage: String) {
   V_11(version = "11", dockerImage = "%ecr-registry-connectors%:jdk-11-latest"),
   V_17(version = "17", dockerImage = "%ecr-registry-connectors%:jdk-17-latest"),
   V_21(version = "21", dockerImage = "%ecr-registry-connectors%:jdk-21-latest"),
+}
+
+fun BuildFeatures.buildCache(javaVersion: JavaVersion) = buildCache {
+  this.name = "import-spec-${javaVersion.version}"
+  publish = true
+  use = true
+  publishOnlyChanged = true
+  rules = ".m2/repository"
 }
 
 fun Requirements.runOnLinux(size: LinuxSize = LinuxSize.SMALL) {

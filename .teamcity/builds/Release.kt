@@ -9,7 +9,7 @@ import jetbrains.buildServer.configs.kotlin.toId
 
 private const val DRY_RUN = "dry-run"
 
-class Release(id: String, name: String) :
+class Release(id: String, name: String, java: JavaVersion = JavaVersion.V_21) :
     BuildType(
         {
           this.id(id.toId())
@@ -94,7 +94,7 @@ class Release(id: String, name: String) :
                       .trimIndent()
 
               dockerImagePlatform = ScriptBuildStep.ImagePlatform.Linux
-              dockerImage = JavaVersion.V_21.dockerImage
+              dockerImage = java.dockerImage
               dockerRunParameters =
                   "--volume /var/run/docker.sock:/var/run/docker.sock --volume %teamcity.build.checkoutDir%/signingkeysandbox:/root/.gnupg"
             }
@@ -114,6 +114,8 @@ class Release(id: String, name: String) :
             +:out/jreleaser => jreleaser
             """
                   .trimIndent()
+
+          features { buildCache(java) }
 
           requirements { runOnLinux(LinuxSize.SMALL) }
         },
