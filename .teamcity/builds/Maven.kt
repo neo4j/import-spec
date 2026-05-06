@@ -10,7 +10,7 @@ open class Maven(
     name: String,
     goals: String,
     args: String? = null,
-    javaVersion: String = DEFAULT_JAVA_VERSION,
+    javaVersion: JavaVersion = DEFAULT_JAVA_VERSION,
     size: LinuxSize = LinuxSize.SMALL,
     mavenVersion: MavenBuildStep.MavenVersion? = null,
 ) :

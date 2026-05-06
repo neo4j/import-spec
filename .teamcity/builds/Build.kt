@@ -24,11 +24,11 @@ class Build(
         parallel {
           dependentBuildType(SemgrepCheck("${name}-semgrep-check", "semgrep check"))
 
-          listOf("17", "21").forEach { java ->
+          listOf(JavaVersion.V_17, JavaVersion.V_21).forEach { java ->
             dependentBuildType(
                 Maven(
-                    "${name}-build-${java}",
-                    "build - java ${java}",
+                    "${name}-build-${java.version}",
+                    "build - java ${java.version}",
                     "sortpom:verify license:check spotless:check compile",
                     "-DspotlessFiles=src/main/java/.*.java",
                     java))
@@ -50,6 +50,7 @@ class Build(
         it.thisVcs()
 
         it.features {
+          loginToECR()
           enableCommitStatusPublisher()
           if (forPullRequests) enablePullRequests()
         }
