@@ -27,10 +27,7 @@ import kotlinx.serialization.json.Json
 import platform.posix.memcpy
 
 @Serializable
-data class BridgeResponse(
-    val data: String? = null,
-    val error: String? = null
-)
+data class BridgeResponse(val data: String? = null, val error: String? = null)
 
 /*
 Handles the Kotlin/Native bridge operations to safely invoke Kotlin methods from C.
@@ -42,7 +39,7 @@ fun invokeBridge(
     vararg input: CPointer<ByteVar>?,
     outputBuffer: CPointer<ByteVar>?,
     bufferSize: Int,
-    action: (List<String>) -> String,
+    action: (List<String>) -> String
 ): Int {
     if (input.any { it == null } || outputBuffer == null || bufferSize < 1) return -1
 
@@ -58,7 +55,6 @@ fun invokeBridge(
     )
 
     val jsonResp = Json.encodeToString(response)
-
 
     // we use memScoped here to ensure that we don't need to do any manual memory management
     // .cstr and getPointer() will allocate memory outside of Kotlin's GC scope, but memScoped

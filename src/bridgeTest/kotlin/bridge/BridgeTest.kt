@@ -73,11 +73,12 @@ class BridgeTest {
             val outputBuffer = allocArray<ByteVar>(bufferSize)
             val format = JsonFormat.default
 
-            val resultSize = invokeBridge(inputJsonPtr, inputVersionPtr, outputBuffer = outputBuffer, bufferSize = bufferSize) {
-                val schema = format.decodeFromString(it[0]) as SchemaMap
-                schema["version"] = it[1]
-                format.encodeToString(schema)
-            }
+            val resultSize =
+                invokeBridge(inputJsonPtr, inputVersionPtr, outputBuffer = outputBuffer, bufferSize = bufferSize) {
+                    val schema = format.decodeFromString(it[0]) as SchemaMap
+                    schema["version"] = it[1]
+                    format.encodeToString(schema)
+                }
 
             assertTrue(resultSize > 0)
             val response = Json.decodeFromString(BridgeResponse.serializer(), outputBuffer.toKString())

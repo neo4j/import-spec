@@ -26,20 +26,34 @@ import kotlinx.serialization.json.Json
 import migrate.MigrationPath
 import kotlin.experimental.ExperimentalNativeApi
 
-private val format = JsonFormat(Json {
-    ignoreUnknownKeys = true
-    isLenient = true
-    prettyPrint = false
-})
+private val format = JsonFormat(
+    Json {
+        ignoreUnknownKeys = true
+        isLenient = true
+        prettyPrint = false
+    }
+)
 
 @OptIn(ExperimentalForeignApi::class, ExperimentalNativeApi::class)
 @CName("migrate")
-fun migrate(inputJson: CPointer<ByteVar>?, inputType: CPointer<ByteVar>?, targetType: CPointer<ByteVar>?, targetVersion: CPointer<ByteVar>?, outputBuffer: CPointer<ByteVar>?, bufferSize: Int) =
-    invokeBridge(inputJson, inputType, targetType, targetVersion, outputBuffer = outputBuffer, bufferSize = bufferSize) { input ->
-        val path = MigrationPath(GraphSpec.Json.configuration.migrations)
-        val schema = format.decodeFromString(input[0])
-        var map = schema as? SchemaMap ?: error("Schema format expected")
-        map = path.migrate(map, type = input[1], targetType = input[2], targetVersion = input[3])
-        format.encodeToString(map)
-    }
-
+fun migrate(
+    inputJson: CPointer<ByteVar>?,
+    inputType: CPointer<ByteVar>?,
+    targetType: CPointer<ByteVar>?,
+    targetVersion: CPointer<ByteVar>?,
+    outputBuffer: CPointer<ByteVar>?,
+    bufferSize: Int
+) = invokeBridge(
+    inputJson,
+    inputType,
+    targetType,
+    targetVersion,
+    outputBuffer = outputBuffer,
+    bufferSize = bufferSize
+) { input ->
+    val path = MigrationPath(GraphSpec.Json.configuration.migrations)
+    val schema = format.decodeFromString(input[0])
+    var map = schema as? SchemaMap ?: error("Schema format expected")
+    map = path.migrate(map, type = input[1], targetType = input[2], targetVersion = input[3])
+    format.encodeToString(map)
+}
