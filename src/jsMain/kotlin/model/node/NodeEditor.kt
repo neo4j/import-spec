@@ -162,11 +162,7 @@ class NodeEditor {
             NodeConstraintEditor.removeProperty(constraint, propertyId)
         }
 
-        private fun getConstraint(
-            model: GraphModelJs,
-            nodeId: String,
-            constraintId: String
-        ): NodeConstraintJs {
+        private fun getConstraint(model: GraphModelJs, nodeId: String, constraintId: String): NodeConstraintJs {
             val node = model.nodes.getOrThrow(nodeId, "Node")
             val constraint = node.constraints.getOrThrow(constraintId, "Constraint")
             return constraint
@@ -234,15 +230,10 @@ class NodeEditor {
             NodeIndexEditor.removeOption(index, key)
         }
 
-        private fun getIndex(
-            model: GraphModelJs,
-            nodeId: String,
-            indexId: String
-        ): NodeIndexJs {
+        private fun getIndex(model: GraphModelJs, nodeId: String, indexId: String): NodeIndexJs {
             val node = model.nodes.getOrThrow(nodeId, "Node")
             val index = node.indexes.getOrThrow(indexId, "Index")
             return index
         }
-
     }
 }

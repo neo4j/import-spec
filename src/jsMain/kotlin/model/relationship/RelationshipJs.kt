@@ -45,8 +45,8 @@ external interface RelationshipJs {
 
 fun relationshipJs(
     type: String,
-    from: RelationshipTargetJs,
-    to: RelationshipTargetJs,
+    from: RelationshipTargetJs = relationshipTargetJs(),
+    to: RelationshipTargetJs = relationshipTargetJs(),
     properties: Record<String, PropertyJs> = emptyRecord(),
     constraints: Record<String, RelationshipConstraintJs> = emptyRecord(),
     indexes: Record<String, RelationshipIndexJs> = emptyRecord(),

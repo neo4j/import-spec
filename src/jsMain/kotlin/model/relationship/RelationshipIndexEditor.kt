@@ -14,37 +14,44 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package model.node
+package model.relationship
 
 import model.dropAt
+import model.extension.ExtensionValueJs
+import model.remove
 import kotlin.collections.plus
 
 @JsExport
-class NodeConstraintEditor {
+class RelationshipIndexEditor {
     companion object {
         @JsStatic
-        fun setType(constraint: NodeConstraintJs, type: String) {
+        fun setType(constraint: RelationshipIndexJs, type: String) {
             constraint.type = type
         }
 
         @JsStatic
-        fun setLabel(constraint: NodeConstraintJs, label: String?) {
-            constraint.label = label
-        }
-
-        @JsStatic
-        fun addProperty(constraint: NodeConstraintJs, property: String) {
+        fun addProperty(constraint: RelationshipIndexJs, property: String) {
             if (!constraint.properties.contains(property)) {
                 constraint.properties += property
             }
         }
 
         @JsStatic
-        fun removeProperty(constraint: NodeConstraintJs, property: String) {
+        fun removeProperty(constraint: RelationshipIndexJs, property: String) {
             val index = constraint.properties.indexOf(property)
             if (index != -1) {
                 constraint.properties = constraint.properties.dropAt(index)
             }
+        }
+
+        @JsStatic
+        fun setOption(constraint: RelationshipIndexJs, key: String, value: ExtensionValueJs) {
+            constraint.options[key] = value
+        }
+
+        @JsStatic
+        fun removeOption(constraint: RelationshipIndexJs, key: String) {
+            constraint.options.remove(key)
         }
     }
 }

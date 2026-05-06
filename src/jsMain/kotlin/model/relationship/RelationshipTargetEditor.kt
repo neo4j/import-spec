@@ -16,31 +16,24 @@
  */
 package model.relationship
 
-import kotlinx.js.JsPlainObject
-import model.jso
-
 @JsExport
-@JsPlainObject
-external interface RelationshipTargetJs {
-    var node: String
-    var label: String
-    var property: String
+class RelationshipTargetEditor {
+    companion object {
+        @JsStatic
+        fun setNode(target: RelationshipTargetJs, node: String) {
+            target.node = node
+            target.label = ""
+        }
+
+        @JsStatic
+        fun setLabel(target: RelationshipTargetJs, label: String) {
+            target.label = label
+            target.node = ""
+        }
+
+        @JsStatic
+        fun setProperty(target: RelationshipTargetJs, property: String) {
+            target.property = property
+        }
+    }
 }
-
-fun relationshipTargetJs(node: String = "", label: String = "", property: String = ""): RelationshipTargetJs = jso {
-    this.node = node
-    this.label = label
-    this.property = property
-}
-
-fun RelationshipTarget.toJs() = relationshipTargetJs(
-    node = node,
-    label = label,
-    property = property
-)
-
-fun RelationshipTargetJs.toClass() = RelationshipTarget(
-    node = node,
-    label = label,
-    property = property
-)

@@ -24,6 +24,7 @@ import model.mapping.toJs
 import model.node.nodeJs
 import model.node.toClass
 import model.node.toJs
+import model.relationship.relationshipJs
 import model.relationship.toClass
 import model.relationship.toJs
 import model.source.toClass
@@ -57,10 +58,8 @@ class GraphModelEditor {
         )
 
         @JsStatic
-        fun addNode(model: GraphModelJs, name: String?): String {
-            return model.nodes.addUnique("node") { nodeId ->
-                nodeJs(id = nodeId, name = name ?: nodeId)
-            }
+        fun addNode(model: GraphModelJs, name: String?): String = model.nodes.addUnique("node") { nodeId ->
+            nodeJs(id = nodeId, name = name ?: nodeId)
         }
 
         @JsStatic
@@ -68,5 +67,15 @@ class GraphModelEditor {
             model.nodes.remove(nodeId)
         }
 
+        @JsStatic
+        fun addRelationship(model: GraphModelJs, type: String, name: String?): String =
+            model.relationships.addUnique("relationship") { relId ->
+                relationshipJs(type = type, id = relId, name = name ?: relId)
+            }
+
+        @JsStatic
+        fun removeRelationship(model: GraphModelJs, relationshipId: String) {
+            model.relationships.remove(relationshipId)
+        }
     }
 }
