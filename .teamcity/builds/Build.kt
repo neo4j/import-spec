@@ -52,6 +52,7 @@ class Build(
         it.features {
           loginToECR()
           enableCommitStatusPublisher()
+          requireDiskSpace("5gb")
           if (forPullRequests) enablePullRequests()
         }
 

@@ -5,6 +5,7 @@ import jetbrains.buildServer.configs.kotlin.buildFeatures.PullRequests
 import jetbrains.buildServer.configs.kotlin.buildFeatures.buildCache
 import jetbrains.buildServer.configs.kotlin.buildFeatures.commitStatusPublisher
 import jetbrains.buildServer.configs.kotlin.buildFeatures.dockerRegistryConnections
+import jetbrains.buildServer.configs.kotlin.buildFeatures.freeDiskSpace
 import jetbrains.buildServer.configs.kotlin.buildFeatures.pullRequests
 import jetbrains.buildServer.configs.kotlin.buildSteps.MavenBuildStep
 import jetbrains.buildServer.configs.kotlin.buildSteps.ScriptBuildStep
@@ -88,6 +89,11 @@ fun BuildFeatures.loginToECR() = dockerRegistryConnections {
   cleanupPushedImages = true
   loginToRegistry = on { dockerRegistryId = ECR_CONNECTION_ID_ENG }
   loginToRegistry = on { dockerRegistryId = ECR_CONNECTION_ID_BUILD }
+}
+
+fun BuildFeatures.requireDiskSpace(size: String = "3gb") = freeDiskSpace {
+  requiredSpace = size
+  failBuild = true
 }
 
 fun CompoundStage.dependentBuildType(bt: BuildType) =
