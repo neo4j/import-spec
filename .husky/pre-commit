@@ -1,4 +1,6 @@
 #!/usr/bin/env sh
 
+$(git rev-parse --show-toplevel)/mvnw spotless:apply -f .teamcity
 $(git rev-parse --show-toplevel)/mvnw sortpom:sort spotless:apply -DspotlessFiles=src/main/java/.*.java
+
 git update-index --again
