@@ -31,7 +31,7 @@ import kotlin.String
 @JsExport
 @JsPlainObject
 external interface ForeignKeyJs {
-    val fields: Array<String>
+    var fields: Array<String>
     val references: ForeignKeyReferenceJs
     val extensions: Record<String, ExtensionValueJs>
 }

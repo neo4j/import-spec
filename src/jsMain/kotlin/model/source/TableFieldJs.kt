@@ -31,8 +31,8 @@ import kotlin.String
 @JsExport
 @JsPlainObject
 external interface TableFieldJs {
-    val type: String
-    val size: Int
+    var type: String
+    var size: Int
     val suggested: String
     val supported: Array<String>
     val extensions: Record<String, ExtensionValueJs>

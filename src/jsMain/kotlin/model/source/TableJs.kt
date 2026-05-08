@@ -30,9 +30,9 @@ import kotlin.String
 @JsExport
 @JsPlainObject
 external interface TableJs {
-    val source: String
+    var source: String
     val fields: Record<String, TableFieldJs>
-    val primaryKeys: Array<String>
+    var primaryKeys: Array<String>
     val foreignKeys: Record<String, ForeignKeyJs>
     val extensions: Record<String, ExtensionValueJs>
 }

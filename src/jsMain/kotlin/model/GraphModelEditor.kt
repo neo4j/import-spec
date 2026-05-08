@@ -27,6 +27,7 @@ import model.node.toJs
 import model.relationship.relationshipJs
 import model.relationship.toClass
 import model.relationship.toJs
+import model.source.tableJs
 import model.source.toClass
 import model.source.toJs
 
@@ -76,6 +77,16 @@ class GraphModelEditor {
         @JsStatic
         fun removeRelationship(model: GraphModelJs, relationshipId: String) {
             model.relationships.remove(relationshipId)
+        }
+
+        @JsStatic
+        fun addTable(model: GraphModelJs, source: String): String = model.tables.addUnique("table") {
+            tableJs(source)
+        }
+
+        @JsStatic
+        fun removeTable(model: GraphModelJs, tableId: String) {
+            model.tables.remove(tableId)
         }
     }
 }
