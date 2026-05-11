@@ -54,6 +54,6 @@ fun ForeignKeyReference.toJs() = foreignKeyReferenceJs(
 
 fun ForeignKeyReferenceJs.toClass() = ForeignKeyReference(
     table = table,
-    fields = fields.toSet(),
+    fields = fields.toMutableSet(),
     extensions = extensions.associateBy { _, value -> value.toClass() }.toMutableMap()
 )

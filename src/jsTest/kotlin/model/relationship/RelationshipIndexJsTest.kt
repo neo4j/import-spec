@@ -10,7 +10,7 @@ class RelationshipIndexJsTest : JsMappingTest<RelationshipIndex, RelationshipInd
 
     override fun createClass() = RelationshipIndex(
         type = "INDEX_TYPE",
-        properties = setOf("property_1", "property_2"),
+        properties = mutableSetOf("property_1", "property_2"),
         options = mutableMapOf(
             "key1" to StringValue("val1")
         ),

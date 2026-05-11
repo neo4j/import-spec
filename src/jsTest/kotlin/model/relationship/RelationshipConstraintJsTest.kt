@@ -10,7 +10,7 @@ class RelationshipConstraintJsTest : JsMappingTest<RelationshipConstraint, Relat
 
     override fun createClass() = RelationshipConstraint(
         type = "CONSTRAINT_TYPE",
-        properties = setOf("property_1", "property_2"),
+        properties = mutableSetOf("property_1", "property_2"),
         options = mutableMapOf(
             "key1" to StringValue("val1")
         ),

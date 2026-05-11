@@ -1,6 +1,5 @@
 package model.mapping
 
-import model.mapping.JsMappingTest
 import kotlin.test.assertEquals
 
 class TargetMappingJsTest : JsMappingTest<TargetMapping, TargetMappingJs>() {
@@ -8,7 +7,7 @@ class TargetMappingJsTest : JsMappingTest<TargetMapping, TargetMappingJs>() {
     override fun createClass() = TargetMapping(
         node = "nodeId",
         label = "label",
-        properties = mapOf("prop" to PropertyMapping("field")),
+        properties = mutableMapOf("prop" to PropertyMapping("field")),
     )
 
     override fun toJs(k: TargetMapping): TargetMappingJs = k.toJs()

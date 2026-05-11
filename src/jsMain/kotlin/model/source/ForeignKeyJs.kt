@@ -53,7 +53,7 @@ fun ForeignKey.toJs() = foreignKeyJs(
 )
 
 fun ForeignKeyJs.toClass() = ForeignKey(
-    fields = fields.toSet(),
+    fields = fields.toMutableSet(),
     references = references.toClass(),
     extensions = extensions.associateBy { _, value -> value.toClass() }.toMutableMap()
 )

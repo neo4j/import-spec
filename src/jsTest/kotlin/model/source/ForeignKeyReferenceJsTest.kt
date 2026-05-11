@@ -10,7 +10,7 @@ class ForeignKeyReferenceJsTest : JsMappingTest<ForeignKeyReference, ForeignKeyR
 
     override fun createClass() = ForeignKeyReference(
         table = "table_name",
-        fields = setOf("field1", "field2"),
+        fields = mutableSetOf("field1", "field2"),
         extensions = mutableMapOf("key1" to StringValue("val1")),
     )
 

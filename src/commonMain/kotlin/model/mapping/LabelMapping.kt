@@ -23,4 +23,4 @@ import kotlin.js.JsExport
 @JsExport
 @Serializable
 @SerialName(MappingType.LABEL)
-data class LabelMapping(val table: String, val field: String) : Mapping
+data class LabelMapping(var table: String, var field: String) : Mapping

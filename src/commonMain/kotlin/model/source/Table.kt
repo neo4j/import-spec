@@ -26,9 +26,9 @@ import kotlin.js.JsExport
 @Serializable
 @SerialName("Table")
 data class Table(
-    val source: String,
-    val fields: Map<String, TableField> = emptyMap(),
-    val primaryKeys: Set<String> = emptySet(),
-    val foreignKeys: Map<String, ForeignKey> = emptyMap(),
+    var source: String,
+    val fields: MutableMap<String, TableField> = mutableMapOf(),
+    val primaryKeys: MutableSet<String> = mutableSetOf(),
+    val foreignKeys: MutableMap<String, ForeignKey> = mutableMapOf(),
     override val extensions: MutableMap<String, ExtensionValue> = mutableMapOf()
 ) : Extensions

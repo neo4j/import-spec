@@ -24,8 +24,8 @@ import kotlin.js.JsExport
 @Serializable
 @SerialName("RelationshipTarget")
 data class RelationshipTarget(
-    val node: String = "",
-    val label: String = "",
-    val property: String = ""
+    var node: String = "",
+    var label: String = "",
+    var property: String = ""
     // TODO: Not sure if property is necessary or not
 )

@@ -19,6 +19,7 @@ package model.relationship
 import js.objects.Record
 import js.objects.toRecord
 import kotlinx.js.JsPlainObject
+import model.associateBy
 import model.emptyRecord
 import model.extension.ExtensionValueJs
 import model.extension.toClass
@@ -81,9 +82,9 @@ fun RelationshipJs.toClass(id: String) = Relationship(
     type = type,
     from = from.toClass(),
     to = to.toClass(),
-    properties = properties.toMap().mapValues { (name, property) -> property.toClass("relationships.$id", name) },
-    constraints = constraints.toMap().mapValues { (_, constraint) -> constraint.toClass() },
-    indexes = indexes.toMap().mapValues { (_, index) -> index.toClass() },
-    extensions = extensions.toMap().mapValues { (_, value) -> value.toClass() }.toMutableMap(),
+    properties = properties.associateBy { _, property -> property.toClass("relationships.$id", name) },
+    constraints = constraints.associateBy { _, constraint -> constraint.toClass() },
+    indexes = indexes.associateBy { _, index -> index.toClass() },
+    extensions = extensions.associateBy { _, value -> value.toClass() },
     name = name
 )

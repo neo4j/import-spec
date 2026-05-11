@@ -11,10 +11,10 @@ class RelationshipMappingJsTest : JsMappingTest<RelationshipMapping, Relationshi
         table = "table_name",
         from = TargetMapping("from_node"),
         to = TargetMapping(label = "to_label"),
-        properties = mapOf("prop" to PropertyMapping("field")),
+        properties = mutableMapOf("prop" to PropertyMapping("field")),
         mode = MappingMode.MERGE,
         matchLabel = "matchLabel",
-        keys = setOf("key"),
+        keys = mutableSetOf("key"),
     )
 
     override fun toJs(k: RelationshipMapping): RelationshipMappingJs = k.toJs()

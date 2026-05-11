@@ -30,13 +30,13 @@ fun <T> Record<String, T>.toMap(): Map<String, T> = buildMap {
     }
 }
 
-fun <T, R> Record<String, T>.associateBy(block: (String, T) -> R): Map<String, R> = buildMap {
+fun <T, R> Record<String, T>.associateBy(block: (String, T) -> R): MutableMap<String, R> = buildMap {
     for (key in Object.keys(this@associateBy)) {
         val value = this@associateBy[key] ?: continue
         val result = block(key, value)
         set(key.toKotlinString(), result)
     }
-}
+}.toMutableMap()
 
 fun <T, R> Map<String, T>.associateBy(block: (String, T) -> R): Record<String, R> = mapValues { (key, value) ->
     block(key, value)

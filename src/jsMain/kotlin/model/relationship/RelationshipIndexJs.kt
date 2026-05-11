@@ -55,7 +55,7 @@ fun RelationshipIndex.toJs() = relationshipIndexJs(
 
 fun RelationshipIndexJs.toClass() = RelationshipIndex(
     type = type,
-    properties = properties.toSet(),
+    properties = properties.toMutableSet(),
     options = options.associateBy { _, value -> value.toClass() },
     extensions = extensions.associateBy { _, value -> value.toClass() }.toMutableMap()
 )

@@ -26,8 +26,8 @@ import kotlin.js.JsExport
 @Serializable
 @SerialName("RelationshipIndex")
 data class RelationshipIndex(
-    val type: String,
-    val properties: Set<String>,
-    val options: Map<String, ExtensionValue> = emptyMap(),
+    var type: String,
+    val properties: MutableSet<String>,
+    val options: MutableMap<String, ExtensionValue> = mutableMapOf(),
     override val extensions: MutableMap<String, ExtensionValue> = mutableMapOf()
 ) : Extensions

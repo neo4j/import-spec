@@ -23,4 +23,4 @@ import kotlin.js.JsExport
 @JsExport
 @Serializable
 @SerialName("Display")
-data class Display(val nodes: Map<String, NodeDisplay> = emptyMap())
+data class Display(val nodes: MutableMap<String, NodeDisplay> = mutableMapOf())

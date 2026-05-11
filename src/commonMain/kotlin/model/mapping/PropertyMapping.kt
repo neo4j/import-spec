@@ -23,4 +23,4 @@ import kotlin.js.JsExport
 @JsExport
 @Serializable
 @SerialName("PropertyMapping")
-data class PropertyMapping(val field: String)
+data class PropertyMapping(var field: String)

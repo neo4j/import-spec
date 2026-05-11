@@ -59,8 +59,8 @@ fun NodeIndex.toJs() = nodeIndexJs(
 
 fun NodeIndexJs.toClass() = NodeIndex(
     type = type,
-    labels = labels.toSet(),
-    properties = properties.toSet(),
+    labels = labels.toMutableSet(),
+    properties = properties.toMutableSet(),
     options = options.associateBy { _, value -> value.toClass() },
     extensions = extensions.associateBy { _, value -> value.toClass() }.toMutableMap()
 )

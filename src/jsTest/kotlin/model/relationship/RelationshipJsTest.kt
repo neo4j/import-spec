@@ -14,9 +14,9 @@ class RelationshipJsTest : JsMappingTest<Relationship, RelationshipJs>() {
         type = "RELATIONSHIP_TYPE",
         from = RelationshipTarget("from_node"),
         to = RelationshipTarget("to_node"),
-        properties = mapOf("prop" to Property(Neo4jType.STRING, name = "property_name")),
-        constraints = mapOf("constraint" to RelationshipConstraint("type", setOf("prop"))),
-        indexes = mapOf("index" to RelationshipIndex("type", setOf("prop"))),
+        properties = mutableMapOf("prop" to Property(Neo4jType.STRING, name = "property_name")),
+        constraints = mutableMapOf("constraint" to RelationshipConstraint("type", mutableSetOf("prop"))),
+        indexes = mutableMapOf("index" to RelationshipIndex("type", mutableSetOf("prop"))),
         extensions = mutableMapOf("key1" to StringValue("val1")),
         name = "relationshipName"
     )

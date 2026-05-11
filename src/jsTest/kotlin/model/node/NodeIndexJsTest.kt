@@ -10,8 +10,8 @@ class NodeIndexJsTest : JsMappingTest<NodeIndex, NodeIndexJs>() {
 
     override fun createClass() = NodeIndex(
         type = "INDEX_TYPE",
-        labels = setOf("node_label"),
-        properties = setOf("property_1", "property_2"),
+        labels = mutableSetOf("node_label"),
+        properties = mutableSetOf("property_1", "property_2"),
         options = mutableMapOf(
             "key1" to StringValue("val1")
         ),

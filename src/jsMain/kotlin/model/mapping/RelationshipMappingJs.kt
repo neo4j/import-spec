@@ -76,5 +76,5 @@ fun RelationshipMappingJs.toClass() = RelationshipMapping(
     properties = properties.associateBy { _, value -> value.toClass() },
     mode = MappingMode.valueOf(mode),
     matchLabel = matchLabel,
-    keys = keys.toSet()
+    keys = keys.toMutableSet()
 )

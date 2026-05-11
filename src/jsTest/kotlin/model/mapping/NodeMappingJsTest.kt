@@ -1,6 +1,5 @@
 package model.mapping
 
-import model.mapping.JsMappingTest
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 
@@ -9,10 +8,10 @@ class NodeMappingJsTest : JsMappingTest<NodeMapping, NodeMappingJs>() {
     override fun createClass() = NodeMapping(
         node = "node",
         table = "table_name",
-        properties = mapOf("property" to PropertyMapping("field")),
+        properties = mutableMapOf("property" to PropertyMapping("field")),
         mode = MappingMode.CREATE,
         matchLabel = "label_name",
-        keys = setOf("key1", "key2")
+        keys = mutableSetOf("key1", "key2")
     )
 
     override fun toJs(k: NodeMapping): NodeMappingJs = k.toJs()

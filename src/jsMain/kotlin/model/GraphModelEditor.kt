@@ -54,7 +54,7 @@ class GraphModelEditor {
             nodes = model.nodes.associateBy { id, js -> js.toClass(id) },
             relationships = model.relationships.associateBy { id, js -> js.toClass(id) },
             tables = model.tables.associateBy { _, js -> js.toClass() },
-            mappings = model.mappings.map { it.toClass() },
+            mappings = model.mappings.map { it.toClass() }.toMutableList(),
             display = model.display.toClass()
         )
 

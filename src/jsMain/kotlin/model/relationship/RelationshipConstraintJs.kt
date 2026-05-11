@@ -55,7 +55,7 @@ fun RelationshipConstraint.toJs() = relationshipConstraintJs(
 
 fun RelationshipConstraintJs.toClass() = RelationshipConstraint(
     type = type,
-    properties = properties.toSet(),
+    properties = properties.toMutableSet(),
     options = options.associateBy { _, value -> value.toClass() },
     extensions = extensions.associateBy { _, value -> value.toClass() }.toMutableMap()
 )

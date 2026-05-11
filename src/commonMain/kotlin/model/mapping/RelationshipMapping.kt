@@ -24,12 +24,12 @@ import kotlin.js.JsExport
 @Serializable
 @SerialName(MappingType.RELATIONSHIP)
 data class RelationshipMapping(
-    val relationship: String,
-    val table: String,
+    var relationship: String,
+    var table: String,
     val from: TargetMapping,
     val to: TargetMapping,
-    val matchLabel: String? = null,
-    val properties: Map<String, PropertyMapping> = emptyMap(),
-    val mode: MappingMode = MappingMode.MERGE,
-    val keys: Set<String> = emptySet()
+    var matchLabel: String? = null,
+    val properties: MutableMap<String, PropertyMapping> = mutableMapOf(),
+    var mode: MappingMode = MappingMode.MERGE,
+    val keys: MutableSet<String> = mutableSetOf()
 ) : Mapping

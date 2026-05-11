@@ -24,10 +24,10 @@ import kotlin.js.JsExport
 @Serializable
 @SerialName(MappingType.NODE)
 data class NodeMapping(
-    val node: String,
-    val table: String,
-    val properties: Map<String, PropertyMapping>,
-    val mode: MappingMode = MappingMode.MERGE,
-    val matchLabel: String? = null,
-    val keys: Set<String> = emptySet()
+    var node: String,
+    var table: String,
+    val properties: MutableMap<String, PropertyMapping>,
+    var mode: MappingMode = MappingMode.MERGE,
+    var matchLabel: String? = null,
+    val keys: MutableSet<String> = mutableSetOf()
 ) : Mapping

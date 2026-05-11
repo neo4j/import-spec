@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) "Neo4j"
+ * Neo4j Sweden AB [https://neo4j.com]
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package model.source
 
 import model.addUnique
@@ -12,6 +28,7 @@ class TableEditor {
         fun setSource(table: TableJs, source: String) {
             table.source = source
         }
+
         @JsStatic
         fun setFieldType(table: TableJs, fieldId: String, type: String) {
             val field = table.fields.getOrThrow(fieldId, "Field")
@@ -25,10 +42,8 @@ class TableEditor {
         }
 
         @JsStatic
-        fun addField(table: TableJs, type: String): String {
-            return table.fields.addUnique("field") {
-                tableFieldJs(type)
-            }
+        fun addField(table: TableJs, type: String): String = table.fields.addUnique("field") {
+            tableFieldJs(type)
         }
 
         @JsStatic
@@ -52,16 +67,14 @@ class TableEditor {
         }
 
         @JsStatic
-        fun addForeignKey(table: TableJs, fields: Array<String>, reference: ForeignKeyReferenceJs): String {
-            return table.foreignKeys.addUnique("foreignKey") {
+        fun addForeignKey(table: TableJs, fields: Array<String>, reference: ForeignKeyReferenceJs): String =
+            table.foreignKeys.addUnique("foreignKey") {
                 foreignKeyJs(fields, reference)
             }
-        }
 
         @JsStatic
         fun removeForeignKey(table: TableJs, key: String) {
             table.foreignKeys.remove(key)
         }
-
     }
 }

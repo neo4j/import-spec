@@ -23,4 +23,4 @@ import kotlin.js.JsExport
 @JsExport
 @Serializable
 @SerialName(MappingType.QUERY)
-data class QueryMapping(val table: String, val query: String) : Mapping
+data class QueryMapping(var table: String, var query: String) : Mapping

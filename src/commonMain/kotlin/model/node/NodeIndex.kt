@@ -26,9 +26,9 @@ import kotlin.js.JsExport
 @Serializable
 @SerialName("NodeIndex")
 data class NodeIndex(
-    val type: String,
-    val labels: Set<String>,
-    val properties: Set<String>,
-    val options: Map<String, ExtensionValue> = emptyMap(),
+    var type: String,
+    val labels: MutableSet<String>,
+    val properties: MutableSet<String>,
+    val options: MutableMap<String, ExtensionValue> = mutableMapOf(),
     override val extensions: MutableMap<String, ExtensionValue> = mutableMapOf()
 ) : Extensions

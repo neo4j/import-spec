@@ -102,8 +102,8 @@ class JsonFormatTest {
     fun `test empty collections round-trip`() {
         val model = GraphModel(
             version = "1.0",
-            nodes = emptyMap(),
-            mappings = emptyList()
+            nodes = mutableMapOf(),
+            mappings = mutableListOf()
         )
 
         val schema = jsonFormat.encodeToSchema(model)
@@ -123,7 +123,7 @@ class JsonFormatTest {
                 "ext_bool" to BooleanValue(true)
             )
         )
-        val model = GraphModel(version = "1", nodes = mapOf("n1" to node))
+        val model = GraphModel(version = "1", nodes = mutableMapOf("n1" to node))
 
         val schema = jsonFormat.encodeToSchema(model) as SchemaMap
         val n1 = schema.map("nodes").map("n1")

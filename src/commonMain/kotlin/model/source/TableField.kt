@@ -27,10 +27,10 @@ import kotlin.js.JsExport
 @Serializable
 @SerialName("TableField")
 data class TableField(
-    val type: String = "",
-    val size: Int = -1,
+    var type: String = "",
+    var size: Int = -1,
     val suggested: Neo4jType = Neo4jType.ANY,
     val supported: Set<Neo4jType> = emptySet(),
     override val extensions: MutableMap<String, ExtensionValue> = mutableMapOf(),
-    val name: String? = null
+    var name: String? = null
 ) : Extensions

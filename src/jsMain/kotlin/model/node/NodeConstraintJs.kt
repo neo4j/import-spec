@@ -56,6 +56,6 @@ fun NodeConstraint.toJs() = nodeConstraintJs(
 fun NodeConstraintJs.toClass() = NodeConstraint(
     type = type,
     label = label,
-    properties = properties.toSet(),
+    properties = properties.toMutableSet(),
     extensions = extensions.associateBy { _, value -> value.toClass() }.toMutableMap()
 )

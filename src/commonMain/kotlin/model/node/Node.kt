@@ -31,9 +31,9 @@ import kotlin.js.JsExport
 @SerialName("Node")
 data class Node(
     val labels: Labels = Labels(),
-    val properties: Map<String, Property> = emptyMap(),
-    val constraints: Map<String, NodeConstraint> = emptyMap(),
-    val indexes: Map<String, NodeIndex> = emptyMap(),
+    val properties: MutableMap<String, Property> = mutableMapOf(),
+    val constraints: MutableMap<String, NodeConstraint> = mutableMapOf(),
+    val indexes: MutableMap<String, NodeIndex> = mutableMapOf(),
     override val extensions: MutableMap<String, ExtensionValue> = mutableMapOf(),
-    val name: String? = null
+    var name: String? = null
 ) : Extensions

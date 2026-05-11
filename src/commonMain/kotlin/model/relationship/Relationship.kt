@@ -29,12 +29,12 @@ import kotlin.js.JsExport
 @Serializable
 @SerialName("Relationship")
 data class Relationship(
-    val type: String,
+    var type: String,
     val from: RelationshipTarget,
     val to: RelationshipTarget,
-    val properties: Map<String, Property> = emptyMap(),
-    val constraints: Map<String, RelationshipConstraint> = emptyMap(),
-    val indexes: Map<String, RelationshipIndex> = emptyMap(),
+    val properties: MutableMap<String, Property> = mutableMapOf(),
+    val constraints: MutableMap<String, RelationshipConstraint> = mutableMapOf(),
+    val indexes: MutableMap<String, RelationshipIndex> = mutableMapOf(),
     override val extensions: MutableMap<String, ExtensionValue> = mutableMapOf(),
-    val name: String? = null
+    var name: String? = null
 ) : Extensions

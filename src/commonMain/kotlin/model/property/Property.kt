@@ -27,11 +27,11 @@ import kotlin.js.JsExport
 @Serializable
 @SerialName("Property")
 data class Property(
-    val type: Neo4jType = Neo4jType.ANY,
-    val nullable: Boolean = false,
-    val unique: Boolean = false,
+    var type: Neo4jType = Neo4jType.ANY,
+    var nullable: Boolean = false,
+    var unique: Boolean = false,
     override val extensions: MutableMap<String, ExtensionValue> = mutableMapOf(),
-    val name: String? = null
+    var name: String? = null
 ) : Extensions {
     val key: Boolean
         get() = !nullable && unique

@@ -12,9 +12,9 @@ class NodeJsTest : JsMappingTest<Node, NodeJs>() {
 
     override fun createClass() = Node(
         labels = Labels("label"),
-        properties = mapOf("prop" to Property(Neo4jType.STRING, name = "propertyName")),
-        constraints = mapOf("constraint" to NodeConstraint("type", "label", setOf("prop"))),
-        indexes = mapOf("index" to NodeIndex("type", setOf("label"), setOf("prop"))),
+        properties = mutableMapOf("prop" to Property(Neo4jType.STRING, name = "propertyName")),
+        constraints = mutableMapOf("constraint" to NodeConstraint("type", "label", mutableSetOf("prop"))),
+        indexes = mutableMapOf("index" to NodeIndex("type", mutableSetOf("label"), mutableSetOf("prop"))),
         extensions = mutableMapOf("key1" to StringValue("val1")),
         name = "Node Name",
     )

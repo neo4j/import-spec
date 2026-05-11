@@ -34,10 +34,10 @@ import kotlin.js.JsStatic
 @SerialName("GraphModel")
 data class GraphModel(
     val version: String,
-    val nodes: Map<String, Node> = emptyMap(),
-    val relationships: Map<String, Relationship> = emptyMap(),
-    val tables: Map<String, Table> = emptyMap(),
-    val mappings: List<Mapping> = emptyList(),
+    val nodes: MutableMap<String, Node> = mutableMapOf(),
+    val relationships: MutableMap<String, Relationship> = mutableMapOf(),
+    val tables: MutableMap<String, Table> = mutableMapOf(),
+    val mappings: MutableList<Mapping> = mutableListOf(),
     val display: Display = Display()
 ) {
     @JsExport.Ignore
