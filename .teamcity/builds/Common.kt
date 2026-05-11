@@ -39,6 +39,7 @@ const val GITHUB_URL = "https://github.com/$FULL_GITHUB_REPOSITORY"
 // Look into Root Project's settings -> Connections
 const val ECR_CONNECTION_ID_ENG = "PROJECT_EXT_124"
 const val ECR_CONNECTION_ID_BUILD = "PROJECT_EXT_107"
+val DOCKER_REGISTRIES = sequenceOf(ECR_CONNECTION_ID_ENG, ECR_CONNECTION_ID_BUILD)
 
 enum class LinuxSize(val value: String) {
   SMALL("small"),
@@ -87,8 +88,7 @@ fun BuildFeatures.enablePullRequests() = pullRequests {
 
 fun BuildFeatures.loginToECR() = dockerRegistryConnections {
   cleanupPushedImages = true
-  loginToRegistry = on { dockerRegistryId = ECR_CONNECTION_ID_ENG }
-  loginToRegistry = on { dockerRegistryId = ECR_CONNECTION_ID_BUILD }
+  loginToRegistry = on { dockerRegistryId = DOCKER_REGISTRIES.joinToString(",") }
 }
 
 fun BuildFeatures.requireDiskSpace(size: String = "3gb") = freeDiskSpace {
