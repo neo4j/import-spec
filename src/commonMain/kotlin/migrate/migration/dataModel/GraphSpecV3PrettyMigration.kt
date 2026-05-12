@@ -57,9 +57,9 @@ class GraphSpecV3PrettyMigration : Migration(Type.GRAPH_SPEC, Version.LATEST, Ty
             name = { it.stringOrNull("type")?.toCamelCase() } // TODO fallback to combo of from and to names
         ) { _, relationship ->
             val type = relationship.string("type")
-            val from = relationship.string("from")
+            val from = relationship.map("from").string("node")
             relationship["from"] = nodeIds.getOrElse(from) { from }
-            val to = relationship.string("to")
+            val to = relationship.map("to").string("node")
             relationship["to"] = nodeIds.getOrElse(to) { to }
             prettifyProperties(relationship, relationshipPropertyIds, type)
             updatePropertiesList(relationship, relationshipPropertyIds, type, "constraints")
