@@ -24,6 +24,7 @@ import model.extension.ExtensionValueJs
 import model.extension.toClass
 import model.extension.toJs
 import model.jso
+import model.type.IndexType
 
 @JsExport
 @JsPlainObject
@@ -50,7 +51,7 @@ fun nodeIndexJs(
 }
 
 fun NodeIndex.toJs() = nodeIndexJs(
-    type = type,
+    type = type.name,
     labels = labels.toTypedArray(),
     properties = properties.toTypedArray(),
     options = options.associateBy { _, value -> value.toJs() },
@@ -58,7 +59,7 @@ fun NodeIndex.toJs() = nodeIndexJs(
 )
 
 fun NodeIndexJs.toClass() = NodeIndex(
-    type = type,
+    type = IndexType.valueOf(type),
     labels = labels.toMutableSet(),
     properties = properties.toMutableSet(),
     options = options.associateBy { _, value -> value.toClass() },

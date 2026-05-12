@@ -42,6 +42,10 @@
         "Node": {
             "type": "object",
             "properties": {
+                "label": {
+                    "type": "string",
+                    "nullable": true
+                },
                 "labels": {
                     "$ref": "#/$defs/Labels"
                 },
@@ -311,10 +315,11 @@
             "type": "object",
             "properties": {
                 "type": {
-                    "type": "string"
+                    "$ref": "#/$defs/ConstraintType"
                 },
                 "label": {
-                    "type": "string"
+                    "type": "string",
+                    "nullable": true
                 },
                 "properties": {
                     "type": "array",
@@ -331,16 +336,24 @@
             },
             "required": [
                 "type",
-                "label",
                 "properties"
             ],
             "additionalProperties": false
+        },
+        "ConstraintType": {
+            "type": "string",
+            "enum": [
+                "EXISTS",
+                "KEY",
+                "PROPERTY_TYPE",
+                "UNIQUE"
+            ]
         },
         "NodeIndex": {
             "type": "object",
             "properties": {
                 "type": {
-                    "type": "string"
+                    "$ref": "#/$defs/IndexType"
                 },
                 "labels": {
                     "type": "array",
@@ -373,6 +386,17 @@
                 "properties"
             ],
             "additionalProperties": false
+        },
+        "IndexType": {
+            "type": "string",
+            "enum": [
+                "FULLTEXT",
+                "POINT",
+                "RANGE",
+                "TEXT",
+                "VECTOR",
+                "LOOKUP"
+            ]
         },
         "Relationship": {
             "type": "object",
@@ -442,7 +466,7 @@
             "type": "object",
             "properties": {
                 "type": {
-                    "type": "string"
+                    "$ref": "#/$defs/ConstraintType"
                 },
                 "properties": {
                     "type": "array",
@@ -473,7 +497,7 @@
             "type": "object",
             "properties": {
                 "type": {
-                    "type": "string"
+                    "$ref": "#/$defs/IndexType"
                 },
                 "properties": {
                     "type": "array",

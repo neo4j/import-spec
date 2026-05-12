@@ -24,6 +24,7 @@ import model.extension.ExtensionValueJs
 import model.extension.toClass
 import model.extension.toJs
 import model.jso
+import model.type.ConstraintType
 
 @JsExport
 @JsPlainObject
@@ -47,14 +48,14 @@ fun nodeConstraintJs(
 }
 
 fun NodeConstraint.toJs() = nodeConstraintJs(
-    type = type,
+    type = type.name,
     label = label,
     properties = properties.toTypedArray(),
     extensions = extensions.associateBy { _, value -> value.toJs() }
 )
 
 fun NodeConstraintJs.toClass() = NodeConstraint(
-    type = type,
+    type = ConstraintType.valueOf(type),
     label = label,
     properties = properties.toMutableSet(),
     extensions = extensions.associateBy { _, value -> value.toClass() }.toMutableMap()

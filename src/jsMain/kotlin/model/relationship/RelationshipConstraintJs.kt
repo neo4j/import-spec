@@ -24,6 +24,7 @@ import model.extension.ExtensionValueJs
 import model.extension.toClass
 import model.extension.toJs
 import model.jso
+import model.type.ConstraintType
 
 @JsExport
 @JsPlainObject
@@ -47,14 +48,14 @@ fun relationshipConstraintJs(
 }
 
 fun RelationshipConstraint.toJs() = relationshipConstraintJs(
-    type = type,
+    type = type.name,
     properties = properties.toTypedArray(),
     options = options.associateBy { _, value -> value.toJs() },
     extensions = extensions.associateBy { _, value -> value.toJs() }
 )
 
 fun RelationshipConstraintJs.toClass() = RelationshipConstraint(
-    type = type,
+    type = ConstraintType.valueOf(type),
     properties = properties.toMutableSet(),
     options = options.associateBy { _, value -> value.toClass() },
     extensions = extensions.associateBy { _, value -> value.toClass() }.toMutableMap()

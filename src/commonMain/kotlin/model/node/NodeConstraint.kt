@@ -20,13 +20,14 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import model.extension.ExtensionValue
 import model.extension.Extensions
+import model.type.ConstraintType
 import kotlin.js.JsExport
 
 @JsExport
 @Serializable
 @SerialName("NodeConstraint")
 data class NodeConstraint(
-    var type: String,
+    var type: ConstraintType,
     var label: String? = null, // TODO: Optional to avoid id issues with frontend redux?
     val properties: MutableSet<String>,
     override val extensions: MutableMap<String, ExtensionValue> = mutableMapOf()

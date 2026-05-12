@@ -16,12 +16,14 @@
  */
 package model.type
 
+import kotlinx.serialization.SerialName
 import kotlin.js.JsExport
 
 @JsExport
+@SerialName("ConstraintType")
 enum class ConstraintType {
     EXISTS,
     KEY,
-    TYPE,
+    PROPERTY_TYPE,
     UNIQUE
 }

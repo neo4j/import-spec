@@ -28,7 +28,7 @@ import model.mapping.MappingType
 import model.type.ConstraintType
 import model.type.ConstraintType.EXISTS
 import model.type.ConstraintType.KEY
-import model.type.ConstraintType.TYPE
+import model.type.ConstraintType.PROPERTY_TYPE
 import model.type.ConstraintType.UNIQUE
 import model.type.IndexType
 import model.type.IndexType.FULLTEXT
@@ -151,7 +151,7 @@ class DataModelV3GraphSpecMigration :
     ): Map<String, SchemaMap>? = constraints[labelRef]?.associateByUniqueName("constraint") { constraint ->
         val properties = constraint.listOfMapsOrNull("properties")
         val constraintType = constraintType(constraint)
-        if (properties != null && properties.size > 1 && constraintType == ConstraintType.TYPE) {
+        if (properties != null && properties.size > 1 && constraintType == ConstraintType.PROPERTY_TYPE) {
             error("Type constraints not supported on multiple properties.")
         }
         schemaMapOf(
@@ -360,7 +360,7 @@ class DataModelV3GraphSpecMigration :
         private fun constraintType(name: String): ConstraintType? = when (name) {
             "uniqueness" -> UNIQUE
             "propertyExistence" -> EXISTS
-            "propertyType" -> TYPE
+            "propertyType" -> PROPERTY_TYPE
             "key" -> KEY
             else -> null
         }

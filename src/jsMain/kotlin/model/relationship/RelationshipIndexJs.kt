@@ -24,6 +24,7 @@ import model.extension.ExtensionValueJs
 import model.extension.toClass
 import model.extension.toJs
 import model.jso
+import model.type.IndexType
 
 @JsExport
 @JsPlainObject
@@ -47,14 +48,14 @@ fun relationshipIndexJs(
 }
 
 fun RelationshipIndex.toJs() = relationshipIndexJs(
-    type = type,
+    type = type.name,
     properties = properties.toTypedArray(),
     options = options.associateBy { _, value -> value.toJs() },
     extensions = extensions.associateBy { _, value -> value.toJs() }
 )
 
 fun RelationshipIndexJs.toClass() = RelationshipIndex(
-    type = type,
+    type = IndexType.valueOf(type),
     properties = properties.toMutableSet(),
     options = options.associateBy { _, value -> value.toClass() },
     extensions = extensions.associateBy { _, value -> value.toClass() }.toMutableMap()

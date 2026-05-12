@@ -20,13 +20,14 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import model.extension.ExtensionValue
 import model.extension.Extensions
+import model.type.IndexType
 import kotlin.js.JsExport
 
 @JsExport
 @Serializable
 @SerialName("RelationshipIndex")
 data class RelationshipIndex(
-    var type: String,
+    var type: IndexType,
     val properties: MutableSet<String>,
     val options: MutableMap<String, ExtensionValue> = mutableMapOf(),
     override val extensions: MutableMap<String, ExtensionValue> = mutableMapOf()

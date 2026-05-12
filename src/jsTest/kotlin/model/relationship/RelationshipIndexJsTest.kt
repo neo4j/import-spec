@@ -3,13 +3,14 @@ package model.relationship
 import model.mapping.JsMappingTest
 import model.extension.StringValue
 import model.extension.stringValueJs
+import model.type.IndexType
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class RelationshipIndexJsTest : JsMappingTest<RelationshipIndex, RelationshipIndexJs>() {
 
     override fun createClass() = RelationshipIndex(
-        type = "INDEX_TYPE",
+        type = IndexType.POINT,
         properties = mutableSetOf("property_1", "property_2"),
         options = mutableMapOf(
             "key1" to StringValue("val1")
@@ -24,7 +25,7 @@ class RelationshipIndexJsTest : JsMappingTest<RelationshipIndex, RelationshipInd
     override fun toClass(js: RelationshipIndexJs): RelationshipIndex = js.toClass()
 
     override fun verifyJsObject(jsObject: RelationshipIndexJs) {
-        assertEquals("INDEX_TYPE", jsObject.type)
+        assertEquals("POINT", jsObject.type)
         assertEquals(2, jsObject.properties.size)
         assertTrue(jsObject.properties.contains("property_1"))
         assertTrue(jsObject.properties.contains("property_2"))

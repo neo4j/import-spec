@@ -16,9 +16,11 @@
  */
 package model.type
 
+import kotlinx.serialization.SerialName
 import kotlin.js.JsExport
 
 @JsExport
+@SerialName("IndexType")
 enum class IndexType {
     FULLTEXT,
     POINT,

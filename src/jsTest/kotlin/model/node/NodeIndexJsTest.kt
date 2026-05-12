@@ -3,13 +3,14 @@ package model.node
 import model.mapping.JsMappingTest
 import model.extension.StringValue
 import model.extension.stringValueJs
+import model.type.IndexType
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class NodeIndexJsTest : JsMappingTest<NodeIndex, NodeIndexJs>() {
 
     override fun createClass() = NodeIndex(
-        type = "INDEX_TYPE",
+        type = IndexType.TEXT,
         labels = mutableSetOf("node_label"),
         properties = mutableSetOf("property_1", "property_2"),
         options = mutableMapOf(
@@ -25,7 +26,7 @@ class NodeIndexJsTest : JsMappingTest<NodeIndex, NodeIndexJs>() {
     override fun toClass(js: NodeIndexJs): NodeIndex = js.toClass()
 
     override fun verifyJsObject(jsObject: NodeIndexJs) {
-        assertEquals("INDEX_TYPE", jsObject.type)
+        assertEquals("TEXT", jsObject.type)
         val labels = jsObject.labels
         assertEquals(1, labels.size)
         assertTrue(labels.contains("node_label"))

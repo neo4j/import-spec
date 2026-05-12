@@ -35,7 +35,7 @@ object RelationshipExistenceConstraint : RelationshipValidation {
         constraint: RelationshipConstraint,
         issues: MutableList<Issue>
     ) {
-        if (constraint.type != ConstraintType.EXISTS.name) {
+        if (constraint.type != ConstraintType.EXISTS) {
             return
         }
         if (constraint.properties.size == 1) {

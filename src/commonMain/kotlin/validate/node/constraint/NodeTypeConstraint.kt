@@ -35,7 +35,7 @@ object NodeTypeConstraint : NodeValidation {
         constraint: NodeConstraint,
         issues: MutableList<Issue>
     ) {
-        if (constraint.type != ConstraintType.TYPE.name) {
+        if (constraint.type != ConstraintType.PROPERTY_TYPE) {
             return
         }
         if (constraint.properties.size == 1) {
