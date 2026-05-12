@@ -48,7 +48,7 @@ CGO_LDFLAGS_ALLOW="-Wl,-force_load,.*" go test ./...
 ### Generating Kotlin/Native libraries
 
 ```shell
-./gradlew :generateGraphModelJsonSchema
+./go/scripts/generate-kotlin-native-libs.sh
 ```
 
 
