@@ -2,7 +2,10 @@ package builds
 
 import jetbrains.buildServer.configs.kotlin.*
 import jetbrains.buildServer.configs.kotlin.buildFeatures.PullRequests
+import jetbrains.buildServer.configs.kotlin.buildFeatures.buildCache
 import jetbrains.buildServer.configs.kotlin.buildFeatures.commitStatusPublisher
+import jetbrains.buildServer.configs.kotlin.buildFeatures.dockerRegistryConnections
+import jetbrains.buildServer.configs.kotlin.buildFeatures.freeDiskSpace
 import jetbrains.buildServer.configs.kotlin.buildFeatures.pullRequests
 import jetbrains.buildServer.configs.kotlin.buildSteps.MavenBuildStep
 import jetbrains.buildServer.configs.kotlin.buildSteps.ScriptBuildStep
@@ -11,19 +14,50 @@ import jetbrains.buildServer.configs.kotlin.buildSteps.script
 
 const val GITHUB_OWNER = "neo4j"
 const val GITHUB_REPOSITORY = "import-spec"
-const val MAVEN_DEFAULT_ARGS = "--no-transfer-progress --batch-mode --show-version"
+val MAVEN_DEFAULT_ARGS = buildString {
+  append("--no-transfer-progress ")
+  append("--batch-mode ")
+  append("--threads 1C ")
+  append("-Dmaven.repo.local=%teamcity.build.checkoutDir%/.m2/repository ")
+  append("-Dmaven.wagon.http.retryHandler.class=standard ")
+  append("-Dmaven.wagon.http.retryHandler.timeout=60 ")
+  append("-Dmaven.wagon.http.retryHandler.count=3 ")
+  append(
+      "-Dmaven.wagon.http.retryHandler.nonRetryableClasses=java.io.InterruptedIOException,java.net.UnknownHostException,java.net.ConnectException ")
+}
 
-const val DEFAULT_JAVA_VERSION = "17"
-const val LTS_JAVA_VERSION = "21"
+val DEFAULT_JAVA_VERSION = JavaVersion.V_11
+val LTS_JAVA_VERSION = JavaVersion.V_21
 
-const val SEMGREP_DOCKER_IMAGE = "semgrep/semgrep:1.146.0"
+const val NODE_DOCKER_IMAGE = "%ecr-registry-connectors%:node-24-latest"
+
+const val SEMGREP_DOCKER_IMAGE = "%ecr-registry-connectors%:semgrep-latest"
 
 const val FULL_GITHUB_REPOSITORY = "$GITHUB_OWNER/$GITHUB_REPOSITORY"
 const val GITHUB_URL = "https://github.com/$FULL_GITHUB_REPOSITORY"
 
+// Look into Root Project's settings -> Connections
+const val ECR_CONNECTION_ID_ENG = "PROJECT_EXT_124"
+const val ECR_CONNECTION_ID_BUILD = "PROJECT_EXT_107"
+val DOCKER_REGISTRIES = sequenceOf(ECR_CONNECTION_ID_ENG, ECR_CONNECTION_ID_BUILD)
+
 enum class LinuxSize(val value: String) {
   SMALL("small"),
   LARGE("large")
+}
+
+enum class JavaVersion(val version: String, val dockerImage: String) {
+  V_11(version = "11", dockerImage = "%ecr-registry-connectors%:jdk-11-latest"),
+  V_17(version = "17", dockerImage = "%ecr-registry-connectors%:jdk-17-latest"),
+  V_21(version = "21", dockerImage = "%ecr-registry-connectors%:jdk-21-latest"),
+}
+
+fun BuildFeatures.buildCache(javaVersion: JavaVersion) = buildCache {
+  this.name = "import-spec-${javaVersion.version}"
+  publish = true
+  use = true
+  publishOnlyChanged = true
+  rules = ".m2/repository"
 }
 
 fun Requirements.runOnLinux(size: LinuxSize = LinuxSize.SMALL) {
@@ -52,6 +86,16 @@ fun BuildFeatures.enablePullRequests() = pullRequests {
   }
 }
 
+fun BuildFeatures.loginToECR() = dockerRegistryConnections {
+  cleanupPushedImages = true
+  loginToRegistry = on { dockerRegistryId = DOCKER_REGISTRIES.joinToString(",") }
+}
+
+fun BuildFeatures.requireDiskSpace(size: String = "3gb") = freeDiskSpace {
+  requiredSpace = size
+  failBuild = true
+}
+
 fun CompoundStage.dependentBuildType(bt: BuildType) =
     buildType(bt) {
       onDependencyCancel = FailureAction.CANCEL
@@ -69,13 +113,15 @@ fun collectArtifacts(buildType: BuildType): BuildType {
 }
 
 fun BuildSteps.runMaven(
-    javaVersion: String = DEFAULT_JAVA_VERSION,
+    javaVersion: JavaVersion = DEFAULT_JAVA_VERSION,
     init: MavenBuildStep.() -> Unit
 ): MavenBuildStep {
   val maven =
       this.maven {
+        localRepoScope = MavenBuildStep.RepositoryScope.MAVEN_DEFAULT
+
         dockerImagePlatform = MavenBuildStep.ImagePlatform.Linux
-        dockerImage = "eclipse-temurin:${javaVersion}-jdk"
+        dockerImage = javaVersion.dockerImage
         dockerRunParameters = "--volume /var/run/docker.sock:/var/run/docker.sock"
       }
 
@@ -110,38 +156,5 @@ fun BuildSteps.commitAndPush(
             .trimIndent()
 
     conditions { doesNotMatch(dryRunParameter, "true") }
-  }
-}
-
-fun BuildSteps.publishToMavenCentral(
-    name: String,
-    dryRunParameter: String = "dry-run"
-): ScriptBuildStep {
-  return this.script {
-    this.name = name
-
-    scriptContent =
-        """
-            #!/bin/bash -exu
-            
-            DRY_RUN_OPTION=""
-            if [ "%$dryRunParameter%" = "true" ]; then
-                DRY_RUN_OPTION="--dry-run"
-            fi
-
-            ${'$'}{JAVA_HOME}/bin/java -jar lib/rt.jar ${'$'}{DRY_RUN_OPTION} --debug publish-to-maven-central \
-            --group-id org.neo4j \
-            --operator %teamcity.build.triggeredBy.username% \
-            --repository-username ${'$'}{OSSSONATYPEORG_USERNAME} \
-            --repository-password ${'$'}{OSSSONATYPEORG_PASSWORD} \
-            --repository-path ./target/staging-deploy \
-            --signing-key-passphrase "${'$'}{SIGNING_KEY_PASSPHRASE}" \
-            --staging-profile-name org.neo4j
-        """
-            .trimIndent()
-
-    dockerImage = "neo4jbuildservice/quality:general-java8"
-    dockerImagePlatform = ScriptBuildStep.ImagePlatform.Linux
-    dockerRunParameters = "--volume %teamcity.build.checkoutDir%/signingkeysandbox:/root/.gnupg"
   }
 }
