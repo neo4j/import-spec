@@ -40,7 +40,7 @@ public abstract class EntityTargetStep extends TargetStep {
                 .collect(Collectors.toMap(PropertyMapping::getTargetProperty, PropertyMapping::getTargetPropertyType));
     }
 
-    public <T extends EntityTargetExtension> Optional<T> getExtension(Class<T> type) {
+    public <T extends EntityTargetExtension> Optional<T> extension(Class<T> type) {
         return extensions().stream()
                 .filter(ext -> type.isAssignableFrom(ext.getClass()))
                 .map(type::cast)

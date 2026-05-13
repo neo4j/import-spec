@@ -34,7 +34,7 @@ class EntityTargetStepTest {
         var extension = new ExtensionOne();
         var step = stepWithExtensions(extension);
 
-        var result = step.getExtension(ExtensionOne.class);
+        var result = step.extension(ExtensionOne.class);
 
         assertThat(result)
                 .overridingErrorMessage("expected to find matching extension")
@@ -46,7 +46,7 @@ class EntityTargetStepTest {
     void finds_no_extensions() {
         var step = stepWithoutExtensions();
 
-        assertThat(step.getExtension(ExtensionOne.class))
+        assertThat(step.extension(ExtensionOne.class))
                 .overridingErrorMessage("expected not to find any extension")
                 .isEmpty();
     }
@@ -55,7 +55,7 @@ class EntityTargetStepTest {
     void finds_no_matching_extensions() {
         var step = stepWithExtensions(new ExtensionTwo());
 
-        assertThat(step.getExtension(ExtensionOne.class))
+        assertThat(step.extension(ExtensionOne.class))
                 .overridingErrorMessage("expected not to find any matching extension")
                 .isEmpty();
     }
@@ -72,7 +72,7 @@ class EntityTargetStepTest {
     private static EntityTargetStep step(List<EntityTargetExtension> extensions) {
         var entityStep = mock(EntityTargetStep.class);
         when(entityStep.extensions()).thenReturn(extensions);
-        when(entityStep.getExtension(any())).thenCallRealMethod();
+        when(entityStep.extension(any())).thenCallRealMethod();
         return entityStep;
     }
 
