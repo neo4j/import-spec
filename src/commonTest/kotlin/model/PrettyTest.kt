@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) "Neo4j"
+ * Neo4j Sweden AB [https://neo4j.com]
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package model
 
 import model.mapping.NodeMapping
@@ -13,7 +29,11 @@ import model.relationship.Relationship
 import model.relationship.RelationshipTarget
 import model.type.ConstraintType
 import model.type.IndexType
-import kotlin.test.*
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
+import kotlin.test.assertNull
+import kotlin.test.assertTrue
 
 class PrettyTest {
 
@@ -67,8 +87,13 @@ class PrettyTest {
             nodes = mutableMapOf(
                 "node0" to Node(
                     name = "User1",
-                    constraints = mutableMapOf("nodeConstraint0" to NodeConstraint(ConstraintType.UNIQUE, properties = mutableSetOf(), name = "c1")),
-                    indexes = mutableMapOf("nodeIndex0" to NodeIndex(IndexType.TEXT, mutableSetOf(), mutableSetOf(), name = "i1"))
+                    constraints = mutableMapOf(
+                        "nodeConstraint0" to
+                            NodeConstraint(ConstraintType.UNIQUE, properties = mutableSetOf(), name = "c1")
+                    ),
+                    indexes = mutableMapOf(
+                        "nodeIndex0" to NodeIndex(IndexType.TEXT, mutableSetOf(), mutableSetOf(), name = "i1")
+                    )
                 )
             )
         )
@@ -138,7 +163,10 @@ class PrettyTest {
         val relMapping = internalModel.mappings.filterIsInstance<RelationshipMapping>().first()
         assertEquals("FRIENDS_WITH", relMapping.relationship)
         assertEquals("Person", relMapping.from.node)
-        assertTrue(relMapping.from.properties.containsKey("age"), "From Target property should revert to human readable")
+        assertTrue(
+            relMapping.from.properties.containsKey("age"),
+            "From Target property should revert to human readable"
+        )
         assertTrue(relMapping.properties.containsKey("since"), "Relationship property should revert to human readable")
         assertEquals("Person", relMapping.to.node)
     }

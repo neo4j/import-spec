@@ -33,7 +33,8 @@ data class Property(
     var unique: Boolean = false,
     override val extensions: MutableMap<String, ExtensionValue> = mutableMapOf(),
     override var name: String? = null
-) : Extensions, Named {
+) : Extensions,
+    Named {
     val key: Boolean
         get() = !nullable && unique
 }
