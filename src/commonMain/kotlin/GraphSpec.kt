@@ -22,7 +22,6 @@ import migrate.MigrationPath
 import migrate.migration.dataModel.DataModelV2V3Migration
 import migrate.migration.dataModel.DataModelV3GraphSpecMigration
 import migrate.migration.dataModel.GraphSpecDataModelV3Migration
-import migrate.migration.dataModel.GraphSpecV3PrettyMigration
 import model.GraphModel
 import model.Type
 import model.Version
@@ -61,7 +60,6 @@ private fun defaultConfig(format: Format): GraphSpecConfig {
     builder.migrate(DataModelV2V3Migration(Version.DATA_MODEL_V24))
     builder.migrate(DataModelV3GraphSpecMigration())
     builder.migrate(GraphSpecDataModelV3Migration())
-    builder.migrate(GraphSpecV3PrettyMigration())
     return builder.build()
 }
 

@@ -21,6 +21,7 @@ import kotlinx.serialization.Serializable
 import model.extension.ExtensionValue
 import model.extension.Extensions
 import model.property.Neo4jType
+import model.type.Named
 import kotlin.js.JsExport
 
 @JsExport
@@ -31,8 +32,8 @@ data class Property(
     var nullable: Boolean = false,
     var unique: Boolean = false,
     override val extensions: MutableMap<String, ExtensionValue> = mutableMapOf(),
-    var name: String? = null
-) : Extensions {
+    override var name: String? = null
+) : Extensions, Named {
     val key: Boolean
         get() = !nullable && unique
 }

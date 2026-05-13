@@ -23,9 +23,6 @@ object Type {
     // The Connectors ImportSpec
     const val IMPORT_SPEC = "import_spec"
 
-    // GraphSpec internal
+    // GraphSpec
     const val GRAPH_SPEC = "graph_spec"
-
-    // GraphSpec external (prettified)
-    const val GRAPH_SPEC_PRETTY = "graph_spec_pretty"
 }

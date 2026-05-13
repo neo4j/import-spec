@@ -41,6 +41,16 @@ data class GraphModel(
     val display: Display = Display()
 ) {
     @JsExport.Ignore
+    fun prettify() {
+        Pretty.prettify(this)
+    }
+
+    @JsExport.Ignore
+    fun internalise() {
+        Internal.internalise(this)
+    }
+
+    @JsExport.Ignore
     fun validate(validators: List<Validation>): List<Issue> {
         val tree = ValidationTree()
         tree.build(validators)
@@ -50,5 +60,11 @@ data class GraphModel(
     companion object {
         @JsStatic
         fun validate(model: GraphModel, validators: List<Validation>) = model.validate(validators)
+
+        @JsStatic
+        fun prettify(model: GraphModel) = model.prettify()
+
+        @JsStatic
+        fun internalise(model: GraphModel) = model.internalise()
     }
 }

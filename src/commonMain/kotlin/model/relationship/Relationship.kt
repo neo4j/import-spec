@@ -23,6 +23,7 @@ import model.extension.Extensions
 import model.property.Property
 import model.relationship.RelationshipConstraint
 import model.relationship.RelationshipIndex
+import model.type.Named
 import kotlin.js.JsExport
 
 @JsExport
@@ -36,5 +37,5 @@ data class Relationship(
     val constraints: MutableMap<String, RelationshipConstraint> = mutableMapOf(),
     val indexes: MutableMap<String, RelationshipIndex> = mutableMapOf(),
     override val extensions: MutableMap<String, ExtensionValue> = mutableMapOf(),
-    var name: String? = null
-) : Extensions
+    override var name: String? = null
+) : Extensions, Named

@@ -24,16 +24,24 @@ import model.node.Labels
 import model.node.NodeConstraint
 import model.node.NodeIndex
 import model.property.Property
+import model.type.Named
 import kotlin.js.JsExport
 
 @JsExport
 @Serializable
 @SerialName("Node")
 data class Node(
+    var label: String? = null,
     val labels: Labels = Labels(),
     val properties: MutableMap<String, Property> = mutableMapOf(),
     val constraints: MutableMap<String, NodeConstraint> = mutableMapOf(),
     val indexes: MutableMap<String, NodeIndex> = mutableMapOf(),
     override val extensions: MutableMap<String, ExtensionValue> = mutableMapOf(),
-    var name: String? = null
-) : Extensions
+    override var name: String? = null
+) : Extensions, Named {
+    fun prettify() {
+        if (label != null) {
+            labels.identifier = label!!
+        }
+    }
+}
