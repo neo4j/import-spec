@@ -36,7 +36,7 @@ public class RelationshipTargetStep extends EntityTargetStep {
     private final NodeTargetStep startNode;
     private final NodeTargetStep endNode;
 
-    RelationshipTargetStep(
+    public RelationshipTargetStep(
             RelationshipTarget target, NodeTargetStep startNode, NodeTargetStep endNode, Set<ImportStep> dependencies) {
         super(dependencies);
         this.target = target;

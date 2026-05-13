@@ -24,7 +24,7 @@ public class CustomQueryTargetStep extends TargetStep {
 
     private final CustomQueryTarget target;
 
-    CustomQueryTargetStep(CustomQueryTarget target, Set<ImportStep> dependencies) {
+    public CustomQueryTargetStep(CustomQueryTarget target, Set<ImportStep> dependencies) {
         super(dependencies);
         this.target = target;
     }
