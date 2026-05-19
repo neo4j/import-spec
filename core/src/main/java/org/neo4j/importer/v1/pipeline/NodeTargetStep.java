@@ -30,7 +30,7 @@ public class NodeTargetStep extends EntityTargetStep {
 
     private final NodeTarget target;
 
-    NodeTargetStep(NodeTarget target, Set<ImportStep> dependencies) {
+    public NodeTargetStep(NodeTarget target, Set<ImportStep> dependencies) {
         super(dependencies);
         this.target = target;
     }

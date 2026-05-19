@@ -19,6 +19,7 @@ package org.neo4j.importer.v1.pipeline;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -39,7 +40,14 @@ public abstract sealed class EntityTargetStep extends TargetStep permits NodeTar
                 .collect(Collectors.toMap(PropertyMapping::getTargetProperty, PropertyMapping::getTargetPropertyType));
     }
 
-    public List<EntityTargetExtension> getExtensions() {
+    public <T extends EntityTargetExtension> Optional<T> extension(Class<T> type) {
+        return extensions().stream()
+                .filter(ext -> type.isAssignableFrom(ext.getClass()))
+                .map(type::cast)
+                .findFirst();
+    }
+
+    public List<EntityTargetExtension> extensions() {
         return target().getExtensions();
     }
 

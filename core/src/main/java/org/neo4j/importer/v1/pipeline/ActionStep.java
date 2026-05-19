@@ -23,9 +23,10 @@ import org.neo4j.importer.v1.actions.Action;
 public class ActionStep implements ImportStep {
 
     private final Action action;
+
     private final Set<ImportStep> dependencies;
 
-    ActionStep(Action action, Set<ImportStep> dependencies) {
+    public ActionStep(Action action, Set<ImportStep> dependencies) {
         this.action = action;
         this.dependencies = dependencies;
     }
