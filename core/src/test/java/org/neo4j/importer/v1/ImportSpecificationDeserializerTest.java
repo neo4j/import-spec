@@ -2375,7 +2375,19 @@ class ImportSpecificationDeserializerTest {
 
     @ParameterizedTest
     @EnumSource(SpecFormat.class)
-    void fails_if_vector_type_constraint_has_null_dimension(SpecFormat format, TestInfo testInfo) {
+    void does_not_fail_if_dimension_is_null_on_non_vector_property(SpecFormat format, TestInfo testInfo) {
+
+        assertThatCode(() -> {
+                    try (var reader = specReader(format, testInfo)) {
+                        deserialize(reader);
+                    }
+                })
+                .doesNotThrowAnyException();
+    }
+
+    @ParameterizedTest
+    @EnumSource(SpecFormat.class)
+    void fails_if_vector_type_has_null_dimension(SpecFormat format, TestInfo testInfo) {
 
         assertThatThrownBy(() -> {
                     try (var reader = specReader(format, testInfo)) {
@@ -2386,19 +2398,7 @@ class ImportSpecificationDeserializerTest {
                 .hasMessageContainingAll(
                         "1 error(s)",
                         "0 warning(s)",
-                        "$.targets.nodes[0].schema.type_constraints[0]] dimension of referenced property cannot be null for vector type constraint");
-    }
-
-    @ParameterizedTest
-    @EnumSource(SpecFormat.class)
-    void does_not_fail_if_vector_type_has_null_dimension(SpecFormat format, TestInfo testInfo) {
-
-        assertThatCode(() -> {
-                    try (var reader = specReader(format, testInfo)) {
-                        deserialize(reader);
-                    }
-                })
-                .doesNotThrowAnyException();
+                        "$.targets.nodes[0].properties[0].target_property_type] $.targets.nodes[0].properties[0].target_property_type: required property 'dimension' not found");
     }
 
     @ParameterizedTest
