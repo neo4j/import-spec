@@ -21,7 +21,10 @@ class NightlyBuild(name: String) :
       bts.buildTypes().forEach {
         it.thisVcs()
 
-        it.features { enableCommitStatusPublisher() }
+        it.features {
+          loginToECR()
+          enableCommitStatusPublisher()
+        }
 
         buildType(it)
       }
