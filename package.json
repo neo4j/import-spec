@@ -11,6 +11,8 @@
     "prepare": "husky"
   },
   "overrides": {
-    "qs": "6.15.2"
+    "danger": {
+      "qs": "6.15.2"
+    }
   }
 }
