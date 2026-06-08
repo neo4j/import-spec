@@ -1,0 +1,35 @@
+---
+version: '1'
+sources:
+  - name: movies-source
+    type: jdbc
+    sql: SELECT id, title FROM db.movies
+targets:
+  nodes:
+    - name: movies
+      source: movies-source
+      labels:
+        - Movie
+        - VisualArt
+        - WorkOfArt
+      properties:
+        - source_field: id
+          target_property: identifier
+        - source_field: title
+          target_property: title
+          target_property_type: string
+      schema:
+        key_constraints:
+          - name: movies-identifier-key-constraint
+            label: Movie
+            properties:
+              - identifier
+        unique_constraints:
+          - name: movies-title-unique-constraint
+            label: Movie
+            properties:
+              - title
+        type_constraints:
+          - name: movies-title-type-constraint
+            label: Movie
+            property: title
