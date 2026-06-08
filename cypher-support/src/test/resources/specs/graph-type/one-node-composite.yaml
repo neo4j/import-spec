@@ -1,0 +1,51 @@
+---
+version: '1'
+sources:
+  - name: movies-source
+    type: jdbc
+    sql: SELECT id1, id2, title, year FROM db.movies
+targets:
+  nodes:
+    - name: movies
+      source: movies-source
+      labels:
+        - Movie
+      properties:
+        - source_field: id1
+          target_property: identifier1
+          target_property_type: string
+        - source_field: id2
+          target_property: identifier2
+          target_property_type: string
+        - source_field: title
+          target_property: title
+          target_property_type: string
+        - source_field: year
+          target_property: release_year
+          target_property_type: integer
+      schema:
+        key_constraints:
+          - name: movies-identifier-key-constraint
+            label: Movie
+            properties:
+              - identifier1
+              - identifier2
+        unique_constraints:
+          - name: movies-title-unique-constraint
+            label: Movie
+            properties:
+              - title
+              - release_year
+        type_constraints:
+          - name: movies-identifier1-type-constraint
+            label: Movie
+            property: identifier1
+          - name: movies-identifier2-type-constraint
+            label: Movie
+            property: identifier2
+          - name: movies-title-type-constraint
+            label: Movie
+            property: title
+          - name: movies-release_year-type-constraint
+            label: Movie
+            property: release_year

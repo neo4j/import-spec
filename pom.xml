@@ -33,6 +33,7 @@
         <module>core</module>
         <module>examples</module>
         <module>extra-validators</module>
+        <module>cypher-support</module>
     </modules>
     <scm>
         <connection>scm:git:git://github.com/neo4j/import-spec.git</connection>
