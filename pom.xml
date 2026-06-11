@@ -33,6 +33,7 @@
         <module>core</module>
         <module>examples</module>
         <module>extra-validators</module>
+        <module>cypher-support</module>
     </modules>
     <scm>
         <connection>scm:git:git://github.com/neo4j/import-spec.git</connection>
@@ -102,7 +103,7 @@
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-nop</artifactId>
-                <version>2.0.18</version>
+                <version>1.7.36</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
