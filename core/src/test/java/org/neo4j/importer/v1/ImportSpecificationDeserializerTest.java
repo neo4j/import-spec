@@ -8208,6 +8208,88 @@ class ImportSpecificationDeserializerTest {
                 .hasMessageContaining("$.actions[0].execution_mode must be one of: TRANSACTION, AUTOCOMMIT");
     }
 
+    @ParameterizedTest
+    @EnumSource(SpecFormat.class)
+    void fails_with_graph_type_enabled_if_cypher_action_is_included(SpecFormat format, TestInfo testInfo) {
+
+        assertThatThrownBy(() -> {
+                    try (var reader = specReader(format, testInfo)) {
+                        deserialize(reader);
+                    }
+                })
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "[$.actions] Graph type cannot be generated: actions are not supported");
+    }
+
+    @ParameterizedTest
+    @EnumSource(SpecFormat.class)
+    void fails_with_graph_type_enabled_if_custom_query_target_is_included(SpecFormat format, TestInfo testInfo) {
+
+        assertThatThrownBy(() -> {
+                    try (var reader = specReader(format, testInfo)) {
+                        deserialize(reader);
+                    }
+                })
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "[$.targets.queries] Graph type cannot be generated: custom query targets are not supported");
+    }
+
+    @ParameterizedTest
+    @EnumSource(SpecFormat.class)
+    void fails_with_graph_type_enabled_if_primary_label_is_also_secondary(SpecFormat format, TestInfo testInfo) {
+
+        assertThatThrownBy(() -> {
+                    try (var reader = specReader(format, testInfo)) {
+                        deserialize(reader);
+                    }
+                })
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "[$.targets.nodes[0].labels] Graph type cannot be generated: the primary label PrimaryAndSecondary cannot also be an implied label (offending occurrences in $.targets.nodes[1].labels)");
+    }
+
+    @ParameterizedTest
+    @EnumSource(SpecFormat.class)
+    void fails_with_graph_type_enabled_if_primary_label_is_repeated_across_targets(
+            SpecFormat format, TestInfo testInfo) {
+
+        assertThatThrownBy(() -> {
+                    try (var reader = specReader(format, testInfo)) {
+                        deserialize(reader);
+                    }
+                })
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "[$.targets.nodes[0].labels[0]] Graph type cannot be generated: the primary label PrimaryAndSecondary is defined more than once (offending occurrences in $.targets.nodes[1].labels[0])");
+    }
+
+    @ParameterizedTest
+    @EnumSource(SpecFormat.class)
+    void fails_with_graph_type_enabled_if_relationship_type_is_repeated_across_targets(
+            SpecFormat format, TestInfo testInfo) {
+
+        assertThatThrownBy(() -> {
+                    try (var reader = specReader(format, testInfo)) {
+                        deserialize(reader);
+                    }
+                })
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "[$.targets.relationships[0].type] Graph type cannot be generated: the type A_REPEATED_TYPE is defined more than once (offending occurrences in $.targets.relationships[1].type");
+    }
+
     private static FileReader specReader(SpecFormat format, TestInfo testInfo) {
         var spec = String.format(
                 "/specs/import_specification_deserializer_test/%s.%s",

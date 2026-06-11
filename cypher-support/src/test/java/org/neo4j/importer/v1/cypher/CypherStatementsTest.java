@@ -17,6 +17,7 @@
 package org.neo4j.importer.v1.cypher;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -30,7 +31,7 @@ class CypherStatementsTest {
     void generates_graph_type_statement_for_node_with_properties() throws Exception {
         var spec = read("/specs/graph-type/one-node.yaml", ImportSpecificationDeserializer::deserialize);
 
-        var result = CypherStatements.graphType(spec);
+        var result = CypherStatements.generateGraphType(spec);
 
         assertThat(result)
                 .isEqualTo("ALTER CURRENT GRAPH TYPE SET {\n"
@@ -42,7 +43,7 @@ class CypherStatementsTest {
     void generates_graph_type_statement_for_node_with_composite_constraints() throws Exception {
         var spec = read("/specs/graph-type/one-node-composite.yaml", ImportSpecificationDeserializer::deserialize);
 
-        var result = CypherStatements.graphType(spec);
+        var result = CypherStatements.generateGraphType(spec);
 
         assertThat(result)
                 .isEqualTo("ALTER CURRENT GRAPH TYPE SET {\n"
@@ -56,7 +57,7 @@ class CypherStatementsTest {
     void generates_graph_type_statement_for_spec_with_relationship() throws Exception {
         var spec = read("/specs/graph-type/one-rel.yaml", ImportSpecificationDeserializer::deserialize);
 
-        var result = CypherStatements.graphType(spec);
+        var result = CypherStatements.generateGraphType(spec);
 
         assertThat(result)
                 .isEqualTo("ALTER CURRENT GRAPH TYPE SET {\n"
@@ -70,7 +71,7 @@ class CypherStatementsTest {
     void generates_graph_type_statement_for_spec_with_relationship_with_properties() throws Exception {
         var spec = read("/specs/graph-type/one-rel-props.yaml", ImportSpecificationDeserializer::deserialize);
 
-        var result = CypherStatements.graphType(spec);
+        var result = CypherStatements.generateGraphType(spec);
 
         assertThat(result)
                 .isEqualTo("ALTER CURRENT GRAPH TYPE SET {\n"
@@ -84,7 +85,7 @@ class CypherStatementsTest {
     void generates_graph_type_statement_for_spec_with_relationship_with_composite_constraints() throws Exception {
         var spec = read("/specs/graph-type/one-rel-composite.yaml", ImportSpecificationDeserializer::deserialize);
 
-        var result = CypherStatements.graphType(spec);
+        var result = CypherStatements.generateGraphType(spec);
 
         assertThat(result)
                 .isEqualTo("ALTER CURRENT GRAPH TYPE SET {\n"
@@ -93,6 +94,15 @@ class CypherStatementsTest {
                         + "\t(:Actor)-[r1:ACTED_IN => {role :: STRING, role_salary :: INTEGER}]->(:Movie)\n"
                         + "\t\tREQUIRE (r1.role, r1.role_salary) IS UNIQUE\n"
                         + "}");
+    }
+
+    @Test
+    void rejects_spec_without_enabled_graph_type_feature() throws Exception {
+        var spec = read("/specs/graph-type/invalid.yaml", ImportSpecificationDeserializer::deserialize);
+
+        assertThatThrownBy(() -> CypherStatements.generateGraphType(spec))
+                .isInstanceOf(CypherGenerationPreconditionException.class)
+                .hasMessage("Please set 'enable_graph_type' to true in the 'config' section");
     }
 
     private <T> T read(String classpathResource, ThrowingFunction<Reader, T> fn) throws Exception {

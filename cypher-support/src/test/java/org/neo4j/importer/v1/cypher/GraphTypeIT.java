@@ -45,7 +45,8 @@ import org.testcontainers.utility.DockerImageName;
 public class GraphTypeIT {
 
     static {
-        disableJavaUtilLogging();
+        LogManager.getLogManager().reset();
+        Logger.getLogger("").setLevel(Level.OFF);
     }
 
     @Container
@@ -69,22 +70,25 @@ public class GraphTypeIT {
     @TestFactory
     Stream<DynamicTest> creates_graph_type() {
         return listSpecs()
-                .map(file -> DynamicTest.dynamicTest("creates graph type from %s".formatted(file.getName()), () -> {
-                    try (var reader = new FileReader(file)) {
-                        var spec = ImportSpecificationDeserializer.deserialize(reader);
-                        var graphTypeStatement = CypherStatements.graphType(spec);
+                .map(file ->
+                        DynamicTest.dynamicTest(String.format("creates graph type from %s", file.getName()), () -> {
+                            try (var reader = new FileReader(file)) {
+                                var spec = ImportSpecificationDeserializer.deserialize(reader);
+                                var graphTypeStatement = CypherStatements.generateGraphType(spec);
 
-                        assertThatCode(() -> driver.executableQuery(graphTypeStatement)
-                                        .execute())
-                                .doesNotThrowAnyException();
-                    }
-                }));
+                                assertThatCode(() -> driver.executableQuery(graphTypeStatement)
+                                                .execute())
+                                        .doesNotThrowAnyException();
+                            }
+                        }));
     }
 
     private static Stream<File> listSpecs() {
         var folder = specFolder();
         assertThat(folder).isDirectory().isDirectoryContaining("glob:**.yaml");
-        var specs = folder.listFiles(file -> file.isFile() && file.getName().endsWith(".yaml"));
+        var specs = folder.listFiles(file -> file.isFile()
+                && !file.getName().startsWith("invalid")
+                && file.getName().endsWith(".yaml"));
         assertThat(specs).isNotNull();
         return Arrays.stream(specs);
     }
@@ -98,10 +102,5 @@ public class GraphTypeIT {
             Assertions.fail("Could not resolve spec folder", e);
             throw new RuntimeException("beep beep");
         }
-    }
-
-    private static void disableJavaUtilLogging() {
-        LogManager.getLogManager().reset();
-        Logger.getLogger("").setLevel(Level.OFF);
     }
 }

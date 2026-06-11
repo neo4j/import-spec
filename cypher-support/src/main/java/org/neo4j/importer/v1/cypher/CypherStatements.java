@@ -26,6 +26,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.neo4j.importer.v1.ImportSpecification;
+import org.neo4j.importer.v1.config.Features;
 import org.neo4j.importer.v1.cypher.SpecSupport.CompositeConstraintDefinition;
 import org.neo4j.importer.v1.cypher.SpecSupport.SimpleConstraintType;
 import org.neo4j.importer.v1.targets.EntityTarget;
@@ -52,7 +53,11 @@ public class CypherStatements {
      * @param spec the import specification
      * @return the Graph Type creation Cypher statement
      */
-    public static String graphType(ImportSpecification spec) {
+    public static String generateGraphType(ImportSpecification spec) {
+        if (!Features.isGraphTypeEnabled(spec.getConfiguration())) {
+            throw new CypherGenerationPreconditionException(
+                    "Please set 'enable_graph_type' to true in the 'config' section");
+        }
         var builder = new StringBuilder("ALTER CURRENT GRAPH TYPE SET {");
         var nodeTargetIndex = new AtomicInteger(1);
         var nodes = spec.getTargets().getNodes();

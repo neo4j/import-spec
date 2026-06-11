@@ -1,5 +1,6 @@
----
 version: '1'
+config:
+  enable_graph_type: true
 sources:
   - name: movies-source
     type: jdbc
