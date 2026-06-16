@@ -19,8 +19,15 @@ package org.neo4j.importer.v1.validation;
 import java.util.Set;
 
 public class InvalidSpecificationException extends SpecificationException {
+    private final SpecificationValidationResult result;
+
     public InvalidSpecificationException(SpecificationValidationResult result) {
         super(String.format("Import specification is invalid, see report below:\n%s", validationReport(result)));
+        this.result = result;
+    }
+
+    public SpecificationValidationResult getResult() {
+        return result;
     }
 
     // TODO: wrap long error messages
