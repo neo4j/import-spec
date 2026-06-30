@@ -19,7 +19,6 @@ package org.neo4j.importer.v1.cypher;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import org.junit.jupiter.api.Test;
@@ -35,7 +34,7 @@ class CypherStatementsTest {
 
         assertThat(result)
                 .isEqualTo("ALTER CURRENT GRAPH TYPE SET {\n"
-                        + "\t(n1:Movie => :VisualArt&WorkOfArt {identifier :: ANY NOT NULL IS KEY, title :: STRING IS UNIQUE})\n"
+                        + "\t(n1:Movie => :VisualArt&WorkOfArt {identifier :: ANY NOT NULL IS KEY, title :: STRING IS UNIQUE, embeddings :: VECTOR<FLOAT>(42)})\n"
                         + "}");
     }
 
@@ -106,7 +105,7 @@ class CypherStatementsTest {
     }
 
     private <T> T read(String classpathResource, ThrowingFunction<Reader, T> fn) throws Exception {
-        InputStream stream = this.getClass().getResourceAsStream(classpathResource);
+        var stream = this.getClass().getResourceAsStream(classpathResource);
         assertThat(stream).isNotNull();
         try (var reader = new InputStreamReader(stream)) {
             return fn.apply(reader);

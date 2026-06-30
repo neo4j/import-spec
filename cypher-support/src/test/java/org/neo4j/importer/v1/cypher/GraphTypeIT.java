@@ -50,7 +50,7 @@ public class GraphTypeIT {
     }
 
     @Container
-    private static final Neo4jContainer NEO4J = new Neo4jContainer(DockerImageName.parse("neo4j:2026.05.0-enterprise"))
+    private static final Neo4jContainer NEO4J = new Neo4jContainer(DockerImageName.parse("neo4j:2026-enterprise"))
             .withEnv("NEO4J_ACCEPT_LICENSE_AGREEMENT", "yes")
             .withAdminPassword("letmein!");
 

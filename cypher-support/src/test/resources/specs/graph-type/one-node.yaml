@@ -19,6 +19,11 @@ targets:
         - source_field: title
           target_property: title
           target_property_type: string
+        - source_field: embeddings
+          target_property: embeddings
+          target_property_type:
+            name: float_vector
+            dimension: 42
       schema:
         key_constraints:
           - name: movies-identifier-key-constraint
@@ -34,3 +39,6 @@ targets:
           - name: movies-title-type-constraint
             label: Movie
             property: title
+          - name: movies-embeddings-type-constraint
+            label: Movie
+            property: embeddings

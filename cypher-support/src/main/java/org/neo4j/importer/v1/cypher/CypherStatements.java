@@ -32,6 +32,8 @@ import org.neo4j.importer.v1.cypher.SpecSupport.SimpleConstraintType;
 import org.neo4j.importer.v1.targets.EntityTarget;
 import org.neo4j.importer.v1.targets.NodeTarget;
 import org.neo4j.importer.v1.targets.PropertyMapping;
+import org.neo4j.importer.v1.targets.PropertyType;
+import org.neo4j.importer.v1.targets.PropertyTypeName;
 import org.neo4j.importer.v1.targets.RelationshipTarget;
 
 /**
@@ -147,10 +149,7 @@ public class CypherStatements {
         return String.format(
                 "%s :: %s%s%s%s",
                 mapping.getTargetProperty(),
-                // TODO: vector type
-                simpleConstraintTypes.contains(SimpleConstraintType.TYPED)
-                        ? mapping.getTargetPropertyType().getName()
-                        : "ANY",
+                simpleConstraintTypes.contains(SimpleConstraintType.TYPED) ? propertyType(mapping) : "ANY",
                 simpleConstraintTypes.contains(SimpleConstraintType.NOT_NULL) ? " NOT NULL" : "",
                 simpleConstraintTypes.contains(SimpleConstraintType.KEY) ? " IS KEY" : "",
                 simpleConstraintTypes.contains(SimpleConstraintType.UNIQUE) ? " IS UNIQUE" : "");
@@ -167,5 +166,82 @@ public class CypherStatements {
             result.append(String.format("\t\tREQUIRE (%s) IS %s", properties, constraint.getType()));
         });
         return result.toString();
+    }
+
+    private static String propertyType(PropertyMapping mapping) {
+        var propertyType = mapping.getTargetPropertyType();
+        var typeName = propertyType.getName();
+        if (typeName.isVector()) {
+            return vectorPropertyType(typeName, propertyType);
+        }
+        return nonVectorPropertyType(typeName, propertyType);
+    }
+
+    private static String vectorPropertyType(PropertyTypeName typeName, PropertyType propertyType) {
+        switch (typeName) {
+            case INTEGER_VECTOR:
+                return String.format("VECTOR<INTEGER>(%d)", propertyType.getDimension());
+            case FLOAT_VECTOR:
+                return String.format("VECTOR<FLOAT>(%d)", propertyType.getDimension());
+            case FLOAT32_VECTOR:
+                return String.format("VECTOR<FLOAT32>(%d)", propertyType.getDimension());
+            case INTEGER8_VECTOR:
+                return String.format("VECTOR<INTEGER8>(%d)", propertyType.getDimension());
+            case INTEGER16_VECTOR:
+                return String.format("VECTOR<INTEGER16>(%d)", propertyType.getDimension());
+            case INTEGER32_VECTOR:
+                return String.format("VECTOR<INTEGER32>(%d)", propertyType.getDimension());
+        }
+        throw new IllegalArgumentException(String.format("Unsupported vector property type: %s", propertyType));
+    }
+
+    private static String nonVectorPropertyType(PropertyTypeName typeName, PropertyType propertyType) {
+        switch (typeName) {
+            case BOOLEAN:
+                return "BOOLEAN";
+            case BOOLEAN_ARRAY:
+                return "LIST<BOOLEAN NOT NULL>";
+            case DATE:
+                return "DATE";
+            case DATE_ARRAY:
+                return "LIST<DATE NOT NULL>";
+            case DURATION:
+                return "DURATION";
+            case DURATION_ARRAY:
+                return "LIST<DURATION NOT NULL>";
+            case FLOAT:
+                return "FLOAT";
+            case FLOAT_ARRAY:
+                return "LIST<FLOAT NOT NULL>";
+            case INTEGER:
+                return "INTEGER";
+            case INTEGER_ARRAY:
+                return "LIST<INTEGER NOT NULL>";
+            case LOCAL_DATETIME:
+                return "LOCAL DATETIME";
+            case LOCAL_DATETIME_ARRAY:
+                return "LIST<LOCAL DATETIME NOT NULL>";
+            case LOCAL_TIME:
+                return "LOCAL TIME";
+            case LOCAL_TIME_ARRAY:
+                return "LIST<LOCAL TIME NOT NULL>";
+            case POINT:
+                return "POINT";
+            case POINT_ARRAY:
+                return "LIST<POINT NOT NULL>";
+            case STRING:
+                return "STRING";
+            case STRING_ARRAY:
+                return "LIST<STRING NOT NULL>";
+            case ZONED_DATETIME:
+                return "ZONED DATETIME";
+            case ZONED_DATETIME_ARRAY:
+                return "LIST<ZONED DATETIME NOT NULL>";
+            case ZONED_TIME:
+                return "ZONED TIME";
+            case ZONED_TIME_ARRAY:
+                return "LIST<ZONED TIME NOT NULL>";
+        }
+        throw new IllegalArgumentException(String.format("Unsupported property type: %s", propertyType));
     }
 }
