@@ -19,6 +19,15 @@
     <properties>
         <maven.compiler.testRelease>21</maven.compiler.testRelease>
     </properties>
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.neo4j</groupId>
+                <artifactId>neo4j-cypher-dsl</artifactId>
+                <version>2025.3.0</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
     <build>
         <plugins>
             <plugin>
