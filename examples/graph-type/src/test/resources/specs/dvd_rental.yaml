@@ -1,0 +1,127 @@
+version: "1"
+config:
+  enable_graph_type: true
+sources:
+  - name: actor
+    type: parquet
+    uri: gs://example.com/ignored/actor.parquet
+  - name: category
+    type: parquet
+    uri: gs://example.com/ignored/category.parquet
+  - name: film_actor
+    type: parquet
+    uri: gs://example.com/ignored/film_actor.parquet
+  - name: film_category
+    type: parquet
+    uri: gs://example.com/ignored/film_category.parquet
+  - name: film
+    type: parquet
+    uri: gs://example.com/ignored/film.parquet
+targets:
+  nodes:
+    - source: actor
+      name: actor_nodes
+      write_mode: merge
+      labels: [ Actor ]
+      properties:
+        - source_field: actor_id
+          target_property: id
+          target_property_type: integer
+        - source_field: first_name
+          target_property: first_name
+          target_property_type: string
+        - source_field: last_name
+          target_property: last_name
+          target_property_type: string
+      schema:
+        key_constraints:
+          - name: actor_id_key
+            label: Actor
+            properties: [ id ]
+        type_constraints:
+          - name: actor_id_type
+            label: Actor
+            property: id
+          - name: actor_first_name_type
+            label: Actor
+            property: first_name
+          - name: actor_last_name_type
+            label: Actor
+            property: last_name
+
+    - source: category
+      name: category_nodes
+      write_mode: merge
+      labels: [ Category, Genre ]
+      properties:
+        - source_field: category_id
+          target_property: id
+          target_property_type: integer
+        - source_field: name
+          target_property: name
+          target_property_type: string
+      schema:
+        key_constraints:
+          - name: category_id_key
+            label: Category
+            properties: [ id ]
+        unique_constraints:
+          - name: category_name_key
+            label: Category
+            properties: [ name ]
+        type_constraints:
+          - name: category_id_type
+            label: Category
+            property: id
+          - name: category_name_type
+            label: Category
+            property: name
+
+    - source: film
+      name: movie_nodes
+      write_mode: merge
+      labels: [ Movie, Film ]
+      properties:
+        - source_field: film_id
+          target_property: id
+          target_property_type: integer
+        - source_field: title
+          target_property: title
+          target_property_type: string
+        - source_field: description
+          target_property: description
+          target_property_type: string
+        - source_field: release_year
+          target_property: release_year
+      schema:
+        key_constraints:
+          - name: movie_id_key
+            label: Movie
+            properties: [ id ]
+        type_constraints:
+          - name: movie_id_type
+            label: Movie
+            property: id
+          - name: movie_title_type
+            label: Movie
+            property: title
+          - name: movie_description_type
+            label: Movie
+            property: description
+
+  relationships:
+    - source: film_actor
+      name: movie_actor_relationships
+      write_mode: merge
+      node_match_mode: match
+      type: ACTED_IN
+      start_node_reference: actor_nodes
+      end_node_reference: movie_nodes
+
+    - source: film_category
+      name: movie_category_relationships
+      write_mode: merge
+      node_match_mode: match
+      type: IN_CATEGORY
+      start_node_reference: movie_nodes
+      end_node_reference: category_nodes

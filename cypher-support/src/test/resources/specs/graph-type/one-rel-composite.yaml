@@ -1,0 +1,73 @@
+version: '1'
+config:
+  enable_graph_type: true
+sources:
+  - name: movies-source
+    type: jdbc
+    sql: SELECT id FROM db.movies
+  - name: actors-source
+    type: jdbc
+    sql: SELECT id FROM db.actors
+  - name: acted-in-source
+    type: jdbc
+    sql: SELECT actor_id, movie_id, role, role_salary FROM db.acted_in
+targets:
+  nodes:
+    - name: movies
+      source: movies-source
+      labels:
+        - Movie
+      properties:
+        - source_field: id
+          target_property: identifier
+      schema:
+        key_constraints:
+          - name: movie-identifier-key-constraint
+            label: Movie
+            properties:
+              - identifier
+    - name: actors
+      source: actors-source
+      labels:
+        - Actor
+      properties:
+        - source_field: id
+          target_property: identifier
+      schema:
+        key_constraints:
+          - name: actors-identifier-key-constraint
+            label: Actor
+            properties:
+              - identifier
+  relationships:
+    - name: acted-in
+      source: acted-in-source
+      type: "ACTED_IN"
+      start_node_reference:
+        name: actors
+        key_mappings:
+          - source_field: actor_id
+            node_property: identifier
+      end_node_reference:
+        name: movies
+        key_mappings:
+          - source_field: movie_id
+            node_property: identifier
+      properties:
+        - source_field: role
+          target_property: role
+          target_property_type: string
+        - source_field: role_salary
+          target_property: role_salary
+          target_property_type: integer
+      schema:
+        unique_constraints:
+          - name: acted_in-role-role_salary-composite-unique-constraint
+            properties:
+              - role
+              - role_salary
+        type_constraints:
+          - name: acted_in-role-type-constraint
+            property: role
+          - name: acted_in-role_salary-type-constraint
+            property: role_salary

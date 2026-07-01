@@ -1,0 +1,36 @@
+version: '1'
+config:
+  enable_graph_type: true
+sources:
+  - name: a-source
+    type: jdbc
+    data_source: a-data-source
+    sql: SELECT id, name FROM my.table
+targets:
+  nodes:
+    - name: a-target
+      source: a-source
+      labels:
+        - ALabel
+      properties:
+        - source_field: id
+          target_property: property1
+        - source_field: name
+          target_property: property2
+      schema:
+        key_constraints:
+          - name: a key constraint
+            label: ALabel
+            properties:
+              - property2
+  relationships:
+    - name: a-target-2
+      source: a-source
+      type: A_REPEATED_TYPE
+      start_node_reference: a-target
+      end_node_reference: a-target
+    - name: a-target-3
+      source: a-source
+      type: A_REPEATED_TYPE
+      start_node_reference: a-target
+      end_node_reference: a-target

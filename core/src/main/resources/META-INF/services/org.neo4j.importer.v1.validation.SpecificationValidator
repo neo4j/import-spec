@@ -42,3 +42,8 @@ org.neo4j.importer.v1.validation.plugin.NoRedundantKeyConstraintAndRangeIndexVal
 org.neo4j.importer.v1.validation.plugin.NoRedundantRelationshipDependencyValidator
 org.neo4j.importer.v1.validation.plugin.NoRedundantUniqueConstraintAndRangeIndexValidator
 org.neo4j.importer.v1.validation.plugin.NoUntypedPropertyInTypeConstraintValidator
+org.neo4j.importer.v1.validation.plugin.graphtype.NoActionValidator
+org.neo4j.importer.v1.validation.plugin.graphtype.NoCustomQueryTargetValidator
+org.neo4j.importer.v1.validation.plugin.graphtype.NoPrimaryLabelAsImpliedLabelValidator
+org.neo4j.importer.v1.validation.plugin.graphtype.NoRepeatedPrimaryLabelValidator
+org.neo4j.importer.v1.validation.plugin.graphtype.NoRepeatedTypeValidator

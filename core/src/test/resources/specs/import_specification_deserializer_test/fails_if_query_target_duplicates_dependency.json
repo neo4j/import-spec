@@ -38,7 +38,7 @@
                   "label": "Label1",
                   "properties": ["property1"]
                }]
-           },
+           }
        }],
         "relationships": [{
             "name": "a-relationship-target",
