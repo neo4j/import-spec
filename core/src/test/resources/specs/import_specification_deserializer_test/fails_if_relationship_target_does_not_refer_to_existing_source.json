@@ -29,7 +29,7 @@
             "source": "incorrect-source-name",
             "type": "TYPE",
             "start_node_reference": "a-node-target",
-            "end_node_reference": "a-node-target",
+            "end_node_reference": "a-node-target"
         }]
     }
 }

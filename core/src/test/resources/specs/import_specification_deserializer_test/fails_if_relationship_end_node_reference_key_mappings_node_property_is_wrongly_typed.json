@@ -27,7 +27,7 @@
                 "key_mappings": [
                     {
                         "source_field": "source_id",
-                        "node_property": 30,
+                        "node_property": 30
                     }
                 ]
             }

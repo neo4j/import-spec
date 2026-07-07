@@ -26,7 +26,7 @@
                 "name": "a-node-target",
                 "key_mappings": [
                     {
-                        "source_field": "source_id",
+                        "source_field": "source_id"
                     }
                 ]
             }
