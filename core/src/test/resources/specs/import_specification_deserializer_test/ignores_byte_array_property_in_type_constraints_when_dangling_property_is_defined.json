@@ -1,0 +1,37 @@
+{
+  "version": "1",
+  "sources": [{
+    "name": "a-source",
+    "type": "jdbc",
+    "data_source": "a-data-source",
+    "sql": "SELECT id, name FROM my.table"
+  }],
+  "targets": {
+    "nodes": [{
+      "name": "a-node-target",
+      "source": "a-source",
+      "labels": ["Label"],
+      "properties": [
+        {
+          "source_field": "id",
+          "target_property": "property_with_byte_array",
+          "target_property_type": "BYTE_ARRAY"
+        }
+      ],
+      "schema": {
+        "type_constraints": [
+          {
+            "name": "a type constraint",
+            "label": "Label",
+            "property": "property_with_byte_array"
+          },
+          {
+            "name": "another type constraint",
+            "label": "Label",
+            "property": "non_existent"
+          }
+        ]
+      }
+    }]
+  }
+}

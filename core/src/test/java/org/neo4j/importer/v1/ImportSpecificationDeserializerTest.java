@@ -8290,6 +8290,74 @@ class ImportSpecificationDeserializerTest {
                         "[$.targets.relationships[0].type] Graph type cannot be generated: the type A_REPEATED_TYPE is defined more than once (offending occurrences in $.targets.relationships[1].type");
     }
 
+    @ParameterizedTest
+    @EnumSource(SpecFormat.class)
+    void fails_if_node_target_type_constraint_refers_to_byte_array_property(SpecFormat format, TestInfo testInfo) {
+
+        assertThatThrownBy(() -> {
+                    try (var reader = specReader(format, testInfo)) {
+                        deserialize(reader);
+                    }
+                })
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "[NBYT-001][$.targets.nodes[0].schema.type_constraints[0].property] BYTE_ARRAY is not supported in type constraints");
+    }
+
+    @ParameterizedTest
+    @EnumSource(SpecFormat.class)
+    void fails_if_relationship_target_type_constraint_refers_to_byte_array_property(
+            SpecFormat format, TestInfo testInfo) {
+
+        assertThatThrownBy(() -> {
+                    try (var reader = specReader(format, testInfo)) {
+                        deserialize(reader);
+                    }
+                })
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "[NBYT-001][$.targets.relationships[0].schema.type_constraints[0].property] BYTE_ARRAY is not supported in type constraints");
+    }
+
+    @ParameterizedTest
+    @EnumSource(SpecFormat.class)
+    void ignores_byte_array_property_in_type_constraints_when_duplicated_property_is_defined(
+            SpecFormat format, TestInfo testInfo) {
+
+        assertThatThrownBy(() -> {
+                    try (var reader = specReader(format, testInfo)) {
+                        deserialize(reader);
+                    }
+                })
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "[DUPL-009][$.targets.nodes[0].properties[0].target_property] $.targets.nodes[0].properties[0].target_property \"dup\" must be defined only once but found 2 occurrences")
+                .hasMessageNotContaining("NBYT-001");
+    }
+
+    @ParameterizedTest
+    @EnumSource(SpecFormat.class)
+    void ignores_byte_array_property_in_type_constraints_when_dangling_property_is_defined(
+            SpecFormat format, TestInfo testInfo) {
+        assertThatThrownBy(() -> {
+                    try (var reader = specReader(format, testInfo)) {
+                        deserialize(reader);
+                    }
+                })
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "[DANG-005][$.targets.nodes[0].schema.type_constraints[1].property] $.targets.nodes[0].schema.type_constraints[1].property \"non_existent\" is not part of the property mappings")
+                .hasMessageNotContaining("NBYT-001");
+    }
+
     private static FileReader specReader(SpecFormat format, TestInfo testInfo) {
         var spec = String.format(
                 "/specs/import_specification_deserializer_test/%s.%s",
