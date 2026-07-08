@@ -15,7 +15,7 @@
                 "source": "a-source",
                 "labels": ["Label1"],
                 "properties": [
-                    {"source_field": "field_1", "target_property": "property1", "target_property_type": "integer"},
+                    {"source_field": "field_1", "target_property": "property1", "target_property_type": "integer"}
                 ],
                 "schema": {
                     "key_constraints": [

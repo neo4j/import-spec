@@ -19,7 +19,7 @@
              "type": "jdbc",
              "data_source": "db",
              "sql": "SELECT movie_id, category_id FROM db.movies_in_categories"
-         },
+         }
     ],
     "targets": {
         "nodes": [
@@ -29,11 +29,11 @@
                  "labels": ["Movie"],
                  "properties": [
                      {"source_field": "id", "target_property": "identifier"},
-                     {"source_field": "title", "target_property": "title"},
+                     {"source_field": "title", "target_property": "title"}
                  ],
                  "schema": {
                    "key_constraints": [
-                       {"name": "movie-id-key-constraint", "label": "Movie", "properties": ["identifier"]},
+                       {"name": "movie-id-key-constraint", "label": "Movie", "properties": ["identifier"]}
                    ]
                  }
              },
