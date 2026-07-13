@@ -4786,6 +4786,30 @@ class ImportSpecificationDeserializerTest {
 
     @ParameterizedTest
     @EnumSource(SpecFormat.class)
+    void does_not_fail_if_node_key_constraints_share_label_and_property(SpecFormat format, TestInfo testInfo) {
+
+        assertThatCode(() -> {
+                    try (var reader = specReader(format, testInfo)) {
+                        deserialize(reader);
+                    }
+                })
+                .doesNotThrowAnyException();
+    }
+
+    @ParameterizedTest
+    @EnumSource(SpecFormat.class)
+    void does_not_fail_if_relationship_key_constraints_share_property(SpecFormat format, TestInfo testInfo) {
+
+        assertThatCode(() -> {
+                    try (var reader = specReader(format, testInfo)) {
+                        deserialize(reader);
+                    }
+                })
+                .doesNotThrowAnyException();
+    }
+
+    @ParameterizedTest
+    @EnumSource(SpecFormat.class)
     void does_not_report_redundancy_if_key_and_existence_constraint_define_invalid_labels(
             SpecFormat format, TestInfo testInfo) {
 
