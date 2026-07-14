@@ -1,0 +1,44 @@
+
+{
+    "version": "1",
+    "sources": [{
+        "name": "a-source",
+        "type": "jdbc",
+        "data_source": "a-data-source",
+        "sql": "SELECT knower_first, knower_last, known_first FROM my.table"
+    }],
+    "targets": {
+        "nodes": [{
+          "name": "person",
+          "source": "a-source",
+          "labels": ["Person"],
+          "properties": [
+            {"source_field": "knower_first", "target_property": "firstName"},
+            {"source_field": "knower_last", "target_property": "lastName"}
+          ],
+          "schema": {
+              "key_constraints": [
+                 {"name": "person-first-name-key", "label": "Person", "properties": ["firstName"]},
+                 {"name": "person-full-name-key", "label": "Person", "properties": ["firstName", "lastName"]}
+              ]
+          }
+        }],
+        "relationships": [{
+            "name": "knows",
+            "source": "a-source",
+            "type": "KNOWS",
+            "start_node_reference": {
+                "name": "person",
+                "key_mappings": [
+                    {"source_field": "knower_first", "node_property": "firstName"}
+                ]
+            },
+            "end_node_reference": {
+                "name": "person",
+                "key_mappings": [
+                    {"source_field": "known_first", "node_property": "firstName"}
+                ]
+            }
+        }]
+    }
+}
