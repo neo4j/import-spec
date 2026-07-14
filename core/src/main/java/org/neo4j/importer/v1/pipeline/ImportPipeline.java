@@ -41,7 +41,10 @@ import org.neo4j.importer.v1.graph.Graphs;
 import org.neo4j.importer.v1.sources.Source;
 import org.neo4j.importer.v1.targets.CustomQueryTarget;
 import org.neo4j.importer.v1.targets.KeyMapping;
+import org.neo4j.importer.v1.targets.NodeKeyConstraint;
+import org.neo4j.importer.v1.targets.NodeSchema;
 import org.neo4j.importer.v1.targets.NodeTarget;
+import org.neo4j.importer.v1.targets.NodeUniqueConstraint;
 import org.neo4j.importer.v1.targets.PropertyMapping;
 import org.neo4j.importer.v1.targets.RelationshipTarget;
 import org.neo4j.importer.v1.targets.Target;
@@ -357,8 +360,35 @@ public class ImportPipeline implements Iterable<ImportStep>, Serializable {
                         target.getExtensions(),
                         target.getLabels(),
                         mappings,
-                        target.getSchema()),
+                        restrictSchemaToReferencedKey(target.getSchema(), keyMappings)),
                 nodeTarget.dependencies());
+    }
+
+    // a node target may define several key (or unique) constraints. When a relationship references such a node, its
+    // key mappings pick exactly one of them. Retain only the constraints fully covered by the referenced properties so
+    // that the node lookup matches on the referenced key alone rather than on the union of every key constraint.
+    private static NodeSchema restrictSchemaToReferencedKey(NodeSchema schema, List<KeyMapping> keyMappings) {
+        if (schema == null) {
+            return null;
+        }
+        var referencedProperties =
+                keyMappings.stream().map(KeyMapping::getNodeProperty).collect(Collectors.toSet());
+        List<NodeKeyConstraint> keyConstraints = schema.getKeyConstraints().stream()
+                .filter(constraint -> referencedProperties.containsAll(constraint.getProperties()))
+                .collect(Collectors.toList());
+        List<NodeUniqueConstraint> uniqueConstraints = schema.getUniqueConstraints().stream()
+                .filter(constraint -> referencedProperties.containsAll(constraint.getProperties()))
+                .collect(Collectors.toList());
+        return new NodeSchema(
+                schema.getTypeConstraints(),
+                keyConstraints,
+                uniqueConstraints,
+                schema.getExistenceConstraints(),
+                schema.getRangeIndexes(),
+                schema.getTextIndexes(),
+                schema.getPointIndexes(),
+                schema.getFullTextIndexes(),
+                schema.getVectorIndexes());
     }
 
     @SafeVarargs
