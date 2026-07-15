@@ -46,7 +46,8 @@ public class NoRedundantKeyAndExistenceConstraintsValidator implements Specifica
                 NoDanglingLabelInExistenceConstraintValidator.class,
                 NoDanglingLabelInKeyConstraintValidator.class,
                 NoDanglingPropertyInExistenceConstraintValidator.class,
-                NoDanglingPropertyInKeyConstraintValidator.class);
+                NoDanglingPropertyInKeyConstraintValidator.class,
+                NoDuplicatedSchemaDefinitionValidator.class);
     }
 
     @Override

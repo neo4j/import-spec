@@ -48,31 +48,33 @@ public class NoRedundantKeyAndUniqueConstraintsValidator implements Specificatio
                 NoDanglingLabelInUniqueConstraintValidator.class,
                 NoDanglingLabelInKeyConstraintValidator.class,
                 NoDanglingPropertyInUniqueConstraintValidator.class,
-                NoDanglingPropertyInKeyConstraintValidator.class);
+                NoDanglingPropertyInKeyConstraintValidator.class,
+                NoDuplicatedSchemaDefinitionValidator.class);
     }
 
     @Override
     public void visitNodeTarget(int index, NodeTarget target) {
         var schema = target.getSchema();
-        var paths = new LinkedHashMap<SchemaNodePattern, List<String>>();
+        var uniquePaths = new LinkedHashMap<SchemaNodePattern, List<String>>();
         var uniqueBasePath = String.format("$.targets.nodes[%d].schema.unique_constraints", index);
         var uniqueConstraints = schema.getUniqueConstraints();
         for (int i = 0; i < uniqueConstraints.size(); i++) {
             var constraint = uniqueConstraints.get(i);
             var labelAndProps = new SchemaNodePattern(constraint.getLabel(), constraint.getProperties());
-            paths.computeIfAbsent(labelAndProps, (key) -> new ArrayList<>(1))
+            uniquePaths
+                    .computeIfAbsent(labelAndProps, (key) -> new ArrayList<>(1))
                     .add(String.format("%s[%d]", uniqueBasePath, i));
         }
+        var keyPaths = new LinkedHashMap<SchemaNodePattern, List<String>>();
         var keyBasePath = String.format("$.targets.nodes[%d].schema.key_constraints", index);
         var keyConstraints = schema.getKeyConstraints();
         for (int i = 0; i < keyConstraints.size(); i++) {
             var constraint = keyConstraints.get(i);
             var labelAndProp = new SchemaNodePattern(constraint.getLabel(), constraint.getProperties());
-            paths.computeIfAbsent(labelAndProp, (key) -> new ArrayList<>(1))
+            keyPaths.computeIfAbsent(labelAndProp, (key) -> new ArrayList<>(1))
                     .add(String.format("%s[%d]", keyBasePath, i));
         }
-        List<List<String>> redundancies =
-                paths.values().stream().filter(allPaths -> allPaths.size() > 1).collect(Collectors.toList());
+        var redundancies = redundancies(uniquePaths, keyPaths);
 
         if (!redundancies.isEmpty()) {
             var schemaPath = String.format("$.targets.nodes[%d].schema", index);
@@ -86,28 +88,47 @@ public class NoRedundantKeyAndUniqueConstraintsValidator implements Specificatio
         if (schema.isEmpty()) {
             return;
         }
-        var paths = new LinkedHashMap<List<String>, List<String>>();
+        var uniquePaths = new LinkedHashMap<List<String>, List<String>>();
         var uniqueBasePath = String.format("$.targets.relationships[%d].schema.unique_constraints", index);
         var uniqueConstraints = schema.getUniqueConstraints();
         for (int i = 0; i < uniqueConstraints.size(); i++) {
             var constraint = uniqueConstraints.get(i);
-            paths.computeIfAbsent(constraint.getProperties(), (key) -> new ArrayList<>(1))
+            uniquePaths
+                    .computeIfAbsent(constraint.getProperties(), (key) -> new ArrayList<>(1))
                     .add(String.format("%s[%d]", uniqueBasePath, i));
         }
+        var keyPaths = new LinkedHashMap<List<String>, List<String>>();
         var keyBasePath = String.format("$.targets.relationships[%d].schema.key_constraints", index);
         var keyConstraints = schema.getKeyConstraints();
         for (int i = 0; i < keyConstraints.size(); i++) {
             var constraint = keyConstraints.get(i);
-            paths.computeIfAbsent(constraint.getProperties(), (key) -> new ArrayList<>(1))
+            keyPaths.computeIfAbsent(constraint.getProperties(), (key) -> new ArrayList<>(1))
                     .add(String.format("%s[%d]", keyBasePath, i));
         }
-        List<List<String>> redundancies =
-                paths.values().stream().filter(allPaths -> allPaths.size() > 1).collect(Collectors.toList());
+        var redundancies = redundancies(uniquePaths, keyPaths);
 
         if (!redundancies.isEmpty()) {
             var schemaPath = String.format("$.targets.relationships[%d].schema", index);
             invalidPaths.put(schemaPath, redundancies);
         }
+    }
+
+    // a redundancy exists only when the same label/properties (or properties, for relationships) is covered by both a
+    // unique constraint and a key constraint. Two constraints of the same kind sharing the same properties are not
+    // reported here.
+    private static <K> List<List<String>> redundancies(
+            Map<K, List<String>> uniquePaths, Map<K, List<String>> keyPaths) {
+        var redundancies = new ArrayList<List<String>>();
+        uniquePaths.forEach((pattern, uniqueDefinitions) -> {
+            var keyDefinitions = keyPaths.get(pattern);
+            if (keyDefinitions != null) {
+                var redundantDefinitions = new ArrayList<String>(uniqueDefinitions.size() + keyDefinitions.size());
+                redundantDefinitions.addAll(uniqueDefinitions);
+                redundantDefinitions.addAll(keyDefinitions);
+                redundancies.add(redundantDefinitions);
+            }
+        });
+        return redundancies;
     }
 
     @Override

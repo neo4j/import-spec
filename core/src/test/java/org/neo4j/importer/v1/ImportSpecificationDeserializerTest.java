@@ -5011,6 +5011,125 @@ class ImportSpecificationDeserializerTest {
 
     @ParameterizedTest
     @EnumSource(SpecFormat.class)
+    void fails_if_only_one_of_many_node_key_and_unique_constraints_is_redundant(SpecFormat format, TestInfo testInfo) {
+
+        assertThatThrownBy(() -> {
+                    try (var reader = specReader(format, testInfo)) {
+                        deserialize(reader);
+                    }
+                })
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "$.targets.nodes[0].schema defines redundant key and unique constraints: unique_constraints[1], key_constraints[0]");
+    }
+
+    @ParameterizedTest
+    @EnumSource(SpecFormat.class)
+    void fails_if_only_one_of_many_relationship_key_and_unique_constraints_is_redundant(
+            SpecFormat format, TestInfo testInfo) {
+
+        assertThatThrownBy(() -> {
+                    try (var reader = specReader(format, testInfo)) {
+                        deserialize(reader);
+                    }
+                })
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "$.targets.relationships[0].schema defines redundant key and unique constraints: unique_constraints[1], key_constraints[0]");
+    }
+
+    @ParameterizedTest
+    @EnumSource(SpecFormat.class)
+    void fails_if_node_key_and_multiple_unique_constraints_are_redundant(SpecFormat format, TestInfo testInfo) {
+
+        assertThatThrownBy(() -> {
+                    try (var reader = specReader(format, testInfo)) {
+                        deserialize(reader);
+                    }
+                })
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        // the two identical unique constraints are both redundant with the key constraint and
+                        // duplicates of each other, so both validators fire
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "$.targets.nodes[0].schema.unique_constraints defines duplicate entries covering the same properties: \"a unique constraint\", \"another unique constraint\"");
+    }
+
+    @ParameterizedTest
+    @EnumSource(SpecFormat.class)
+    void fails_if_only_one_of_many_node_key_constraints_and_range_indexes_is_redundant(
+            SpecFormat format, TestInfo testInfo) {
+
+        assertThatThrownBy(() -> {
+                    try (var reader = specReader(format, testInfo)) {
+                        deserialize(reader);
+                    }
+                })
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "$.targets.nodes[0].schema defines redundant key constraint and range index: range_indexes[1], key_constraints[0]");
+    }
+
+    @ParameterizedTest
+    @EnumSource(SpecFormat.class)
+    void fails_if_only_one_of_many_relationship_key_constraints_and_range_indexes_is_redundant(
+            SpecFormat format, TestInfo testInfo) {
+
+        assertThatThrownBy(() -> {
+                    try (var reader = specReader(format, testInfo)) {
+                        deserialize(reader);
+                    }
+                })
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "$.targets.relationships[0].schema defines redundant key constraint and range index: range_indexes[1], key_constraints[0]");
+    }
+
+    @ParameterizedTest
+    @EnumSource(SpecFormat.class)
+    void fails_if_only_one_of_many_node_unique_constraints_and_range_indexes_is_redundant(
+            SpecFormat format, TestInfo testInfo) {
+
+        assertThatThrownBy(() -> {
+                    try (var reader = specReader(format, testInfo)) {
+                        deserialize(reader);
+                    }
+                })
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "$.targets.nodes[0].schema defines redundant unique constraint and range index: range_indexes[1], unique_constraints[0]");
+    }
+
+    @ParameterizedTest
+    @EnumSource(SpecFormat.class)
+    void fails_if_only_one_of_many_relationship_unique_constraints_and_range_indexes_is_redundant(
+            SpecFormat format, TestInfo testInfo) {
+
+        assertThatThrownBy(() -> {
+                    try (var reader = specReader(format, testInfo)) {
+                        deserialize(reader);
+                    }
+                })
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "$.targets.relationships[0].schema defines redundant unique constraint and range index: range_indexes[1], unique_constraints[0]");
+    }
+
+    @ParameterizedTest
+    @EnumSource(SpecFormat.class)
     void does_not_fail_if_key_and_unique_constraints_are_defined_on_same_properties_but_different_labels(
             SpecFormat format, TestInfo testInfo) {
 
