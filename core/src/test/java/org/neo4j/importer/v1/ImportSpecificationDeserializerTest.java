@@ -4810,6 +4810,129 @@ class ImportSpecificationDeserializerTest {
 
     @ParameterizedTest
     @EnumSource(SpecFormat.class)
+    void fails_if_node_unique_constraints_are_duplicated(SpecFormat format, TestInfo testInfo) {
+
+        assertThatThrownBy(() -> {
+                    try (var reader = specReader(format, testInfo)) {
+                        deserialize(reader);
+                    }
+                })
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "$.targets.nodes[0].schema.unique_constraints defines duplicate entries covering the same properties: \"a unique constraint\", \"another unique constraint\"");
+    }
+
+    @ParameterizedTest
+    @EnumSource(SpecFormat.class)
+    void fails_if_relationship_unique_constraints_are_duplicated(SpecFormat format, TestInfo testInfo) {
+
+        assertThatThrownBy(() -> {
+                    try (var reader = specReader(format, testInfo)) {
+                        deserialize(reader);
+                    }
+                })
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "$.targets.relationships[0].schema.unique_constraints defines duplicate entries covering the same properties: \"a unique constraint\", \"another unique constraint\"");
+    }
+
+    @ParameterizedTest
+    @EnumSource(SpecFormat.class)
+    void fails_if_node_range_indexes_are_duplicated(SpecFormat format, TestInfo testInfo) {
+
+        assertThatThrownBy(() -> {
+                    try (var reader = specReader(format, testInfo)) {
+                        deserialize(reader);
+                    }
+                })
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "$.targets.nodes[0].schema.range_indexes defines duplicate entries covering the same properties: \"a range index\", \"another range index\"");
+    }
+
+    @ParameterizedTest
+    @EnumSource(SpecFormat.class)
+    void fails_if_relationship_range_indexes_are_duplicated(SpecFormat format, TestInfo testInfo) {
+
+        assertThatThrownBy(() -> {
+                    try (var reader = specReader(format, testInfo)) {
+                        deserialize(reader);
+                    }
+                })
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "$.targets.relationships[0].schema.range_indexes defines duplicate entries covering the same properties: \"a range index\", \"another range index\"");
+    }
+
+    @ParameterizedTest
+    @EnumSource(SpecFormat.class)
+    void fails_if_node_key_constraints_are_duplicated(SpecFormat format, TestInfo testInfo) {
+
+        assertThatThrownBy(() -> {
+                    try (var reader = specReader(format, testInfo)) {
+                        deserialize(reader);
+                    }
+                })
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "$.targets.nodes[0].schema.key_constraints defines duplicate entries covering the same properties: \"a key constraint\", \"another key constraint\"");
+    }
+
+    @ParameterizedTest
+    @EnumSource(SpecFormat.class)
+    void fails_if_relationship_key_constraints_are_duplicated(SpecFormat format, TestInfo testInfo) {
+
+        assertThatThrownBy(() -> {
+                    try (var reader = specReader(format, testInfo)) {
+                        deserialize(reader);
+                    }
+                })
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "$.targets.relationships[0].schema.key_constraints defines duplicate entries covering the same properties: \"a key constraint\", \"another key constraint\"");
+    }
+
+    @ParameterizedTest
+    @EnumSource(SpecFormat.class)
+    // https://neo4j.com/docs/cypher-manual/current/indexes/search-performance-indexes/using-indexes/#composite-indexes-property-order
+    void does_not_fail_if_node_unique_constraints_have_same_properties_in_different_order(
+            SpecFormat format, TestInfo testInfo) {
+
+        assertThatCode(() -> {
+                    try (var reader = specReader(format, testInfo)) {
+                        deserialize(reader);
+                    }
+                })
+                .doesNotThrowAnyException();
+    }
+
+    @ParameterizedTest
+    @EnumSource(SpecFormat.class)
+    void does_not_fail_if_node_unique_constraints_have_same_property_on_different_labels(
+            SpecFormat format, TestInfo testInfo) {
+
+        assertThatCode(() -> {
+                    try (var reader = specReader(format, testInfo)) {
+                        deserialize(reader);
+                    }
+                })
+                .doesNotThrowAnyException();
+    }
+
+    @ParameterizedTest
+    @EnumSource(SpecFormat.class)
     void does_not_fail_if_relationship_references_node_via_shorter_overlapping_key_constraint(
             SpecFormat format, TestInfo testInfo) {
 
