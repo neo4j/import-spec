@@ -4810,6 +4810,32 @@ class ImportSpecificationDeserializerTest {
 
     @ParameterizedTest
     @EnumSource(SpecFormat.class)
+    void does_not_fail_if_relationship_references_node_via_shorter_overlapping_key_constraint(
+            SpecFormat format, TestInfo testInfo) {
+
+        assertThatCode(() -> {
+                    try (var reader = specReader(format, testInfo)) {
+                        deserialize(reader);
+                    }
+                })
+                .doesNotThrowAnyException();
+    }
+
+    @ParameterizedTest
+    @EnumSource(SpecFormat.class)
+    void does_not_fail_if_relationship_references_node_via_longer_overlapping_key_constraint(
+            SpecFormat format, TestInfo testInfo) {
+
+        assertThatCode(() -> {
+                    try (var reader = specReader(format, testInfo)) {
+                        deserialize(reader);
+                    }
+                })
+                .doesNotThrowAnyException();
+    }
+
+    @ParameterizedTest
+    @EnumSource(SpecFormat.class)
     void does_not_report_redundancy_if_key_and_existence_constraint_define_invalid_labels(
             SpecFormat format, TestInfo testInfo) {
 

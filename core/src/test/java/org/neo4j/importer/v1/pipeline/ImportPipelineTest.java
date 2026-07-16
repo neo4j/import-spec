@@ -232,6 +232,74 @@ class ImportPipelineTest {
                 .containsExactlyInAnyOrder("played-relationships");
     }
 
+    @Test
+    void resolves_relationship_node_reference_to_the_matched_overlapping_key_constraint() {
+        var firstNameKey = new NodeKeyConstraint("person-first-name-key", "Person", List.of("firstName"), Map.of());
+        var fullNameKey =
+                new NodeKeyConstraint("person-full-name-key", "Person", List.of("firstName", "lastName"), Map.of());
+        // start reference matches the single-property key, end reference matches the composite key
+        var startRef = new NodeReference("person-nodes", List.of(new KeyMapping("knower_first", "firstName")));
+        var endRef = new NodeReference(
+                "person-nodes",
+                List.of(new KeyMapping("known_first", "firstName"), new KeyMapping("known_last", "lastName")));
+        var spec = new ImportSpecification(
+                "a-version",
+                new HashMap<>(),
+                List.of(new DummySource("people"), new DummySource("acquaintances")),
+                new Targets(
+                        List.of(new NodeTarget(
+                                true,
+                                "person-nodes",
+                                "people",
+                                List.of(),
+                                WriteMode.MERGE,
+                                (ObjectNode) null,
+                                List.of("Person"),
+                                List.of(
+                                        new PropertyMapping("first_name", "firstName", PropertyType.STRING),
+                                        new PropertyMapping("last_name", "lastName", PropertyType.STRING)),
+                                new NodeSchema(
+                                        null,
+                                        List.of(firstNameKey, fullNameKey),
+                                        null,
+                                        null,
+                                        null,
+                                        null,
+                                        null,
+                                        null,
+                                        null))),
+                        List.of(new RelationshipTarget(
+                                true,
+                                "knows-relationships",
+                                "acquaintances",
+                                List.of(),
+                                "KNOWS",
+                                WriteMode.MERGE,
+                                NodeMatchMode.MATCH,
+                                (ObjectNode) null,
+                                startRef,
+                                endRef,
+                                List.of(),
+                                null)),
+                        List.of()),
+                List.of());
+
+        var pipeline = ImportPipeline.of(spec);
+
+        var relationships = stream(pipeline)
+                .filter(step -> step instanceof RelationshipTargetStep)
+                .map(step -> (RelationshipTargetStep) step)
+                .collect(Collectors.toList());
+        assertThat(relationships).hasSize(1);
+        var relationship = relationships.get(0);
+        assertThat(relationship.startNode().keyProperties())
+                .containsExactly(new PropertyMapping("knower_first", "firstName", PropertyType.STRING));
+        assertThat(relationship.endNode().keyProperties())
+                .containsExactly(
+                        new PropertyMapping("known_first", "firstName", PropertyType.STRING),
+                        new PropertyMapping("known_last", "lastName", PropertyType.STRING));
+    }
+
     private static @NotNull NodeSchema schemaFor(NodeKeyConstraint keyConstraint) {
         return new NodeSchema(null, List.of(keyConstraint), null, null, null, null, null, null, null);
     }
