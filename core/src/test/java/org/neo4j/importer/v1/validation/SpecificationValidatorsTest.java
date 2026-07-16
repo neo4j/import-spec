@@ -22,8 +22,10 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import java.util.List;
 import java.util.Set;
 import org.junit.jupiter.api.Test;
+import org.neo4j.importer.v1.Configuration;
 import org.neo4j.importer.v1.ImportSpecification;
 import org.neo4j.importer.v1.sources.BigQuerySource;
+import org.neo4j.importer.v1.sources.Source;
 import org.neo4j.importer.v1.targets.CustomQueryTarget;
 import org.neo4j.importer.v1.targets.Targets;
 import org.neo4j.importer.v1.validation.SpecificationValidationResult.Builder;
@@ -125,6 +127,103 @@ class SpecificationValidatorsTest {
                         + "=== Errors ===\n"
                         + "\t- [C/code][C/path] C/error message\n"
                         + "===============================================================================");
+    }
+
+    @Test
+    void reports_validation_failure_of_dependent_when_its_dependency_passes() {
+        // A requires C; C passes, so A is run and its own failure must be reported
+        var validatorA = new A(true);
+        var validatorC = new C(false);
+
+        var wrapper = SpecificationValidators.of(List.of(validatorA, validatorC));
+
+        assertThatThrownBy(() -> wrapper.validate(aSpec()))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessage("Import specification is invalid, see report below:\n"
+                        + "===============================================================================\n"
+                        + "Summary\n"
+                        + "===============================================================================\n"
+                        + "\t- 1 error(s)\n"
+                        + "\t- 0 warning(s)\n"
+                        + "\n"
+                        + "=== Errors ===\n"
+                        + "\t- [A/code][A/path] A/error message\n"
+                        + "===============================================================================");
+    }
+
+    @Test
+    void reports_validation_failure_of_deep_dependent_when_all_its_dependencies_pass() {
+        // C <- A <- B ; C and A pass, so B is run and its own failure must be reported
+        var validatorA = new A(false);
+        var validatorB = new B(true);
+        var validatorC = new C(false);
+
+        var wrapper = SpecificationValidators.of(List.of(validatorA, validatorC, validatorB));
+
+        assertThatThrownBy(() -> wrapper.validate(aSpec()))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessage("Import specification is invalid, see report below:\n"
+                        + "===============================================================================\n"
+                        + "Summary\n"
+                        + "===============================================================================\n"
+                        + "\t- 1 error(s)\n"
+                        + "\t- 0 warning(s)\n"
+                        + "\n"
+                        + "=== Errors ===\n"
+                        + "\t- [B/code][B/path] B/error message\n"
+                        + "===============================================================================");
+    }
+
+    @Test
+    void skips_whole_dependency_chain_when_the_root_dependency_fails() {
+        // C <- A <- B <- D ; C fails, so A, B and D are all skipped and only C's error is reported
+        var validatorA = new A();
+        var validatorB = new B();
+        var validatorC = new C(true);
+        var validatorD = new D();
+
+        var wrapper = SpecificationValidators.of(List.of(validatorA, validatorB, validatorC, validatorD));
+
+        assertThatThrownBy(() -> wrapper.validate(aSpec()))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessage("Import specification is invalid, see report below:\n"
+                        + "===============================================================================\n"
+                        + "Summary\n"
+                        + "===============================================================================\n"
+                        + "\t- 1 error(s)\n"
+                        + "\t- 0 warning(s)\n"
+                        + "\n"
+                        + "=== Errors ===\n"
+                        + "\t- [C/code][C/path] C/error message\n"
+                        + "===============================================================================");
+    }
+
+    @Test
+    void skips_dependent_entirely_when_requirement_fails() {
+        var requirement = new G(true);
+        var dependent = new H();
+
+        // passed in the "wrong" order on purpose: topological sort must run the requirement first
+        var wrapper = SpecificationValidators.of(List.of(dependent, requirement));
+
+        assertThatThrownBy(() -> wrapper.validate(aSpec()))
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContaining("[FAIL/code][FAIL/path] FAIL/error message");
+        assertThat(dependent.visited).isFalse();
+        assertThat(dependent.reported).isFalse();
+    }
+
+    @Test
+    void runs_dependent_when_requirement_passes() throws SpecificationException {
+        var requirement = new G(false);
+        var dependent = new H();
+
+        var wrapper = SpecificationValidators.of(List.of(dependent, requirement));
+
+        wrapper.validate(aSpec());
+
+        assertThat(dependent.visited).isTrue();
+        assertThat(dependent.reported).isTrue();
     }
 
     static class A implements SpecificationValidator {
@@ -266,6 +365,66 @@ class SpecificationValidatorsTest {
         @Override
         public String toString() {
             return "F";
+        }
+    }
+
+    static class G implements SpecificationValidator {
+
+        private final boolean reportsError;
+
+        public G(boolean reportsError) {
+            this.reportsError = reportsError;
+        }
+
+        @Override
+        public boolean report(Builder builder) {
+            if (reportsError) {
+                builder.addError("FAIL/path", "FAIL/code", "FAIL/error message");
+            }
+            return reportsError;
+        }
+
+        @Override
+        public String toString() {
+            return "FailableValidator";
+        }
+    }
+
+    // Requires G validator and records whether any of its methods ran.
+    static class H implements SpecificationValidator {
+
+        private boolean visited;
+        private boolean reported;
+
+        @Override
+        public Set<Class<? extends SpecificationValidator>> requires() {
+            return Set.of(G.class);
+        }
+
+        @Override
+        public void visitConfiguration(Configuration configuration) {
+            visited = true;
+        }
+
+        @Override
+        public void visitSource(int index, Source source) {
+            visited = true;
+        }
+
+        @Override
+        public void visitCustomQueryTarget(int index, CustomQueryTarget target) {
+            visited = true;
+        }
+
+        @Override
+        public boolean report(Builder builder) {
+            reported = true;
+            return false;
+        }
+
+        @Override
+        public String toString() {
+            return "RecordingDependent";
         }
     }
 
