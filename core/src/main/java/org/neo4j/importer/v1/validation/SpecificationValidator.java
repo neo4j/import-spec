@@ -62,12 +62,17 @@ public interface SpecificationValidator {
 
     /**
      * Declares validators whose validation must be successful before
-     * this validator can report errors and warnings.
-     * In other words, if any of the validation of the returned validators do not pass,
-     * this validator's implementation of {@link SpecificationValidator#report(Builder)} will not be called.
-     * It is however possible that this validator visitXxx methods are called regardless.
+     * this validator can be run.
+     * Validators are evaluated one at a time, in an order where every required validator is fully evaluated (all its
+     * visitXxx methods and its {@link SpecificationValidator#report(Builder)}) before the validators that require it.
+     * If any of the returned validators fails, this validator is skipped <strong>entirely</strong>: none of its
+     * visitXxx methods are called and its {@link SpecificationValidator#report(Builder)} is not called either.
+     * <br>
+     * As a consequence, whenever this validator's methods are invoked, all of its required validators are guaranteed to
+     * have passed. Implementations may therefore rely on the guarantees enforced by their required validators and skip
+     * defensively re-checking them.
      *
-     * @return the set of validator implementations whose validation must pass before this validator reports anything
+     * @return the set of validator implementations whose validation must pass before this validator is run
      */
     default Set<Class<? extends SpecificationValidator>> requires() {
         return Set.of();

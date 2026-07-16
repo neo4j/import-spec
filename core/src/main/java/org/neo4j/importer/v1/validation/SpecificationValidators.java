@@ -38,7 +38,7 @@ public class SpecificationValidators {
     }
 
     public static SpecificationValidators of(List<SpecificationValidator> validators) {
-        return new SpecificationValidators(runTopogicalSort(validators));
+        return new SpecificationValidators(runTopologicalSort(validators));
     }
 
     public static SpecificationValidators of(SpecificationValidator validator) {
@@ -46,49 +46,21 @@ public class SpecificationValidators {
     }
 
     public void validate(ImportSpecification spec) throws SpecificationException {
-        validators.forEach(validator -> validator.visitConfiguration(spec.getConfiguration()));
-        var sources = spec.getSources();
-        for (int i = 0; i < sources.size(); i++) {
-            final int index = i;
-            validators.forEach(validator -> validator.visitSource(index, sources.get(index)));
-        }
-        var targets = spec.getTargets();
-        var nodeTargets = targets.getNodes();
-        for (int i = 0; i < nodeTargets.size(); i++) {
-            final int index = i;
-            validators.forEach(validator -> validator.visitNodeTarget(index, nodeTargets.get(index)));
-        }
-        var relationshipTargets = targets.getRelationships();
-        for (int i = 0; i < relationshipTargets.size(); i++) {
-            final int index = i;
-            validators.forEach(validator -> validator.visitRelationshipTarget(index, relationshipTargets.get(index)));
-        }
-        var queryTargets = targets.getCustomQueries();
-        for (int i = 0; i < queryTargets.size(); i++) {
-            final int index = i;
-            validators.forEach(validator -> validator.visitCustomQueryTarget(index, queryTargets.get(index)));
-        }
-        var actions = spec.getActions();
-        for (int i = 0; i < actions.size(); i++) {
-            final int index = i;
-            validators.forEach(validator -> validator.visitAction(index, actions.get(index)));
-        }
-
-        Set<Class<? extends SpecificationValidator>> failedValidations = new HashSet<>(validators.size());
         Map<Class<? extends SpecificationValidator>, SpecificationValidator> validatorsPerClass =
                 validators.stream().collect(toMap(SpecificationValidator::getClass, Function.identity()));
+        Set<Class<? extends SpecificationValidator>> failedValidations = new HashSet<>(validators.size());
         var builder = SpecificationValidationResult.builder();
-        validators.forEach(validator -> {
-            for (Class<? extends SpecificationValidator> dependent :
-                    resolveTransitiveRequires(validator, validatorsPerClass)) {
-                if (failedValidations.contains(dependent)) {
-                    return;
-                }
+
+        for (SpecificationValidator validator : validators) {
+            if (hasFailedRequirement(validator, validatorsPerClass, failedValidations)) {
+                continue;
             }
+            visitAll(validator, spec);
             if (validator.report(builder)) {
                 failedValidations.add(validator.getClass());
             }
-        });
+        }
+
         SpecificationValidationResult result = builder.build();
         if (!result.passes()) {
             throw new InvalidSpecificationException(result);
@@ -100,7 +72,7 @@ public class SpecificationValidators {
         return validators;
     }
 
-    private static List<SpecificationValidator> runTopogicalSort(List<SpecificationValidator> validators) {
+    private static List<SpecificationValidator> runTopologicalSort(List<SpecificationValidator> validators) {
         var validatorCatalog = new HashMap<Class<? extends SpecificationValidator>, SpecificationValidator>();
         var validatorGraph =
                 new HashMap<Class<? extends SpecificationValidator>, Set<Class<? extends SpecificationValidator>>>();
@@ -122,10 +94,58 @@ public class SpecificationValidators {
         stack.addAll(dependencyClasses);
         while (!stack.isEmpty()) {
             var dependencyClass = stack.pop();
-            result.add(dependencyClass);
+            if (!result.add(dependencyClass)) {
+                // already processed this requirement, do not expand it again
+                continue;
+            }
             var dependency = dependenciesPerClass.get(dependencyClass);
-            stack.addAll(dependency.requires());
+            if (dependency != null) {
+                // the dependency may be absent if a validator requires another one that was not provided
+                stack.addAll(dependency.requires());
+            }
         }
         return result;
+    }
+
+    private static boolean hasFailedRequirement(
+            SpecificationValidator validator,
+            Map<Class<? extends SpecificationValidator>, SpecificationValidator> dependenciesPerClass,
+            Set<Class<? extends SpecificationValidator>> failedValidations) {
+        for (Class<? extends SpecificationValidator> requirement :
+                resolveTransitiveRequires(validator, dependenciesPerClass)) {
+            if (failedValidations.contains(requirement)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static void visitAll(SpecificationValidator validator, ImportSpecification spec) {
+        validator.visitConfiguration(spec.getConfiguration());
+        var sources = spec.getSources();
+        for (int i = 0; i < sources.size(); i++) {
+            validator.visitSource(i, sources.get(i));
+        }
+
+        var targets = spec.getTargets();
+        var nodeTargets = targets.getNodes();
+        for (int i = 0; i < nodeTargets.size(); i++) {
+            validator.visitNodeTarget(i, nodeTargets.get(i));
+        }
+
+        var relationshipTargets = targets.getRelationships();
+        for (int i = 0; i < relationshipTargets.size(); i++) {
+            validator.visitRelationshipTarget(i, relationshipTargets.get(i));
+        }
+
+        var queryTargets = targets.getCustomQueries();
+        for (int i = 0; i < queryTargets.size(); i++) {
+            validator.visitCustomQueryTarget(i, queryTargets.get(i));
+        }
+
+        var actions = spec.getActions();
+        for (int i = 0; i < actions.size(); i++) {
+            validator.visitAction(i, actions.get(i));
+        }
     }
 }
