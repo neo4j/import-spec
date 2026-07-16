@@ -16,25 +16,17 @@
  */
 package org.neo4j.importer.v1.validation.plugin;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 import org.neo4j.importer.v1.targets.NodeTarget;
 import org.neo4j.importer.v1.targets.RelationshipTarget;
-import org.neo4j.importer.v1.validation.SpecificationValidationResult.Builder;
 import org.neo4j.importer.v1.validation.SpecificationValidator;
 
-public class NoRedundantUniqueConstraintAndRangeIndexValidator implements SpecificationValidator {
+public class NoRedundantUniqueConstraintAndRangeIndexValidator extends AbstractRedundantSchemaValidator {
 
     private static final String ERROR_CODE = "NRDC-004";
 
-    private final Map<String, List<List<String>>> invalidPaths;
-
     public NoRedundantUniqueConstraintAndRangeIndexValidator() {
-        this.invalidPaths = new LinkedHashMap<>();
+        super(ERROR_CODE, "unique constraint and range index");
     }
 
     @Override
@@ -43,36 +35,23 @@ public class NoRedundantUniqueConstraintAndRangeIndexValidator implements Specif
                 NoDanglingLabelInRangeIndexValidator.class,
                 NoDanglingLabelInUniqueConstraintValidator.class,
                 NoDanglingPropertyInRangeIndexValidator.class,
-                NoDanglingPropertyInUniqueConstraintValidator.class);
+                NoDanglingPropertyInUniqueConstraintValidator.class,
+                NoDuplicatedSchemaDefinitionValidator.class);
     }
 
     @Override
     public void visitNodeTarget(int index, NodeTarget target) {
         var schema = target.getSchema();
-        var paths = new LinkedHashMap<SchemaNodePattern, List<String>>();
-        var rangeIndexBasePath = String.format("$.targets.nodes[%d].schema.range_indexes", index);
-        var rangeIndexes = schema.getRangeIndexes();
-        for (int i = 0; i < rangeIndexes.size(); i++) {
-            var rangeIndex = rangeIndexes.get(i);
-            var labelAndProps = new SchemaNodePattern(rangeIndex.getLabel(), rangeIndex.getProperties());
-            paths.computeIfAbsent(labelAndProps, (key) -> new ArrayList<>(1))
-                    .add(String.format("%s[%d]", rangeIndexBasePath, i));
-        }
-        var uniqueBasePath = String.format("$.targets.nodes[%d].schema.unique_constraints", index);
-        var uniqueConstraints = schema.getUniqueConstraints();
-        for (int i = 0; i < uniqueConstraints.size(); i++) {
-            var constraint = uniqueConstraints.get(i);
-            var labelAndProp = new SchemaNodePattern(constraint.getLabel(), constraint.getProperties());
-            paths.computeIfAbsent(labelAndProp, (key) -> new ArrayList<>(1))
-                    .add(String.format("%s[%d]", uniqueBasePath, i));
-        }
-        List<List<String>> redundancies =
-                paths.values().stream().filter(allPaths -> allPaths.size() > 1).collect(Collectors.toList());
-
-        if (!redundancies.isEmpty()) {
-            var schemaPath = String.format("$.targets.nodes[%d].schema", index);
-            invalidPaths.put(schemaPath, redundancies);
-        }
+        var rangeIndexPaths = index(
+                schema.getRangeIndexes(),
+                String.format("$.targets.nodes[%d].schema.range_indexes", index),
+                (rangeIndex) -> new SchemaNodePattern(rangeIndex.getLabel(), rangeIndex.getProperties()));
+        var uniquePaths = index(
+                schema.getUniqueConstraints(),
+                String.format("$.targets.nodes[%d].schema.unique_constraints", index),
+                (constraint) -> new SchemaNodePattern(constraint.getLabel(), constraint.getProperties()));
+        recordRedundancies(
+                String.format("$.targets.nodes[%d].schema", index), redundancies(rangeIndexPaths, uniquePaths));
     }
 
     @Override
@@ -81,42 +60,15 @@ public class NoRedundantUniqueConstraintAndRangeIndexValidator implements Specif
         if (schema.isEmpty()) {
             return;
         }
-        var paths = new LinkedHashMap<List<String>, List<String>>();
-        var rangeIndexBasePath = String.format("$.targets.relationships[%d].schema.range_indexes", index);
-        var rangeIndexes = schema.getRangeIndexes();
-        for (int i = 0; i < rangeIndexes.size(); i++) {
-            var rangeIndex = rangeIndexes.get(i);
-            paths.computeIfAbsent(rangeIndex.getProperties(), (key) -> new ArrayList<>(1))
-                    .add(String.format("%s[%d]", rangeIndexBasePath, i));
-        }
-        var uniqueBasePath = String.format("$.targets.relationships[%d].schema.unique_constraints", index);
-        var uniqueConstraints = schema.getUniqueConstraints();
-        for (int i = 0; i < uniqueConstraints.size(); i++) {
-            var constraint = uniqueConstraints.get(i);
-            paths.computeIfAbsent(constraint.getProperties(), (key) -> new ArrayList<>(1))
-                    .add(String.format("%s[%d]", uniqueBasePath, i));
-        }
-        List<List<String>> redundancies =
-                paths.values().stream().filter(allPaths -> allPaths.size() > 1).collect(Collectors.toList());
-
-        if (!redundancies.isEmpty()) {
-            var schemaPath = String.format("$.targets.relationships[%d].schema", index);
-            invalidPaths.put(schemaPath, redundancies);
-        }
-    }
-
-    @Override
-    public boolean report(Builder builder) {
-        invalidPaths.forEach((schemaPath, redundancies) -> redundancies.forEach((redundantDefinitions) -> {
-            String redundantDefs = redundantDefinitions.stream()
-                    .map(def -> def.replace(schemaPath + ".", ""))
-                    .collect(Collectors.joining(", "));
-            builder.addError(
-                    schemaPath,
-                    ERROR_CODE,
-                    String.format(
-                            "%s defines redundant unique constraint and range index: %s", schemaPath, redundantDefs));
-        }));
-        return !invalidPaths.isEmpty();
+        var rangeIndexPaths = index(
+                schema.getRangeIndexes(),
+                String.format("$.targets.relationships[%d].schema.range_indexes", index),
+                (rangeIndex) -> rangeIndex.getProperties());
+        var uniquePaths = index(
+                schema.getUniqueConstraints(),
+                String.format("$.targets.relationships[%d].schema.unique_constraints", index),
+                (constraint) -> constraint.getProperties());
+        recordRedundancies(
+                String.format("$.targets.relationships[%d].schema", index), redundancies(rangeIndexPaths, uniquePaths));
     }
 }
