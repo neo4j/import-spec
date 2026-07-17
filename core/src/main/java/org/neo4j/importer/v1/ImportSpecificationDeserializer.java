@@ -23,12 +23,9 @@ import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
-import com.networknt.schema.InputFormat;
-import com.networknt.schema.Schema;
-import com.networknt.schema.SchemaRegistry;
-import com.networknt.schema.SchemaRegistryConfig;
-import com.networknt.schema.SpecificationVersion;
-import com.networknt.schema.path.PathType;
+import com.networknt.schema.JsonSchema;
+import com.networknt.schema.JsonSchemaFactory;
+import com.networknt.schema.SpecVersion.VersionFlag;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.List;
@@ -59,7 +56,8 @@ import org.neo4j.importer.v1.validation.UnparseableSpecificationException;
 
 public class ImportSpecificationDeserializer {
 
-    private static final Schema SCHEMA = initSchema();
+    private static final JsonSchema SCHEMA = JsonSchemaFactory.getInstance(VersionFlag.V202012)
+            .getSchema(ImportSpecificationDeserializer.class.getResourceAsStream("/spec.v1.json"));
 
     /**
      * Returns an instance of {@link ImportSpecification} based on the provided {@link Reader} content.<br>
@@ -158,30 +156,13 @@ public class ImportSpecificationDeserializer {
         }
     }
 
-    private static Schema initSchema() {
-        var registryConfig =
-                SchemaRegistryConfig.builder().pathType(PathType.LEGACY).build();
-        var registry = SchemaRegistry.withDefaultDialect(
-                SpecificationVersion.DRAFT_2020_12, builder -> builder.schemaRegistryConfig(registryConfig));
-        try (var schema = ImportSpecificationDeserializer.class.getResourceAsStream("/spec.v1.json")) {
-            if (schema == null) {
-                throw new IllegalStateException("Cannot load import specification JSON schema");
-            }
-            return registry.getSchema(schema, InputFormat.JSON);
-        } catch (IOException e) {
-            throw new IllegalStateException("Cannot load import specification JSON schema", e);
-        }
-    }
-
-    private static void validateSchema(Schema schema, JsonNode json) throws InvalidSpecificationException {
+    private static void validateSchema(JsonSchema schema, JsonNode json) throws InvalidSpecificationException {
         Builder builder = SpecificationValidationResult.builder();
-        schema.validate(json.toString(), InputFormat.JSON).forEach(error -> {
-            var location = error.getInstanceLocation().toString();
-            builder.addError(
-                    location,
-                    String.format("SCHM-%s", error.getKeyword()),
-                    String.format("%s: %s", location, error.getMessage()));
-        });
+        schema.validate(json)
+                .forEach(msg -> builder.addError(
+                        msg.getInstanceLocation().toString(),
+                        String.format("SCHM-%s", msg.getCode()),
+                        msg.getMessage()));
         SpecificationValidationResult result = builder.build();
         if (!result.passes()) {
             throw new InvalidSpecificationException(result);
