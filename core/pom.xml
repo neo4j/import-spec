@@ -18,9 +18,10 @@
             <artifactId>jackson-dataformat-yaml</artifactId>
         </dependency>
         <dependency>
+            <!-- please avoid upgrading this dependency as 3.x version require Java 17 -->
             <groupId>com.networknt</groupId>
             <artifactId>json-schema-validator</artifactId>
-            <version>3.0.6</version>
+            <version>1.5.9</version>
         </dependency>
         <dependency>
             <groupId>org.apache.beam</groupId>
