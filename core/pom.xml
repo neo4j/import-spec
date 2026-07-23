@@ -21,7 +21,7 @@
             <!-- please avoid upgrading this dependency as 3.x version require Java 17 -->
             <groupId>com.networknt</groupId>
             <artifactId>json-schema-validator</artifactId>
-            <version>1.5.9</version>
+            <version>2.0.4</version>
         </dependency>
         <dependency>
             <groupId>org.apache.beam</groupId>
