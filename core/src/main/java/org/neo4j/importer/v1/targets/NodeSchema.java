@@ -18,7 +18,6 @@ package org.neo4j.importer.v1.targets;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
 
@@ -38,7 +37,7 @@ import java.util.Objects;
  *     <li>vector indexes (see {@link NodeSchema#getVectorIndexes()})</li>
  * </ul>
  */
-public class NodeSchema implements Schema, Serializable {
+public class NodeSchema implements Schema {
 
     static final NodeSchema EMPTY = new NodeSchema(
             List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of());

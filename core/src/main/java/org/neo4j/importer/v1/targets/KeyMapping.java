@@ -18,12 +18,13 @@ package org.neo4j.importer.v1.targets;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import java.io.Serializable;
 import java.util.Objects;
 
 /**
  * {@link KeyMapping} defines the node lookup override for the given start/end node of a {@link RelationshipTarget}.
  */
-public class KeyMapping {
+public class KeyMapping implements Serializable {
 
     private final String sourceField;
 
