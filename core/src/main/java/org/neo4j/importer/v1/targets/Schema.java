@@ -16,9 +16,10 @@
  */
 package org.neo4j.importer.v1.targets;
 
+import java.io.Serializable;
 import java.util.List;
 
-public interface Schema {
+public interface Schema extends Serializable {
 
     List<? extends Constraint> getTypeConstraints();
 
