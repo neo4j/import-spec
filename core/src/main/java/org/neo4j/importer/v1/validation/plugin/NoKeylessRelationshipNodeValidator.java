@@ -56,15 +56,13 @@ public class NoKeylessRelationshipNodeValidator implements SpecificationValidato
         if (keylessNodes.contains(startNode)) {
             errorMessages.put(
                     String.format("$.targets.relationships[%d].start_node_reference", index),
-                    String.format(
-                            "Node %s must define a key or unique constraint for property id, none found", startNode));
+                    String.format("Node %s must define a key or unique constraint, none found", startNode));
         }
         var endNode = target.getEndNodeReference().getName();
         if (keylessNodes.contains(endNode)) {
             errorMessages.put(
                     String.format("$.targets.relationships[%d].end_node_reference", index),
-                    String.format(
-                            "Node %s must define a key or unique constraint for property id, none found", endNode));
+                    String.format("Node %s must define a key or unique constraint, none found", endNode));
         }
     }
 

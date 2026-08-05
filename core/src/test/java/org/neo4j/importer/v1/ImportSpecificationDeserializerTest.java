@@ -1807,8 +1807,8 @@ class ImportSpecificationDeserializerTest {
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll(
                         "0 warning(s)",
-                        "[$.targets.relationships[0].start_node_reference] Node a-node-target must define a key or unique constraint for property id, none found",
-                        "[$.targets.relationships[0].end_node_reference] Node a-node-target must define a key or unique constraint for property id, none found");
+                        "[$.targets.relationships[0].start_node_reference] Node a-node-target must define a key or unique constraint, none found",
+                        "[$.targets.relationships[0].end_node_reference] Node a-node-target must define a key or unique constraint, none found");
     }
 
     @ParameterizedTest
@@ -1825,8 +1825,8 @@ class ImportSpecificationDeserializerTest {
                 .hasMessageContainingAll(
                         "2 error(s)",
                         "0 warning(s)",
-                        "[$.targets.relationships[0].start_node_reference] Node a-node-target must define a key or unique constraint for property id, none found",
-                        "[$.targets.relationships[0].end_node_reference] Node a-node-target must define a key or unique constraint for property id, none found");
+                        "[$.targets.relationships[0].start_node_reference] Node a-node-target must define a key or unique constraint, none found",
+                        "[$.targets.relationships[0].end_node_reference] Node a-node-target must define a key or unique constraint, none found");
     }
 
     @ParameterizedTest
