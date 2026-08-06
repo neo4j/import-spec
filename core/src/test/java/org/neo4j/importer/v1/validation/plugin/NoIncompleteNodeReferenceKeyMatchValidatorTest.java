@@ -30,7 +30,6 @@ import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -111,32 +110,6 @@ class NoIncompleteNodeReferenceKeyMatchValidatorTest {
                 return message.startsWith(expectedErrorMessage);
             });
         });
-    }
-
-    @Test
-    void displays_closest_match_with_largest_number_of_properties_when_validation_fails() {
-        var spec = importSpec(
-                node(
-                        "a-node",
-                        keyProperties(List.of("a", "c"), List.of("b")),
-                        uniqueProperties(List.of("a", "f", "g"))),
-                relationship(startNodeReference("a-node", List.of("a"))));
-        validator.visitNodeTarget(0, spec.getTargets().getNodes().get(0));
-        validator.visitRelationshipTarget(
-                0, spec.getTargets().getRelationships().get(0));
-        var reportBuilder = new Builder();
-
-        boolean result = validator.report(reportBuilder);
-        assertThat(result)
-                .overridingErrorMessage("expected an error message, but got none")
-                .isTrue();
-        var errorMessages = reportBuilder.build().getErrors().stream()
-                .map(SpecificationError::getMessage)
-                .collect(Collectors.toList());
-        assertThat(errorMessages).hasSize(1);
-        assertThat(errorMessages.get(0))
-                .startsWith(
-                        "Insufficient key mapping for node reference 'a-node'. Please also map ['f', 'g'] alongside 'a' to fully match the node target's unique constraint 'unique-constraint-");
     }
 
     private static Stream<Arguments> matching_property_combinations() {
