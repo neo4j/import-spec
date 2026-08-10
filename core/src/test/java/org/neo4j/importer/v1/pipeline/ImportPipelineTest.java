@@ -35,6 +35,7 @@ import org.neo4j.importer.v1.targets.NodeMatchMode;
 import org.neo4j.importer.v1.targets.NodeReference;
 import org.neo4j.importer.v1.targets.NodeSchema;
 import org.neo4j.importer.v1.targets.NodeTarget;
+import org.neo4j.importer.v1.targets.NodeUniqueConstraint;
 import org.neo4j.importer.v1.targets.PropertyMapping;
 import org.neo4j.importer.v1.targets.PropertyType;
 import org.neo4j.importer.v1.targets.RelationshipTarget;
@@ -298,6 +299,69 @@ class ImportPipelineTest {
                 .containsExactly(
                         new PropertyMapping("known_first", "firstName", PropertyType.STRING),
                         new PropertyMapping("known_last", "lastName", PropertyType.STRING));
+    }
+
+    @Test
+    void resolves_relationship_node_reference_to_exact_unique_constraint_when_key_constraint_is_subset() {
+        var idKey = new NodeKeyConstraint("person-id-key", "Person", List.of("id"), Map.of());
+        var tenantIdAndIdUnique = new NodeUniqueConstraint(
+                "person-tenant-id-and-id-unique", "Person", List.of("tenantId", "id"), Map.of());
+        var startRef = new NodeReference(
+                "person-nodes",
+                List.of(new KeyMapping("person_tenant_id", "tenantId"), new KeyMapping("person_id", "id")));
+        var spec = new ImportSpecification(
+                "a-version",
+                new HashMap<>(),
+                List.of(new DummySource("people"), new DummySource("orders")),
+                new Targets(
+                        List.of(new NodeTarget(
+                                true,
+                                "person-nodes",
+                                "people",
+                                List.of(),
+                                WriteMode.MERGE,
+                                (ObjectNode) null,
+                                List.of("Person"),
+                                List.of(
+                                        new PropertyMapping("tenant_id", "tenantId", PropertyType.STRING),
+                                        new PropertyMapping("id", "id", PropertyType.STRING)),
+                                new NodeSchema(
+                                        null,
+                                        List.of(idKey),
+                                        List.of(tenantIdAndIdUnique),
+                                        null,
+                                        null,
+                                        null,
+                                        null,
+                                        null,
+                                        null))),
+                        List.of(new RelationshipTarget(
+                                true,
+                                "ordered-by-relationships",
+                                "orders",
+                                List.of(),
+                                "ORDERED_BY",
+                                WriteMode.MERGE,
+                                NodeMatchMode.MATCH,
+                                (ObjectNode) null,
+                                startRef,
+                                new NodeReference("person-nodes"),
+                                List.of(),
+                                null)),
+                        List.of()),
+                List.of());
+
+        var pipeline = ImportPipeline.of(spec);
+
+        var relationships = stream(pipeline)
+                .filter(step -> step instanceof RelationshipTargetStep)
+                .map(step -> (RelationshipTargetStep) step)
+                .collect(Collectors.toList());
+        assertThat(relationships).hasSize(1);
+        assertThat(relationships.get(0).startNode().keyProperties())
+                .containsExactly(
+                        new PropertyMapping("person_tenant_id", "tenantId", PropertyType.STRING),
+                        new PropertyMapping("person_id", "id", PropertyType.STRING));
     }
 
     private static @NotNull NodeSchema schemaFor(NodeKeyConstraint keyConstraint) {

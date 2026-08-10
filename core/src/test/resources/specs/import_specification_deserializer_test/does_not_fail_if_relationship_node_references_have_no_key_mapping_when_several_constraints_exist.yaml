@@ -1,0 +1,36 @@
+---
+version: '1'
+sources:
+- name: a-source
+  type: jdbc
+  data_source: a-data-source
+  sql: SELECT id, email FROM my.table
+targets:
+  nodes:
+  - name: a-node-target
+    source: a-source
+    labels:
+    - Label
+    properties:
+    - source_field: id
+      target_property: id
+    - source_field: email
+      target_property: email
+    schema:
+      key_constraints:
+      - name: id-key
+        label: Label
+        properties:
+        - id
+      unique_constraints:
+      - name: email-unique
+        label: Label
+        properties:
+        - email
+  relationships:
+  - name: a-relationship-target
+    source: a-source
+    type: TYPE
+    write_mode: create
+    start_node_reference: a-node-target
+    end_node_reference: a-node-target
