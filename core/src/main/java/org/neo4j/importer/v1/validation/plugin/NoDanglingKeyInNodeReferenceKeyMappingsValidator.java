@@ -66,7 +66,8 @@ public class NoDanglingKeyInNodeReferenceKeyMappingsValidator implements Specifi
                 var property = mapping.getNodeProperty();
                 if (!startKeyOrUniqueProps.contains(property)) {
                     var path = String.format(
-                            "$.relationships[%d].start_node_reference.key_mappings[%d].node_property", index, i);
+                            "$.targets.relationships[%d].start_node_reference.key_mappings[%d].node_property",
+                            index, i);
                     var error = String.format(
                             "Property '%s' is not part of start node target's %s key and unique properties",
                             property, startNodeReference.getName());
@@ -83,7 +84,7 @@ public class NoDanglingKeyInNodeReferenceKeyMappingsValidator implements Specifi
                 var property = mapping.getNodeProperty();
                 if (!endKeyOrUniqueProps.contains(property)) {
                     var path = String.format(
-                            "$.relationships[%d].end_node_reference.key_mappings[%d].node_property", index, i);
+                            "$.targets.relationships[%d].end_node_reference.key_mappings[%d].node_property", index, i);
                     var error = String.format(
                             "Property '%s' is not part of end node target's %s key and unique properties",
                             property, endNodeReference.getName());

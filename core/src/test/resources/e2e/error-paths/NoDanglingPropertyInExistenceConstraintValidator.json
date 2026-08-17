@@ -1,0 +1,258 @@
+{
+  "version": "1",
+  "sources": [
+    {
+      "name": "a-source",
+      "type": "bigquery",
+      "query": "SELECT 1"
+    }
+  ],
+  "targets": {
+    "nodes": [
+      {
+        "name": "a-node",
+        "source": "a-source",
+        "labels": [
+          "Label"
+        ],
+        "properties": [
+          {
+            "source_field": "id",
+            "target_property": "id",
+            "target_property_type": "INTEGER"
+          },
+          {
+            "source_field": "first_duplicate",
+            "target_property": "duplicate",
+            "target_property_type": "STRING"
+          },
+          {
+            "source_field": "second_duplicate",
+            "target_property": "duplicate",
+            "target_property_type": "STRING"
+          },
+          {
+            "source_field": "bad_dimension",
+            "target_property": "bad_dimension",
+            "target_property_type": {
+              "name": "STRING",
+              "dimension": 4
+            }
+          },
+          {
+            "source_field": "bytes",
+            "target_property": "bytes",
+            "target_property_type": "BYTE_ARRAY"
+          },
+          {
+            "source_field": "untyped",
+            "target_property": "untyped"
+          }
+        ],
+        "schema": {
+          "type_constraints": [
+            {
+              "name": "node-type-bytes",
+              "label": "Label",
+              "property": "bytes"
+            },
+            {
+              "name": "node-type-untyped",
+              "label": "Label",
+              "property": "untyped"
+            },
+            {
+              "name": "node-type-missing",
+              "label": "Label",
+              "property": "missing"
+            }
+          ],
+          "key_constraints": [
+            {
+              "name": "node-key-missing",
+              "label": "Label",
+              "properties": [
+                "missing"
+              ]
+            }
+          ],
+          "unique_constraints": [
+            {
+              "name": "node-unique-missing",
+              "label": "Label",
+              "properties": [
+                "missing"
+              ]
+            }
+          ],
+          "existence_constraints": [
+            {
+              "name": "node-existence-missing",
+              "label": "Label",
+              "property": "missing"
+            }
+          ],
+          "range_indexes": [
+            {
+              "name": "node-range-missing",
+              "label": "Label",
+              "properties": [
+                "missing"
+              ]
+            }
+          ],
+          "text_indexes": [
+            {
+              "name": "node-text-missing",
+              "label": "Label",
+              "property": "missing"
+            }
+          ],
+          "point_indexes": [
+            {
+              "name": "node-point-missing",
+              "label": "Label",
+              "property": "missing"
+            }
+          ],
+          "fulltext_indexes": [
+            {
+              "name": "node-fulltext-missing",
+              "labels": [
+                "Label"
+              ],
+              "properties": [
+                "missing"
+              ]
+            }
+          ],
+          "vector_indexes": [
+            {
+              "name": "node-vector-missing",
+              "label": "Label",
+              "property": "missing",
+              "options": {}
+            }
+          ]
+        }
+      }
+    ],
+    "relationships": [
+      {
+        "name": "a-relationship",
+        "source": "a-source",
+        "type": "REL",
+        "start_node_reference": "a-node",
+        "end_node_reference": "a-node",
+        "properties": [
+          {
+            "source_field": "id",
+            "target_property": "id",
+            "target_property_type": "INTEGER"
+          },
+          {
+            "source_field": "first_duplicate",
+            "target_property": "duplicate",
+            "target_property_type": "STRING"
+          },
+          {
+            "source_field": "second_duplicate",
+            "target_property": "duplicate",
+            "target_property_type": "STRING"
+          },
+          {
+            "source_field": "bad_dimension",
+            "target_property": "bad_dimension",
+            "target_property_type": {
+              "name": "STRING",
+              "dimension": 4
+            }
+          },
+          {
+            "source_field": "bytes",
+            "target_property": "bytes",
+            "target_property_type": "BYTE_ARRAY"
+          },
+          {
+            "source_field": "untyped",
+            "target_property": "untyped"
+          }
+        ],
+        "schema": {
+          "type_constraints": [
+            {
+              "name": "relationship-type-bytes",
+              "property": "bytes"
+            },
+            {
+              "name": "relationship-type-untyped",
+              "property": "untyped"
+            },
+            {
+              "name": "relationship-type-missing",
+              "property": "missing"
+            }
+          ],
+          "key_constraints": [
+            {
+              "name": "relationship-key-missing",
+              "properties": [
+                "missing"
+              ]
+            }
+          ],
+          "unique_constraints": [
+            {
+              "name": "relationship-unique-missing",
+              "properties": [
+                "missing"
+              ]
+            }
+          ],
+          "existence_constraints": [
+            {
+              "name": "relationship-existence-missing",
+              "property": "missing"
+            }
+          ],
+          "range_indexes": [
+            {
+              "name": "relationship-range-missing",
+              "properties": [
+                "missing"
+              ]
+            }
+          ],
+          "text_indexes": [
+            {
+              "name": "relationship-text-missing",
+              "property": "missing"
+            }
+          ],
+          "point_indexes": [
+            {
+              "name": "relationship-point-missing",
+              "property": "missing"
+            }
+          ],
+          "fulltext_indexes": [
+            {
+              "name": "relationship-fulltext-missing",
+              "properties": [
+                "missing"
+              ]
+            }
+          ],
+          "vector_indexes": [
+            {
+              "name": "relationship-vector-missing",
+              "property": "missing",
+              "options": {}
+            }
+          ]
+        }
+      }
+    ],
+    "queries": []
+  }
+}
