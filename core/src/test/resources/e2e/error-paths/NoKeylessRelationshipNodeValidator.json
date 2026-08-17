@@ -1,0 +1,61 @@
+{
+  "version": "1",
+  "sources": [
+    {
+      "name": "a-source",
+      "type": "bigquery",
+      "query": "SELECT 1"
+    }
+  ],
+  "targets": {
+    "nodes": [
+      {
+        "name": "keyless-node",
+        "source": "a-source",
+        "labels": [
+          "Keyless"
+        ],
+        "properties": [
+          {
+            "source_field": "id",
+            "target_property": "id"
+          }
+        ]
+      },
+      {
+        "name": "keyed-node",
+        "source": "a-source",
+        "labels": [
+          "Keyed"
+        ],
+        "properties": [
+          {
+            "source_field": "id",
+            "target_property": "id"
+          }
+        ],
+        "schema": {
+          "key_constraints": [
+            {
+              "name": "keyed-node-key",
+              "label": "Keyed",
+              "properties": [
+                "id"
+              ]
+            }
+          ]
+        }
+      }
+    ],
+    "relationships": [
+      {
+        "name": "a-relationship",
+        "source": "a-source",
+        "type": "REL",
+        "start_node_reference": "keyless-node",
+        "end_node_reference": "keyed-node"
+      }
+    ],
+    "queries": []
+  }
+}

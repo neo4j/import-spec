@@ -1,0 +1,51 @@
+{
+  "version": "1",
+  "sources": [
+    {
+      "name": "a-source",
+      "type": "bigquery",
+      "query": "SELECT 1"
+    }
+  ],
+  "targets": {
+    "nodes": [
+      {
+        "active": false,
+        "name": "inactive-node",
+        "source": "a-source",
+        "labels": [
+          "Inactive"
+        ],
+        "properties": [
+          {
+            "source_field": "id",
+            "target_property": "id"
+          }
+        ]
+      },
+      {
+        "name": "active-node",
+        "source": "a-source",
+        "labels": [
+          "Active"
+        ],
+        "properties": [
+          {
+            "source_field": "id",
+            "target_property": "id"
+          }
+        ]
+      }
+    ],
+    "relationships": [
+      {
+        "name": "a-relationship",
+        "source": "a-source",
+        "type": "REL",
+        "start_node_reference": "inactive-node",
+        "end_node_reference": "active-node"
+      }
+    ],
+    "queries": []
+  }
+}

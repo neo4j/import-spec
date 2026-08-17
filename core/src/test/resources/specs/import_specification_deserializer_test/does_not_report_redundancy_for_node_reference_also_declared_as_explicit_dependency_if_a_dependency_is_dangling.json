@@ -29,7 +29,7 @@
             "type": "TYPE",
             "start_node_reference": "a-node-target",
             "end_node_reference": "a-node-target",
-            "dependencies": ["a-node-target", "another-node-target"]
+            "depends_on": ["a-node-target", "another-node-target"]
         }]
     }
 }

@@ -1,0 +1,60 @@
+{
+  "version": "1",
+  "sources": [
+    {
+      "name": "a-source",
+      "type": "bigquery",
+      "query": "SELECT 1"
+    }
+  ],
+  "targets": {
+    "nodes": [
+      {
+        "name": "referenced-node",
+        "source": "a-source",
+        "labels": [
+          "Referenced"
+        ],
+        "properties": [
+          {
+            "source_field": "id",
+            "target_property": "id"
+          },
+          {
+            "source_field": "other",
+            "target_property": "other"
+          }
+        ],
+        "schema": {
+          "key_constraints": [
+            {
+              "name": "referenced-node-key",
+              "label": "Referenced",
+              "properties": [
+                "id"
+              ]
+            }
+          ]
+        }
+      }
+    ],
+    "relationships": [
+      {
+        "name": "a-relationship",
+        "source": "a-source",
+        "type": "REL",
+        "start_node_reference": {
+          "name": "referenced-node",
+          "key_mappings": [
+            {
+              "source_field": "other",
+              "node_property": "other"
+            }
+          ]
+        },
+        "end_node_reference": "referenced-node"
+      }
+    ],
+    "queries": []
+  }
+}
