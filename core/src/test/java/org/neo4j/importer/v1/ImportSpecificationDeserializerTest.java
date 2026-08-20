@@ -1744,7 +1744,105 @@ class ImportSpecificationDeserializerTest {
 
     @ParameterizedTest
     @EnumSource(SpecFormat.class)
+    void fails_if_relationship_start_node_reference_partially_matches_node_key_constraint(
+            SpecFormat format, TestInfo testInfo) {
+
+        assertThatThrownBy(() -> {
+                    try (var reader = specReader(format, testInfo)) {
+                        deserialize(reader);
+                    }
+                })
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "[NINR-001][$.targets.relationships[0].start_node_reference.key_mappings[0]] Insufficient key mapping for node reference 'a-node-target'. Please also map ['tenant_id'] alongside 'id' to fully match the node target's key constraint 'a-key-constraint'");
+    }
+
+    @ParameterizedTest
+    @EnumSource(SpecFormat.class)
+    void fails_if_relationship_end_node_reference_partially_matches_node_unique_constraint(
+            SpecFormat format, TestInfo testInfo) {
+
+        assertThatThrownBy(() -> {
+                    try (var reader = specReader(format, testInfo)) {
+                        deserialize(reader);
+                    }
+                })
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "[NINR-001][$.targets.relationships[0].end_node_reference.key_mappings[0]] Insufficient key mapping for node reference 'a-node-target'. Please also map ['tenant_id'] alongside 'id' to fully match the node target's unique constraint 'a-unique-constraint'");
+    }
+
+    @ParameterizedTest
+    @EnumSource(SpecFormat.class)
+    void displays_closest_match_with_largest_number_of_properties_when_validation_fails(
+            SpecFormat format, TestInfo testInfo) {
+
+        assertThatThrownBy(() -> {
+                    try (var reader = specReader(format, testInfo)) {
+                        deserialize(reader);
+                    }
+                })
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "[NINR-001][$.targets.relationships[0].start_node_reference.key_mappings[0]] Insufficient key mapping for node reference 'a-node'. Please also map ['f', 'g'] alongside 'a' to fully match the node target's unique constraint 'unique-a-f-g'");
+    }
+
+    @ParameterizedTest
+    @EnumSource(SpecFormat.class)
+    void fails_if_relationship_start_node_reference_matches_no_exact_node_key_or_unique_constraint(
+            SpecFormat format, TestInfo testInfo) {
+
+        assertThatThrownBy(() -> {
+                    try (var reader = specReader(format, testInfo)) {
+                        deserialize(reader);
+                    }
+                })
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "[EONR-001][$.targets.relationships[0].start_node_reference.key_mappings] Invalid key mapping for node reference 'a-node-target'. Expected it to exactly match 1 node target key or unique constraint, but it exactly matches 0 node target key or unique constraint.");
+    }
+
+    @ParameterizedTest
+    @EnumSource(SpecFormat.class)
+    void fails_if_relationship_start_node_reference_exactly_matches_several_node_key_or_unique_constraints(
+            SpecFormat format, TestInfo testInfo) {
+
+        assertThatThrownBy(() -> {
+                    try (var reader = specReader(format, testInfo)) {
+                        deserialize(reader);
+                    }
+                })
+                .isInstanceOf(InvalidSpecificationException.class)
+                .hasMessageContainingAll(
+                        "1 error(s)",
+                        "0 warning(s)",
+                        "[EONR-001][$.targets.relationships[0].start_node_reference.key_mappings] Invalid key mapping for node reference 'a-node-target'. Expected it to exactly match 1 node target key or unique constraint, but it exactly matches 2 node target key or unique constraints:\n\t$.targets.nodes[0].schema.key_constraints[0]\n\t$.targets.nodes[0].schema.key_constraints[1]");
+    }
+
+    @ParameterizedTest
+    @EnumSource(SpecFormat.class)
     void does_not_fail_if_relationship_start_node_reference_refers_to_node_key_property(
+            SpecFormat format, TestInfo testInfo) {
+
+        assertThatCode(() -> {
+                    try (var reader = specReader(format, testInfo)) {
+                        deserialize(reader);
+                    }
+                })
+                .doesNotThrowAnyException();
+    }
+
+    @ParameterizedTest
+    @EnumSource(SpecFormat.class)
+    void does_not_fail_if_relationship_node_references_have_no_key_mapping_when_several_constraints_exist(
             SpecFormat format, TestInfo testInfo) {
 
         assertThatCode(() -> {

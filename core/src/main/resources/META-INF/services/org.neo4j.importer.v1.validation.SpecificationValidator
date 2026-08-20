@@ -1,5 +1,6 @@
 # keep this alphabetically sorted
 org.neo4j.importer.v1.validation.plugin.AtLeastOneActiveTargetValidator
+org.neo4j.importer.v1.validation.plugin.ExactlyOneNodeReferenceKeyMatchValidator
 org.neo4j.importer.v1.validation.plugin.NoBlankCypherActionQueryValidator
 org.neo4j.importer.v1.validation.plugin.NoByteArrayPropertyInTypeConstraintValidator
 org.neo4j.importer.v1.validation.plugin.NoDanglingActiveNodeReferenceValidator

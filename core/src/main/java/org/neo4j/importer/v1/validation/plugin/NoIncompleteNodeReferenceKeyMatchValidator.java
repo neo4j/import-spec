@@ -17,16 +17,13 @@
 package org.neo4j.importer.v1.validation.plugin;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import org.neo4j.importer.v1.targets.KeyMapping;
 import org.neo4j.importer.v1.targets.NodeKeyConstraint;
 import org.neo4j.importer.v1.targets.NodeReference;
@@ -86,62 +83,47 @@ public class NoIncompleteNodeReferenceKeyMatchValidator implements Specification
             // keyless node, ignoring (another upstream validator takes care of this)
             return;
         }
-        var matches = lookupProperties.stream()
-                .flatMap(lookup -> indexByProperty(new Match(lookup), lookup.getProperties()))
-                .collect(Collectors.toMap(
-                        Entry::getKey, entry -> List.of(entry.getValue()), (matches1, matches2) -> Stream.concat(
-                                        matches1.stream(), matches2.stream())
-                                .collect(Collectors.toList())));
-        keyMappings.forEach(key -> trackMatches(key, matches));
-        var matchedProperties = matches.values().stream()
-                .flatMap(Collection::stream)
-                .filter(Match::fullyMatches)
-                .flatMap(match -> match.getLookup().getProperties().stream())
+        var mappedProperties =
+                keyMappings.stream().map(KeyMapping::getNodeProperty).collect(Collectors.toSet());
+        var matchedProperties = lookupProperties.stream()
+                .filter(lookup -> mappedProperties.containsAll(lookup.getProperties()))
+                .flatMap(lookup -> lookup.getProperties().stream())
                 .collect(Collectors.toSet());
         for (int i = 0; i < keyMappings.size(); i++) {
             var mappedKey = keyMappings.get(i).getNodeProperty();
             if (!matchedProperties.contains(mappedKey)) {
-                var maybeClosestMatch = matches.values().stream()
-                        .flatMap(Collection::stream)
-                        .filter(match -> match.includes(mappedKey))
-                        .max(NoIncompleteNodeReferenceKeyMatchValidator::sortMatches);
-                var mappingPath = String.format("%s.key_mappings[%d]", path, i);
+                var maybeClosestMatch = lookupProperties.stream()
+                        .filter(lookup -> lookup.includes(mappedKey))
+                        .max((lookup1, lookup2) -> sortLookups(lookup1, lookup2, mappedProperties));
+                var mappingPath = String.format("%s[%d]", path, i);
                 if (maybeClosestMatch.isEmpty()) {
                     // prop is invalid or not a key/not unique, ignoring (another upstream validator takes care of this)
                     return;
                 }
                 var closestMatch = maybeClosestMatch.get();
-                var missingKeys = closestMatch.getLookup().getProperties().stream()
-                        .filter(property -> !property.equals(mappedKey))
+                var missingKeys = closestMatch.getProperties().stream()
+                        .filter(property -> !mappedProperties.contains(property))
                         .collect(Collectors.toList());
                 var error = String.format(
                         "Insufficient key mapping for node reference '%s'. Please also map ['%s'] alongside '%s' to fully match the node target's %s constraint '%s'",
                         nodeReference.getName(),
                         String.join("', '", missingKeys),
                         mappedKey,
-                        closestMatch.getLookupType().toString().toLowerCase(Locale.ROOT),
+                        closestMatch.getType().toString().toLowerCase(Locale.ROOT),
                         closestMatch.getConstraintName());
                 incompleteKeyMappings.put(mappingPath, error);
             }
         }
     }
 
-    private static Stream<Entry<String, Match>> indexByProperty(Match initialMatch, List<String> properties) {
-        return properties.stream().map(property -> Map.entry(property, initialMatch));
-    }
-
-    private static void trackMatches(KeyMapping key, Map<String, List<Match>> allMatches) {
-        allMatches.getOrDefault(key.getNodeProperty(), List.of()).forEach(Match::incrementMatch);
-    }
-
-    private static int sortMatches(Match match1, Match match2) {
-        var count1 = match1.getMatchCount();
-        var count2 = match2.getMatchCount();
+    private static int sortLookups(LookupProperties lookup1, LookupProperties lookup2, Set<String> mappedProperties) {
+        var count1 = lookup1.countMatches(mappedProperties);
+        var count2 = lookup2.countMatches(mappedProperties);
         if (count1 == count2) {
             // more specific key/unique definitions win (i.e., key/unique defs with more properties)
             // this is because such definitions are likely to offer a lower cardinality and a faster lookup
             // when leveraged in queries
-            return match1.getPropertyCount() - match2.getPropertyCount();
+            return lookup1.getPropertyCount() - lookup2.getPropertyCount();
         }
         return count1 - count2;
     }
@@ -177,47 +159,17 @@ public class NoIncompleteNodeReferenceKeyMatchValidator implements Specification
         public String getConstraintName() {
             return constraintName;
         }
-    }
-
-    private static class Match {
-
-        private final LookupProperties lookup;
-        private int matchCount;
-
-        private Match(LookupProperties lookupProperties) {
-            this.lookup = lookupProperties;
-        }
-
-        public LookupProperties getLookup() {
-            return lookup;
-        }
-
-        public void incrementMatch() {
-            matchCount++;
-        }
-
-        public boolean fullyMatches() {
-            return matchCount == lookup.getProperties().size();
-        }
 
         public boolean includes(String property) {
-            return lookup.getProperties().contains(property);
+            return properties.contains(property);
         }
 
-        public int getMatchCount() {
-            return matchCount;
+        public int countMatches(Set<String> mappedProperties) {
+            return (int) properties.stream().filter(mappedProperties::contains).count();
         }
 
         public int getPropertyCount() {
-            return lookup.getProperties().size();
-        }
-
-        public LookupType getLookupType() {
-            return lookup.getType();
-        }
-
-        public String getConstraintName() {
-            return lookup.getConstraintName();
+            return properties.size();
         }
     }
 
