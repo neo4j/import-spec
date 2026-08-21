@@ -1,0 +1,106 @@
+{
+  "version": "1",
+  "sources": [
+    {
+      "name": "a-source",
+      "type": "bigquery",
+      "query": "SELECT 1"
+    }
+  ],
+  "targets": {
+    "nodes": [
+      {
+        "name": "a-node",
+        "source": "a-source",
+        "labels": [
+          "Label"
+        ],
+        "properties": [
+          {
+            "source_field": "prop",
+            "target_property": "prop"
+          }
+        ],
+        "schema": {
+          "type_constraints": [
+            {
+              "name": "node-type",
+              "label": "Missing",
+              "property": "prop"
+            }
+          ],
+          "key_constraints": [
+            {
+              "name": "node-key",
+              "label": "Missing",
+              "properties": [
+                "prop"
+              ]
+            }
+          ],
+          "unique_constraints": [
+            {
+              "name": "node-unique",
+              "label": "Missing",
+              "properties": [
+                "prop"
+              ]
+            }
+          ],
+          "existence_constraints": [
+            {
+              "name": "node-existence",
+              "label": "Missing",
+              "property": "prop"
+            }
+          ],
+          "range_indexes": [
+            {
+              "name": "node-range",
+              "label": "Missing",
+              "properties": [
+                "prop"
+              ]
+            }
+          ],
+          "text_indexes": [
+            {
+              "name": "node-text",
+              "label": "Missing",
+              "property": "prop"
+            }
+          ],
+          "point_indexes": [
+            {
+              "name": "node-point",
+              "label": "Missing",
+              "property": "prop"
+            }
+          ],
+          "fulltext_indexes": [
+            {
+              "name": "node-fulltext",
+              "labels": [
+                "Missing",
+                "Missing"
+              ],
+              "properties": [
+                "prop"
+              ]
+            }
+          ],
+          "vector_indexes": [
+            {
+              "name": "node-vector",
+              "label": "Missing",
+              "property": "prop",
+              "options": {}
+            }
+          ]
+        }
+      }
+    ],
+    "relationships": [],
+    "queries": []
+  }
+}

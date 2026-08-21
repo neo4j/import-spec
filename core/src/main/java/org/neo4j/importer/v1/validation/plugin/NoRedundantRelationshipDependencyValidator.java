@@ -44,7 +44,7 @@ public class NoRedundantRelationshipDependencyValidator implements Specification
 
     @Override
     public void visitRelationshipTarget(int index, RelationshipTarget target) {
-        var path = String.format("$.targets.relationships[%d].dependencies", index);
+        var path = String.format("$.targets.relationships[%d].depends_on", index);
         Set<String> explicitDependencies = new HashSet<>(target.getDependencies());
         var startNodeRef = target.getStartNodeReference();
         if (explicitDependencies.contains(startNodeRef.getName())) {

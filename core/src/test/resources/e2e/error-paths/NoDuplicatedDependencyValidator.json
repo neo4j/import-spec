@@ -1,0 +1,46 @@
+{
+  "version": "1",
+  "sources": [
+    {
+      "name": "a-source",
+      "type": "bigquery",
+      "query": "SELECT 1"
+    }
+  ],
+  "targets": {
+    "nodes": [
+      {
+        "name": "dependent-node",
+        "source": "a-source",
+        "depends_on": [
+          "dependency-node",
+          "dependency-node"
+        ],
+        "labels": [
+          "Dependent"
+        ],
+        "properties": [
+          {
+            "source_field": "id",
+            "target_property": "id"
+          }
+        ]
+      },
+      {
+        "name": "dependency-node",
+        "source": "a-source",
+        "labels": [
+          "Dependency"
+        ],
+        "properties": [
+          {
+            "source_field": "id",
+            "target_property": "id"
+          }
+        ]
+      }
+    ],
+    "relationships": [],
+    "queries": []
+  }
+}

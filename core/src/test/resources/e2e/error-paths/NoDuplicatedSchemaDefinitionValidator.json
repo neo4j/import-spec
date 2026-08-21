@@ -1,0 +1,60 @@
+{
+  "version": "1",
+  "sources": [
+    {
+      "name": "a-source",
+      "type": "bigquery",
+      "query": "SELECT 1"
+    }
+  ],
+  "targets": {
+    "nodes": [
+      {
+        "name": "a-node",
+        "source": "a-source",
+        "labels": [
+          "Label"
+        ],
+        "properties": [
+          {
+            "source_field": "id",
+            "target_property": "id"
+          },
+          {
+            "source_field": "email",
+            "target_property": "email"
+          }
+        ],
+        "schema": {
+          "key_constraints": [
+            {
+              "name": "duplicate-schema-name",
+              "label": "Label",
+              "properties": [
+                "id"
+              ]
+            },
+            {
+              "name": "same-definition-name",
+              "label": "Label",
+              "properties": [
+                "id"
+              ]
+            }
+          ],
+          "unique_constraints": [
+            {
+              "name": "duplicate-schema-name",
+              "label": "Label",
+              "properties": [
+                "email"
+              ]
+            }
+          ]
+        }
+      }
+    ],
+    "relationships": [],
+    "queries": []
+  }
+}
