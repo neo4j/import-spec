@@ -1,0 +1,61 @@
+{
+  "version": "1",
+  "sources": [
+    {
+      "name": "a-source",
+      "type": "bigquery",
+      "query": "SELECT 1"
+    }
+  ],
+  "targets": {
+    "nodes": [
+      {
+        "name": "lookup-node",
+        "source": "a-source",
+        "labels": [
+          "Lookup"
+        ],
+        "properties": [
+          {
+            "source_field": "id",
+            "target_property": "id"
+          },
+          {
+            "source_field": "name",
+            "target_property": "name"
+          }
+        ],
+        "schema": {
+          "key_constraints": [
+            {
+              "name": "lookup-node-key",
+              "label": "Lookup",
+              "properties": [
+                "id",
+                "name"
+              ]
+            }
+          ]
+        }
+      }
+    ],
+    "relationships": [
+      {
+        "name": "a-relationship",
+        "source": "a-source",
+        "type": "REL",
+        "start_node_reference": {
+          "name": "lookup-node",
+          "key_mappings": [
+            {
+              "source_field": "id",
+              "node_property": "id"
+            }
+          ]
+        },
+        "end_node_reference": "lookup-node"
+      }
+    ],
+    "queries": []
+  }
+}

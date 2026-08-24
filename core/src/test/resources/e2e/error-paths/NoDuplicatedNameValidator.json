@@ -1,0 +1,29 @@
+{
+  "version": "1",
+  "sources": [
+    {
+      "name": "duplicate-name",
+      "type": "bigquery",
+      "query": "SELECT 1"
+    }
+  ],
+  "targets": {
+    "nodes": [
+      {
+        "name": "duplicate-name",
+        "source": "duplicate-name",
+        "labels": [
+          "Label"
+        ],
+        "properties": [
+          {
+            "source_field": "id",
+            "target_property": "id"
+          }
+        ]
+      }
+    ],
+    "relationships": [],
+    "queries": []
+  }
+}

@@ -43,7 +43,7 @@
             "type": "TYPE",
             "start_node_reference": "a-node-target",
             "end_node_reference": "another-node-target",
-            "dependencies": ["another-node-target"]
+            "depends_on": ["another-node-target"]
         }]
     }
 }

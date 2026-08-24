@@ -26,6 +26,6 @@ targets:
     type: TYPE
     start_node_reference: a-node-target
     end_node_reference: a-node-target
-    dependencies:
+    depends_on:
     - a-node-target
     - another-node-target

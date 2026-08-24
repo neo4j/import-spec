@@ -1722,7 +1722,7 @@ class ImportSpecificationDeserializerTest {
                 .hasMessageContainingAll(
                         "1 error(s)",
                         "0 warning(s)",
-                        "[$.relationships[0].start_node_reference.key_mappings[0].node_property] Property 'prop' is not part of start node target's a-node-target key and unique properties");
+                        "[$.targets.relationships[0].start_node_reference.key_mappings[0].node_property] Property 'prop' is not part of start node target's a-node-target key and unique properties");
     }
 
     @ParameterizedTest
@@ -1739,7 +1739,7 @@ class ImportSpecificationDeserializerTest {
                 .hasMessageContainingAll(
                         "1 error(s)",
                         "0 warning(s)",
-                        "[$.relationships[0].end_node_reference.key_mappings[0].node_property] Property 'prop' is not part of end node target's a-node-target key and unique properties");
+                        "[$.targets.relationships[0].end_node_reference.key_mappings[0].node_property] Property 'prop' is not part of end node target's a-node-target key and unique properties");
     }
 
     @ParameterizedTest
@@ -4440,7 +4440,7 @@ class ImportSpecificationDeserializerTest {
                 .hasMessageContainingAll(
                         "1 error(s)",
                         "0 warning(s)",
-                        "[DUPL-010][$.targets.nodes[0].schema.fulltext_indexes[0].label] $.targets.nodes[0].schema.fulltext_indexes[0].label \"Label\" must be defined at most once but 3 occurrences were found");
+                        "[DUPL-010][$.targets.nodes[0].schema.fulltext_indexes[0].labels[0]] $.targets.nodes[0].schema.fulltext_indexes[0].labels[0] \"Label\" must be defined at most once but 3 occurrences were found");
     }
 
     @ParameterizedTest
@@ -8445,7 +8445,7 @@ class ImportSpecificationDeserializerTest {
                 .hasMessageContainingAll(
                         "1 error(s)",
                         "0 warning(s)",
-                        "$.targets.relationships[0].dependencies \"a-node-target\" is defined as an explicit dependency *and* as a start node reference, remove it from dependencies");
+                        "$.targets.relationships[0].depends_on \"a-node-target\" is defined as an explicit dependency *and* as a start node reference, remove it from dependencies");
     }
 
     @ParameterizedTest
@@ -8462,7 +8462,7 @@ class ImportSpecificationDeserializerTest {
                 .hasMessageContainingAll(
                         "1 error(s)",
                         "0 warning(s)",
-                        "$.targets.relationships[0].dependencies \"another-node-target\" is defined as an explicit dependency *and* as an end node reference, remove it from dependencies");
+                        "$.targets.relationships[0].depends_on \"another-node-target\" is defined as an explicit dependency *and* as an end node reference, remove it from dependencies");
     }
 
     @ParameterizedTest

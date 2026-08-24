@@ -1,0 +1,91 @@
+{
+  "version": "1",
+  "config": {
+    "enable_graph_type": true
+  },
+  "sources": [
+    {
+      "name": "a-source",
+      "type": "bigquery",
+      "query": "SELECT 1"
+    }
+  ],
+  "targets": {
+    "nodes": [
+      {
+        "name": "person-node",
+        "source": "a-source",
+        "labels": [
+          "Person",
+          "Common"
+        ],
+        "properties": [
+          {
+            "source_field": "id",
+            "target_property": "id"
+          }
+        ]
+      },
+      {
+        "name": "common-node",
+        "source": "a-source",
+        "labels": [
+          "Common",
+          "Secondary"
+        ],
+        "properties": [
+          {
+            "source_field": "id",
+            "target_property": "id"
+          }
+        ]
+      },
+      {
+        "name": "another-person-node",
+        "source": "a-source",
+        "labels": [
+          "Person",
+          "Other"
+        ],
+        "properties": [
+          {
+            "source_field": "id",
+            "target_property": "id"
+          }
+        ]
+      }
+    ],
+    "relationships": [
+      {
+        "name": "first-relationship",
+        "source": "a-source",
+        "type": "REPEATED",
+        "start_node_reference": "person-node",
+        "end_node_reference": "common-node"
+      },
+      {
+        "name": "second-relationship",
+        "source": "a-source",
+        "type": "REPEATED",
+        "start_node_reference": "common-node",
+        "end_node_reference": "another-person-node"
+      }
+    ],
+    "queries": [
+      {
+        "name": "a-query",
+        "source": "a-source",
+        "query": "RETURN 1"
+      }
+    ]
+  },
+  "actions": [
+    {
+      "name": "a-action",
+      "type": "cypher",
+      "stage": "start",
+      "query": "RETURN 1",
+      "execution_mode": "transaction"
+    }
+  ]
+}

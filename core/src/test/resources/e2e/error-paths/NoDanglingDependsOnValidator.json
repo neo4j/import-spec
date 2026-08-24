@@ -1,0 +1,32 @@
+{
+  "version": "1",
+  "sources": [
+    {
+      "name": "a-source",
+      "type": "bigquery",
+      "query": "SELECT 1"
+    }
+  ],
+  "targets": {
+    "nodes": [
+      {
+        "name": "a-node",
+        "source": "a-source",
+        "depends_on": [
+          "missing-target"
+        ],
+        "labels": [
+          "Label"
+        ],
+        "properties": [
+          {
+            "source_field": "id",
+            "target_property": "id"
+          }
+        ]
+      }
+    ],
+    "relationships": [],
+    "queries": []
+  }
+}

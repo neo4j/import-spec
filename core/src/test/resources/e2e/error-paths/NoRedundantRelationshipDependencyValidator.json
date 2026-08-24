@@ -1,0 +1,53 @@
+{
+  "version": "1",
+  "sources": [
+    {
+      "name": "a-source",
+      "type": "bigquery",
+      "query": "SELECT 1"
+    }
+  ],
+  "targets": {
+    "nodes": [
+      {
+        "name": "start-node",
+        "source": "a-source",
+        "labels": [
+          "Start"
+        ],
+        "properties": [
+          {
+            "source_field": "id",
+            "target_property": "id"
+          }
+        ]
+      },
+      {
+        "name": "end-node",
+        "source": "a-source",
+        "labels": [
+          "End"
+        ],
+        "properties": [
+          {
+            "source_field": "id",
+            "target_property": "id"
+          }
+        ]
+      }
+    ],
+    "relationships": [
+      {
+        "name": "a-relationship",
+        "source": "a-source",
+        "depends_on": [
+          "start-node"
+        ],
+        "type": "REL",
+        "start_node_reference": "start-node",
+        "end_node_reference": "end-node"
+      }
+    ],
+    "queries": []
+  }
+}

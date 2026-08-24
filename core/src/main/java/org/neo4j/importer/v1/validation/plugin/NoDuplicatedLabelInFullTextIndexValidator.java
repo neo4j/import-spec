@@ -44,10 +44,11 @@ public class NoDuplicatedLabelInFullTextIndexValidator implements SpecificationV
         var fullTextIndexes = target.getSchema().getFullTextIndexes();
         for (int i = 0; i < fullTextIndexes.size(); i++) {
             NodeFullTextIndex textIndex = fullTextIndexes.get(i);
+            int fullTextIndex = i;
 
-            int arrayIndex = i;
             Duplicate.findDuplicates(textIndex.getLabels()).forEach(duplicate -> {
-                var path = String.format("%s[%d].label", basePath, arrayIndex);
+                var labelIndex = textIndex.getLabels().indexOf(duplicate.getValue());
+                var path = String.format("%s[%d].labels[%d]", basePath, fullTextIndex, labelIndex);
                 duplicateLabels.put(path, duplicate);
             });
         }
