@@ -76,40 +76,40 @@ public class GraphTypeExampleIT {
                 var spec = ImportSpecificationDeserializer.deserialize(reader);
 
                 var graphTypeStatement = CypherStatements.generateGraphType(spec);
-                driver.executableQuery(graphTypeStatement).execute();
-
-                driver.executableQuery("CREATE (actor:Actor {id: 42, first_name: 'Florent', last_name: 'Biville'}), "
-                                + "       (category:Category:Genre {id: 42, name: 'Documentary'}), "
-                                + "       (movie:Movie:Film {id: 42,"
-                                + "                          title: 'Working at Neo4j', "
-                                + "                          description: 'Work life inside the graph of all graphs'}), "
-                                + "       (actor)-[:ACTED_IN]->(movie), "
-                                + "       (movie)-[:IN_CATEGORY]->(category)")
-                        .execute();
-                // let's exercise some graph type constraints now
-                assertThatThrownBy(() -> driver.executableQuery("CREATE (:Category {id: 43, name: 'Horror'})")
-                                .execute())
-                        .isInstanceOf(ClientException.class)
-                        .hasMessageContaining("label Category is required to have label Genre");
-                assertThatThrownBy(() -> driver.executableQuery("CREATE (:Movie {id: 43, "
-                                        + "               title: 'Crafting a recursive SQL query', "
-                                        + "               description: 'After so much Cypher, can he still SQL?'"
-                                        + "})")
-                                .execute())
-                        .isInstanceOf(ClientException.class)
-                        .hasMessageContaining("label Movie is required to have label Film");
-                assertThatThrownBy(() -> driver.executableQuery(
-                                        "CREATE (category:Category:Genre {id: 43, name: 'Horror'}), "
-                                                + "       (movie:Movie:Film {id: 43, "
-                                                + "                          title: 'Crafting a recursive SQL query', "
-                                                + "                          description: 'After so much Cypher, can he still SQL?'"
-                                                + "}),"
-                                                +
-                                                // wrong node labels for the relationship
-                                                "       (category)-[:IN_CATEGORY]->(movie)")
-                                .execute())
-                        .isInstanceOf(ClientException.class)
-                        .hasMessageContainingAll("type IN_CATEGORY requires", "start", "to have label Movie");
+                try (var session = driver.session()) {
+                    session.run(graphTypeStatement).consume();
+                    session.run("CREATE (actor:Actor {id: 42, first_name: 'Florent', last_name: 'Biville'}), "
+                                    + "       (category:Category:Genre {id: 42, name: 'Documentary'}), "
+                                    + "       (movie:Movie:Film {id: 42,"
+                                    + "                          title: 'Working at Neo4j', "
+                                    + "                          description: 'Work life inside the graph of all graphs'}), "
+                                    + "       (actor)-[:ACTED_IN]->(movie), "
+                                    + "       (movie)-[:IN_CATEGORY]->(category)")
+                            .consume();
+                    // let's exercise some graph type constraints now
+                    assertThatThrownBy(() -> session.run("CREATE (:Category {id: 43, name: 'Horror'})")
+                                    .consume())
+                            .isInstanceOf(ClientException.class)
+                            .hasMessageContaining("label Category is required to have label Genre");
+                    assertThatThrownBy(() -> session.run("CREATE (:Movie {id: 43, "
+                                            + "               title: 'Crafting a recursive SQL query', "
+                                            + "               description: 'After so much Cypher, can he still SQL?'"
+                                            + "})")
+                                    .consume())
+                            .isInstanceOf(ClientException.class)
+                            .hasMessageContaining("label Movie is required to have label Film");
+                    assertThatThrownBy(() -> session.run("CREATE (category:Category:Genre {id: 43, name: 'Horror'}), "
+                                            + "       (movie:Movie:Film {id: 43, "
+                                            + "                          title: 'Crafting a recursive SQL query', "
+                                            + "                          description: 'After so much Cypher, can he still SQL?'"
+                                            + "}),"
+                                            +
+                                            // wrong node labels for the relationship
+                                            "       (category)-[:IN_CATEGORY]->(movie)")
+                                    .consume())
+                            .isInstanceOf(ClientException.class)
+                            .hasMessageContainingAll("type IN_CATEGORY requires", "start", "to have label Movie");
+                }
             }
         }
     }
@@ -128,7 +128,20 @@ public class GraphTypeExampleIT {
         }
     }
 
-    public record ParquetSource(String name, String uri) implements Source {
+    public static class ParquetSource implements Source {
+
+        private final String name;
+
+        private final String uri;
+
+        public ParquetSource(String name, String uri) {
+            this.name = name;
+            this.uri = uri;
+        }
+
+        public String uri() {
+            return uri;
+        }
 
         @Override
         public String getType() {

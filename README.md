@@ -80,6 +80,7 @@ class GettingStarted {
                     case SourceStep source -> handleSource(source);
                     case ActionStep action -> handleAction(action);
                     case TargetStep target -> handleTarget(target);
+                    default -> throw new IllegalArgumentException("Unsupported step: " + step);
                 }
             });
         }
@@ -90,4 +91,4 @@ class GettingStarted {
 ## Prerequisites
 
 - Maven
-- JDK 21+ (21 is used for examples, 11 and 17 for core)
+- JDK 11+ 

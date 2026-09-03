@@ -22,24 +22,23 @@ class Build(
             buildType(WhiteListCheck("${name}-whitelist-check", "white-list check"))
         if (forPullRequests) dependentBuildType(PRCheck("${name}-pr-check", "pr check"))
         parallel {
-          dependentBuildType(SemgrepCheck("${name}-semgrep-check", "semgrep check"))
+            dependentBuildType(SemgrepCheck("${name}-semgrep-check", "semgrep check"))
 
-          listOf(JavaVersion.V_17, JavaVersion.V_21).forEach { java ->
             dependentBuildType(
                 Maven(
-                    "${name}-build-${java.version}",
-                    "build - java ${java.version}",
+                    "${name}-build",
+                    "build",
                     "sortpom:verify license:check spotless:check compile",
-                    "-DspotlessFiles=src/main/java/.*.java",
-                    java))
-          }
+                    "-DspotlessFiles=src/main/java/.*.java"
+                )
+            )
         }
+
         dependentBuildType(
             Maven(
                 "${name}-test",
                 "test",
                 "verify",
-                javaVersion = LTS_JAVA_VERSION,
                 size = LinuxSize.LARGE))
         dependentBuildType(complete)
         if (!forPullRequests)

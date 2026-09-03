@@ -16,9 +16,6 @@
         <module>neo4j-admin</module>
         <module>graph-type</module>
     </modules>
-    <properties>
-        <maven.compiler.testRelease>21</maven.compiler.testRelease>
-    </properties>
     <dependencyManagement>
         <dependencies>
             <dependency>

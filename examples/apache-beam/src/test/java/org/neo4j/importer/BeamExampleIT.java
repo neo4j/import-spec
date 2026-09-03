@@ -16,6 +16,7 @@
  */
 package org.neo4j.importer;
 
+import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -74,17 +75,17 @@ import org.apache.beam.sdk.values.PCollection;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.neo4j.cypherdsl.core.Cypher;
+import org.neo4j.cypherdsl.core.ExposesCreate;
+import org.neo4j.cypherdsl.core.ExposesMerge;
 import org.neo4j.cypherdsl.core.Expression;
 import org.neo4j.cypherdsl.core.MapExpression;
 import org.neo4j.cypherdsl.core.Node;
+import org.neo4j.cypherdsl.core.Relationship;
 import org.neo4j.cypherdsl.core.Statement;
 import org.neo4j.cypherdsl.core.StatementBuilder.OngoingReading;
 import org.neo4j.cypherdsl.core.SymbolicName;
 import org.neo4j.cypherdsl.core.internal.SchemaNames;
-import org.neo4j.driver.AuthTokens;
-import org.neo4j.driver.Driver;
-import org.neo4j.driver.GraphDatabase;
-import org.neo4j.driver.Session;
+import org.neo4j.driver.*;
 import org.neo4j.driver.summary.ResultSummary;
 import org.neo4j.driver.summary.SummaryCounters;
 import org.neo4j.importer.v1.ImportSpecificationDeserializer;
@@ -124,11 +125,14 @@ public class BeamExampleIT {
                 var outputs = new HashMap<String, PCollection<?>>();
                 var importPipeline = ImportPipeline.of(ImportSpecificationDeserializer.deserialize(reader));
                 importPipeline.forEach(step -> {
-                    switch (step) {
-                        case SourceStep source -> handleSource(source, pipeline, outputs);
-                        case ActionStep action -> handleAction(action, pipeline, outputs);
-                        case TargetStep target -> handleTarget(target, pipeline, outputs);
-                        default -> throw new IllegalStateException("Unexpected value: " + step);
+                    if (step instanceof SourceStep) {
+                        handleSource((SourceStep) step, pipeline, outputs);
+                    } else if (step instanceof ActionStep) {
+                        handleAction((ActionStep) step, pipeline, outputs);
+                    } else if (step instanceof TargetStep) {
+                        handleTarget((TargetStep) step, pipeline, outputs);
+                    } else {
+                        throw new IllegalStateException("Unexpected value: " + step);
                     }
                 });
             }
@@ -158,7 +162,7 @@ public class BeamExampleIT {
         assertThat(source).isInstanceOf(ParquetSource.class);
         var parquetSource = (ParquetSource) source;
         var output = pipeline.apply(
-                "[source %s] Read records".formatted(name),
+                format("[source %s] Read records", name),
                 ParquetIO.parseGenericRecords((SerializableFunction<GenericRecord, GenericRecord>) record -> record)
                         .withCoder(GenericRecordCoder.create())
                         .from(parquetSource.uri()));
@@ -171,13 +175,13 @@ public class BeamExampleIT {
         assertThat(action).isInstanceOf(CypherAction.class);
         var cypherAction = (CypherAction) action;
         PCollection<Integer> output = pipeline.apply(
-                        "[action %s] Create single input".formatted(actionName), Create.of(1))
+                        format("[action %s] Create single input", actionName), Create.of(1))
                 .apply(
-                        "[action %s] Wait for dependencies inferred from stage".formatted(actionName),
+                        format("[action %s] Wait for dependencies inferred from stage", actionName),
                         Wait.on(stepsToOutputs(step.dependencies(), outputs)))
                 .setCoder(VarIntCoder.of())
                 .apply(
-                        "[action %s] Run".formatted(actionName),
+                        format("[action %s] Run", actionName),
                         CypherActionIO.run(cypherAction, NEO4J.getBoltUrl(), NEO4J.getAdminPassword()));
         outputs.put(actionName, output);
     }
@@ -187,26 +191,26 @@ public class BeamExampleIT {
         var stepName = step.name();
         assertThat(step).isInstanceOf(EntityTargetStep.class);
         var entityTargetStep = (EntityTargetStep) step;
-        var schemaInitOutput = pipeline.apply("[target %s] Create single input".formatted(stepName), Create.of(1))
+        var schemaInitOutput = pipeline.apply(format("[target %s] Create single input", stepName), Create.of(1))
                 .setCoder(VarIntCoder.of())
                 .apply(
-                        "[target %s] Init schema".formatted(stepName),
+                        format("[target %s] Init schema", stepName),
                         TargetSchemaIO.initSchema(NEO4J.getBoltUrl(), NEO4J.getAdminPassword(), entityTargetStep));
         var sourceRecords = (PCollection<GenericRecord>) outputs.get(step.sourceName());
         var sourceCoder = sourceRecords.getCoder();
         var output = sourceRecords
                 .apply(
-                        "[target %s] Wait for implicit dependencies".formatted(stepName),
+                        format("[target %s] Wait for implicit dependencies", stepName),
                         Wait.on(stepsToOutputs(step.dependencies(), outputs, schemaInitOutput)))
                 .setCoder(sourceCoder)
                 .apply(
-                        "[target %s] Assign keys to records".formatted(stepName),
+                        format("[target %s] Assign keys to records", stepName),
                         WithKeys.of((SerializableFunction<GenericRecord, Integer>) input -> ThreadLocalRandom.current()
                                 .nextInt(Runtime.getRuntime().availableProcessors())))
                 .setCoder(KvCoder.of(VarIntCoder.of(), sourceCoder))
-                .apply("[target %s] Group records into batches".formatted(stepName), GroupIntoBatches.ofSize(50))
+                .apply(format("[target %s] Group records into batches", stepName), GroupIntoBatches.ofSize(50))
                 .apply(
-                        "[target %s] Write record batches to Neo4j".formatted(stepName),
+                        format("[target %s] Write record batches to Neo4j", stepName),
                         TargetIO.writeAll(NEO4J.getBoltUrl(), NEO4J.getAdminPassword(), entityTargetStep));
         outputs.put(stepName, output);
     }
@@ -248,53 +252,57 @@ public class BeamExampleIT {
     }
 
     private static void assertNodeConstraint(Driver driver, String constraintType, String label, String property) {
-        var records = driver.executableQuery("""
-                        SHOW CONSTRAINTS YIELD type, entityType, labelsOrTypes, properties \
-                        WHERE type = $constraintType AND entityType = 'NODE' AND labelsOrTypes = [$label] AND properties = [$property] \
-                        RETURN count(*) = 1 AS result""")
-                .withParameters(Map.of("constraintType", constraintType, "label", label, "property", property))
-                .execute()
-                .records();
-        assertThat(records).hasSize(1);
-        assertThat(records.getFirst().get("result").asBoolean()).isTrue();
+        try (var session = driver.session()) {
+            var records = session.run(
+                            "SHOW CONSTRAINTS YIELD type, entityType, labelsOrTypes, properties "
+                                    + "WHERE type = $constraintType AND entityType = 'NODE' AND labelsOrTypes = [$label] AND properties = [$property] "
+                                    + "RETURN count(*) = 1 AS result",
+                            Map.of("constraintType", constraintType, "label", label, "property", property))
+                    .list();
+            assertThat(records).hasSize(1);
+            assertThat(records.get(0).get("result").asBoolean()).isTrue();
+        }
     }
 
     private static void assertNodeTypeConstraint(Driver driver, String label, String property, String propertyType) {
-        var records = driver.executableQuery("""
-                        SHOW CONSTRAINTS YIELD type, entityType, labelsOrTypes, properties, propertyType \
-                        WHERE type = 'NODE_PROPERTY_TYPE' AND entityType = 'NODE' AND labelsOrTypes = [$label] AND properties = [$property] AND propertyType = $propertyType \
-                        RETURN count(*) = 1 AS result""")
-                .withParameters(Map.of("label", label, "property", property, "propertyType", propertyType))
-                .execute()
-                .records();
-        assertThat(records).hasSize(1);
-        assertThat(records.getFirst().get("result").asBoolean()).isTrue();
+        try (var session = driver.session()) {
+            var records = session.run(
+                            "SHOW CONSTRAINTS YIELD type, entityType, labelsOrTypes, properties, propertyType "
+                                    + "WHERE type = 'NODE_PROPERTY_TYPE' AND entityType = 'NODE' AND labelsOrTypes = [$label] AND properties = [$property] AND propertyType = $propertyType "
+                                    + "RETURN count(*) = 1 AS result",
+                            Map.of("label", label, "property", property, "propertyType", propertyType))
+                    .list();
+            assertThat(records).hasSize(1);
+            assertThat(records.get(0).get("result").asBoolean()).isTrue();
+        }
     }
 
     private static void assertRelationshipConstraint(
             Driver driver, String constraintType, String relType, String property) {
-        var records = driver.executableQuery("""
-                        SHOW CONSTRAINTS YIELD type, entityType, labelsOrTypes, properties \
-                        WHERE type = $constraintType AND entityType = 'RELATIONSHIP' AND labelsOrTypes = [$type] AND properties = [$property] \
-                        RETURN count(*) = 1 AS result""")
-                .withParameters(Map.of("constraintType", constraintType, "type", relType, "property", property))
-                .execute()
-                .records();
-        assertThat(records).hasSize(1);
-        assertThat(records.getFirst().get("result").asBoolean()).isTrue();
+        try (var session = driver.session()) {
+            var records = session.run(
+                            "SHOW CONSTRAINTS YIELD type, entityType, labelsOrTypes, properties "
+                                    + "WHERE type = $constraintType AND entityType = 'RELATIONSHIP' AND labelsOrTypes = [$type] AND properties = [$property] "
+                                    + "RETURN count(*) = 1 AS result",
+                            Map.of("constraintType", constraintType, "type", relType, "property", property))
+                    .list();
+            assertThat(records).hasSize(1);
+            assertThat(records.get(0).get("result").asBoolean()).isTrue();
+        }
     }
 
     private static void assertRelationshipTypeConstraint(
             Driver driver, String relType, String property, String propertyType) {
-        var records = driver.executableQuery("""
-                        SHOW CONSTRAINTS YIELD type, entityType, labelsOrTypes, properties, propertyType \
-                        WHERE type = 'RELATIONSHIP_PROPERTY_TYPE' AND entityType = 'RELATIONSHIP' AND labelsOrTypes = [$type] AND properties = [$property] AND propertyType = $propertyType \
-                        RETURN count(*) = 1 AS result""")
-                .withParameters(Map.of("type", relType, "property", property, "propertyType", propertyType))
-                .execute()
-                .records();
-        assertThat(records).hasSize(1);
-        assertThat(records.getFirst().get("result").asBoolean()).isTrue();
+        try (var session = driver.session()) {
+            var records = session.run(
+                            "SHOW CONSTRAINTS YIELD type, entityType, labelsOrTypes, properties, propertyType "
+                                    + "WHERE type = 'RELATIONSHIP_PROPERTY_TYPE' AND entityType = 'RELATIONSHIP' AND labelsOrTypes = [$type] AND properties = [$property] AND propertyType = $propertyType "
+                                    + "RETURN count(*) = 1 AS result",
+                            Map.of("type", relType, "property", property, "propertyType", propertyType))
+                    .list();
+            assertThat(records).hasSize(1);
+            assertThat(records.get(0).get("result").asBoolean()).isTrue();
+        }
     }
 
     private static void assertNodeCount(Driver driver, String label, long expectedCount) {
@@ -302,9 +310,11 @@ public class BeamExampleIT {
         var query = Cypher.match(node)
                 .returning(Cypher.count(node.getRequiredSymbolicName()).as("count"))
                 .build();
-        var records = driver.executableQuery(query.getCypher()).execute().records();
-        assertThat(records).hasSize(1);
-        assertThat(records.getFirst().get("count").asLong()).isEqualTo(expectedCount);
+        try (var session = driver.session()) {
+            var records = session.run(query.getCypher()).list();
+            assertThat(records).hasSize(1);
+            assertThat(records.get(0).get("count").asLong()).isEqualTo(expectedCount);
+        }
     }
 
     private static void assertRelationshipCount(
@@ -315,9 +325,11 @@ public class BeamExampleIT {
         var query = Cypher.match(relationship)
                 .returning(Cypher.count(relationship.getRequiredSymbolicName()).as("count"))
                 .build();
-        var records = driver.executableQuery(query.getCypher()).execute().records();
-        assertThat(records).hasSize(1);
-        assertThat(records.getFirst().get("count").asLong()).isEqualTo(expectedCount);
+        try (var session = driver.session()) {
+            var records = session.run(query.getCypher()).list();
+            assertThat(records).hasSize(1);
+            assertThat(records.get(0).get("count").asLong()).isEqualTo(expectedCount);
+        }
     }
 
     public static class ParquetSourceProvider implements SourceProvider<ParquetSource> {
@@ -334,7 +346,20 @@ public class BeamExampleIT {
         }
     }
 
-    public record ParquetSource(String name, String uri) implements Source {
+    public static class ParquetSource implements Source {
+
+        private final String name;
+
+        private final String uri;
+
+        public ParquetSource(String name, String uri) {
+            this.name = name;
+            this.uri = uri;
+        }
+
+        public String uri() {
+            return uri;
+        }
 
         @Override
         public String getType() {
@@ -407,21 +432,22 @@ public class BeamExampleIT {
             @ProcessElement
             @SuppressWarnings("unused")
             public void processElement(ProcessContext context) {
-                var schemaStatements =
-                        switch (target) {
-                            case NodeTargetStep nodeTarget -> generateNodeSchemaStatements(nodeTarget);
-                            case RelationshipTargetStep relationshipTarget ->
-                                generateRelationshipSchemaStatements(relationshipTarget);
-                            default -> throw new IllegalStateException("Unexpected value: " + target);
-                        };
+                List<String> schemaStatements;
+                if (target instanceof NodeTargetStep) {
+                    schemaStatements = generateNodeSchemaStatements((NodeTargetStep) target);
+                } else if (target instanceof RelationshipTargetStep) {
+                    schemaStatements = generateRelationshipSchemaStatements((RelationshipTargetStep) target);
+                } else {
+                    throw new IllegalStateException("Unexpected value: " + target);
+                }
 
                 if (schemaStatements.isEmpty()) {
                     return;
                 }
                 try (Session session = driver.session()) {
-                    List<ResultSummary> summaries = session.executeWrite(tx -> schemaStatements.stream()
+                    List<ResultSummary> summaries = session.writeTransaction(tx -> schemaStatements.stream()
                             .map(statement -> tx.run(statement).consume())
-                            .toList());
+                            .collect(Collectors.toList()));
                     context.output(WriteCounters.ofCombined(summaries));
                 }
             }
@@ -433,35 +459,34 @@ public class BeamExampleIT {
                 }
                 var statements = new ArrayList<String>();
                 statements.addAll(schema.getKeyConstraints().stream()
-                        .map(constraint -> "CREATE CONSTRAINT %s FOR (n:%s) REQUIRE (%s) IS NODE KEY"
-                                .formatted(
-                                        generateName(step, "key", constraint.getLabel(), constraint.getProperties()),
-                                        sanitize(constraint.getLabel()),
-                                        constraint.getProperties().stream()
-                                                .map(TargetSchemaWriteFn::sanitize)
-                                                .map(prop -> propertyOf("n", prop))
-                                                .collect(Collectors.joining(","))))
-                        .toList());
+                        .map(constraint -> format(
+                                "CREATE CONSTRAINT %s FOR (n:%s) REQUIRE (%s) IS NODE KEY",
+                                generateName(step, "key", constraint.getLabel(), constraint.getProperties()),
+                                sanitize(constraint.getLabel()),
+                                constraint.getProperties().stream()
+                                        .map(TargetSchemaWriteFn::sanitize)
+                                        .map(prop -> propertyOf("n", prop))
+                                        .collect(Collectors.joining(","))))
+                        .collect(Collectors.toList()));
                 statements.addAll(schema.getUniqueConstraints().stream()
-                        .map(constraint -> "CREATE CONSTRAINT %s FOR (n:%s) REQUIRE (%s) IS UNIQUE"
-                                .formatted(
-                                        generateName(step, "unique", constraint.getLabel(), constraint.getProperties()),
-                                        sanitize(constraint.getLabel()),
-                                        constraint.getProperties().stream()
-                                                .map(TargetSchemaWriteFn::sanitize)
-                                                .map(prop -> propertyOf("n", prop))
-                                                .collect(Collectors.joining(","))))
-                        .toList());
+                        .map(constraint -> format(
+                                "CREATE CONSTRAINT %s FOR (n:%s) REQUIRE (%s) IS UNIQUE",
+                                generateName(step, "unique", constraint.getLabel(), constraint.getProperties()),
+                                sanitize(constraint.getLabel()),
+                                constraint.getProperties().stream()
+                                        .map(TargetSchemaWriteFn::sanitize)
+                                        .map(prop -> propertyOf("n", prop))
+                                        .collect(Collectors.joining(","))))
+                        .collect(Collectors.toList()));
                 Map<String, PropertyType> propertyTypes = step.propertyTypes();
                 statements.addAll(schema.getTypeConstraints().stream()
-                        .map(constraint -> "CREATE CONSTRAINT %s FOR (n:%s) REQUIRE n.%s IS :: %s"
-                                .formatted(
-                                        generateName(
-                                                step, "type", constraint.getLabel(), List.of(constraint.getProperty())),
-                                        sanitize(constraint.getLabel()),
-                                        sanitize(constraint.getProperty()),
-                                        propertyType(propertyTypes.get(constraint.getProperty()))))
-                        .toList());
+                        .map(constraint -> format(
+                                "CREATE CONSTRAINT %s FOR (n:%s) REQUIRE n.%s IS :: %s",
+                                generateName(step, "type", constraint.getLabel(), List.of(constraint.getProperty())),
+                                sanitize(constraint.getLabel()),
+                                sanitize(constraint.getProperty()),
+                                propertyType(propertyTypes.get(constraint.getProperty()))))
+                        .collect(Collectors.toList()));
                 return statements;
             }
 
@@ -472,44 +497,44 @@ public class BeamExampleIT {
                 }
                 var statements = new ArrayList<String>();
                 statements.addAll(schema.getKeyConstraints().stream()
-                        .map(constraint -> "CREATE CONSTRAINT %s FOR ()-[r:%s]-() REQUIRE (%s) IS RELATIONSHIP KEY"
-                                .formatted(
-                                        generateName(step, "key", step.type(), constraint.getProperties()),
-                                        sanitize(step.type()),
-                                        constraint.getProperties().stream()
-                                                .map(TargetSchemaWriteFn::sanitize)
-                                                .map(prop -> propertyOf("r", prop))
-                                                .collect(Collectors.joining(","))))
-                        .toList());
+                        .map(constraint -> format(
+                                "CREATE CONSTRAINT %s FOR ()-[r:%s]-() REQUIRE (%s) IS RELATIONSHIP KEY",
+                                generateName(step, "key", step.type(), constraint.getProperties()),
+                                sanitize(step.type()),
+                                constraint.getProperties().stream()
+                                        .map(TargetSchemaWriteFn::sanitize)
+                                        .map(prop -> propertyOf("r", prop))
+                                        .collect(Collectors.joining(","))))
+                        .collect(Collectors.toList()));
                 statements.addAll(schema.getUniqueConstraints().stream()
-                        .map(constraint -> "CREATE CONSTRAINT %s FOR ()-[r:%s]-() REQUIRE (%s) IS UNIQUE"
-                                .formatted(
-                                        generateName(step, "unique", step.type(), constraint.getProperties()),
-                                        sanitize(step.type()),
-                                        constraint.getProperties().stream()
-                                                .map(TargetSchemaWriteFn::sanitize)
-                                                .map(prop -> propertyOf("r", prop))
-                                                .collect(Collectors.joining(","))))
-                        .toList());
+                        .map(constraint -> format(
+                                "CREATE CONSTRAINT %s FOR ()-[r:%s]-() REQUIRE (%s) IS UNIQUE",
+                                generateName(step, "unique", step.type(), constraint.getProperties()),
+                                sanitize(step.type()),
+                                constraint.getProperties().stream()
+                                        .map(TargetSchemaWriteFn::sanitize)
+                                        .map(prop -> propertyOf("r", prop))
+                                        .collect(Collectors.joining(","))))
+                        .collect(Collectors.toList()));
                 Map<String, PropertyType> propertyTypes = step.propertyTypes();
                 statements.addAll(schema.getTypeConstraints().stream()
-                        .map(constraint -> "CREATE CONSTRAINT %s FOR ()-[r:%s]-() REQUIRE r.%s IS :: %s"
-                                .formatted(
-                                        generateName(step, "type", step.type(), List.of(constraint.getProperty())),
-                                        sanitize(step.type()),
-                                        sanitize(constraint.getProperty()),
-                                        propertyType(propertyTypes.get(constraint.getProperty()))))
-                        .toList());
+                        .map(constraint -> format(
+                                "CREATE CONSTRAINT %s FOR ()-[r:%s]-() REQUIRE r.%s IS :: %s",
+                                generateName(step, "type", step.type(), List.of(constraint.getProperty())),
+                                sanitize(step.type()),
+                                sanitize(constraint.getProperty()),
+                                propertyType(propertyTypes.get(constraint.getProperty()))))
+                        .collect(Collectors.toList()));
                 return statements;
             }
 
             private static String generateName(
                     EntityTargetStep target, String type, String label, List<String> properties) {
-                return sanitize("%s_%s_%s_%s".formatted(target.name(), type, label, String.join("-", properties)));
+                return sanitize(format("%s_%s_%s_%s", target.name(), type, label, String.join("-", properties)));
             }
 
             private static String propertyOf(String container, String property) {
-                return "%s.%s".formatted(container, property);
+                return format("%s.%s", container, property);
             }
 
             private static String sanitize(String element) {
@@ -519,39 +544,66 @@ public class BeamExampleIT {
             }
 
             private static String propertyType(PropertyType propertyType) {
-                return switch (propertyType.getName()) {
-                    case BOOLEAN -> "BOOLEAN";
-                    case BOOLEAN_ARRAY -> "LIST<BOOLEAN NOT NULL>";
-                    case DATE -> "DATE";
-                    case DATE_ARRAY -> "LIST<DATE NOT NULL>";
-                    case DURATION -> "DURATION";
-                    case DURATION_ARRAY -> "LIST<DURATION NOT NULL>";
-                    case FLOAT -> "FLOAT";
-                    case FLOAT_ARRAY -> "LIST<FLOAT NOT NULL>";
-                    case INTEGER -> "INTEGER";
-                    case INTEGER_ARRAY -> "LIST<INTEGER NOT NULL>";
-                    case LOCAL_DATETIME -> "LOCAL DATETIME";
-                    case LOCAL_DATETIME_ARRAY -> "LIST<LOCAL DATETIME NOT NULL>";
-                    case LOCAL_TIME -> "LOCAL TIME";
-                    case LOCAL_TIME_ARRAY -> "LIST<LOCAL TIME NOT NULL>";
-                    case POINT -> "POINT";
-                    case POINT_ARRAY -> "LIST<POINT NOT NULL>";
-                    case STRING -> "STRING";
-                    case STRING_ARRAY -> "LIST<STRING NOT NULL>";
-                    case ZONED_DATETIME -> "ZONED DATETIME";
-                    case ZONED_DATETIME_ARRAY -> "LIST<ZONED DATETIME NOT NULL>";
-                    case ZONED_TIME -> "ZONED TIME";
-                    case ZONED_TIME_ARRAY -> "LIST<ZONED TIME NOT NULL>";
-                    case INTEGER_VECTOR -> String.format("VECTOR<INTEGER>(%d)", propertyType.getDimension());
-                    case FLOAT_VECTOR -> String.format("VECTOR<FLOAT>(%d)", propertyType.getDimension());
-                    case INTEGER32_VECTOR -> String.format("VECTOR<INTEGER32>(%d)", propertyType.getDimension());
-                    case FLOAT32_VECTOR -> String.format("VECTOR<FLOAT32>(%d)", propertyType.getDimension());
-                    case INTEGER8_VECTOR -> String.format("VECTOR<INTEGER8>(%d)", propertyType.getDimension());
-                    case INTEGER16_VECTOR -> String.format("VECTOR<INTEGER16>(%d)", propertyType.getDimension());
-                    default ->
-                        throw new IllegalArgumentException(
-                                String.format("Unsupported property type: %s", propertyType));
-                };
+                switch (propertyType.getName()) {
+                    case BOOLEAN:
+                        return "BOOLEAN";
+                    case BOOLEAN_ARRAY:
+                        return "LIST<BOOLEAN NOT NULL>";
+                    case DATE:
+                        return "DATE";
+                    case DATE_ARRAY:
+                        return "LIST<DATE NOT NULL>";
+                    case DURATION:
+                        return "DURATION";
+                    case DURATION_ARRAY:
+                        return "LIST<DURATION NOT NULL>";
+                    case FLOAT:
+                        return "FLOAT";
+                    case FLOAT_ARRAY:
+                        return "LIST<FLOAT NOT NULL>";
+                    case INTEGER:
+                        return "INTEGER";
+                    case INTEGER_ARRAY:
+                        return "LIST<INTEGER NOT NULL>";
+                    case LOCAL_DATETIME:
+                        return "LOCAL DATETIME";
+                    case LOCAL_DATETIME_ARRAY:
+                        return "LIST<LOCAL DATETIME NOT NULL>";
+                    case LOCAL_TIME:
+                        return "LOCAL TIME";
+                    case LOCAL_TIME_ARRAY:
+                        return "LIST<LOCAL TIME NOT NULL>";
+                    case POINT:
+                        return "POINT";
+                    case POINT_ARRAY:
+                        return "LIST<POINT NOT NULL>";
+                    case STRING:
+                        return "STRING";
+                    case STRING_ARRAY:
+                        return "LIST<STRING NOT NULL>";
+                    case ZONED_DATETIME:
+                        return "ZONED DATETIME";
+                    case ZONED_DATETIME_ARRAY:
+                        return "LIST<ZONED DATETIME NOT NULL>";
+                    case ZONED_TIME:
+                        return "ZONED TIME";
+                    case ZONED_TIME_ARRAY:
+                        return "LIST<ZONED TIME NOT NULL>";
+                    case INTEGER_VECTOR:
+                        return format("VECTOR<INTEGER>(%d)", propertyType.getDimension());
+                    case FLOAT_VECTOR:
+                        return format("VECTOR<FLOAT>(%d)", propertyType.getDimension());
+                    case INTEGER32_VECTOR:
+                        return format("VECTOR<INTEGER32>(%d)", propertyType.getDimension());
+                    case FLOAT32_VECTOR:
+                        return format("VECTOR<FLOAT32>(%d)", propertyType.getDimension());
+                    case INTEGER8_VECTOR:
+                        return format("VECTOR<INTEGER8>(%d)", propertyType.getDimension());
+                    case INTEGER16_VECTOR:
+                        return format("VECTOR<INTEGER16>(%d)", propertyType.getDimension());
+                    default:
+                        throw new IllegalArgumentException(format("Unsupported property type: %s", propertyType));
+                }
             }
         }
     }
@@ -626,43 +678,43 @@ public class BeamExampleIT {
                 assertThat(element).isNotNull();
                 Iterable<GenericRecord> records = element.getValue();
                 assertThat(records).isNotNull();
-                var statement =
-                        switch (target) {
-                            case NodeTargetStep nodeTarget -> buildNodeImportQuery(nodeTarget, unwindRows, row);
-                            case RelationshipTargetStep relationshipTarget ->
-                                buildRelationshipImportQuery(relationshipTarget, unwindRows, row);
-                            default -> throw new IllegalStateException("Unexpected value: " + target);
-                        };
-
-                var summary = WriteCounters.of(driver.executableQuery(statement.getCypher())
-                        .withParameters(Map.of(rows.getName(), parameters(records)))
-                        .execute()
-                        .summary());
-                context.output(summary);
+                Statement statement;
+                if (target instanceof NodeTargetStep) {
+                    statement = buildNodeImportQuery((NodeTargetStep) target, unwindRows, row);
+                } else if (target instanceof RelationshipTargetStep) {
+                    statement = buildRelationshipImportQuery((RelationshipTargetStep) target, unwindRows, row);
+                } else {
+                    throw new IllegalStateException("Unexpected value: " + target);
+                }
+                try (var session = driver.session()) {
+                    var results = session.writeTransaction(
+                            tx -> tx.run(statement.getCypher(), Map.of(rows.getName(), parameters(records)))
+                                    .consume());
+                    var summary = WriteCounters.of(results);
+                    context.output(summary);
+                }
             }
 
             private static Statement buildNodeImportQuery(
                     NodeTargetStep nodeTarget, OngoingReading unwindRows, SymbolicName row) {
                 var node = cypherNode(nodeTarget, row);
                 var nonKeyProps = nonKeyPropertiesOf(nodeTarget, node.getRequiredSymbolicName(), row);
-                var query =
-                        switch (nodeTarget.writeMode()) {
-                            case CREATE -> {
-                                var create = unwindRows.create(node);
-                                if (nonKeyProps.isEmpty()) {
-                                    yield create;
-                                }
-                                yield create.set(nonKeyProps);
-                            }
-                            case MERGE -> {
-                                var merge = unwindRows.merge(node);
-                                if (nonKeyProps.isEmpty()) {
-                                    yield merge;
-                                }
-                                yield merge.onCreate().set(nonKeyProps);
-                            }
-                        };
-                return query.build();
+                switch (nodeTarget.writeMode()) {
+                    case CREATE: {
+                        var create = unwindRows.create(node);
+                        return nonKeyProps.isEmpty()
+                                ? create.build()
+                                : create.set(nonKeyProps).build();
+                    }
+                    case MERGE: {
+                        var merge = unwindRows.merge(node);
+                        return nonKeyProps.isEmpty()
+                                ? merge.build()
+                                : merge.onCreate().set(nonKeyProps).build();
+                    }
+                    default:
+                        throw new IllegalArgumentException("Unsupported write mode: " + nodeTarget.writeMode());
+                }
             }
 
             private Statement buildRelationshipImportQuery(
@@ -675,29 +727,46 @@ public class BeamExampleIT {
                         .withProperties(keyPropertiesOf(relationshipTarget, row));
                 var nonKeyProps = nonKeyPropertiesOf(relationshipTarget, relationship.getRequiredSymbolicName(), row);
 
-                var queryStart =
-                        switch (relationshipTarget.nodeMatchMode()) {
-                            case MATCH -> unwindRows.match(startNode).match(endNode);
-                            case MERGE -> unwindRows.merge(startNode).merge(endNode);
-                        };
-                var query =
-                        switch (relationshipTarget.writeMode()) {
-                            case CREATE -> {
-                                var create = queryStart.create(relationship);
-                                if (nonKeyProps.isEmpty()) {
-                                    yield create;
-                                }
-                                yield create.set(nonKeyProps);
-                            }
-                            case MERGE -> {
-                                var merge = queryStart.merge(relationship);
-                                if (nonKeyProps.isEmpty()) {
-                                    yield merge;
-                                }
-                                yield merge.set(nonKeyProps);
-                            }
-                        };
-                return query.build();
+                switch (relationshipTarget.nodeMatchMode()) {
+                    case MATCH:
+                        return buildRelationshipImportQuery(
+                                relationshipTarget,
+                                unwindRows.match(startNode).match(endNode),
+                                relationship,
+                                nonKeyProps);
+                    case MERGE:
+                        return buildRelationshipImportQuery(
+                                relationshipTarget,
+                                unwindRows.merge(startNode).merge(endNode),
+                                relationship,
+                                nonKeyProps);
+                    default:
+                        throw new IllegalArgumentException(
+                                "Unsupported node match mode: " + relationshipTarget.nodeMatchMode());
+                }
+            }
+
+            private static <T extends ExposesCreate & ExposesMerge> Statement buildRelationshipImportQuery(
+                    RelationshipTargetStep relationshipTarget,
+                    T queryStart,
+                    Relationship relationship,
+                    Collection<? extends Expression> nonKeyProps) {
+                switch (relationshipTarget.writeMode()) {
+                    case CREATE: {
+                        var create = queryStart.create(relationship);
+                        return nonKeyProps.isEmpty()
+                                ? create.build()
+                                : create.set(nonKeyProps).build();
+                    }
+                    case MERGE: {
+                        var merge = queryStart.merge(relationship);
+                        return nonKeyProps.isEmpty()
+                                ? merge.build()
+                                : merge.set(nonKeyProps).build();
+                    }
+                    default:
+                        throw new IllegalArgumentException("Unsupported write mode: " + relationshipTarget.writeMode());
+                }
             }
 
             private static Node cypherNode(NodeTargetStep nodeTarget, SymbolicName row) {
@@ -706,7 +775,7 @@ public class BeamExampleIT {
 
             private static Node cypherNode(NodeTargetStep nodeTarget, SymbolicName row, String variableName) {
                 List<String> labels = nodeTarget.labels();
-                return Cypher.node(labels.getFirst(), labels.subList(1, labels.size()))
+                return Cypher.node(labels.get(0), labels.subList(1, labels.size()))
                         .named(variableName)
                         .withProperties(keyPropertiesOf(nodeTarget, row));
             }
@@ -725,7 +794,7 @@ public class BeamExampleIT {
                         .flatMap(mapping -> Stream.of(
                                 Cypher.property(entityVariable, mapping.getTargetProperty()),
                                 Cypher.property(rowVariable, mapping.getSourceField())))
-                        .toList();
+                        .collect(Collectors.toList());
             }
 
             private List<Map<String, Object>> parameters(Iterable<GenericRecord> records) {
@@ -750,10 +819,11 @@ public class BeamExampleIT {
                         .anyMatch(type -> LogicalTypes.date().equals(type))) {
                     return Optional.of(LocalDate.ofEpochDay(((Number) value).longValue()));
                 }
-                if (value instanceof Utf8 utf8Value) {
-                    return Optional.of(utf8Value.toString());
+                if (value instanceof Utf8) {
+                    return Optional.of(value.toString());
                 }
-                if (value instanceof Array<?> arrayValue) {
+                if (value instanceof Array<?>) {
+                    var arrayValue = (Array<?>) value;
                     var values = new ArrayList<>(arrayValue.size());
                     for (Object element : arrayValue) {
                         convertRecordValue(field, element).ifPresent(values::add);
@@ -961,7 +1031,8 @@ public class BeamExampleIT {
         @Override
         public boolean equals(Object o) {
             if (this == o) return true;
-            if (!(o instanceof WriteCounters that)) return false;
+            if (!(o instanceof WriteCounters)) return false;
+            WriteCounters that = (WriteCounters) o;
             return labelsAdded == that.labelsAdded
                     && labelsRemoved == that.labelsRemoved
                     && nodesCreated == that.nodesCreated

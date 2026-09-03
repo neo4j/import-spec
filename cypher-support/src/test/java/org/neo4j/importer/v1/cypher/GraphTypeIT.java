@@ -76,8 +76,11 @@ public class GraphTypeIT {
                                 var spec = ImportSpecificationDeserializer.deserialize(reader);
                                 var graphTypeStatement = CypherStatements.generateGraphType(spec);
 
-                                assertThatCode(() -> driver.executableQuery(graphTypeStatement)
-                                                .execute())
+                                assertThatCode(() -> {
+                                            try (var session = driver.session()) {
+                                                session.run(graphTypeStatement).consume();
+                                            }
+                                        })
                                         .doesNotThrowAnyException();
                             }
                         }));

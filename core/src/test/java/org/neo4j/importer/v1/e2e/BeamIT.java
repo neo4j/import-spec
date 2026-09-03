@@ -21,6 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -172,58 +173,65 @@ public class BeamIT {
 
         pipeline.run();
 
-        var productCount = neo4jDriver
-                .executableQuery("MATCH (p:Product) RETURN count(p) AS count")
-                .execute()
-                .records();
-        assertThat(productCount).hasSize(1);
-        assertThat(productCount.get(0).get("count").asLong()).isEqualTo(77L);
-        var categoryCount = neo4jDriver
-                .executableQuery("MATCH (c:Category) RETURN count(c) AS count")
-                .execute()
-                .records();
-        assertThat(categoryCount).hasSize(1);
-        assertThat(categoryCount.get(0).get("count").asLong()).isEqualTo(8L);
-        var productInCategoryCount = neo4jDriver
-                .executableQuery("MATCH (:Product)-[btc:BELONGS_TO_CATEGORY]->(:Category) RETURN count(btc) AS count")
-                .execute()
-                .records();
-        assertThat(productInCategoryCount).hasSize(1);
-        assertThat(productInCategoryCount.get(0).get("count").asLong()).isEqualTo(77L);
-        var countRows = neo4jDriver
-                .executableQuery(
-                        "MATCH (post_s:Count {stage: 'post_sources'})\n" + "MATCH (pre_n:Count {stage: 'pre_nodes'})\n"
-                                + "MATCH (post_n:Count {stage: 'post_nodes'})\n"
-                                + "MATCH (pre_r:Count {stage: 'pre_relationships'})\n"
-                                + "MATCH (post_r:Count {stage: 'post_relationships'})\n"
-                                + "MATCH (pre_q:Count {stage: 'pre_queries'})\n"
-                                + "MATCH (post_q:Count {stage: 'post_queries'})\n"
-                                + "MATCH (end:Count {stage: 'end'})\n"
-                                + "RETURN\n"
-                                + "    post_s.count AS post_s_count,\n"
-                                + "    pre_n.count  AS pre_n_count,\n"
-                                + "    post_n.count AS post_n_count,\n"
-                                + "    pre_r.count  AS pre_r_count,\n"
-                                + "    post_r.count AS post_r_count,\n"
-                                + "    pre_q.count  AS pre_q_count,\n"
-                                + "    post_q.count AS post_q_count,\n"
-                                + "    end.count    AS end_count")
-                .execute()
-                .records();
-        assertThat(countRows).hasSize(1);
-        Record counts = countRows.get(0);
-        assertThat(counts.get("post_s_count").asLong())
-                .isGreaterThanOrEqualTo(0); // targets have likely already started
-        assertThat(counts.get("pre_n_count").asLong()).isEqualTo(0);
-        assertThat(counts.get("post_n_count").asLong()).isEqualTo(77L + 8L); // 77 (:Product) + 8 (:Category)
-        assertThat(counts.get("pre_r_count").asLong()).isEqualTo(0);
-        assertThat(counts.get("post_r_count").asLong()).isEqualTo(77L); // 77 -[:BELONGS_TO_CATEGORY]-> rels
-        assertThat(counts.get("pre_q_count").asLong()).isEqualTo(0);
-        assertThat(counts.get("post_q_count").asLong())
-                .isEqualTo(77L + 8L); // 77 (:ClonedProduct) + 8 (:ClonedCategory)
-        assertThat(counts.get("end_count").asLong())
-                .isEqualTo(77L + 8L + 77L
-                        + 8L); // 77 (:Product) + 8 (:Category) + 77 (:ClonedProduct) + 8 (:ClonedCategory)
+        try (var session = neo4jDriver.session()) {
+            var productCount = session.run("MATCH (p:Product) RETURN count(p) AS count", Collections.emptyMap())
+                    .list();
+            assertThat(productCount).hasSize(1);
+            assertThat(productCount.get(0).get("count").asLong()).isEqualTo(77L);
+        }
+
+        try (var session = neo4jDriver.session()) {
+            var categoryCount = session.run("MATCH (c:Category) RETURN count(c) AS count", Collections.emptyMap())
+                    .list();
+            assertThat(categoryCount).hasSize(1);
+            assertThat(categoryCount.get(0).get("count").asLong()).isEqualTo(8L);
+        }
+
+        try (var session = neo4jDriver.session()) {
+            var productInCategoryCount = session.run(
+                            "MATCH (:Product)-[btc:BELONGS_TO_CATEGORY]->(:Category) RETURN count(btc) AS count",
+                            Collections.emptyMap())
+                    .list();
+            assertThat(productInCategoryCount).hasSize(1);
+            assertThat(productInCategoryCount.get(0).get("count").asLong()).isEqualTo(77L);
+        }
+
+        try (var session = neo4jDriver.session()) {
+            var countRows = session.run(
+                            "MATCH (post_s:Count {stage: 'post_sources'})\n"
+                                    + "MATCH (pre_n:Count {stage: 'pre_nodes'})\n"
+                                    + "MATCH (post_n:Count {stage: 'post_nodes'})\n"
+                                    + "MATCH (pre_r:Count {stage: 'pre_relationships'})\n"
+                                    + "MATCH (post_r:Count {stage: 'post_relationships'})\n"
+                                    + "MATCH (pre_q:Count {stage: 'pre_queries'})\n"
+                                    + "MATCH (post_q:Count {stage: 'post_queries'})\n"
+                                    + "MATCH (end:Count {stage: 'end'})\n"
+                                    + "RETURN\n"
+                                    + "    post_s.count AS post_s_count,\n"
+                                    + "    pre_n.count  AS pre_n_count,\n"
+                                    + "    post_n.count AS post_n_count,\n"
+                                    + "    pre_r.count  AS pre_r_count,\n"
+                                    + "    post_r.count AS post_r_count,\n"
+                                    + "    pre_q.count  AS pre_q_count,\n"
+                                    + "    post_q.count AS post_q_count,\n"
+                                    + "    end.count    AS end_count",
+                            Collections.emptyMap())
+                    .list();
+            assertThat(countRows).hasSize(1);
+            Record counts = countRows.get(0);
+            assertThat(counts.get("post_s_count").asLong())
+                    .isGreaterThanOrEqualTo(0); // targets have likely already started
+            assertThat(counts.get("pre_n_count").asLong()).isEqualTo(0);
+            assertThat(counts.get("post_n_count").asLong()).isEqualTo(77L + 8L); // 77 (:Product) + 8 (:Category)
+            assertThat(counts.get("pre_r_count").asLong()).isEqualTo(0);
+            assertThat(counts.get("post_r_count").asLong()).isEqualTo(77L); // 77 -[:BELONGS_TO_CATEGORY]-> rels
+            assertThat(counts.get("pre_q_count").asLong()).isEqualTo(0);
+            assertThat(counts.get("post_q_count").asLong())
+                    .isEqualTo(77L + 8L); // 77 (:ClonedProduct) + 8 (:ClonedCategory)
+            assertThat(counts.get("end_count").asLong())
+                    .isEqualTo(77L + 8L + 77L
+                            + 8L); // 77 (:Product) + 8 (:Category) + 77 (:ClonedProduct) + 8 (:ClonedCategory)
+        }
     }
 
     private static List<PCollection<?>> dependencyOutputs(
@@ -327,7 +335,9 @@ class CypherActionFn extends DoFn<Integer, Integer> {
         var query = action.getQuery();
         switch (action.getExecutionMode()) {
             case TRANSACTION:
-                driver.executableQuery(query).execute();
+                try (var session = driver.session()) {
+                    session.run(query, Collections.emptyMap()).consume();
+                }
                 break;
             case AUTOCOMMIT: {
                 try (Session session = driver.session()) {
@@ -376,44 +386,53 @@ class TargetWriteRowFn extends DoFn<Row, Row> {
         assertThat(row).isNotNull();
         if (step instanceof CustomQueryTargetStep) {
             var queryStep = (CustomQueryTargetStep) step;
-            driver.executableQuery(queryStep.query())
-                    .withParameters(Map.of("rows", List.of(properties(row))))
-                    .execute();
+            String query = queryStep.query();
+            Map<String, Object> parameters = Map.of("rows", List.of(properties(row)));
+            try (var session = driver.session()) {
+                session.run(query, parameters).consume();
+            }
         } else if (step instanceof NodeTargetStep) {
             var nodeStep = (NodeTargetStep) step;
             var keys = nodeStep.keyProperties();
             var nonKeys = nodeStep.nonKeyProperties();
-            driver.executableQuery(String.format(
-                            "%s (n:%s%s) %s",
-                            nodeStep.writeMode(),
-                            String.join(":", nodeStep.labels()),
-                            entityPattern("row", keys),
-                            setClause("n", "row", nonKeys)))
-                    .withParameters(Map.of("row", rowValues(keys, nonKeys, row)))
-                    .execute();
+
+            try (var session = driver.session()) {
+                session.run(
+                                String.format(
+                                        "%s (n:%s%s) %s",
+                                        nodeStep.writeMode(),
+                                        String.join(":", nodeStep.labels()),
+                                        entityPattern("row", keys),
+                                        setClause("n", "row", nonKeys)),
+                                Map.of("row", rowValues(keys, nonKeys, row)))
+                        .consume();
+            }
         } else if (step instanceof RelationshipTargetStep) {
             var relationshipStep = (RelationshipTargetStep) step;
             var start = relationshipStep.startNode();
             var end = relationshipStep.endNode();
             var keys = relationshipStep.keyProperties();
             var nonKeys = relationshipStep.nonKeyProperties();
-            driver.executableQuery(String.format(
-                            "%s (start:%s%s) %s (end:%s%s) %s (start)-[r:%s%s]->(end) %s",
-                            relationshipStep.nodeMatchMode(),
-                            String.join(":", start.labels()),
-                            entityPattern("start", start.keyProperties()),
-                            relationshipStep.nodeMatchMode(),
-                            String.join(":", end.labels()),
-                            entityPattern("end", end.keyProperties()),
-                            relationshipStep.writeMode(),
-                            relationshipStep.type(),
-                            entityPattern("row", keys),
-                            setClause("r", "row", nonKeys)))
-                    .withParameters(Map.of(
-                            "start", nodeKeyValues(start, row),
-                            "end", nodeKeyValues(end, row),
-                            "row", rowValues(keys, nonKeys, row)))
-                    .execute();
+
+            var query = String.format(
+                    "%s (start:%s%s) %s (end:%s%s) %s (start)-[r:%s%s]->(end) %s",
+                    relationshipStep.nodeMatchMode(),
+                    String.join(":", start.labels()),
+                    entityPattern("start", start.keyProperties()),
+                    relationshipStep.nodeMatchMode(),
+                    String.join(":", end.labels()),
+                    entityPattern("end", end.keyProperties()),
+                    relationshipStep.writeMode(),
+                    relationshipStep.type(),
+                    entityPattern("row", keys),
+                    setClause("r", "row", nonKeys));
+            var parameters = Map.<String, Object>of(
+                    "start", nodeKeyValues(start, row),
+                    "end", nodeKeyValues(end, row),
+                    "row", rowValues(keys, nonKeys, row));
+            try (var session = driver.session()) {
+                session.run(query, parameters).consume();
+            }
         } else {
             Assertions.fail("unsupported target type: %s", step.getClass());
         }

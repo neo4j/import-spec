@@ -18,6 +18,7 @@ package org.neo4j.importer.v1.e2e;
 
 import static java.util.stream.Collectors.toMap;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.neo4j.driver.SessionConfig.builder;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -44,7 +45,6 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.neo4j.driver.AuthTokens;
 import org.neo4j.driver.Driver;
 import org.neo4j.driver.GraphDatabase;
-import org.neo4j.driver.QueryConfig;
 import org.neo4j.importer.v1.ImportSpecification;
 import org.neo4j.importer.v1.ImportSpecificationDeserializer;
 import org.neo4j.importer.v1.sources.JdbcSource;
@@ -128,30 +128,28 @@ public class AdminImportIT {
 
         Neo4jAdmin.executeImport(NEO4J, neo4jDriver, importSpec, targetNeo4jDatabase);
 
-        var productCount = neo4jDriver
-                .executableQuery("MATCH (p:Product) RETURN count(p) AS count")
-                .withConfig(
-                        QueryConfig.builder().withDatabase(targetNeo4jDatabase).build())
-                .execute()
-                .records();
-        assertThat(productCount).hasSize(1);
-        assertThat(productCount.get(0).get("count").asLong()).isEqualTo(77L);
-        var categoryCount = neo4jDriver
-                .executableQuery("MATCH (c:Category) RETURN count(c) AS count")
-                .withConfig(
-                        QueryConfig.builder().withDatabase(targetNeo4jDatabase).build())
-                .execute()
-                .records();
-        assertThat(categoryCount).hasSize(1);
-        assertThat(categoryCount.get(0).get("count").asLong()).isEqualTo(8L);
-        var productInCategoryCount = neo4jDriver
-                .executableQuery("MATCH (:Product)-[btc:BELONGS_TO_CATEGORY]->(:Category) RETURN count(btc) AS count")
-                .withConfig(
-                        QueryConfig.builder().withDatabase(targetNeo4jDatabase).build())
-                .execute()
-                .records();
-        assertThat(productInCategoryCount).hasSize(1);
-        assertThat(productInCategoryCount.get(0).get("count").asLong()).isEqualTo(77L);
+        var sessionConfig = builder().withDatabase(targetNeo4jDatabase).build();
+        try (var session = neo4jDriver.session(sessionConfig)) {
+            var productCount =
+                    session.run("MATCH (p:Product) RETURN count(p) AS count").list();
+            assertThat(productCount).hasSize(1);
+            assertThat(productCount.get(0).get("count").asLong()).isEqualTo(77L);
+        }
+
+        try (var session = neo4jDriver.session(sessionConfig)) {
+            var categoryCount =
+                    session.run("MATCH (c:Category) RETURN count(c) AS count").list();
+            assertThat(categoryCount).hasSize(1);
+            assertThat(categoryCount.get(0).get("count").asLong()).isEqualTo(8L);
+        }
+
+        try (var session = neo4jDriver.session(sessionConfig)) {
+            var productInCategoryCount = session.run(
+                            "MATCH (:Product)-[btc:BELONGS_TO_CATEGORY]->(:Category) RETURN count(btc) AS count")
+                    .list();
+            assertThat(productInCategoryCount).hasSize(1);
+            assertThat(productInCategoryCount.get(0).get("count").asLong()).isEqualTo(77L);
+        }
     }
 
     private File csvFolderPathFor(String classpath) throws Exception {
@@ -336,10 +334,10 @@ public class AdminImportIT {
             assertThat(execution.getExitCode())
                     .overridingErrorMessage(execution.getStderr())
                     .isZero();
-            driver.executableQuery("CREATE DATABASE $name WAIT")
-                    .withParameters(Map.of("name", neo4jDatabase))
-                    .withConfig(QueryConfig.builder().withDatabase("system").build())
-                    .execute();
+            try (var session = driver.session(builder().withDatabase("system").build())) {
+                session.run("CREATE DATABASE $name WAIT", Map.of("name", neo4jDatabase))
+                        .consume();
+            }
         }
 
         private static String[] importCommand(ImportSpecification importSpec, String database) {

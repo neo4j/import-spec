@@ -43,7 +43,6 @@ import org.neo4j.cypherdsl.core.internal.SchemaNames;
 import org.neo4j.driver.AuthTokens;
 import org.neo4j.driver.Driver;
 import org.neo4j.driver.GraphDatabase;
-import org.neo4j.driver.QueryConfig;
 import org.neo4j.driver.SessionConfig;
 import org.neo4j.importer.v1.ImportSpecification;
 import org.neo4j.importer.v1.ImportSpecificationDeserializer;
@@ -90,13 +89,14 @@ public class Neo4jAdminExampleIT {
             .withLogConsumer(frame -> System.out.print(frame.getUtf8String()));
 
     private static final String TARGET_DATABASE = "dvdrental";
+    private static final SessionConfig SESSION_CONFIG = SessionConfig.forDatabase(TARGET_DATABASE);
 
     private Driver driver;
 
     @BeforeEach
     void prepare() {
         driver = GraphDatabase.driver(
-                String.format("bolt://%s:%d".formatted(NEO4J.getHost(), NEO4J.getMappedPort(7687))),
+                String.format("bolt://%s:%d", NEO4J.getHost(), NEO4J.getMappedPort(7687)),
                 AuthTokens.basic("neo4j", "letmein!"));
         driver.verifyConnectivity();
     }
@@ -136,12 +136,11 @@ public class Neo4jAdminExampleIT {
         var query = Cypher.match(node)
                 .returning(Cypher.count(node.getRequiredSymbolicName()).as("count"))
                 .build();
-        var records = driver.executableQuery(query.getCypher())
-                .withConfig(QueryConfig.builder().withDatabase(TARGET_DATABASE).build())
-                .execute()
-                .records();
-        assertThat(records).hasSize(1);
-        assertThat(records.getFirst().get("count").asLong()).isEqualTo(expectedCount);
+        try (var session = driver.session(SESSION_CONFIG)) {
+            var records = session.run(query.getCypher()).list();
+            assertThat(records).hasSize(1);
+            assertThat(records.get(0).get("count").asLong()).isEqualTo(expectedCount);
+        }
     }
 
     private static void assertRelationshipCount(
@@ -152,12 +151,11 @@ public class Neo4jAdminExampleIT {
         var query = Cypher.match(relationship)
                 .returning(Cypher.count(relationship.getRequiredSymbolicName()).as("count"))
                 .build();
-        var records = driver.executableQuery(query.getCypher())
-                .withConfig(QueryConfig.builder().withDatabase(TARGET_DATABASE).build())
-                .execute()
-                .records();
-        assertThat(records).hasSize(1);
-        assertThat(records.getFirst().get("count").asLong()).isEqualTo(expectedCount);
+        try (var session = driver.session(SESSION_CONFIG)) {
+            var records = session.run(query.getCypher()).list();
+            assertThat(records).hasSize(1);
+            assertThat(records.get(0).get("count").asLong()).isEqualTo(expectedCount);
+        }
     }
 
     private static void assertSchema(Driver driver) {
@@ -188,57 +186,57 @@ public class Neo4jAdminExampleIT {
     }
 
     private static void assertNodeConstraint(Driver driver, String constraintType, String label, String property) {
-        var records = driver.executableQuery("""
-                                SHOW CONSTRAINTS YIELD type, entityType, labelsOrTypes, properties \
-                                WHERE type = $constraintType AND entityType = 'NODE' AND labelsOrTypes = [$label] AND properties = [$property] \
-                                RETURN count(*) = 1 AS result""")
-                .withConfig(QueryConfig.builder().withDatabase(TARGET_DATABASE).build())
-                .withParameters(Map.of("constraintType", constraintType, "label", label, "property", property))
-                .execute()
-                .records();
-        assertThat(records).hasSize(1);
-        assertThat(records.getFirst().get("result").asBoolean()).isTrue();
+        try (var session = driver.session(SESSION_CONFIG)) {
+            var records = session.run(
+                            "SHOW CONSTRAINTS YIELD type, entityType, labelsOrTypes, properties "
+                                    + "WHERE type = $constraintType AND entityType = 'NODE' AND labelsOrTypes = [$label] AND properties = [$property] "
+                                    + "RETURN count(*) = 1 AS result",
+                            Map.of("constraintType", constraintType, "label", label, "property", property))
+                    .list();
+            assertThat(records).hasSize(1);
+            assertThat(records.get(0).get("result").asBoolean()).isTrue();
+        }
     }
 
     private static void assertNodeTypeConstraint(Driver driver, String label, String property, String propertyType) {
-        var records = driver.executableQuery("""
-                                SHOW CONSTRAINTS YIELD type, entityType, labelsOrTypes, properties, propertyType \
-                                WHERE type = 'NODE_PROPERTY_TYPE' AND entityType = 'NODE' AND labelsOrTypes = [$label] AND properties = [$property] AND propertyType = $propertyType \
-                                RETURN count(*) = 1 AS result""")
-                .withConfig(QueryConfig.builder().withDatabase(TARGET_DATABASE).build())
-                .withParameters(Map.of("label", label, "property", property, "propertyType", propertyType))
-                .execute()
-                .records();
-        assertThat(records).hasSize(1);
-        assertThat(records.getFirst().get("result").asBoolean()).isTrue();
+        try (var session = driver.session(SESSION_CONFIG)) {
+            var records = session.run(
+                            "SHOW CONSTRAINTS YIELD type, entityType, labelsOrTypes, properties, propertyType "
+                                    + "WHERE type = 'NODE_PROPERTY_TYPE' AND entityType = 'NODE' AND labelsOrTypes = [$label] AND properties = [$property] AND propertyType = $propertyType "
+                                    + "RETURN count(*) = 1 AS result",
+                            Map.of("label", label, "property", property, "propertyType", propertyType))
+                    .list();
+            assertThat(records).hasSize(1);
+            assertThat(records.get(0).get("result").asBoolean()).isTrue();
+        }
     }
 
     private static void assertRelationshipConstraint(
             Driver driver, String constraintType, String relType, String property) {
-        var records = driver.executableQuery("""
-                                SHOW CONSTRAINTS YIELD type, entityType, labelsOrTypes, properties \
-                                WHERE type = $constraintType AND entityType = 'RELATIONSHIP' AND labelsOrTypes = [$type] AND properties = [$property] \
-                                RETURN count(*) = 1 AS result""")
-                .withConfig(QueryConfig.builder().withDatabase(TARGET_DATABASE).build())
-                .withParameters(Map.of("constraintType", constraintType, "type", relType, "property", property))
-                .execute()
-                .records();
-        assertThat(records).hasSize(1);
-        assertThat(records.getFirst().get("result").asBoolean()).isTrue();
+        try (var session = driver.session(SESSION_CONFIG)) {
+            var records = session.run(
+                            "SHOW CONSTRAINTS YIELD type, entityType, labelsOrTypes, properties "
+                                    + "WHERE type = $constraintType AND entityType = 'RELATIONSHIP' AND labelsOrTypes = [$type] AND properties = [$property] "
+                                    + "RETURN count(*) = 1 AS result",
+                            Map.of("constraintType", constraintType, "type", relType, "property", property))
+                    .list();
+            assertThat(records).hasSize(1);
+            assertThat(records.get(0).get("result").asBoolean()).isTrue();
+        }
     }
 
     private static void assertRelationshipTypeConstraint(
             Driver driver, String relType, String property, String propertyType) {
-        var records = driver.executableQuery("""
-                                SHOW CONSTRAINTS YIELD type, entityType, labelsOrTypes, properties, propertyType \
-                                WHERE type = 'RELATIONSHIP_PROPERTY_TYPE' AND entityType = 'RELATIONSHIP' AND labelsOrTypes = [$type] AND properties = [$property] AND propertyType = $propertyType \
-                                RETURN count(*) = 1 AS result""")
-                .withConfig(QueryConfig.builder().withDatabase(TARGET_DATABASE).build())
-                .withParameters(Map.of("type", relType, "property", property, "propertyType", propertyType))
-                .execute()
-                .records();
-        assertThat(records).hasSize(1);
-        assertThat(records.getFirst().get("result").asBoolean()).isTrue();
+        try (var session = driver.session(SESSION_CONFIG)) {
+            var records = session.run(
+                            "SHOW CONSTRAINTS YIELD type, entityType, labelsOrTypes, properties, propertyType "
+                                    + "WHERE type = 'RELATIONSHIP_PROPERTY_TYPE' AND entityType = 'RELATIONSHIP' AND labelsOrTypes = [$type] AND properties = [$property] AND propertyType = $propertyType "
+                                    + "RETURN count(*) = 1 AS result",
+                            Map.of("type", relType, "property", property, "propertyType", propertyType))
+                    .list();
+            assertThat(records).hasSize(1);
+            assertThat(records.get(0).get("result").asBoolean()).isTrue();
+        }
     }
 
     public static class ParquetSourceProvider implements SourceProvider<ParquetSource> {
@@ -255,7 +253,20 @@ public class Neo4jAdminExampleIT {
         }
     }
 
-    public record ParquetSource(String name, String uri) implements Source {
+    public static class ParquetSource implements Source {
+
+        private final String name;
+
+        private final String uri;
+
+        public ParquetSource(String name, String uri) {
+            this.name = name;
+            this.uri = uri;
+        }
+
+        public String uri() {
+            return uri;
+        }
 
         @Override
         public String getType() {
@@ -290,10 +301,10 @@ public class Neo4jAdminExampleIT {
             assertThat(execution.getExitCode())
                     .overridingErrorMessage(execution.getStderr())
                     .isZero();
-            driver.executableQuery("CREATE DATABASE $name WAIT")
-                    .withParameters(Map.of("name", targetDatabase))
-                    .withConfig(QueryConfig.builder().withDatabase("system").build())
-                    .execute();
+            try (var session = driver.session(SessionConfig.forDatabase("system"))) {
+                session.run("CREATE DATABASE $name WAIT", Map.of("name", targetDatabase))
+                        .consume();
+            }
 
             // run post actions
             for (Action action : specification.getActions()) {
@@ -318,11 +329,12 @@ public class Neo4jAdminExampleIT {
             Map<String, NodeTarget> indexedNodes = specification.getTargets().getNodes().stream()
                     .collect(Collectors.toMap(Target::getName, Function.identity()));
             for (Target target : specification.getTargets().getAllActive()) {
-                switch (target) {
-                    case NodeTarget nodeTarget -> createHeaderFile(indexedSources, nodeTarget);
-                    case RelationshipTarget relationshipTarget ->
-                        createHeaderFile(indexedSources, indexedNodes, relationshipTarget);
-                    default -> throw new RuntimeException("unsupported target type: %s".formatted(target.getClass()));
+                if (target instanceof NodeTarget) {
+                    createHeaderFile(indexedSources, (NodeTarget) target);
+                } else if (target instanceof RelationshipTarget) {
+                    createHeaderFile(indexedSources, indexedNodes, (RelationshipTarget) target);
+                } else {
+                    throw new RuntimeException(String.format("unsupported target type: %s", target.getClass()));
                 }
             }
         }
@@ -372,11 +384,11 @@ public class Neo4jAdminExampleIT {
         }
 
         private void generateHeaderFile(File targetFile, Map<String, String> fieldMappings) throws IOException {
-            var originalFields = fieldMappings.keySet().stream().sorted().toList();
-            var mappedNames = originalFields.stream().map(fieldMappings::get).toList();
+            var originalFields = fieldMappings.keySet().stream().sorted().collect(Collectors.toList());
+            var mappedNames = originalFields.stream().map(fieldMappings::get).collect(Collectors.toList());
             Files.writeString(
                     targetFile.toPath(),
-                    "%s%n%s".formatted(String.join(",", mappedNames), String.join(",", originalFields)));
+                    String.format("%s%n%s", String.join(",", mappedNames), String.join(",", originalFields)));
         }
 
         private static String[] importCommand(ImportSpecification specification, String database) {
@@ -389,16 +401,16 @@ public class Neo4jAdminExampleIT {
                 command.append(" --nodes=");
                 command.append(String.join(":", nodeTarget.getLabels()));
                 command.append("=");
-                command.append("/import/%s,".formatted(headerFileName(nodeTarget)));
-                command.append("%s".formatted(sourceUri(specification, nodeTarget)));
+                command.append(String.format("/import/%s,", headerFileName(nodeTarget)));
+                command.append(String.format("%s", sourceUri(specification, nodeTarget)));
             }
 
             for (RelationshipTarget relationshipTarget : targets.getRelationships()) {
                 command.append(" --relationships=");
                 command.append(relationshipTarget.getType());
                 command.append("=");
-                command.append("/import/%s,".formatted(headerFileName(relationshipTarget)));
-                command.append("%s".formatted(sourceUri(specification, relationshipTarget)));
+                command.append(String.format("/import/%s,", headerFileName(relationshipTarget)));
+                command.append(String.format("%s", sourceUri(specification, relationshipTarget)));
             }
 
             if (targets.getAllActive().stream().anyMatch(Neo4jAdminExampleIT::hasSchemaOps)) {
@@ -476,7 +488,7 @@ public class Neo4jAdminExampleIT {
         }
 
         private static String headerFileName(Target target) {
-            return "%s_header.csv".formatted(target.getName());
+            return String.format("%s_header.csv", target.getName());
         }
 
         private static String schemaFileName() {
@@ -507,70 +519,72 @@ public class Neo4jAdminExampleIT {
         }
 
         private static String idSpaceFor(String id, NodeTarget nodeTarget) {
-            return ":%s(%s-%s)".formatted(id, nodeTarget.getName(), String.join("|", nodeTarget.getLabels()));
+            return String.format(":%s(%s-%s)", id, nodeTarget.getName(), String.join("|", nodeTarget.getLabels()));
         }
 
         private static List<String> generateSchemaStatements(List<? extends Target> targets) {
             return targets.stream()
-                    .flatMap(target -> switch (target) {
-                        case NodeTarget nodeTarget -> generateNodeSchemaStatements(nodeTarget);
-                        case RelationshipTarget relationshipTarget ->
-                            generateRelationshipSchemaStatements(relationshipTarget);
-                        default -> Stream.empty();
+                    .flatMap(target -> {
+                        if (target instanceof NodeTarget) {
+                            return generateNodeSchemaStatements((NodeTarget) target);
+                        }
+                        if (target instanceof RelationshipTarget) {
+                            return generateRelationshipSchemaStatements((RelationshipTarget) target);
+                        }
+                        return Stream.<String>empty();
                     })
-                    .toList();
+                    .collect(Collectors.toList());
         }
 
         private static Stream<String> generateNodeSchemaStatements(NodeTarget nodeTarget) {
             var statements = new ArrayList<String>();
             statements.addAll(nodeTarget.getSchema().getKeyConstraints().stream()
                     .map(constraint -> Map.entry("n", constraint))
-                    .map(entry -> "CREATE CONSTRAINT %s FOR (%s:%s) REQUIRE (%s) IS NODE KEY"
-                            .formatted(
-                                    generateName(
-                                            nodeTarget,
-                                            "key",
-                                            entry.getValue().getLabel(),
-                                            entry.getValue().getProperties()),
-                                    entry.getKey(),
-                                    sanitize(entry.getValue().getLabel()),
-                                    entry.getValue().getProperties().stream()
-                                            .map(Neo4jAdmin::sanitize)
-                                            .map(prop -> propertyOf(entry.getKey(), prop))
-                                            .collect(Collectors.joining(","))))
-                    .toList());
+                    .map(entry -> String.format(
+                            "CREATE CONSTRAINT %s FOR (%s:%s) REQUIRE (%s) IS NODE KEY",
+                            generateName(
+                                    nodeTarget,
+                                    "key",
+                                    entry.getValue().getLabel(),
+                                    entry.getValue().getProperties()),
+                            entry.getKey(),
+                            sanitize(entry.getValue().getLabel()),
+                            entry.getValue().getProperties().stream()
+                                    .map(Neo4jAdmin::sanitize)
+                                    .map(prop -> propertyOf(entry.getKey(), prop))
+                                    .collect(Collectors.joining(","))))
+                    .collect(Collectors.toList()));
             statements.addAll(nodeTarget.getSchema().getUniqueConstraints().stream()
                     .map(constraint -> Map.entry("n", constraint))
-                    .map(entry -> "CREATE CONSTRAINT %s FOR (%s:%s) REQUIRE (%s) IS UNIQUE"
-                            .formatted(
-                                    generateName(
-                                            nodeTarget,
-                                            "unique",
-                                            entry.getValue().getLabel(),
-                                            entry.getValue().getProperties()),
-                                    entry.getKey(),
-                                    sanitize(entry.getValue().getLabel()),
-                                    entry.getValue().getProperties().stream()
-                                            .map(Neo4jAdmin::sanitize)
-                                            .map(prop -> propertyOf(entry.getKey(), prop))
-                                            .collect(Collectors.joining(","))))
-                    .toList());
+                    .map(entry -> String.format(
+                            "CREATE CONSTRAINT %s FOR (%s:%s) REQUIRE (%s) IS UNIQUE",
+                            generateName(
+                                    nodeTarget,
+                                    "unique",
+                                    entry.getValue().getLabel(),
+                                    entry.getValue().getProperties()),
+                            entry.getKey(),
+                            sanitize(entry.getValue().getLabel()),
+                            entry.getValue().getProperties().stream()
+                                    .map(Neo4jAdmin::sanitize)
+                                    .map(prop -> propertyOf(entry.getKey(), prop))
+                                    .collect(Collectors.joining(","))))
+                    .collect(Collectors.toList()));
             statements.addAll(nodeTarget.getSchema().getTypeConstraints().stream()
                     .map(constraint -> Map.entry("n", constraint))
-                    .map(entry -> "CREATE CONSTRAINT %s FOR (%s:%s) REQUIRE %s IS :: %s"
-                            .formatted(
-                                    generateName(
-                                            nodeTarget,
-                                            "type",
-                                            entry.getValue().getLabel(),
-                                            List.of(entry.getValue().getProperty())),
-                                    entry.getKey(),
-                                    sanitize(entry.getValue().getLabel()),
-                                    propertyOf(entry.getKey(), entry.getValue().getProperty()),
-                                    propertyType(findPropertyType(
-                                            nodeTarget.getProperties(),
-                                            entry.getValue().getProperty()))))
-                    .toList());
+                    .map(entry -> String.format(
+                            "CREATE CONSTRAINT %s FOR (%s:%s) REQUIRE %s IS :: %s",
+                            generateName(
+                                    nodeTarget,
+                                    "type",
+                                    entry.getValue().getLabel(),
+                                    List.of(entry.getValue().getProperty())),
+                            entry.getKey(),
+                            sanitize(entry.getValue().getLabel()),
+                            propertyOf(entry.getKey(), entry.getValue().getProperty()),
+                            propertyType(findPropertyType(
+                                    nodeTarget.getProperties(), entry.getValue().getProperty()))))
+                    .collect(Collectors.toList()));
             return statements.stream();
         }
 
@@ -582,52 +596,52 @@ public class Neo4jAdminExampleIT {
             var statements = new ArrayList<String>();
             statements.addAll(schema.getKeyConstraints().stream()
                     .map(constraint -> Map.entry("r", constraint))
-                    .map(entry -> "CREATE CONSTRAINT %s FOR ()-[%s:%s]-() REQUIRE (%s) IS RELATIONSHIP KEY"
-                            .formatted(
-                                    generateName(
-                                            relationshipTarget,
-                                            "key",
-                                            relationshipTarget.getType(),
-                                            entry.getValue().getProperties()),
-                                    entry.getKey(),
-                                    sanitize(relationshipTarget.getType()),
-                                    entry.getValue().getProperties().stream()
-                                            .map(Neo4jAdmin::sanitize)
-                                            .map(prop -> propertyOf(entry.getKey(), prop))
-                                            .collect(Collectors.joining(","))))
-                    .toList());
+                    .map(entry -> String.format(
+                            "CREATE CONSTRAINT %s FOR ()-[%s:%s]-() REQUIRE (%s) IS RELATIONSHIP KEY",
+                            generateName(
+                                    relationshipTarget,
+                                    "key",
+                                    relationshipTarget.getType(),
+                                    entry.getValue().getProperties()),
+                            entry.getKey(),
+                            sanitize(relationshipTarget.getType()),
+                            entry.getValue().getProperties().stream()
+                                    .map(Neo4jAdmin::sanitize)
+                                    .map(prop -> propertyOf(entry.getKey(), prop))
+                                    .collect(Collectors.joining(","))))
+                    .collect(Collectors.toList()));
             statements.addAll(schema.getUniqueConstraints().stream()
                     .map(constraint -> Map.entry("r", constraint))
-                    .map(entry -> "CREATE CONSTRAINT %s FOR ()-[%s:%s]-() REQUIRE (%s) IS UNIQUE"
-                            .formatted(
-                                    generateName(
-                                            relationshipTarget,
-                                            "unique",
-                                            relationshipTarget.getType(),
-                                            entry.getValue().getProperties()),
-                                    entry.getKey(),
-                                    sanitize(relationshipTarget.getType()),
-                                    entry.getValue().getProperties().stream()
-                                            .map(Neo4jAdmin::sanitize)
-                                            .map(prop -> propertyOf(entry.getKey(), prop))
-                                            .collect(Collectors.joining(","))))
-                    .toList());
+                    .map(entry -> String.format(
+                            "CREATE CONSTRAINT %s FOR ()-[%s:%s]-() REQUIRE (%s) IS UNIQUE",
+                            generateName(
+                                    relationshipTarget,
+                                    "unique",
+                                    relationshipTarget.getType(),
+                                    entry.getValue().getProperties()),
+                            entry.getKey(),
+                            sanitize(relationshipTarget.getType()),
+                            entry.getValue().getProperties().stream()
+                                    .map(Neo4jAdmin::sanitize)
+                                    .map(prop -> propertyOf(entry.getKey(), prop))
+                                    .collect(Collectors.joining(","))))
+                    .collect(Collectors.toList()));
             statements.addAll(schema.getTypeConstraints().stream()
                     .map(constraint -> Map.entry("r", constraint))
-                    .map(entry -> "CREATE CONSTRAINT %s FOR ()-[%s:%s]-() REQUIRE %s IS :: %s"
-                            .formatted(
-                                    generateName(
-                                            relationshipTarget,
-                                            "type",
-                                            relationshipTarget.getType(),
-                                            List.of(entry.getValue().getProperty())),
-                                    entry.getKey(),
-                                    sanitize(relationshipTarget.getType()),
-                                    propertyOf(entry.getKey(), entry.getValue().getProperty()),
-                                    propertyType(findPropertyType(
-                                            relationshipTarget.getProperties(),
-                                            entry.getValue().getProperty()))))
-                    .toList());
+                    .map(entry -> String.format(
+                            "CREATE CONSTRAINT %s FOR ()-[%s:%s]-() REQUIRE %s IS :: %s",
+                            generateName(
+                                    relationshipTarget,
+                                    "type",
+                                    relationshipTarget.getType(),
+                                    List.of(entry.getValue().getProperty())),
+                            entry.getKey(),
+                            sanitize(relationshipTarget.getType()),
+                            propertyOf(entry.getKey(), entry.getValue().getProperty()),
+                            propertyType(findPropertyType(
+                                    relationshipTarget.getProperties(),
+                                    entry.getValue().getProperty()))))
+                    .collect(Collectors.toList()));
             return statements.stream();
         }
 
@@ -635,17 +649,17 @@ public class Neo4jAdminExampleIT {
             var result = mappings.stream()
                     .filter(mapping -> mapping.getTargetProperty().equals(property))
                     .map(PropertyMapping::getTargetPropertyType)
-                    .toList();
+                    .collect(Collectors.toList());
             assertThat(result).hasSize(1);
-            return result.getFirst();
+            return result.get(0);
         }
 
         private static String generateName(EntityTarget target, String type, String label, List<String> properties) {
-            return sanitize("%s_%s_%s_%s".formatted(target.getName(), type, label, String.join("-", properties)));
+            return sanitize(String.format("%s_%s_%s_%s", target.getName(), type, label, String.join("-", properties)));
         }
 
         private static String propertyOf(String container, String property) {
-            return "%s.%s".formatted(container, property);
+            return String.format("%s.%s", container, property);
         }
 
         private static String sanitize(String element) {
@@ -655,47 +669,77 @@ public class Neo4jAdminExampleIT {
         }
 
         private static String propertyType(PropertyType propertyType) {
-            return switch (propertyType.getName()) {
-                case BOOLEAN -> "BOOLEAN";
-                case BOOLEAN_ARRAY -> "LIST<BOOLEAN NOT NULL>";
-                case DATE -> "DATE";
-                case DATE_ARRAY -> "LIST<DATE NOT NULL>";
-                case DURATION -> "DURATION";
-                case DURATION_ARRAY -> "LIST<DURATION NOT NULL>";
-                case FLOAT -> "FLOAT";
-                case FLOAT_ARRAY -> "LIST<FLOAT NOT NULL>";
-                case INTEGER -> "INTEGER";
-                case INTEGER_ARRAY -> "LIST<INTEGER NOT NULL>";
-                case LOCAL_DATETIME -> "LOCAL DATETIME";
-                case LOCAL_DATETIME_ARRAY -> "LIST<LOCAL DATETIME NOT NULL>";
-                case LOCAL_TIME -> "LOCAL TIME";
-                case LOCAL_TIME_ARRAY -> "LIST<LOCAL TIME NOT NULL>";
-                case POINT -> "POINT";
-                case POINT_ARRAY -> "LIST<POINT NOT NULL>";
-                case STRING -> "STRING";
-                case STRING_ARRAY -> "LIST<STRING NOT NULL>";
-                case ZONED_DATETIME -> "ZONED DATETIME";
-                case ZONED_DATETIME_ARRAY -> "LIST<ZONED DATETIME NOT NULL>";
-                case ZONED_TIME -> "ZONED TIME";
-                case ZONED_TIME_ARRAY -> "LIST<ZONED TIME NOT NULL>";
-                case INTEGER_VECTOR -> String.format("VECTOR<INTEGER>(%d)", propertyType.getDimension());
-                case FLOAT_VECTOR -> String.format("VECTOR<FLOAT>(%d)", propertyType.getDimension());
-                case INTEGER32_VECTOR -> String.format("VECTOR<INTEGER32>(%d)", propertyType.getDimension());
-                case FLOAT32_VECTOR -> String.format("VECTOR<FLOAT32>(%d)", propertyType.getDimension());
-                case INTEGER8_VECTOR -> String.format("VECTOR<INTEGER8>(%d)", propertyType.getDimension());
-                case INTEGER16_VECTOR -> String.format("VECTOR<INTEGER16>(%d)", propertyType.getDimension());
-                default ->
+            switch (propertyType.getName()) {
+                case BOOLEAN:
+                    return "BOOLEAN";
+                case BOOLEAN_ARRAY:
+                    return "LIST<BOOLEAN NOT NULL>";
+                case DATE:
+                    return "DATE";
+                case DATE_ARRAY:
+                    return "LIST<DATE NOT NULL>";
+                case DURATION:
+                    return "DURATION";
+                case DURATION_ARRAY:
+                    return "LIST<DURATION NOT NULL>";
+                case FLOAT:
+                    return "FLOAT";
+                case FLOAT_ARRAY:
+                    return "LIST<FLOAT NOT NULL>";
+                case INTEGER:
+                    return "INTEGER";
+                case INTEGER_ARRAY:
+                    return "LIST<INTEGER NOT NULL>";
+                case LOCAL_DATETIME:
+                    return "LOCAL DATETIME";
+                case LOCAL_DATETIME_ARRAY:
+                    return "LIST<LOCAL DATETIME NOT NULL>";
+                case LOCAL_TIME:
+                    return "LOCAL TIME";
+                case LOCAL_TIME_ARRAY:
+                    return "LIST<LOCAL TIME NOT NULL>";
+                case POINT:
+                    return "POINT";
+                case POINT_ARRAY:
+                    return "LIST<POINT NOT NULL>";
+                case STRING:
+                    return "STRING";
+                case STRING_ARRAY:
+                    return "LIST<STRING NOT NULL>";
+                case ZONED_DATETIME:
+                    return "ZONED DATETIME";
+                case ZONED_DATETIME_ARRAY:
+                    return "LIST<ZONED DATETIME NOT NULL>";
+                case ZONED_TIME:
+                    return "ZONED TIME";
+                case ZONED_TIME_ARRAY:
+                    return "LIST<ZONED TIME NOT NULL>";
+                case INTEGER_VECTOR:
+                    return String.format("VECTOR<INTEGER>(%d)", propertyType.getDimension());
+                case FLOAT_VECTOR:
+                    return String.format("VECTOR<FLOAT>(%d)", propertyType.getDimension());
+                case INTEGER32_VECTOR:
+                    return String.format("VECTOR<INTEGER32>(%d)", propertyType.getDimension());
+                case FLOAT32_VECTOR:
+                    return String.format("VECTOR<FLOAT32>(%d)", propertyType.getDimension());
+                case INTEGER8_VECTOR:
+                    return String.format("VECTOR<INTEGER8>(%d)", propertyType.getDimension());
+                case INTEGER16_VECTOR:
+                    return String.format("VECTOR<INTEGER16>(%d)", propertyType.getDimension());
+                default:
                     throw new IllegalArgumentException(String.format("Unsupported property type: %s", propertyType));
-            };
+            }
         }
     }
 
     private static boolean hasSchemaOps(Target target) {
-        return switch (target) {
-            case NodeTarget nodeTarget -> hasSchemaOps(nodeTarget.getSchema());
-            case RelationshipTarget relationshipTarget -> hasSchemaOps(relationshipTarget.getSchema());
-            default -> false;
-        };
+        if (target instanceof NodeTarget) {
+            return hasSchemaOps(((NodeTarget) target).getSchema());
+        }
+        if (target instanceof RelationshipTarget) {
+            return hasSchemaOps(((RelationshipTarget) target).getSchema());
+        }
+        return false;
     }
 
     private static boolean hasSchemaOps(NodeSchema schema) {

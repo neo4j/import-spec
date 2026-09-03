@@ -27,7 +27,6 @@ val MAVEN_DEFAULT_ARGS = buildString {
 }
 
 val DEFAULT_JAVA_VERSION = JavaVersion.V_11
-val LTS_JAVA_VERSION = JavaVersion.V_21
 
 const val NODE_DOCKER_IMAGE = "%ecr-registry-connectors%:node-24-latest"
 
@@ -47,9 +46,7 @@ enum class LinuxSize(val value: String) {
 }
 
 enum class JavaVersion(val version: String, val dockerImage: String) {
-  V_11(version = "11", dockerImage = "%ecr-registry-connectors%:jdk-11-latest"),
-  V_17(version = "17", dockerImage = "%ecr-registry-connectors%:jdk-17-latest"),
-  V_21(version = "21", dockerImage = "%ecr-registry-connectors%:jdk-21-latest"),
+  V_11(version = "11", dockerImage = "%ecr-registry-connectors%:jdk-11-latest")
 }
 
 fun BuildFeatures.buildCache(javaVersion: JavaVersion) = buildCache {

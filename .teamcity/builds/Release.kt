@@ -9,7 +9,7 @@ import jetbrains.buildServer.configs.kotlin.toId
 
 private const val DRY_RUN = "dry-run"
 
-class Release(id: String, name: String, java: JavaVersion = JavaVersion.V_21) :
+class Release(id: String, name: String, java: JavaVersion = JavaVersion.V_11) :
     BuildType(
         {
           this.id(id.toId())

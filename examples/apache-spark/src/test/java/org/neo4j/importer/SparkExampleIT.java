@@ -16,6 +16,7 @@
  */
 package org.neo4j.importer;
 
+import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -155,18 +156,20 @@ public class SparkExampleIT {
         return CompletableFuture.runAsync(() -> {
             var stepFutures = new ArrayList<CompletableFuture<Void>>();
             for (var step : currentStage.getSteps()) {
-                switch (step) {
-                    case SourceStep sourceStep -> indexSource(sourceDataFrames, sourceStep);
-                    case NodeTargetStep node -> {
-                        var df = sourceDataFrames.get(node.sourceName());
-                        stepFutures.add(runNodeImport(node, df));
-                    }
-                    case RelationshipTargetStep relationship -> {
-                        var df = sourceDataFrames.get(relationship.sourceName());
-                        stepFutures.add(runRelationshipImport(relationship, df));
-                    }
-                    case ActionStep action -> stepFutures.add(runAction(driver, action));
-                    default -> Assertions.fail("Unexpected step: %s".formatted(step));
+                if (step instanceof SourceStep) {
+                    indexSource(sourceDataFrames, (SourceStep) step);
+                } else if (step instanceof NodeTargetStep) {
+                    var node = (NodeTargetStep) step;
+                    var df = sourceDataFrames.get(node.sourceName());
+                    stepFutures.add(runNodeImport(node, df));
+                } else if (step instanceof RelationshipTargetStep) {
+                    var relationship = (RelationshipTargetStep) step;
+                    var df = sourceDataFrames.get(relationship.sourceName());
+                    stepFutures.add(runRelationshipImport(relationship, df));
+                } else if (step instanceof ActionStep) {
+                    stepFutures.add(runAction(driver, (ActionStep) step));
+                } else {
+                    Assertions.fail(format("Unexpected step: %s", step));
                 }
             }
             CompletableFuture.allOf(stepFutures.toArray(new CompletableFuture[0]))
@@ -243,38 +246,34 @@ public class SparkExampleIT {
 
     private String properties(EntityTargetStep target) {
         return allProperties(target)
-                .map(mapping -> "%s:%s".formatted(mapping.getSourceField(), mapping.getTargetProperty()))
+                .map(mapping -> format("%s:%s", mapping.getSourceField(), mapping.getTargetProperty()))
                 .collect(Collectors.joining(","));
     }
 
     private String keyProperties(EntityTargetStep target) {
         return target.keyProperties().stream()
-                .map(mapping -> "%s:%s".formatted(mapping.getSourceField(), mapping.getTargetProperty()))
+                .map(mapping -> format("%s:%s", mapping.getSourceField(), mapping.getTargetProperty()))
                 .collect(Collectors.joining(","));
     }
 
     private SaveMode saveMode(WriteMode writeMode) {
         switch (writeMode) {
-            case CREATE -> {
+            case CREATE:
                 return SaveMode.Append;
-            }
-            case MERGE -> {
+            case MERGE:
                 return SaveMode.Overwrite;
-            }
         }
-        throw new IllegalStateException("unexpected write mode: %s".formatted(writeMode));
+        throw new IllegalStateException(format("unexpected write mode: %s", writeMode));
     }
 
     private String nodeSaveMode(NodeMatchMode nodeMatchMode) {
         switch (nodeMatchMode) {
-            case MATCH -> {
+            case MATCH:
                 return "Match";
-            }
-            case MERGE -> {
+            case MERGE:
                 return "Overwrite";
-            }
         }
-        throw new IllegalStateException("unexpected node match mode: %s".formatted(nodeMatchMode));
+        throw new IllegalStateException(format("unexpected node match mode: %s", nodeMatchMode));
     }
 
     private String keys(EntityTargetStep target) {
@@ -310,34 +309,34 @@ public class SparkExampleIT {
         }
         var statements = new ArrayList<String>();
         statements.addAll(schema.getKeyConstraints().stream()
-                .map(constraint -> "CREATE CONSTRAINT %s FOR (n:%s) REQUIRE (%s) IS NODE KEY"
-                        .formatted(
-                                constraint.getName(),
-                                sanitize(constraint.getLabel()),
-                                constraint.getProperties().stream()
-                                        .map(SparkExampleIT::sanitize)
-                                        .map(prop -> "%s.%s".formatted("n", prop))
-                                        .collect(Collectors.joining(","))))
-                .toList());
+                .map(constraint -> format(
+                        "CREATE CONSTRAINT %s FOR (n:%s) REQUIRE (%s) IS NODE KEY",
+                        constraint.getName(),
+                        sanitize(constraint.getLabel()),
+                        constraint.getProperties().stream()
+                                .map(SparkExampleIT::sanitize)
+                                .map(prop -> format("%s.%s", "n", prop))
+                                .collect(Collectors.joining(","))))
+                .collect(Collectors.toList()));
         statements.addAll(schema.getUniqueConstraints().stream()
-                .map(constraint -> "CREATE CONSTRAINT %s FOR (n:%s) REQUIRE (%s) IS UNIQUE"
-                        .formatted(
-                                constraint.getName(),
-                                sanitize(constraint.getLabel()),
-                                constraint.getProperties().stream()
-                                        .map(SparkExampleIT::sanitize)
-                                        .map(prop -> "%s.%s".formatted("n", prop))
-                                        .collect(Collectors.joining(","))))
-                .toList());
+                .map(constraint -> format(
+                        "CREATE CONSTRAINT %s FOR (n:%s) REQUIRE (%s) IS UNIQUE",
+                        constraint.getName(),
+                        sanitize(constraint.getLabel()),
+                        constraint.getProperties().stream()
+                                .map(SparkExampleIT::sanitize)
+                                .map(prop -> format("%s.%s", "n", prop))
+                                .collect(Collectors.joining(","))))
+                .collect(Collectors.toList()));
         Map<String, PropertyType> propertyTypes = step.propertyTypes();
         statements.addAll(schema.getTypeConstraints().stream()
-                .map(constraint -> "CREATE CONSTRAINT %s FOR (n:%s) REQUIRE n.%s IS :: %s"
-                        .formatted(
-                                constraint.getName(),
-                                sanitize(constraint.getLabel()),
-                                sanitize(constraint.getProperty()),
-                                propertyType(propertyTypes.get(constraint.getProperty()))))
-                .toList());
+                .map(constraint -> format(
+                        "CREATE CONSTRAINT %s FOR (n:%s) REQUIRE n.%s IS :: %s",
+                        constraint.getName(),
+                        sanitize(constraint.getLabel()),
+                        sanitize(constraint.getProperty()),
+                        propertyType(propertyTypes.get(constraint.getProperty()))))
+                .collect(Collectors.toList()));
         return statements;
     }
 
@@ -348,34 +347,34 @@ public class SparkExampleIT {
         }
         var statements = new ArrayList<String>();
         statements.addAll(schema.getKeyConstraints().stream()
-                .map(constraint -> "CREATE CONSTRAINT %s FOR ()-[r:%s]-() REQUIRE (%s) IS RELATIONSHIP KEY"
-                        .formatted(
-                                constraint.getName(),
-                                sanitize(step.type()),
-                                constraint.getProperties().stream()
-                                        .map(SparkExampleIT::sanitize)
-                                        .map(prop -> "%s.%s".formatted("r", prop))
-                                        .collect(Collectors.joining(","))))
-                .toList());
+                .map(constraint -> format(
+                        "CREATE CONSTRAINT %s FOR ()-[r:%s]-() REQUIRE (%s) IS RELATIONSHIP KEY",
+                        constraint.getName(),
+                        sanitize(step.type()),
+                        constraint.getProperties().stream()
+                                .map(SparkExampleIT::sanitize)
+                                .map(prop -> format("%s.%s", "r", prop))
+                                .collect(Collectors.joining(","))))
+                .collect(Collectors.toList()));
         statements.addAll(schema.getUniqueConstraints().stream()
-                .map(constraint -> "CREATE CONSTRAINT %s FOR ()-[r:%s]-() REQUIRE (%s) IS UNIQUE"
-                        .formatted(
-                                constraint.getName(),
-                                sanitize(step.type()),
-                                constraint.getProperties().stream()
-                                        .map(SparkExampleIT::sanitize)
-                                        .map(prop -> "%s.%s".formatted("r", prop))
-                                        .collect(Collectors.joining(","))))
-                .toList());
+                .map(constraint -> format(
+                        "CREATE CONSTRAINT %s FOR ()-[r:%s]-() REQUIRE (%s) IS UNIQUE",
+                        constraint.getName(),
+                        sanitize(step.type()),
+                        constraint.getProperties().stream()
+                                .map(SparkExampleIT::sanitize)
+                                .map(prop -> format("%s.%s", "r", prop))
+                                .collect(Collectors.joining(","))))
+                .collect(Collectors.toList()));
         Map<String, PropertyType> propertyTypes = step.propertyTypes();
         statements.addAll(schema.getTypeConstraints().stream()
-                .map(constraint -> "CREATE CONSTRAINT %s FOR ()-[r:%s]-() REQUIRE r.%s IS :: %s"
-                        .formatted(
-                                constraint.getName(),
-                                sanitize(step.type()),
-                                sanitize(constraint.getProperty()),
-                                propertyType(propertyTypes.get(constraint.getProperty()))))
-                .toList());
+                .map(constraint -> format(
+                        "CREATE CONSTRAINT %s FOR ()-[r:%s]-() REQUIRE r.%s IS :: %s",
+                        constraint.getName(),
+                        sanitize(step.type()),
+                        sanitize(constraint.getProperty()),
+                        propertyType(propertyTypes.get(constraint.getProperty()))))
+                .collect(Collectors.toList()));
         return statements;
     }
 
@@ -386,46 +385,78 @@ public class SparkExampleIT {
     }
 
     private static String propertyType(PropertyType propertyType) {
-        return switch (propertyType.getName()) {
-            case BOOLEAN -> "BOOLEAN";
-            case BOOLEAN_ARRAY -> "LIST<BOOLEAN NOT NULL>";
-            case DATE -> "DATE";
-            case DATE_ARRAY -> "LIST<DATE NOT NULL>";
-            case DURATION -> "DURATION";
-            case DURATION_ARRAY -> "LIST<DURATION NOT NULL>";
-            case FLOAT -> "FLOAT";
-            case FLOAT_ARRAY -> "LIST<FLOAT NOT NULL>";
-            case INTEGER -> "INTEGER";
-            case INTEGER_ARRAY -> "LIST<INTEGER NOT NULL>";
-            case LOCAL_DATETIME -> "LOCAL DATETIME";
-            case LOCAL_DATETIME_ARRAY -> "LIST<LOCAL DATETIME NOT NULL>";
-            case LOCAL_TIME -> "LOCAL TIME";
-            case LOCAL_TIME_ARRAY -> "LIST<LOCAL TIME NOT NULL>";
-            case POINT -> "POINT";
-            case POINT_ARRAY -> "LIST<POINT NOT NULL>";
-            case STRING -> "STRING";
-            case STRING_ARRAY -> "LIST<STRING NOT NULL>";
-            case ZONED_DATETIME -> "ZONED DATETIME";
-            case ZONED_DATETIME_ARRAY -> "LIST<ZONED DATETIME NOT NULL>";
-            case ZONED_TIME -> "ZONED TIME";
-            case ZONED_TIME_ARRAY -> "LIST<ZONED TIME NOT NULL>";
-            case INTEGER_VECTOR -> String.format("VECTOR<INTEGER>(%d)", propertyType.getDimension());
-            case FLOAT_VECTOR -> String.format("VECTOR<FLOAT>(%d)", propertyType.getDimension());
-            case INTEGER32_VECTOR -> String.format("VECTOR<INTEGER32>(%d)", propertyType.getDimension());
-            case FLOAT32_VECTOR -> String.format("VECTOR<FLOAT32>(%d)", propertyType.getDimension());
-            case INTEGER8_VECTOR -> String.format("VECTOR<INTEGER8>(%d)", propertyType.getDimension());
-            case INTEGER16_VECTOR -> String.format("VECTOR<INTEGER16>(%d)", propertyType.getDimension());
-            default -> throw new IllegalArgumentException(String.format("Unsupported property type: %s", propertyType));
-        };
+        switch (propertyType.getName()) {
+            case BOOLEAN:
+                return "BOOLEAN";
+            case BOOLEAN_ARRAY:
+                return "LIST<BOOLEAN NOT NULL>";
+            case DATE:
+                return "DATE";
+            case DATE_ARRAY:
+                return "LIST<DATE NOT NULL>";
+            case DURATION:
+                return "DURATION";
+            case DURATION_ARRAY:
+                return "LIST<DURATION NOT NULL>";
+            case FLOAT:
+                return "FLOAT";
+            case FLOAT_ARRAY:
+                return "LIST<FLOAT NOT NULL>";
+            case INTEGER:
+                return "INTEGER";
+            case INTEGER_ARRAY:
+                return "LIST<INTEGER NOT NULL>";
+            case LOCAL_DATETIME:
+                return "LOCAL DATETIME";
+            case LOCAL_DATETIME_ARRAY:
+                return "LIST<LOCAL DATETIME NOT NULL>";
+            case LOCAL_TIME:
+                return "LOCAL TIME";
+            case LOCAL_TIME_ARRAY:
+                return "LIST<LOCAL TIME NOT NULL>";
+            case POINT:
+                return "POINT";
+            case POINT_ARRAY:
+                return "LIST<POINT NOT NULL>";
+            case STRING:
+                return "STRING";
+            case STRING_ARRAY:
+                return "LIST<STRING NOT NULL>";
+            case ZONED_DATETIME:
+                return "ZONED DATETIME";
+            case ZONED_DATETIME_ARRAY:
+                return "LIST<ZONED DATETIME NOT NULL>";
+            case ZONED_TIME:
+                return "ZONED TIME";
+            case ZONED_TIME_ARRAY:
+                return "LIST<ZONED TIME NOT NULL>";
+            case INTEGER_VECTOR:
+                return String.format("VECTOR<INTEGER>(%d)", propertyType.getDimension());
+            case FLOAT_VECTOR:
+                return String.format("VECTOR<FLOAT>(%d)", propertyType.getDimension());
+            case INTEGER32_VECTOR:
+                return String.format("VECTOR<INTEGER32>(%d)", propertyType.getDimension());
+            case FLOAT32_VECTOR:
+                return String.format("VECTOR<FLOAT32>(%d)", propertyType.getDimension());
+            case INTEGER8_VECTOR:
+                return String.format("VECTOR<INTEGER8>(%d)", propertyType.getDimension());
+            case INTEGER16_VECTOR:
+                return String.format("VECTOR<INTEGER16>(%d)", propertyType.getDimension());
+            default:
+                throw new IllegalArgumentException(String.format("Unsupported property type: %s", propertyType));
+        }
     }
 
     private static void runAction(CypherAction cypherAction, Driver driver) {
         try (var session = driver.session()) {
             var query = cypherAction.getQuery();
             switch (cypherAction.getExecutionMode()) {
-                case TRANSACTION ->
+                case TRANSACTION:
                     session.writeTransaction((tx) -> tx.run(query).consume());
-                case AUTOCOMMIT -> session.run(query).consume();
+                    break;
+                case AUTOCOMMIT:
+                    session.run(query).consume();
+                    break;
             }
         }
     }
@@ -459,55 +490,57 @@ public class SparkExampleIT {
 
     private static void assertNodeConstraint(Driver driver, String constraintType, String label, String property) {
         try (Session session = driver.session()) {
-            var result =
-                    session.run("""
-                            SHOW CONSTRAINTS YIELD type, entityType, labelsOrTypes, properties \
-                            WHERE type = $constraintType AND entityType = 'NODE' AND labelsOrTypes = [$label] AND properties = [$property] \
-                            RETURN count(*) = 1 AS result""", Map.of("constraintType", constraintType, "label", label, "property", property));
+            var result = session.run(
+                    "SHOW CONSTRAINTS YIELD type, entityType, labelsOrTypes, properties "
+                            + "WHERE type = $constraintType AND entityType = 'NODE' AND labelsOrTypes = [$label] AND properties = [$property] "
+                            + "RETURN count(*) = 1 AS result",
+                    Map.of("constraintType", constraintType, "label", label, "property", property));
             var records = result.list(MapAccessor::asMap);
             assertThat(records).hasSize(1);
-            assertThat((boolean) records.getFirst().get("result")).isTrue();
+            assertThat((boolean) records.get(0).get("result")).isTrue();
         }
     }
 
     private static void assertNodeTypeConstraint(Driver driver, String label, String property, String propertyType) {
         try (Session session = driver.session()) {
-            var result = session.run("""
-                            SHOW CONSTRAINTS YIELD type, entityType, labelsOrTypes, properties, propertyType \
-                            WHERE type = 'NODE_PROPERTY_TYPE' AND entityType = 'NODE' AND labelsOrTypes = [$label] AND properties = [$property] AND propertyType = $propertyType \
-                            RETURN count(*) = 1 AS result""", Map.of("label", label, "property", property, "propertyType", propertyType));
+            var result = session.run(
+                    "SHOW CONSTRAINTS YIELD type, entityType, labelsOrTypes, properties, propertyType "
+                            + "WHERE type = 'NODE_PROPERTY_TYPE' AND entityType = 'NODE' AND labelsOrTypes = [$label] AND properties = [$property] AND propertyType = $propertyType "
+                            + "RETURN count(*) = 1 AS result",
+                    Map.of("label", label, "property", property, "propertyType", propertyType));
             var records = result.list(MapAccessor::asMap);
             assertThat(records).hasSize(1);
-            assertThat((boolean) records.getFirst().get("result")).isTrue();
+            assertThat((boolean) records.get(0).get("result")).isTrue();
         }
     }
 
     private static void assertRelationshipConstraint(
             Driver driver, String constraintType, String relType, String property) {
         try (Session session = driver.session()) {
-            var result =
-                    session.run("""
-                                    SHOW CONSTRAINTS YIELD type, entityType, labelsOrTypes, properties \
-                                    WHERE type = $constraintType AND entityType = 'RELATIONSHIP' AND labelsOrTypes = [$type] AND properties = [$property] \
-                                    RETURN count(*) = 1 AS result""", Map.of("constraintType", constraintType, "type", relType, "property", property));
+            var result = session.run(
+                    "SHOW CONSTRAINTS YIELD type, entityType, labelsOrTypes, properties "
+                            + "WHERE type = $constraintType AND entityType = 'RELATIONSHIP' AND labelsOrTypes = [$type] AND properties = [$property] "
+                            + "RETURN count(*) = 1 AS result",
+                    Map.of("constraintType", constraintType, "type", relType, "property", property));
 
             var records = result.list(MapAccessor::asMap);
             assertThat(records).hasSize(1);
-            assertThat((boolean) records.getFirst().get("result")).isTrue();
+            assertThat((boolean) records.get(0).get("result")).isTrue();
         }
     }
 
     private static void assertRelationshipTypeConstraint(
             Driver driver, String relType, String property, String propertyType) {
         try (Session session = driver.session()) {
-            var result = session.run("""
-                            SHOW CONSTRAINTS YIELD type, entityType, labelsOrTypes, properties, propertyType \
-                            WHERE type = 'RELATIONSHIP_PROPERTY_TYPE' AND entityType = 'RELATIONSHIP' AND labelsOrTypes = [$type] AND properties = [$property] AND propertyType = $propertyType \
-                            RETURN count(*) = 1 AS result""", Map.of("type", relType, "property", property, "propertyType", propertyType));
+            var result = session.run(
+                    "SHOW CONSTRAINTS YIELD type, entityType, labelsOrTypes, properties, propertyType "
+                            + "WHERE type = 'RELATIONSHIP_PROPERTY_TYPE' AND entityType = 'RELATIONSHIP' AND labelsOrTypes = [$type] AND properties = [$property] AND propertyType = $propertyType "
+                            + "RETURN count(*) = 1 AS result",
+                    Map.of("type", relType, "property", property, "propertyType", propertyType));
 
             var records = result.list(MapAccessor::asMap);
             assertThat(records).hasSize(1);
-            assertThat((boolean) records.getFirst().get("result")).isTrue();
+            assertThat((boolean) records.get(0).get("result")).isTrue();
         }
     }
 
@@ -516,7 +549,7 @@ public class SparkExampleIT {
             var query = String.format("MATCH (n:`%s`) RETURN count(n) AS count", label);
             var records = session.run(query).list(MapAccessor::asMap);
             assertThat(records).hasSize(1);
-            assertThat((long) records.getFirst().get("count")).isEqualTo(expectedCount);
+            assertThat((long) records.get(0).get("count")).isEqualTo(expectedCount);
         }
     }
 
@@ -527,7 +560,7 @@ public class SparkExampleIT {
                     "MATCH (:`%s`)-[r:`%s`]->(:`%s`) RETURN count(r) AS count", startLabel, type, endLabel);
             var records = session.run(query).list(MapAccessor::asMap);
             assertThat(records).hasSize(1);
-            assertThat((long) records.getFirst().get("count")).isEqualTo(expectedCount);
+            assertThat((long) records.get(0).get("count")).isEqualTo(expectedCount);
         }
     }
 
@@ -545,7 +578,24 @@ public class SparkExampleIT {
         }
     }
 
-    public record ParquetSource(String name, String uri) implements Source {
+    public static class ParquetSource implements Source {
+
+        private final String name;
+
+        private final String uri;
+
+        public ParquetSource(String name, String uri) {
+            this.name = name;
+            this.uri = uri;
+        }
+
+        public String uri() {
+            return uri;
+        }
+
+        public String name() {
+            return name;
+        }
 
         @Override
         public String getType() {
