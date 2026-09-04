@@ -46,7 +46,7 @@ class Build(
             dependentBuildType(
                 Maven(
                     "${name}-test-11-compatibility",
-                    "test",
+                    "test - java 11 compatibility",
                     "verify -pl core,extra-validators",
                     javaVersion = JavaVersion.V_11,
                     size = LinuxSize.LARGE))
