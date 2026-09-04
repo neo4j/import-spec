@@ -34,13 +34,24 @@ class Build(
                     java))
           }
         }
-        dependentBuildType(
-            Maven(
-                "${name}-test",
-                "test",
-                "verify",
-                javaVersion = LTS_JAVA_VERSION,
-                size = LinuxSize.LARGE))
+        parallel {
+            dependentBuildType(
+                Maven(
+                    "${name}-test",
+                    "test",
+                    "verify",
+                    javaVersion = LTS_JAVA_VERSION,
+                    size = LinuxSize.LARGE))
+
+            dependentBuildType(
+                Maven(
+                    "${name}-test-11-compatibility",
+                    "test",
+                    "verify -pl core,extra-validators",
+                    javaVersion = JavaVersion.V_11,
+                    size = LinuxSize.LARGE))
+        }
+
         dependentBuildType(complete)
         if (!forPullRequests)
             collectArtifacts(dependentBuildType(Release("${name}-release", "release")))
