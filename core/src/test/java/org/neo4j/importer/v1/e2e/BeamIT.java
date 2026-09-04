@@ -173,34 +173,40 @@ public class BeamIT {
         pipeline.run();
 
         try (var session = neo4jDriver.session()) {
-            var productCount = session.run("MATCH (p:Product) RETURN count(p) AS count").list();
+            var productCount =
+                    session.run("MATCH (p:Product) RETURN count(p) AS count").list();
             assertThat(productCount).hasSize(1);
             assertThat(productCount.get(0).get("count").asLong()).isEqualTo(77L);
 
-            var categoryCount = session.run("MATCH (c:Category) RETURN count(c) AS count").list();
+            var categoryCount =
+                    session.run("MATCH (c:Category) RETURN count(c) AS count").list();
             assertThat(categoryCount).hasSize(1);
             assertThat(categoryCount.get(0).get("count").asLong()).isEqualTo(8L);
 
-            var productInCategoryCount = session.run("MATCH (:Product)-[btc:BELONGS_TO_CATEGORY]->(:Category) RETURN count(btc) AS count").list();
+            var productInCategoryCount = session.run(
+                            "MATCH (:Product)-[btc:BELONGS_TO_CATEGORY]->(:Category) RETURN count(btc) AS count")
+                    .list();
             assertThat(productInCategoryCount).hasSize(1);
             assertThat(productInCategoryCount.get(0).get("count").asLong()).isEqualTo(77L);
 
-            var countRows = session.run("MATCH (post_s:Count {stage: 'post_sources'})\n" + "MATCH (pre_n:Count {stage: 'pre_nodes'})\n"
-                                    + "MATCH (post_n:Count {stage: 'post_nodes'})\n"
-                                    + "MATCH (pre_r:Count {stage: 'pre_relationships'})\n"
-                                    + "MATCH (post_r:Count {stage: 'post_relationships'})\n"
-                                    + "MATCH (pre_q:Count {stage: 'pre_queries'})\n"
-                                    + "MATCH (post_q:Count {stage: 'post_queries'})\n"
-                                    + "MATCH (end:Count {stage: 'end'})\n"
-                                    + "RETURN\n"
-                                    + "    post_s.count AS post_s_count,\n"
-                                    + "    pre_n.count  AS pre_n_count,\n"
-                                    + "    post_n.count AS post_n_count,\n"
-                                    + "    pre_r.count  AS pre_r_count,\n"
-                                    + "    post_r.count AS post_r_count,\n"
-                                    + "    pre_q.count  AS pre_q_count,\n"
-                                    + "    post_q.count AS post_q_count,\n"
-                                    + "    end.count    AS end_count").list();
+            var countRows = session.run("MATCH (post_s:Count {stage: 'post_sources'})\n"
+                            + "MATCH (pre_n:Count {stage: 'pre_nodes'})\n"
+                            + "MATCH (post_n:Count {stage: 'post_nodes'})\n"
+                            + "MATCH (pre_r:Count {stage: 'pre_relationships'})\n"
+                            + "MATCH (post_r:Count {stage: 'post_relationships'})\n"
+                            + "MATCH (pre_q:Count {stage: 'pre_queries'})\n"
+                            + "MATCH (post_q:Count {stage: 'post_queries'})\n"
+                            + "MATCH (end:Count {stage: 'end'})\n"
+                            + "RETURN\n"
+                            + "    post_s.count AS post_s_count,\n"
+                            + "    pre_n.count  AS pre_n_count,\n"
+                            + "    post_n.count AS post_n_count,\n"
+                            + "    pre_r.count  AS pre_r_count,\n"
+                            + "    post_r.count AS post_r_count,\n"
+                            + "    pre_q.count  AS pre_q_count,\n"
+                            + "    post_q.count AS post_q_count,\n"
+                            + "    end.count    AS end_count")
+                    .list();
             assertThat(countRows).hasSize(1);
             Record counts = countRows.get(0);
             assertThat(counts.get("post_s_count").asLong())
@@ -320,9 +326,7 @@ class CypherActionFn extends DoFn<Integer, Integer> {
         switch (action.getExecutionMode()) {
             case TRANSACTION:
                 try (Session session = driver.session()) {
-                    session.writeTransaction(tx ->
-                        tx.run(query).consume()
-                    );
+                    session.writeTransaction(tx -> tx.run(query).consume());
                 }
                 break;
             case AUTOCOMMIT: {
@@ -373,24 +377,23 @@ class TargetWriteRowFn extends DoFn<Row, Row> {
         if (step instanceof CustomQueryTargetStep) {
             var queryStep = (CustomQueryTargetStep) step;
             try (var session = driver.session()) {
-                session.writeTransaction(tx ->
-                    tx.run(queryStep.query(), Map.of("rows", List.of(properties(row)))).consume()
-                );
+                session.writeTransaction(tx -> tx.run(queryStep.query(), Map.of("rows", List.of(properties(row))))
+                        .consume());
             }
         } else if (step instanceof NodeTargetStep) {
             var nodeStep = (NodeTargetStep) step;
             var keys = nodeStep.keyProperties();
             var nonKeys = nodeStep.nonKeyProperties();
             try (var session = driver.session()) {
-                session.writeTransaction(tx ->
-                        tx.run(String.format(
-                                "%s (n:%s%s) %s",
-                                nodeStep.writeMode(),
-                                String.join(":", nodeStep.labels()),
-                                entityPattern("row", keys),
-                                setClause("n", "row", nonKeys)),
-                                Map.of("row", rowValues(keys, nonKeys, row))).consume()
-                );
+                session.writeTransaction(tx -> tx.run(
+                                String.format(
+                                        "%s (n:%s%s) %s",
+                                        nodeStep.writeMode(),
+                                        String.join(":", nodeStep.labels()),
+                                        entityPattern("row", keys),
+                                        setClause("n", "row", nonKeys)),
+                                Map.of("row", rowValues(keys, nonKeys, row)))
+                        .consume());
             }
         } else if (step instanceof RelationshipTargetStep) {
             var relationshipStep = (RelationshipTargetStep) step;
@@ -400,24 +403,24 @@ class TargetWriteRowFn extends DoFn<Row, Row> {
             var nonKeys = relationshipStep.nonKeyProperties();
 
             try (var session = driver.session()) {
-                session.writeTransaction(tx ->
-                    tx.run(String.format(
-                        "%s (start:%s%s) %s (end:%s%s) %s (start)-[r:%s%s]->(end) %s",
-                        relationshipStep.nodeMatchMode(),
-                        String.join(":", start.labels()),
-                        entityPattern("start", start.keyProperties()),
-                        relationshipStep.nodeMatchMode(),
-                        String.join(":", end.labels()),
-                        entityPattern("end", end.keyProperties()),
-                        relationshipStep.writeMode(),
-                        relationshipStep.type(),
-                        entityPattern("row", keys),
-                        setClause("r", "row", nonKeys)),
-                        Map.of(
-                            "start", nodeKeyValues(start, row),
-                            "end", nodeKeyValues(end, row),
-                            "row", rowValues(keys, nonKeys, row))).consume()
-                );
+                session.writeTransaction(tx -> tx.run(
+                                String.format(
+                                        "%s (start:%s%s) %s (end:%s%s) %s (start)-[r:%s%s]->(end) %s",
+                                        relationshipStep.nodeMatchMode(),
+                                        String.join(":", start.labels()),
+                                        entityPattern("start", start.keyProperties()),
+                                        relationshipStep.nodeMatchMode(),
+                                        String.join(":", end.labels()),
+                                        entityPattern("end", end.keyProperties()),
+                                        relationshipStep.writeMode(),
+                                        relationshipStep.type(),
+                                        entityPattern("row", keys),
+                                        setClause("r", "row", nonKeys)),
+                                Map.of(
+                                        "start", nodeKeyValues(start, row),
+                                        "end", nodeKeyValues(end, row),
+                                        "row", rowValues(keys, nonKeys, row)))
+                        .consume());
             }
         } else {
             Assertions.fail("unsupported target type: %s", step.getClass());

@@ -126,15 +126,19 @@ public class AdminImportIT {
         Neo4jAdmin.executeImport(NEO4J, neo4jDriver, importSpec, targetNeo4jDatabase);
 
         try (var session = neo4jDriver.session(SessionConfig.forDatabase(targetNeo4jDatabase))) {
-            var productCount = session.run("MATCH (p:Product) RETURN count(p) AS count").list();
+            var productCount =
+                    session.run("MATCH (p:Product) RETURN count(p) AS count").list();
             assertThat(productCount).hasSize(1);
             assertThat(productCount.get(0).get("count").asLong()).isEqualTo(77L);
 
-            var categoryCount = session.run("MATCH (c:Category) RETURN count(c) AS count").list();
+            var categoryCount =
+                    session.run("MATCH (c:Category) RETURN count(c) AS count").list();
             assertThat(categoryCount).hasSize(1);
             assertThat(categoryCount.get(0).get("count").asLong()).isEqualTo(8L);
 
-            var productInCategoryCount = session.run("MATCH (:Product)-[btc:BELONGS_TO_CATEGORY]->(:Category) RETURN count(btc) AS count").list();
+            var productInCategoryCount = session.run(
+                            "MATCH (:Product)-[btc:BELONGS_TO_CATEGORY]->(:Category) RETURN count(btc) AS count")
+                    .list();
             assertThat(productInCategoryCount).hasSize(1);
             assertThat(productInCategoryCount.get(0).get("count").asLong()).isEqualTo(77L);
         }
@@ -323,7 +327,8 @@ public class AdminImportIT {
                     .overridingErrorMessage(execution.getStderr())
                     .isZero();
             try (var session = driver.session(SessionConfig.forDatabase("system"))) {
-                session.run("CREATE DATABASE $name WAIT", Map.of("name", neo4jDatabase)).consume();
+                session.run("CREATE DATABASE $name WAIT", Map.of("name", neo4jDatabase))
+                        .consume();
             }
         }
 
