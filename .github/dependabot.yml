@@ -13,3 +13,16 @@ updates:
       interval: daily
     cooldown:
       default-days: 3
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      time: "07:00"
+      timezone: "Etc/GMT"
+    cooldown:
+      default-days: 3
+    open-pull-requests-limit: 10
+    commit-message:
+      prefix: "build(repo)"
+      prefix-development: "build(repo)"
+      include: "scope"
