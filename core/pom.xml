@@ -147,4 +147,36 @@
             </plugin>
         </plugins>
     </build>
+    <profiles>
+        <profile>
+            <id>java-17-compilation</id>
+            <activation>
+                <jdk>[17,)</jdk>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-compiler-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>compile-java-17</id>
+                                <goals>
+                                    <goal>compile</goal>
+                                </goals>
+                                <phase>compile</phase>
+                                <configuration>
+                                    <release>17</release>
+                                    <compileSourceRoots>
+                                        <compileSourceRoot>${project.basedir}/src/main/java17</compileSourceRoot>
+                                    </compileSourceRoots>
+                                    <multiReleaseOutput>true</multiReleaseOutput>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>
