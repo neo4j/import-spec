@@ -42,7 +42,7 @@ public interface Source extends Serializable {
     String getType();
 
     /**
-     * Name of a particular source instance<br/>
+     * Name of a particular source instance<br>
      * The name is user-provided and must be unique within the whole {@link org.neo4j.importer.v1.ImportSpecification}.
      * This name is used as a reference for {@link org.neo4j.importer.v1.targets.Target}s to declare the source of the
      * data they map from.
