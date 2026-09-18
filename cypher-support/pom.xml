@@ -27,6 +27,7 @@
         <dependency>
             <groupId>org.neo4j.driver</groupId>
             <artifactId>neo4j-java-driver</artifactId>
+            <version>${neo4j.driver.6.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>

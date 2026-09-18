@@ -66,9 +66,9 @@ import org.neo4j.importer.v1.targets.Targets;
  * key mapping overrides, the resulting {@link NodeTargetStep} get their property mappings accordingly updated.
  * <br><br>
  * Here is an example usage of {@link ImportPipeline} made possible by its {@link Iterable} implementation:
- * <pre>
+ * <pre>{@code
  *     var specification = org.neo4j.importer.v1.ImportSpecificationDeserializer.deserialize(aReader);
- *     var pipeline = @link ImportPipeline.of(specification);
+ *     var pipeline = ImportPipeline.of(specification);
  *     pipeline.forEach((step) -> {
  *          if (step instanceof SourceStep) {
  *              handleSource((SourceStep) step);
@@ -80,14 +80,14 @@ import org.neo4j.importer.v1.targets.Targets;
  *              handleTarget((TargetStep) step);
  *          }
  *     });
- * </pre>
+ * }</pre>
  * The iteration returns every step in order.
  * Each step is guaranteed to be processed after all its implicit and explicit dependencies.
  * <br>
  * Implicit dependencies are:<br><br>
  * - {@link TargetStep} depending on a {@link SourceStep}<br>
  * - {@link RelationshipTargetStep} depending on start/end {@link NodeTargetStep}s<br>
- * - {@link RelationshipTargetStep} sharing common start/end nodes with other {@link RelationshipTargetStep}<br/>
+ * - {@link RelationshipTargetStep} sharing common start/end nodes with other {@link RelationshipTargetStep}<br>
  * - {@link ActionStep} must define an {@link ActionStage}, which gets translated to a set of concrete dependencies<br>
  * <br>
  * Relationships sharing common nodes must not be imported in parallel as this would likely cause
