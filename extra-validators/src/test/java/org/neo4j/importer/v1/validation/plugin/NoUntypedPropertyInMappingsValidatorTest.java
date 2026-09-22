@@ -53,7 +53,7 @@ class NoUntypedPropertyInMappingsValidatorTest {
 
         var error = validationResult.getErrors().iterator().next();
 
-        assertThat(error.getCode()).isEqualTo("TYPE-002");
+        assertThat(error.getCode()).isEqualTo("TYPE-003");
         assertThat(error.getElementPath()).isEqualTo("$.targets.nodes[0].properties[0].target_property_type");
         assertThat(error.getMessage())
                 .isEqualTo(
@@ -89,7 +89,7 @@ class NoUntypedPropertyInMappingsValidatorTest {
 
         var error = validationResult.getErrors().iterator().next();
 
-        assertThat(error.getCode()).isEqualTo("TYPE-002");
+        assertThat(error.getCode()).isEqualTo("TYPE-003");
         assertThat(error.getElementPath()).isEqualTo("$.targets.relationships[0].properties[0].target_property_type");
         assertThat(error.getMessage())
                 .isEqualTo(
