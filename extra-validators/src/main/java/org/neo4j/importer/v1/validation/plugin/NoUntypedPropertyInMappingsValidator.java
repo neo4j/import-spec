@@ -29,7 +29,7 @@ import org.neo4j.importer.v1.validation.SpecificationValidator;
  */
 public class NoUntypedPropertyInMappingsValidator implements SpecificationValidator {
 
-    private static final String ERROR_CODE = "TYPE-002";
+    private static final String ERROR_CODE = "TYPE-003";
 
     private final Map<String, String> invalidProperties;
 
