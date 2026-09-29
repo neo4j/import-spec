@@ -46,7 +46,7 @@
         <license.id>neo4j_apache_v2</license.id>
         <maven.compiler.release>11</maven.compiler.release>
         <maven.compiler.testRelease>11</maven.compiler.testRelease>
-        <neo4j.driver.6.version>6.2.1</neo4j.driver.6.version>
+        <neo4j.driver.6.version>6.3.0</neo4j.driver.6.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
     <dependencyManagement>
