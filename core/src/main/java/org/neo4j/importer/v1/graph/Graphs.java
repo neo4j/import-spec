@@ -44,8 +44,9 @@ public class Graphs {
      */
     public static <T> List<T> runTopologicalSort(Map<T, Set<T>> graph) { // K: dependent, V: dependencies
         Map<T, Integer> outDegrees = getAllValues(graph)
-                .collect(Collectors.toMap(Function.identity(), value -> graph.getOrDefault(value, Set.of())
-                        .size()));
+                .collect(Collectors.toMap(
+                        Function.identity(),
+                        value -> graph.getOrDefault(value, Set.of()).size()));
         Map<T, Set<T>> dependencies = reverseGraph(graph); // K: dependency, V: dependents
         Queue<T> queue = new ArrayDeque<>(graph.size());
         for (T node : outDegrees.keySet()) {

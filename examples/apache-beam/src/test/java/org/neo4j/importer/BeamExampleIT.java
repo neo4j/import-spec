@@ -199,9 +199,9 @@ public class BeamExampleIT {
                         "[target %s] Wait for implicit dependencies".formatted(stepName),
                         Wait.on(stepsToOutputs(step.dependencies(), outputs, schemaInitOutput)))
                 .setCoder(sourceCoder)
-                .apply(
-                        "[target %s] Assign keys to records".formatted(stepName),
-                        WithKeys.of((SerializableFunction<GenericRecord, Integer>) input -> ThreadLocalRandom.current()
+                .apply("[target %s] Assign keys to records".formatted(stepName), WithKeys.of((SerializableFunction<
+                                GenericRecord, Integer>)
+                        input -> ThreadLocalRandom.current()
                                 .nextInt(Runtime.getRuntime().availableProcessors())))
                 .setCoder(KvCoder.of(VarIntCoder.of(), sourceCoder))
                 .apply("[target %s] Group records into batches".formatted(stepName), GroupIntoBatches.ofSize(50))
