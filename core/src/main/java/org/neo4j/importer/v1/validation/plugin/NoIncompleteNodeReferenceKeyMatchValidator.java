@@ -47,12 +47,18 @@ public class NoIncompleteNodeReferenceKeyMatchValidator implements Specification
 
     @Override
     public void visitNodeTarget(int index, NodeTarget nodeTarget) {
-        nodeTarget.getSchema().getKeyConstraints().forEach(constraint -> possibleLookups
-                .computeIfAbsent(nodeTarget.getName(), (name) -> new ArrayList<>())
-                .add(LookupProperties.key(constraint)));
-        nodeTarget.getSchema().getUniqueConstraints().forEach(constraint -> possibleLookups
-                .computeIfAbsent(nodeTarget.getName(), (name) -> new ArrayList<>())
-                .add(LookupProperties.unique(constraint)));
+        nodeTarget
+                .getSchema()
+                .getKeyConstraints()
+                .forEach(constraint -> possibleLookups
+                        .computeIfAbsent(nodeTarget.getName(), (name) -> new ArrayList<>())
+                        .add(LookupProperties.key(constraint)));
+        nodeTarget
+                .getSchema()
+                .getUniqueConstraints()
+                .forEach(constraint -> possibleLookups
+                        .computeIfAbsent(nodeTarget.getName(), (name) -> new ArrayList<>())
+                        .add(LookupProperties.unique(constraint)));
     }
 
     @Override
