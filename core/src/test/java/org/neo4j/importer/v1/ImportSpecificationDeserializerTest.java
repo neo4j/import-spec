@@ -33,6 +33,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.TestInfo;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
+import org.neo4j.importer.v1.ImportSpecificationDeserializer.Options;
 import org.neo4j.importer.v1.actions.ActionStage;
 import org.neo4j.importer.v1.actions.plugin.CypherAction;
 import org.neo4j.importer.v1.actions.plugin.CypherExecutionMode;
@@ -62,6 +63,36 @@ class ImportSpecificationDeserializerTest {
 
         try (var reader = specReader(format, testInfo)) {
             var spec = deserialize(reader);
+
+            assertThat(spec.getConfiguration()).isEqualTo(new Configuration(null));
+            assertThat(spec.getSources())
+                    .isEqualTo(List.of(new BigQuerySource("my-bigquery-source", "SELECT id, name FROM my.table")));
+            assertThat(spec.getTargets())
+                    .isEqualTo(new Targets(
+                            null,
+                            null,
+                            List.of(new CustomQueryTarget(
+                                    true,
+                                    "my-query",
+                                    "my-bigquery-source",
+                                    null,
+                                    "UNWIND $rows AS row CREATE (n:ANode) SET n = row"))));
+            assertThat(spec.getActions()).isEmpty();
+        }
+    }
+
+    @ParameterizedTest
+    @EnumSource(SpecFormat.class)
+    void deserializes_minimal_job_spec_with_interpolation(SpecFormat format, TestInfo testInfo) throws Exception {
+
+        try (var reader = specReader(format, testInfo)) {
+            var spec = deserialize(
+                    reader,
+                    Options.builder()
+                            .enableInterpolation()
+                            .allowInterpolationAt("$.sources[*].query")
+                            .interpolationVariables(Map.of("env", "my", "label", "ANode"))
+                            .build());
 
             assertThat(spec.getConfiguration()).isEqualTo(new Configuration(null));
             assertThat(spec.getSources())

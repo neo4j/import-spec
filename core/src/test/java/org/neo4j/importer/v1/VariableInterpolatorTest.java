@@ -18,8 +18,7 @@ package org.neo4j.importer.v1;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Map;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
@@ -30,18 +29,15 @@ import org.neo4j.importer.v1.ImportSpecificationDeserializer.Options;
 
 class VariableInterpolatorTest {
 
-    private final YAMLMapper mapper = new YAMLMapper();
+    private final ObjectMapper mapper = new ObjectMapper();
 
     private final VariableInterpolator interpolator = new VariableInterpolator();
 
     @ParameterizedTest
     @MethodSource("interpolated_values")
-    void interpolates_values(Object value) throws Exception {
-        // TODO: yaml
-        var json = "{\"key\": \"$value\"}";
-
+    void interpolates_values(Object value) {
         var result = interpolator.interpolate(
-                jsonNode(json),
+                mapper.createObjectNode().put("key", "$value"),
                 Options.builder()
                         .enableInterpolation()
                         .allowInterpolationAt("$.key")
@@ -56,11 +52,9 @@ class VariableInterpolatorTest {
     }
 
     @Test
-    void interpolates_substring_values() throws Exception {
-        var json = "{\"key\": \"a $value !!\"}";
-
-        JsonNode result = interpolator.interpolate(
-                jsonNode(json),
+    void interpolates_substring_values() {
+        var result = interpolator.interpolate(
+                mapper.createObjectNode().put("key", "a $value !!"),
                 Options.builder()
                         .enableInterpolation()
                         .allowInterpolationAt("$.key")
@@ -71,11 +65,9 @@ class VariableInterpolatorTest {
     }
 
     @Test
-    void interpolates_multiple_values() throws Exception {
-        var json = "{\"key\": \"a $value1 and $val !!\"}";
-
-        JsonNode result = interpolator.interpolate(
-                jsonNode(json),
+    void interpolates_multiple_values() {
+        var result = interpolator.interpolate(
+                mapper.createObjectNode().put("key", "a $value1 and $val !!"),
                 Options.builder()
                         .enableInterpolation()
                         .allowInterpolationAt("$.key")
@@ -85,12 +77,35 @@ class VariableInterpolatorTest {
         assertThat(result.get("key").asText()).isEqualTo("a 42 and true !!");
     }
 
-    private JsonNode jsonNode(String json) throws Exception {
-        return mapper.readTree(json);
+    @ParameterizedTest
+    @MethodSource("named_variable_interpolations")
+    void interpolates_only_defined_variables(String text, Map<String, Object> variables, String expected) {
+        var result = interpolator.interpolate(
+                mapper.createObjectNode().put("key", text),
+                Options.builder()
+                        .enableInterpolation()
+                        .allowInterpolationAt("$.key")
+                        .interpolationVariables(variables)
+                        .build());
+
+        assertThat(result.get("key").asText()).isEqualTo(expected);
+    }
+
+    private static Stream<Arguments> named_variable_interpolations() {
+        return Stream.of(
+                Arguments.of("$rows", Map.of("value", "word"), "$rows"),
+                Arguments.of("$rows and $value", Map.of("value", "word"), "$rows and word"),
+                Arguments.of(
+                        "$val $value $val1 $val_ $valé $val١",
+                        Map.of("val", "word"),
+                        "word $value $val1 $val_ $valé $val١"),
+                Arguments.of(
+                        "$val $value $value1", Map.of("val", "short", "value", "long", "value1", 42), "short long 42"),
+                Arguments.of("a $变量١ and $café !!", Map.of("变量١", "first", "café", "second"), "a first and second !!"),
+                Arguments.of("a $value !!", Map.of("value", "C:\\data\\$rows"), "a C:\\data\\$rows !!"));
     }
 
     private static Stream<Arguments> interpolated_values() {
-        return Stream.of(
-                Arguments.of(true), Arguments.of("string"), Arguments.of(42), Arguments.of(42f), Arguments.of(42.0d));
+        return Stream.of(true, "string", 42, 42f, 42.0d).map(Arguments::of);
     }
 }

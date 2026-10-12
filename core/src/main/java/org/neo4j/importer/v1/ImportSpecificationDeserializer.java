@@ -130,8 +130,15 @@ public class ImportSpecificationDeserializer {
      * TODO
      */
     public static final class Options {
-        // TODO: define sensible generic default paths
-        private static final Set<String> DEFAULT_INTERPOLATION_PATHS = new LinkedHashSet<>();
+        private static final Set<String> DEFAULT_INTERPOLATION_PATHS = Set.of(
+                "$.targets.nodes[*].active",
+                "$.targets.nodes[*].labels",
+                "$.targets.relationships[*].active",
+                "$.targets.relationships[*].labels",
+                "$.targets.queries[*].active",
+                "$.targets.queries[*].query",
+                "$.actions[*].active",
+                "$.actions[?(@.type == 'cypher')].query");
         private final Neo4jDistribution neo4jDistribution;
         private final Map<String, Object> variables;
         private final Set<String> interpolationPaths;
@@ -171,7 +178,6 @@ public class ImportSpecificationDeserializer {
         public static final class Builder {
             // this allows all kinds of international letters and integers as well as underscore as separator
             static final Pattern EXACT_VARIABLE_NAME_PATTERN = Pattern.compile("^\\p{L}[\\p{L}\\p{Nd}_]*$");
-            static final Pattern VARIABLE_NAME_PATTERN = Pattern.compile("\\p{L}[\\p{L}\\p{Nd}_]*");
 
             private Neo4jDistribution neo4jDistribution;
             private final Map<String, Object> variables = new LinkedHashMap<>();
