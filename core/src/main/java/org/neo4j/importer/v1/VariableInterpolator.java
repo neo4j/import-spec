@@ -17,7 +17,6 @@
 package org.neo4j.importer.v1;
 
 import static com.jayway.jsonpath.Configuration.builder;
-import static org.neo4j.importer.v1.ImportSpecificationDeserializer.Options.Builder.VARIABLE_NAME_PATTERN;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -27,6 +26,7 @@ import com.fasterxml.jackson.databind.node.TextNode;
 import com.fasterxml.jackson.databind.node.ValueNode;
 import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.JsonPath;
+import com.jayway.jsonpath.Option;
 import com.jayway.jsonpath.spi.json.JacksonJsonNodeJsonProvider;
 import com.jayway.jsonpath.spi.mapper.JacksonMappingProvider;
 import java.math.BigDecimal;
@@ -34,7 +34,9 @@ import java.math.BigInteger;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import org.neo4j.importer.v1.ImportSpecificationDeserializer.Options;
 
 class VariableInterpolator {
@@ -48,6 +50,7 @@ class VariableInterpolator {
         this.jsonPathConfig = builder()
                 .jsonProvider(new JacksonJsonNodeJsonProvider())
                 .mappingProvider(new JacksonMappingProvider())
+                .options(Option.SUPPRESS_EXCEPTIONS)
                 .build();
     }
 
@@ -58,13 +61,15 @@ class VariableInterpolator {
         }
 
         var variables = options.getVariables();
+        var variableNames = variables.keySet().stream().map(Pattern::quote).collect(Collectors.joining("|"));
+        var variablePattern = Pattern.compile("\\$(" + variableNames + ")(?![\\p{L}\\p{Nd}_])");
         var context = JsonPath.using(jsonPathConfig).parse(json);
-        interpolationPaths.forEach(
-                path -> context.map(path, ((currentValue, config) -> interpolate(currentValue, variables))));
+        interpolationPaths.forEach(path ->
+                context.map(path, ((currentValue, config) -> interpolate(currentValue, variables, variablePattern))));
         return context.json();
     }
 
-    private Object interpolate(Object value, Map<String, Object> variables) {
+    private Object interpolate(Object value, Map<String, Object> variables, Pattern variablePattern) {
         if (value instanceof ValueNode) {
             var jsonNode = (ValueNode) value;
             var variableNames = variables.keySet();
@@ -75,21 +80,18 @@ class VariableInterpolator {
                 return toJsonNode(variableValue);
             }
             if (value instanceof TextNode) {
-                // TODO: constant
-                var newText = Pattern.compile(String.format("\\$(%s)", VARIABLE_NAME_PATTERN))
-                        .matcher(textValue)
-                        .replaceAll(match -> {
-                            var name = match.group(1);
-                            var variableValue = variables.getOrDefault(name, match.group(0));
-                            if (variableValue instanceof String) {
-                                return (String) variableValue;
-                            }
-                            try {
-                                return mapper.writeValueAsString(variableValue);
-                            } catch (JsonProcessingException e) {
-                                throw new RuntimeException(e);
-                            }
-                        });
+                var newText = variablePattern.matcher(textValue).replaceAll(match -> {
+                    var name = match.group(1);
+                    var variableValue = variables.get(name);
+                    if (variableValue instanceof String) {
+                        return Matcher.quoteReplacement((String) variableValue);
+                    }
+                    try {
+                        return Matcher.quoteReplacement(mapper.writeValueAsString(variableValue));
+                    } catch (JsonProcessingException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
                 return newText.equals(textValue) ? jsonNode : toJsonNode(newText);
             }
         }
