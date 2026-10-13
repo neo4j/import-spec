@@ -273,7 +273,6 @@ public class ImportSpecificationDeserializer {
                 if (value == null) {
                     return Optional.of(String.format("The value of variable '%s' cannot be null", name));
                 }
-                // TODO: this needs to be validated against actual usage in dataflow
                 if (!(value instanceof String) && !(value instanceof Number) && !(value instanceof Boolean)) {
                     return Optional.of(String.format(
                             "The value of variable '%s' can only be a string, number or boolean, found: %s",
