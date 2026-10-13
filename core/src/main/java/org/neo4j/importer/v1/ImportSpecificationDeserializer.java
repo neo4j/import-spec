@@ -127,14 +127,15 @@ public class ImportSpecificationDeserializer {
     }
 
     /**
-     * TODO
+     * {@code Options} configures Neo4j distribution validation and variable interpolation.
+     * Both are disabled by default.
      */
     public static final class Options {
         private static final Set<String> DEFAULT_INTERPOLATION_PATHS = Set.of(
                 "$.targets.nodes[*].active",
                 "$.targets.nodes[*].labels",
                 "$.targets.relationships[*].active",
-                "$.targets.relationships[*].labels",
+                "$.targets.relationships[*].type",
                 "$.targets.queries[*].active",
                 "$.targets.queries[*].query",
                 "$.actions[*].active",
@@ -164,6 +165,11 @@ public class ImportSpecificationDeserializer {
             return variables;
         }
 
+        /**
+         * {@code getInterpolationPaths} returns the allowed json paths, or an empty set if interpolation is effectively
+         * disabled.
+         * @return the allowed interpolation paths
+         */
         public Set<String> getInterpolationPaths() {
             return interpolationPaths;
         }
@@ -185,7 +191,7 @@ public class ImportSpecificationDeserializer {
             private final Set<String> additionalInterpolationPaths = new LinkedHashSet<>();
 
             /**
-             * Enables validation against the supplied Neo4j distribution.
+             * {@code neo4jDistribution} enables validation against the supplied Neo4j distribution.
              * @param distribution the Neo4j distribution
              * @return this builder
              */
@@ -195,31 +201,33 @@ public class ImportSpecificationDeserializer {
             }
 
             /**
-             * TODO
+             * {@code interpolationVariables} adds variables, replacing existing values with the same name.
+             * Names must start with a letter and contain only letters, digits or underscores.
+             * Values must be non-null strings, numbers or booleans.
+             * @param values the variables, referenced as {@code $name} in the specification
+             * @return this builder
              */
             public Builder interpolationVariables(Map<String, ?> values) {
                 variables.putAll(values);
                 return this;
             }
 
-            /**
-             * TODO
-             */
             public Builder enableInterpolation() {
                 interpolationEnabled = true;
                 return this;
             }
 
-            /**
-             * TODO
-             */
             public Builder disableInterpolation() {
                 interpolationEnabled = false;
                 return this;
             }
 
             /**
-             * TODO
+             * {@code allowInterpolationAt} adds a json path to the default interpolation paths.
+             * Default paths cover target and action {@code active} fields, node {@code labels} and relationship {@code type},
+             * and query target and Cypher action {@code query} fields.
+             * @param path an additional JSONPath where interpolation is allowed
+             * @return this builder
              */
             public Builder allowInterpolationAt(String path) {
                 additionalInterpolationPaths.add(path);
@@ -227,7 +235,10 @@ public class ImportSpecificationDeserializer {
             }
 
             /**
-             * TODO
+             * {@code build} validates the configuration and creates the options.
+             * @return the deserialization options
+             * @throws InvalidDeserializerOptionsException if variables are invalid, or additional paths are configured
+             * while interpolation is disabled or no variables are defined
              */
             public Options build() {
                 if (!interpolationEnabled && !additionalInterpolationPaths.isEmpty()) {
