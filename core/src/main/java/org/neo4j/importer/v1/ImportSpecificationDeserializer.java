@@ -116,7 +116,6 @@ public class ImportSpecificationDeserializer {
         var variableInterpolator = new VariableInterpolator();
 
         JsonNode json = parse(mapper, rawSpecification);
-        // TODO: integration tests
         json = variableInterpolator.interpolate(json, options);
         validateSchema(SCHEMA, json);
 
