@@ -407,13 +407,12 @@ public class BeamExampleIT {
             @ProcessElement
             @SuppressWarnings("unused")
             public void processElement(ProcessContext context) {
-                var schemaStatements =
-                        switch (target) {
-                            case NodeTargetStep nodeTarget -> generateNodeSchemaStatements(nodeTarget);
-                            case RelationshipTargetStep relationshipTarget ->
-                                generateRelationshipSchemaStatements(relationshipTarget);
-                            default -> throw new IllegalStateException("Unexpected value: " + target);
-                        };
+                var schemaStatements = switch (target) {
+                    case NodeTargetStep nodeTarget -> generateNodeSchemaStatements(nodeTarget);
+                    case RelationshipTargetStep relationshipTarget ->
+                        generateRelationshipSchemaStatements(relationshipTarget);
+                    default -> throw new IllegalStateException("Unexpected value: " + target);
+                };
 
                 if (schemaStatements.isEmpty()) {
                     return;
@@ -626,13 +625,12 @@ public class BeamExampleIT {
                 assertThat(element).isNotNull();
                 Iterable<GenericRecord> records = element.getValue();
                 assertThat(records).isNotNull();
-                var statement =
-                        switch (target) {
-                            case NodeTargetStep nodeTarget -> buildNodeImportQuery(nodeTarget, unwindRows, row);
-                            case RelationshipTargetStep relationshipTarget ->
-                                buildRelationshipImportQuery(relationshipTarget, unwindRows, row);
-                            default -> throw new IllegalStateException("Unexpected value: " + target);
-                        };
+                var statement = switch (target) {
+                    case NodeTargetStep nodeTarget -> buildNodeImportQuery(nodeTarget, unwindRows, row);
+                    case RelationshipTargetStep relationshipTarget ->
+                        buildRelationshipImportQuery(relationshipTarget, unwindRows, row);
+                    default -> throw new IllegalStateException("Unexpected value: " + target);
+                };
 
                 var summary = WriteCounters.of(driver.executableQuery(statement.getCypher())
                         .withParameters(Map.of(rows.getName(), parameters(records)))
@@ -645,23 +643,22 @@ public class BeamExampleIT {
                     NodeTargetStep nodeTarget, OngoingReading unwindRows, SymbolicName row) {
                 var node = cypherNode(nodeTarget, row);
                 var nonKeyProps = nonKeyPropertiesOf(nodeTarget, node.getRequiredSymbolicName(), row);
-                var query =
-                        switch (nodeTarget.writeMode()) {
-                            case CREATE -> {
-                                var create = unwindRows.create(node);
-                                if (nonKeyProps.isEmpty()) {
-                                    yield create;
-                                }
-                                yield create.set(nonKeyProps);
-                            }
-                            case MERGE -> {
-                                var merge = unwindRows.merge(node);
-                                if (nonKeyProps.isEmpty()) {
-                                    yield merge;
-                                }
-                                yield merge.onCreate().set(nonKeyProps);
-                            }
-                        };
+                var query = switch (nodeTarget.writeMode()) {
+                    case CREATE -> {
+                        var create = unwindRows.create(node);
+                        if (nonKeyProps.isEmpty()) {
+                            yield create;
+                        }
+                        yield create.set(nonKeyProps);
+                    }
+                    case MERGE -> {
+                        var merge = unwindRows.merge(node);
+                        if (nonKeyProps.isEmpty()) {
+                            yield merge;
+                        }
+                        yield merge.onCreate().set(nonKeyProps);
+                    }
+                };
                 return query.build();
             }
 
@@ -675,28 +672,26 @@ public class BeamExampleIT {
                         .withProperties(keyPropertiesOf(relationshipTarget, row));
                 var nonKeyProps = nonKeyPropertiesOf(relationshipTarget, relationship.getRequiredSymbolicName(), row);
 
-                var queryStart =
-                        switch (relationshipTarget.nodeMatchMode()) {
-                            case MATCH -> unwindRows.match(startNode).match(endNode);
-                            case MERGE -> unwindRows.merge(startNode).merge(endNode);
-                        };
-                var query =
-                        switch (relationshipTarget.writeMode()) {
-                            case CREATE -> {
-                                var create = queryStart.create(relationship);
-                                if (nonKeyProps.isEmpty()) {
-                                    yield create;
-                                }
-                                yield create.set(nonKeyProps);
-                            }
-                            case MERGE -> {
-                                var merge = queryStart.merge(relationship);
-                                if (nonKeyProps.isEmpty()) {
-                                    yield merge;
-                                }
-                                yield merge.set(nonKeyProps);
-                            }
-                        };
+                var queryStart = switch (relationshipTarget.nodeMatchMode()) {
+                    case MATCH -> unwindRows.match(startNode).match(endNode);
+                    case MERGE -> unwindRows.merge(startNode).merge(endNode);
+                };
+                var query = switch (relationshipTarget.writeMode()) {
+                    case CREATE -> {
+                        var create = queryStart.create(relationship);
+                        if (nonKeyProps.isEmpty()) {
+                            yield create;
+                        }
+                        yield create.set(nonKeyProps);
+                    }
+                    case MERGE -> {
+                        var merge = queryStart.merge(relationship);
+                        if (nonKeyProps.isEmpty()) {
+                            yield merge;
+                        }
+                        yield merge.set(nonKeyProps);
+                    }
+                };
                 return query.build();
             }
 
