@@ -40,10 +40,22 @@ import org.neo4j.importer.v1.actions.plugin.CypherExecutionMode;
 import org.neo4j.importer.v1.distribution.Neo4jDistributions;
 import org.neo4j.importer.v1.sources.BigQuerySource;
 import org.neo4j.importer.v1.targets.CustomQueryTarget;
+import org.neo4j.importer.v1.targets.NodeExistenceConstraint;
+import org.neo4j.importer.v1.targets.NodeFullTextIndex;
+import org.neo4j.importer.v1.targets.NodeKeyConstraint;
+import org.neo4j.importer.v1.targets.NodePointIndex;
+import org.neo4j.importer.v1.targets.NodeRangeIndex;
+import org.neo4j.importer.v1.targets.NodeReference;
+import org.neo4j.importer.v1.targets.NodeSchema;
 import org.neo4j.importer.v1.targets.NodeTarget;
+import org.neo4j.importer.v1.targets.NodeTextIndex;
+import org.neo4j.importer.v1.targets.NodeTypeConstraint;
+import org.neo4j.importer.v1.targets.NodeUniqueConstraint;
+import org.neo4j.importer.v1.targets.NodeVectorIndex;
 import org.neo4j.importer.v1.targets.PropertyMapping;
 import org.neo4j.importer.v1.targets.PropertyType;
 import org.neo4j.importer.v1.targets.PropertyTypeName;
+import org.neo4j.importer.v1.targets.RelationshipTarget;
 import org.neo4j.importer.v1.targets.Targets;
 import org.neo4j.importer.v1.targets.WriteMode;
 import org.neo4j.importer.v1.validation.InvalidSpecificationException;
@@ -135,6 +147,98 @@ class ImportSpecificationDeserializerTest {
             assertThat(spec.getActions())
                     .isEqualTo(List.of(new CypherAction(
                             true,
+                            "my-cypher-action",
+                            ActionStage.START,
+                            "CREATE (:Started)",
+                            CypherExecutionMode.TRANSACTION)));
+        }
+    }
+
+    @ParameterizedTest
+    @EnumSource(SpecFormat.class)
+    void deserializes_job_spec_with_interpolation(SpecFormat format, TestInfo testInfo) throws Exception {
+
+        try (var reader = specReader(format, testInfo)) {
+            var spec = deserialize(
+                    reader,
+                    Options.builder()
+                            .enableInterpolation()
+                            .interpolationVariables(Map.of(
+                                    "active", false,
+                                    "queryActive", true,
+                                    "label", "ANode",
+                                    "otherLabel", "AnotherNode",
+                                    "relationshipType", "RELATED_TO",
+                                    "startedLabel", "Started"))
+                            .build());
+
+            assertThat(spec.getConfiguration())
+                    .isEqualTo(new Configuration(Map.of("foo", "bar", "baz", 42, "qix", List.of(true, 1.0, Map.of()))));
+            assertThat(spec.getSources())
+                    .isEqualTo(List.of(new BigQuerySource("my-bigquery-source", "SELECT id, name FROM my.table")));
+            assertThat(spec.getTargets())
+                    .isEqualTo(new Targets(
+                            List.of(new NodeTarget(
+                                    false,
+                                    "my-node",
+                                    "my-bigquery-source",
+                                    null,
+                                    WriteMode.CREATE,
+                                    (ObjectNode) null,
+                                    List.of("ANode", "AnotherNode"),
+                                    List.of(
+                                            new PropertyMapping("id", "id", PropertyType.STRING),
+                                            new PropertyMapping("name", "name", PropertyType.STRING),
+                                            new PropertyMapping("location", "location", PropertyType.POINT),
+                                            new PropertyMapping(
+                                                    "embedding",
+                                                    "embedding",
+                                                    new PropertyType(PropertyTypeName.FLOAT_VECTOR))),
+                                    new NodeSchema(
+                                            List.of(new NodeTypeConstraint("name-type", "ANode", "name")),
+                                            List.of(new NodeKeyConstraint("node-key", "ANode", List.of("id"), null)),
+                                            List.of(new NodeUniqueConstraint(
+                                                    "unique-name", "AnotherNode", List.of("name"), null)),
+                                            List.of(new NodeExistenceConstraint("name-exists", "ANode", "name")),
+                                            List.of(new NodeRangeIndex("name-range", "ANode", List.of("name"))),
+                                            List.of(new NodeTextIndex("name-text", "ANode", "name", null)),
+                                            List.of(new NodePointIndex("location-point", "ANode", "location", null)),
+                                            List.of(new NodeFullTextIndex(
+                                                    "name-fulltext",
+                                                    List.of("ANode", "AnotherNode"),
+                                                    List.of("name"),
+                                                    null)),
+                                            List.of(new NodeVectorIndex(
+                                                    "embedding-vector",
+                                                    "ANode",
+                                                    "embedding",
+                                                    Map.of(
+                                                            "vector.dimensions",
+                                                            3,
+                                                            "vector.similarity_function",
+                                                            "cosine")))))),
+                            List.of(new RelationshipTarget(
+                                    false,
+                                    "my-relationship",
+                                    "my-bigquery-source",
+                                    null,
+                                    "RELATED_TO",
+                                    WriteMode.CREATE,
+                                    null,
+                                    (ObjectNode) null,
+                                    new NodeReference("my-node"),
+                                    new NodeReference("my-node"),
+                                    null,
+                                    null)),
+                            List.of(new CustomQueryTarget(
+                                    true,
+                                    "my-query",
+                                    "my-bigquery-source",
+                                    null,
+                                    "UNWIND $rows AS row CREATE (n:ANode) SET n = row"))));
+            assertThat(spec.getActions())
+                    .isEqualTo(List.of(new CypherAction(
+                            false,
                             "my-cypher-action",
                             ActionStage.START,
                             "CREATE (:Started)",

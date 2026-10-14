@@ -132,7 +132,16 @@ public class ImportSpecificationDeserializer {
     public static final class Options {
         private static final Set<String> DEFAULT_INTERPOLATION_PATHS = Set.of(
                 "$.targets.nodes[*].active",
-                "$.targets.nodes[*].labels",
+                "$.targets.nodes[*].labels[*]",
+                "$.targets.nodes[*].schema.type_constraints[*].label",
+                "$.targets.nodes[*].schema.key_constraints[*].label",
+                "$.targets.nodes[*].schema.unique_constraints[*].label",
+                "$.targets.nodes[*].schema.existence_constraints[*].label",
+                "$.targets.nodes[*].schema.range_indexes[*].label",
+                "$.targets.nodes[*].schema.text_indexes[*].label",
+                "$.targets.nodes[*].schema.point_indexes[*].label",
+                "$.targets.nodes[*].schema.fulltext_indexes[*].labels[*]",
+                "$.targets.nodes[*].schema.vector_indexes[*].label",
                 "$.targets.relationships[*].active",
                 "$.targets.relationships[*].type",
                 "$.targets.queries[*].active",
@@ -224,7 +233,7 @@ public class ImportSpecificationDeserializer {
             /**
              * {@code allowInterpolationAt} adds a json path to the default interpolation paths.
              * Default paths cover target and action {@code active} fields, node {@code labels} and relationship {@code type},
-             * and query target and Cypher action {@code query} fields.
+             * node constraint and index labels, and query target and Cypher action {@code query} fields.
              * @param path an additional JSONPath where interpolation is allowed
              * @return this builder
              */
