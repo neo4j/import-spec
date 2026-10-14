@@ -129,7 +129,6 @@ class ImportSpecificationDeserializerOptionsTest {
         @Test
         void rejects_options_if_interpolation_is_disabled_and_extra_paths_are_configured() {
             assertThatThrownBy(() -> ImportSpecificationDeserializer.Options.builder()
-                            //                            .disableInterpolation()
                             .allowInterpolationAt("$.sources[*].name")
                             .allowInterpolationAt("$.actions[*].query")
                             .interpolationVariables(Map.of("a", "variable"))
