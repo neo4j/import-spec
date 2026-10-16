@@ -28,11 +28,20 @@ import com.networknt.schema.JsonSchemaFactory;
 import com.networknt.schema.SpecVersion.VersionFlag;
 import java.io.IOException;
 import java.io.Reader;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.ServiceLoader;
 import java.util.ServiceLoader.Provider;
+import java.util.Set;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.neo4j.importer.v1.actions.Action;
 import org.neo4j.importer.v1.actions.ActionDeserializer;
 import org.neo4j.importer.v1.actions.ActionProvider;
@@ -41,6 +50,7 @@ import org.neo4j.importer.v1.sources.Source;
 import org.neo4j.importer.v1.sources.SourceDeserializer;
 import org.neo4j.importer.v1.sources.SourceProvider;
 import org.neo4j.importer.v1.validation.ActionError;
+import org.neo4j.importer.v1.validation.InvalidDeserializerOptionsException;
 import org.neo4j.importer.v1.validation.InvalidSpecificationException;
 import org.neo4j.importer.v1.validation.Neo4jDistributionValidator;
 import org.neo4j.importer.v1.validation.SourceError;
@@ -71,7 +81,7 @@ public class ImportSpecificationDeserializer {
      * @throws SpecificationException if parsing, deserialization or validation fail
      */
     public static ImportSpecification deserialize(Reader spec) throws SpecificationException {
-        return deserialize(spec, Optional.empty());
+        return deserialize(spec, Options.builder().build());
     }
 
     /**
@@ -79,24 +89,217 @@ public class ImportSpecificationDeserializer {
      * against the provided {@link Neo4jDistribution} value.
      * @return an {@link ImportSpecification}
      * @throws SpecificationException if parsing, deserialization or validation fail
+     * @deprecated use {@link #deserialize(Reader, Options)} with
+     * {@link Options.Builder#neo4jDistribution(Neo4jDistribution)} instead
      */
+    @Deprecated
     public static ImportSpecification deserialize(Reader spec, Neo4jDistribution neo4jDistribution)
             throws SpecificationException {
 
-        return deserialize(spec, Optional.of(neo4jDistribution));
+        return deserialize(
+                spec, Options.builder().neo4jDistribution(neo4jDistribution).build());
     }
 
-    private static ImportSpecification deserialize(
-            Reader rawSpecification, Optional<Neo4jDistribution> neo4jDistribution) throws SpecificationException {
+    /**
+     * Returns a validated import specification using the supplied options.
+     * Interpolation runs on the parsed JSON or YAML tree before schema validation.
+     * @param rawSpecification the JSON or YAML specification
+     * @param options deserialization options
+     * @return an {@link ImportSpecification}
+     * @throws SpecificationException if parsing, interpolation, deserialization or validation fail
+     */
+    public static ImportSpecification deserialize(Reader rawSpecification, Options options)
+            throws SpecificationException {
 
+        Objects.requireNonNull(options, "options");
         YAMLMapper mapper = initMapper();
+        var variableInterpolator = new VariableInterpolator();
+
         JsonNode json = parse(mapper, rawSpecification);
+        json = variableInterpolator.interpolate(json, options);
         validateSchema(SCHEMA, json);
 
         ImportSpecification specification = deserialize(mapper, json);
         validateStatically(specification);
-        validateRuntime(specification, neo4jDistribution);
+        validateRuntime(specification, options.getNeo4jDistribution());
         return specification;
+    }
+
+    /**
+     * {@code Options} configures Neo4j distribution validation and variable interpolation.
+     * Both are disabled by default.
+     */
+    public static final class Options {
+        private static final Set<String> DEFAULT_INTERPOLATION_PATHS = Set.of(
+                "$.targets.nodes[*].active",
+                "$.targets.nodes[*].labels[*]",
+                "$.targets.nodes[*].schema.type_constraints[*].label",
+                "$.targets.nodes[*].schema.key_constraints[*].label",
+                "$.targets.nodes[*].schema.unique_constraints[*].label",
+                "$.targets.nodes[*].schema.existence_constraints[*].label",
+                "$.targets.nodes[*].schema.range_indexes[*].label",
+                "$.targets.nodes[*].schema.text_indexes[*].label",
+                "$.targets.nodes[*].schema.point_indexes[*].label",
+                "$.targets.nodes[*].schema.fulltext_indexes[*].labels[*]",
+                "$.targets.nodes[*].schema.vector_indexes[*].label",
+                "$.targets.relationships[*].active",
+                "$.targets.relationships[*].type",
+                "$.targets.queries[*].active",
+                "$.targets.queries[*].query",
+                "$.actions[*].active",
+                "$.actions[?(@.type == 'cypher')].query");
+        private final Neo4jDistribution neo4jDistribution;
+        private final Map<String, Object> variables;
+        private final Set<String> interpolationPaths;
+
+        private Options(Builder builder) {
+            neo4jDistribution = builder.neo4jDistribution;
+            interpolationPaths = builder.interpolationEnabled && !builder.variables.isEmpty()
+                    ? Collections.unmodifiableSet(
+                            mergePaths(DEFAULT_INTERPOLATION_PATHS, builder.additionalInterpolationPaths))
+                    : Set.of();
+            variables = Collections.unmodifiableMap(builder.variables);
+        }
+
+        public static Builder builder() {
+            return new Builder();
+        }
+
+        public Optional<Neo4jDistribution> getNeo4jDistribution() {
+            return Optional.ofNullable(neo4jDistribution);
+        }
+
+        public Map<String, Object> getVariables() {
+            return variables;
+        }
+
+        /**
+         * {@code getInterpolationPaths} returns the allowed json paths, or an empty set if interpolation is effectively
+         * disabled.
+         * @return the allowed interpolation paths
+         */
+        public Set<String> getInterpolationPaths() {
+            return interpolationPaths;
+        }
+
+        private static Set<String> mergePaths(Set<String> defaultPaths, Set<String> additionalPaths) {
+            var paths = new LinkedHashSet<String>(defaultPaths.size() + additionalPaths.size());
+            paths.addAll(defaultPaths);
+            paths.addAll(additionalPaths);
+            return paths;
+        }
+
+        public static final class Builder {
+            // this allows all kinds of international letters and integers as well as underscore as separator
+            static final Pattern EXACT_VARIABLE_NAME_PATTERN = Pattern.compile("^\\p{L}[\\p{L}\\p{Nd}_]*$");
+
+            private Neo4jDistribution neo4jDistribution;
+            private final Map<String, Object> variables = new LinkedHashMap<>();
+            private boolean interpolationEnabled = false;
+            private final Set<String> additionalInterpolationPaths = new LinkedHashSet<>();
+
+            /**
+             * {@code neo4jDistribution} enables validation against the supplied Neo4j distribution.
+             * @param distribution the Neo4j distribution
+             * @return this builder
+             */
+            public Builder neo4jDistribution(Neo4jDistribution distribution) {
+                neo4jDistribution = Objects.requireNonNull(distribution, "distribution");
+                return this;
+            }
+
+            /**
+             * {@code interpolationVariables} adds variables, replacing existing values with the same name.
+             * Names must start with a letter and contain only letters, digits or underscores.
+             * Values must be non-null strings, numbers or booleans.
+             * @param values the variables, referenced as {@code $name} in the specification
+             * @return this builder
+             */
+            public Builder interpolationVariables(Map<String, ?> values) {
+                variables.putAll(values);
+                return this;
+            }
+
+            public Builder enableInterpolation() {
+                interpolationEnabled = true;
+                return this;
+            }
+
+            public Builder disableInterpolation() {
+                interpolationEnabled = false;
+                return this;
+            }
+
+            /**
+             * {@code allowInterpolationAt} adds a json path to the default interpolation paths.
+             * Default paths cover target and action {@code active} fields, node {@code labels} and relationship {@code type},
+             * node constraint and index labels, and query target and Cypher action {@code query} fields.
+             * @param path an additional JSONPath where interpolation is allowed
+             * @return this builder
+             */
+            public Builder allowInterpolationAt(String path) {
+                additionalInterpolationPaths.add(path);
+                return this;
+            }
+
+            /**
+             * {@code build} validates the configuration and creates the options.
+             * @return the deserialization options
+             * @throws InvalidDeserializerOptionsException if variables are invalid, or additional paths are configured
+             * while interpolation is disabled or no variables are defined
+             */
+            public Options build() {
+                if (!interpolationEnabled && !additionalInterpolationPaths.isEmpty()) {
+                    throw new InvalidDeserializerOptionsException(
+                            "Interpolation is disabled but additional interpolation paths are configured. "
+                                    + "Enable interpolation or remove those paths");
+                }
+                if (variables.isEmpty() && !additionalInterpolationPaths.isEmpty()) {
+                    throw new InvalidDeserializerOptionsException(
+                            "Additional interpolation paths are configured but no interpolation variables are defined. "
+                                    + "Define variables or remove these paths");
+                }
+                var errors = variables.entrySet().stream()
+                        .flatMap((entry) -> variableErrorMessages(entry.getKey(), entry.getValue()))
+                        .collect(Collectors.toList());
+                if (!errors.isEmpty()) {
+                    throw new InvalidDeserializerOptionsException(
+                            String.format("Invalid variable definitions were found:\n%s", String.join("\n", errors)));
+                }
+                return new Options(this);
+            }
+
+            private static Stream<String> variableErrorMessages(String name, Object value) {
+                var errors = new ArrayList<String>();
+                nameErrorMessage(name).ifPresent(errors::add);
+                valueErrorMessage(name, value).ifPresent(errors::add);
+                return errors.stream();
+            }
+
+            private static Optional<String> nameErrorMessage(String name) {
+                if (name == null) {
+                    return Optional.of("Variable name cannot be null");
+                }
+                if (!EXACT_VARIABLE_NAME_PATTERN.matcher(name).matches()) {
+                    return Optional.of(String.format(
+                            "The name of variable '%s' must start with a letter, optionally followed by _ and/or other letters/numbers",
+                            name));
+                }
+                return Optional.empty();
+            }
+
+            private static Optional<String> valueErrorMessage(String name, Object value) {
+                if (value == null) {
+                    return Optional.of(String.format("The value of variable '%s' cannot be null", name));
+                }
+                if (!(value instanceof String) && !(value instanceof Number) && !(value instanceof Boolean)) {
+                    return Optional.of(String.format(
+                            "The value of variable '%s' can only be a string, number or boolean, found: %s",
+                            name, value.getClass()));
+                }
+                return Optional.empty();
+            }
+        }
     }
 
     /**
