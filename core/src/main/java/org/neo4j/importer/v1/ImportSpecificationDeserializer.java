@@ -29,7 +29,6 @@ import com.networknt.schema.SpecVersion.VersionFlag;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -155,10 +154,9 @@ public class ImportSpecificationDeserializer {
         private Options(Builder builder) {
             neo4jDistribution = builder.neo4jDistribution;
             interpolationPaths = builder.interpolationEnabled && !builder.variables.isEmpty()
-                    ? Collections.unmodifiableSet(
-                            mergePaths(DEFAULT_INTERPOLATION_PATHS, builder.additionalInterpolationPaths))
+                    ? Set.copyOf(mergePaths(DEFAULT_INTERPOLATION_PATHS, builder.additionalInterpolationPaths))
                     : Set.of();
-            variables = Collections.unmodifiableMap(builder.variables);
+            variables = Map.copyOf(builder.variables);
         }
 
         public static Builder builder() {
