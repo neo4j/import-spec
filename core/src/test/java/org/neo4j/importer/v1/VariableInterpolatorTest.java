@@ -18,8 +18,14 @@ package org.neo4j.importer.v1;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -35,7 +41,7 @@ class VariableInterpolatorTest {
 
     @ParameterizedTest
     @MethodSource("interpolated_values")
-    void interpolates_values(Object value) {
+    void interpolates_values(Object value, JsonNode expectedValue) {
         var result = interpolator.interpolate(
                 mapper.createObjectNode().put("key", "$value"),
                 Options.builder()
@@ -44,11 +50,9 @@ class VariableInterpolatorTest {
                         .interpolationVariables(Map.of("value", value))
                         .build());
 
-        var actualValue = mapper.convertValue(result.get("key"), value.getClass());
-        assertThat(actualValue)
-                .overridingErrorMessage(
-                        "Variable interpolation failed: values don't match (expected: %s, got: %s)", value, actualValue)
-                .isEqualTo(value);
+        assertThat(result.get("key"))
+                .as("Interpolated value for %s", value.getClass().getSimpleName())
+                .isEqualTo(expectedValue);
     }
 
     @Test
@@ -106,6 +110,20 @@ class VariableInterpolatorTest {
     }
 
     private static Stream<Arguments> interpolated_values() {
-        return Stream.of(true, "string", 42, 42f, 42.0d).map(Arguments::of);
+        var nodes = JsonNodeFactory.instance;
+        return Stream.of(
+                Arguments.of(true, nodes.booleanNode(true)),
+                Arguments.of("string", nodes.textNode("string")),
+                Arguments.of(42, nodes.numberNode(42)),
+                Arguments.of(42L, nodes.numberNode(42L)),
+                Arguments.of(42f, nodes.numberNode(42f)),
+                Arguments.of(42.0d, nodes.numberNode(42.0d)),
+                Arguments.of(new BigDecimal("42.125"), nodes.numberNode(new BigDecimal("42.125"))),
+                Arguments.of(new BigInteger("9007199254740993"), nodes.numberNode(new BigInteger("9007199254740993"))),
+                Arguments.of((byte) 42, nodes.numberNode(42)),
+                Arguments.of((short) 42, nodes.numberNode(42)),
+                Arguments.of(new AtomicInteger(42), nodes.numberNode(42)),
+                Arguments.of(new AtomicLong(42), nodes.numberNode(42L)),
+                Arguments.of(new AtomicLong(9_007_199_254_740_993L), nodes.numberNode(9_007_199_254_740_993L)));
     }
 }

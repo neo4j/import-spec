@@ -111,7 +111,7 @@ class VariableInterpolator {
                 .findFirst();
     }
 
-    private static JsonNode toJsonNode(Object value) {
+    private JsonNode toJsonNode(Object value) {
         if (value instanceof Boolean) {
             return JsonNodeFactory.instance.booleanNode((Boolean) value);
         }
@@ -134,7 +134,7 @@ class VariableInterpolator {
             return JsonNodeFactory.instance.numberNode((BigInteger) value);
         }
         if (value instanceof Number) {
-            return JsonNodeFactory.instance.numberNode(((Number) value).doubleValue());
+            return mapper.valueToTree(value);
         }
         if (value instanceof String) {
             return JsonNodeFactory.instance.textNode((String) value);
