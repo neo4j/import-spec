@@ -22,6 +22,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.NullNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 import com.fasterxml.jackson.databind.node.ValueNode;
 import com.jayway.jsonpath.Configuration;
@@ -70,6 +71,9 @@ class VariableInterpolator {
     }
 
     private Object interpolate(Object value, Map<String, Object> variables, Pattern variablePattern) {
+        if (value instanceof NullNode) {
+            return value;
+        }
         if (value instanceof ValueNode) {
             var jsonNode = (ValueNode) value;
             var variableNames = variables.keySet();
