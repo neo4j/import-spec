@@ -231,14 +231,31 @@ public class ImportSpecificationDeserializer {
             }
 
             /**
-             * {@code allowInterpolationAt} adds a json path to the default interpolation paths.
-             * Default paths cover target and action {@code active} fields, node {@code labels} and relationship {@code type},
-             * node constraint and index labels, and query target and Cypher action {@code query} fields.
-             * @param path an additional JSONPath where interpolation is allowed
-             * @return this builder
+             * @see #allowInterpolationsAt(List)
              */
             public Builder allowInterpolationAt(String path) {
-                additionalInterpolationPaths.add(path);
+                return allowInterpolationsAt(List.of(path));
+            }
+
+            /**
+             * @see #allowInterpolationsAt(List)
+             */
+            public Builder allowInterpolationsAt(String path, String... paths) {
+                var allPaths = new ArrayList<String>(1 + paths.length);
+                allPaths.add(path);
+                allPaths.addAll(List.of(paths));
+                return allowInterpolationsAt(allPaths);
+            }
+
+            /**
+             * {@code allowInterpolationsAt} adds json paths to the default interpolation paths.
+             * Default paths cover target and action {@code active} fields, node {@code labels} and relationship {@code type},
+             * node constraint and index labels, and query target and Cypher action {@code query} fields.
+             * @param paths additional JSON paths where interpolation is allowed
+             * @return this builder
+             */
+            public Builder allowInterpolationsAt(List<String> paths) {
+                additionalInterpolationPaths.addAll(paths);
                 return this;
             }
 
