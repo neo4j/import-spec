@@ -23,6 +23,8 @@ import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
+import com.jayway.jsonpath.InvalidPathException;
+import com.jayway.jsonpath.JsonPath;
 import com.networknt.schema.JsonSchema;
 import com.networknt.schema.JsonSchemaFactory;
 import com.networknt.schema.SpecVersion.VersionFlag;
@@ -274,14 +276,33 @@ public class ImportSpecificationDeserializer {
                             "Additional interpolation paths are configured but no interpolation variables are defined. "
                                     + "Define variables or remove these paths");
                 }
-                var errors = variables.entrySet().stream()
+
+                var pathErrors = additionalInterpolationPaths.stream()
+                        .flatMap(Builder::pathErrorMessage)
+                        .collect(Collectors.toList());
+                if (!pathErrors.isEmpty()) {
+                    throw new InvalidDeserializerOptionsException(String.format(
+                            "Interpolation path(s) parsing errors were found:\n%s", String.join("\n", pathErrors)));
+                }
+
+                var variableErrors = variables.entrySet().stream()
                         .flatMap((entry) -> variableErrorMessages(entry.getKey(), entry.getValue()))
                         .collect(Collectors.toList());
-                if (!errors.isEmpty()) {
-                    throw new InvalidDeserializerOptionsException(
-                            String.format("Invalid variable definitions were found:\n%s", String.join("\n", errors)));
+                if (!variableErrors.isEmpty()) {
+                    throw new InvalidDeserializerOptionsException(String.format(
+                            "Invalid variable definitions were found:\n%s", String.join("\n", variableErrors)));
                 }
                 return new Options(this);
+            }
+
+            private static Stream<String> pathErrorMessage(String path) {
+                try {
+                    compileStrict(path);
+                    return Stream.empty();
+                } catch (InvalidPathException invalidPathException) {
+                    return Stream.of(
+                            String.format("Path %s did not compile: %s", path, invalidPathException.getMessage()));
+                }
             }
 
             private static Stream<String> variableErrorMessages(String name, Object value) {
@@ -313,6 +334,16 @@ public class ImportSpecificationDeserializer {
                             name, value.getClass()));
                 }
                 return Optional.empty();
+            }
+
+            private static JsonPath compileStrict(String path) {
+                if (path == null) {
+                    throw new InvalidPathException("Path must not be null");
+                }
+                if (!path.startsWith("$.")) {
+                    throw new InvalidPathException("Path must start with '$.'");
+                }
+                return JsonPath.compile(path);
             }
         }
     }

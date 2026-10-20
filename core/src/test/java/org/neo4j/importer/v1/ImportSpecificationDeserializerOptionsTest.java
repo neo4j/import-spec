@@ -143,6 +143,17 @@ class ImportSpecificationDeserializerOptionsTest {
         void rejects_options_if_no_interpolation_variable_is_added_and_extra_paths_are_configured() {
             assertThatThrownBy(() -> ImportSpecificationDeserializer.Options.builder()
                             .enableInterpolation()
+                            .interpolationVariables(Map.of("a", "variable"))
+                            .allowInterpolationAt("_not_valid_path_")
+                            .build())
+                    .isInstanceOf(InvalidDeserializerOptionsException.class)
+                    .hasMessageContaining("Path _not_valid_path_ did not compile: Path must start with '$.'");
+        }
+
+        @Test
+        void rejects_options_if_interpolation_path_is_syntactically_invalid() {
+            assertThatThrownBy(() -> ImportSpecificationDeserializer.Options.builder()
+                            .enableInterpolation()
                             .allowInterpolationAt("$.sources[*].name")
                             .build())
                     .isInstanceOf(InvalidDeserializerOptionsException.class)
