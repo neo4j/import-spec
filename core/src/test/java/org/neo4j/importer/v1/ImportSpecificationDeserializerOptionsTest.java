@@ -80,7 +80,7 @@ class ImportSpecificationDeserializerOptionsTest {
                             .interpolationVariables(variables)
                             .build())
                     .isInstanceOf(InvalidDeserializerOptionsException.class)
-                    .hasMessageContaining("Variable name cannot be null");
+                    .hasMessageContaining("Variable name must not be null");
         }
 
         @ParameterizedTest
@@ -122,7 +122,7 @@ class ImportSpecificationDeserializerOptionsTest {
                             .build())
                     .isInstanceOf(InvalidDeserializerOptionsException.class)
                     .hasMessageContaining(String.format(
-                            "The value of variable 'referee_checks_var' can only be a string, number or boolean, found: %s",
+                            "The value of variable 'referee_checks_var' must be a string, number or boolean, found: %s",
                             variableValue.getClass()));
         }
 

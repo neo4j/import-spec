@@ -18,7 +18,7 @@ package org.neo4j.importer.v1.validation;
 
 public class InvalidDeserializerOptionsException extends IllegalStateException {
 
-    public InvalidDeserializerOptionsException(String message) {
-        super(message);
+    public InvalidDeserializerOptionsException(String message, Object... args) {
+        super(String.format(message, args));
     }
 }

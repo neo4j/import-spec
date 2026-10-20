@@ -40,7 +40,6 @@ import java.util.Optional;
 import java.util.ServiceLoader;
 import java.util.ServiceLoader.Provider;
 import java.util.Set;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.neo4j.importer.v1.actions.Action;
@@ -64,6 +63,8 @@ import org.neo4j.importer.v1.validation.UndeserializableActionException;
 import org.neo4j.importer.v1.validation.UndeserializableSourceException;
 import org.neo4j.importer.v1.validation.UndeserializableSpecificationException;
 import org.neo4j.importer.v1.validation.UnparseableSpecificationException;
+import org.neo4j.importer.v1.validation.interpolation.InterpolationVariableValidator;
+import org.neo4j.importer.v1.validation.interpolation.InterpolationVariableValidators;
 
 public class ImportSpecificationDeserializer {
 
@@ -190,9 +191,6 @@ public class ImportSpecificationDeserializer {
         }
 
         public static final class Builder {
-            // this allows all kinds of international letters and integers as well as underscore as separator
-            static final Pattern EXACT_VARIABLE_NAME_PATTERN = Pattern.compile("^\\p{L}[\\p{L}\\p{Nd}_]*$");
-
             private Neo4jDistribution neo4jDistribution;
             private final Map<String, Object> variables = new LinkedHashMap<>();
             private boolean interpolationEnabled = false;
@@ -285,13 +283,9 @@ public class ImportSpecificationDeserializer {
                             "Interpolation path(s) parsing errors were found:\n%s", String.join("\n", pathErrors)));
                 }
 
-                var variableErrors = variables.entrySet().stream()
-                        .flatMap((entry) -> variableErrorMessages(entry.getKey(), entry.getValue()))
-                        .collect(Collectors.toList());
-                if (!variableErrors.isEmpty()) {
-                    throw new InvalidDeserializerOptionsException(String.format(
-                            "Invalid variable definitions were found:\n%s", String.join("\n", variableErrors)));
-                }
+                InterpolationVariableValidators.of(loadInterpolationVariableValidators())
+                        .validate(variables);
+
                 return new Options(this);
             }
 
@@ -303,37 +297,6 @@ public class ImportSpecificationDeserializer {
                     return Stream.of(
                             String.format("Path %s did not compile: %s", path, invalidPathException.getMessage()));
                 }
-            }
-
-            private static Stream<String> variableErrorMessages(String name, Object value) {
-                var errors = new ArrayList<String>();
-                nameErrorMessage(name).ifPresent(errors::add);
-                valueErrorMessage(name, value).ifPresent(errors::add);
-                return errors.stream();
-            }
-
-            private static Optional<String> nameErrorMessage(String name) {
-                if (name == null) {
-                    return Optional.of("Variable name cannot be null");
-                }
-                if (!EXACT_VARIABLE_NAME_PATTERN.matcher(name).matches()) {
-                    return Optional.of(String.format(
-                            "The name of variable '%s' must start with a letter, optionally followed by _ and/or other letters/numbers",
-                            name));
-                }
-                return Optional.empty();
-            }
-
-            private static Optional<String> valueErrorMessage(String name, Object value) {
-                if (value == null) {
-                    return Optional.of(String.format("The value of variable '%s' cannot be null", name));
-                }
-                if (!(value instanceof String) && !(value instanceof Number) && !(value instanceof Boolean)) {
-                    return Optional.of(String.format(
-                            "The value of variable '%s' can only be a string, number or boolean, found: %s",
-                            name, value.getClass()));
-                }
-                return Optional.empty();
             }
 
             private static JsonPath compileStrict(String path) {
@@ -363,7 +326,7 @@ public class ImportSpecificationDeserializer {
      */
     @Deprecated
     public static void validateStatically(ImportSpecification specification) throws SpecificationException {
-        SpecificationValidators.of(loadValidators()).validate(specification);
+        SpecificationValidators.of(loadSpecificationValidators()).validate(specification);
     }
 
     private static YAMLMapper initMapper() {
@@ -418,8 +381,14 @@ public class ImportSpecificationDeserializer {
         }
     }
 
-    private static List<SpecificationValidator> loadValidators() {
+    private static List<SpecificationValidator> loadSpecificationValidators() {
         return ServiceLoader.load(SpecificationValidator.class).stream()
+                .map(Provider::get)
+                .collect(Collectors.toList());
+    }
+
+    private static List<InterpolationVariableValidator> loadInterpolationVariableValidators() {
+        return ServiceLoader.load(InterpolationVariableValidator.class).stream()
                 .map(Provider::get)
                 .collect(Collectors.toList());
     }
