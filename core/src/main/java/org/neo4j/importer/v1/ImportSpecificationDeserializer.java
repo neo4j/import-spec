@@ -146,7 +146,7 @@ public class ImportSpecificationDeserializer {
                 "$.targets.queries[*].active",
                 "$.targets.queries[*].query",
                 "$.actions[*].active",
-                "$.actions[?(@.type == 'cypher')].query");
+                "$.actions[?(@.type =~ /^cypher$/i)].query");
         private final Neo4jDistribution neo4jDistribution;
         private final Map<String, Object> variables;
         private final Set<String> interpolationPaths;
