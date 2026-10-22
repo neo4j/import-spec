@@ -1,0 +1,6 @@
+# keep this alphabetically sorted
+org.neo4j.importer.v1.validation.interpolation.plugin.AlphanumericVariableNameValidator
+org.neo4j.importer.v1.validation.interpolation.plugin.NonDollarPrefixedVariableNameValidator
+org.neo4j.importer.v1.validation.interpolation.plugin.NotNullVariableNameValidator
+org.neo4j.importer.v1.validation.interpolation.plugin.NotNullVariableValueValidator
+org.neo4j.importer.v1.validation.interpolation.plugin.PrimitiveVariableValueValidator

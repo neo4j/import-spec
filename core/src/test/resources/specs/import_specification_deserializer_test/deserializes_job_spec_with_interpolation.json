@@ -1,0 +1,112 @@
+{
+    "version": "1",
+    "config": {
+        "foo": "bar",
+        "baz": 42,
+        "qix": [true, 1.0, {}]
+    },
+    "sources": [{
+        "name": "my-bigquery-source",
+        "type": "bigquery",
+        "query": "SELECT id, name FROM my.table"
+    }],
+    "targets": {
+        "nodes": [{
+            "name": "my-node",
+            "active": "$active",
+            "source": "my-bigquery-source",
+            "write_mode": "create",
+            "labels": ["$label", "$otherLabel"],
+            "properties": [{
+                "source_field": "id",
+                "target_property": "id",
+                "target_property_type": "string"
+            }, {
+                "source_field": "name",
+                "target_property": "name",
+                "target_property_type": "string"
+            }, {
+                "source_field": "location",
+                "target_property": "location",
+                "target_property_type": "point"
+            }, {
+                "source_field": "embedding",
+                "target_property": "embedding",
+                "target_property_type": "float_vector"
+            }],
+            "schema": {
+                "type_constraints": [{
+                    "name": "name-type",
+                    "label": "$label",
+                    "property": "name"
+                }],
+                "key_constraints": [{
+                    "name": "node-key",
+                    "label": "$label",
+                    "properties": ["id"]
+                }],
+                "unique_constraints": [{
+                    "name": "unique-name",
+                    "label": "$otherLabel",
+                    "properties": ["name"]
+                }],
+                "existence_constraints": [{
+                    "name": "name-exists",
+                    "label": "$label",
+                    "property": "name"
+                }],
+                "range_indexes": [{
+                    "name": "name-range",
+                    "label": "$label",
+                    "properties": ["name"]
+                }],
+                "text_indexes": [{
+                    "name": "name-text",
+                    "label": "$label",
+                    "property": "name"
+                }],
+                "point_indexes": [{
+                    "name": "location-point",
+                    "label": "$label",
+                    "property": "location"
+                }],
+                "fulltext_indexes": [{
+                    "name": "name-fulltext",
+                    "labels": ["$label", "$otherLabel"],
+                    "properties": ["name"]
+                }],
+                "vector_indexes": [{
+                    "name": "embedding-vector",
+                    "label": "$label",
+                    "property": "embedding",
+                    "options": {
+                        "vector.dimensions": 3,
+                        "vector.similarity_function": "cosine"
+                    }
+                }]
+            }
+        }],
+        "relationships": [{
+            "name": "my-relationship",
+            "active": "$active",
+            "source": "my-bigquery-source",
+            "type": "$relationshipType",
+            "write_mode": "create",
+            "start_node_reference": "my-node",
+            "end_node_reference": "my-node"
+        }],
+        "queries": [{
+            "name": "my-query",
+            "active": "$queryActive",
+            "source": "my-bigquery-source",
+            "query": "UNWIND $rows AS row CREATE (n:$label) SET n = row"
+        }]
+    },
+    "actions": [{
+        "name": "my-cypher-action",
+        "active": "$active",
+        "type": "Cypher",
+        "query": "CREATE (:$startedLabel)",
+        "stage": "start"
+    }]
+}

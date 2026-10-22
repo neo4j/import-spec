@@ -1,0 +1,10 @@
+version: '1'
+sources:
+  - name: my-bigquery-source
+    type: bigquery
+    query: SELECT id, name FROM $env.table
+targets:
+  queries:
+    - name: my-query
+      source: my-bigquery-source
+      query: UNWIND $rows AS row CREATE (n:$label) SET n = row
