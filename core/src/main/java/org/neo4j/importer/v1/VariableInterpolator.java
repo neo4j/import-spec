@@ -21,7 +21,6 @@ import static com.jayway.jsonpath.Configuration.builder;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.NullNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 import com.fasterxml.jackson.databind.node.ValueNode;
@@ -30,8 +29,6 @@ import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.Option;
 import com.jayway.jsonpath.spi.json.JacksonJsonNodeJsonProvider;
 import com.jayway.jsonpath.spi.mapper.JacksonMappingProvider;
-import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -112,33 +109,9 @@ class VariableInterpolator {
     }
 
     private JsonNode toJsonNode(Object value) {
-        if (value instanceof Boolean) {
-            return JsonNodeFactory.instance.booleanNode((Boolean) value);
+        if (!(value instanceof Boolean) && !(value instanceof Number) && !(value instanceof String)) {
+            throw new IllegalArgumentException("Unsupported variable value type: " + value.getClass());
         }
-        if (value instanceof Integer) {
-            return JsonNodeFactory.instance.numberNode((Integer) value);
-        }
-        if (value instanceof Long) {
-            return JsonNodeFactory.instance.numberNode((Long) value);
-        }
-        if (value instanceof Double) {
-            return JsonNodeFactory.instance.numberNode((Double) value);
-        }
-        if (value instanceof Float) {
-            return JsonNodeFactory.instance.numberNode((Float) value);
-        }
-        if (value instanceof BigDecimal) {
-            return JsonNodeFactory.instance.numberNode((BigDecimal) value);
-        }
-        if (value instanceof BigInteger) {
-            return JsonNodeFactory.instance.numberNode((BigInteger) value);
-        }
-        if (value instanceof Number) {
-            return mapper.valueToTree(value);
-        }
-        if (value instanceof String) {
-            return JsonNodeFactory.instance.textNode((String) value);
-        }
-        throw new IllegalArgumentException("Unsupported variable value type: " + value.getClass());
+        return mapper.valueToTree(value);
     }
 }
