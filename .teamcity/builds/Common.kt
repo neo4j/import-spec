@@ -33,6 +33,13 @@ const val NODE_DOCKER_IMAGE = "%ecr-registry-connectors%:node-24-latest"
 
 const val SEMGREP_DOCKER_IMAGE = "%ecr-registry-connectors%:semgrep-latest"
 
+// Docker run arguments for build steps that run Testcontainers inside the build container (Docker
+// socket mounted). Pins the Testcontainers Docker host to the agent's IPv4 bridge gateway: when the
+// bridge network has IPv6 enabled, Testcontainers may otherwise pick the IPv6 gateway and put it
+// into URLs without brackets (e.g. `bolt://fdfb:3ff6:...::1:32768`).
+const val TESTCONTAINERS_HOST_DOCKER_ARGS =
+    "--add-host=host.docker.internal:host-gateway -e TESTCONTAINERS_HOST_OVERRIDE=host.docker.internal"
+
 const val FULL_GITHUB_REPOSITORY = "$GITHUB_OWNER/$GITHUB_REPOSITORY"
 const val GITHUB_URL = "https://github.com/$FULL_GITHUB_REPOSITORY"
 
@@ -122,7 +129,8 @@ fun BuildSteps.runMaven(
 
         dockerImagePlatform = MavenBuildStep.ImagePlatform.Linux
         dockerImage = javaVersion.dockerImage
-        dockerRunParameters = "--volume /var/run/docker.sock:/var/run/docker.sock"
+        dockerRunParameters =
+            "--volume /var/run/docker.sock:/var/run/docker.sock $TESTCONTAINERS_HOST_DOCKER_ARGS"
       }
 
   init(maven)
