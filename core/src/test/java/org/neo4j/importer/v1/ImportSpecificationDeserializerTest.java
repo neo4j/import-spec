@@ -29,6 +29,7 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.TestInfo;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -368,6 +369,20 @@ class ImportSpecificationDeserializerTest {
                 })
                 .isInstanceOf(InvalidSpecificationException.class)
                 .hasMessageContainingAll("1 error(s)", "0 warning(s)", "$: required property 'sources' not found");
+    }
+
+    @ParameterizedTest
+    @EnumSource(SpecFormat.class)
+    void deserializes_source_less_specification_with_external_sources(SpecFormat format, TestInfo testInfo)
+            throws Exception {
+
+        try (var reader = specReader(format, testInfo)) {
+            var source = new BigQuerySource("a-source", "SELECT id FROM my.table");
+            var specification = deserialize(
+                    reader, Options.builder().externalSources(Set.of(source)).build());
+
+            assertThat(specification.getSources()).containsExactly(source);
+        }
     }
 
     @ParameterizedTest
@@ -2108,6 +2123,7 @@ class ImportSpecificationDeserializerTest {
 
     @ParameterizedTest
     @EnumSource(SpecFormat.class)
+    @SuppressWarnings("deprecation")
     void fails_if_version_below_5_9_with_node_type_constraint(SpecFormat format, TestInfo testInfo) {
         assertThatThrownBy(() -> deserialize(
                         specReader(format, testInfo),
@@ -2121,6 +2137,7 @@ class ImportSpecificationDeserializerTest {
 
     @ParameterizedTest
     @EnumSource(SpecFormat.class)
+    @SuppressWarnings("deprecation")
     void fails_if_edition_community_with_node_key_constraint(SpecFormat format, TestInfo testInfo) {
         assertThatThrownBy(() -> deserialize(
                         specReader(format, testInfo),
@@ -2134,6 +2151,7 @@ class ImportSpecificationDeserializerTest {
 
     @ParameterizedTest
     @EnumSource(SpecFormat.class)
+    @SuppressWarnings("deprecation")
     void fails_if_version_below_5_13_with_node_vector_index(SpecFormat format, TestInfo testInfo) {
         assertThatThrownBy(() -> deserialize(
                         specReader(format, testInfo),
@@ -2147,6 +2165,7 @@ class ImportSpecificationDeserializerTest {
 
     @ParameterizedTest
     @EnumSource(SpecFormat.class)
+    @SuppressWarnings("deprecation")
     void fails_if_version_below_5_9_with_relationship_type_constraint(SpecFormat format, TestInfo testInfo) {
         assertThatThrownBy(() -> deserialize(
                         specReader(format, testInfo),
@@ -2160,6 +2179,7 @@ class ImportSpecificationDeserializerTest {
 
     @ParameterizedTest
     @EnumSource(SpecFormat.class)
+    @SuppressWarnings("deprecation")
     void fails_if_below_the_version_with_multiple_nodes_and_relationships(SpecFormat format, TestInfo testInfo) {
         assertThatThrownBy(() -> deserialize(
                         specReader(format, testInfo),
@@ -2176,6 +2196,7 @@ class ImportSpecificationDeserializerTest {
 
     @ParameterizedTest
     @EnumSource(SpecFormat.class)
+    @SuppressWarnings("deprecation")
     void does_not_fail_if_above_the_version(SpecFormat format, TestInfo testInfo) {
         assertDoesNotThrow(() -> deserialize(
                 specReader(format, testInfo), Neo4jDistributions.enterprise().of("5.20")));

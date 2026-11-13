@@ -18,10 +18,12 @@ package org.neo4j.importer.v1;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.StreamReadFeature;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
 import com.jayway.jsonpath.InvalidPathException;
 import com.jayway.jsonpath.JsonPath;
@@ -49,6 +51,7 @@ import org.neo4j.importer.v1.distribution.Neo4jDistribution;
 import org.neo4j.importer.v1.sources.Source;
 import org.neo4j.importer.v1.sources.SourceDeserializer;
 import org.neo4j.importer.v1.sources.SourceProvider;
+import org.neo4j.importer.v1.targets.Targets;
 import org.neo4j.importer.v1.validation.ActionError;
 import org.neo4j.importer.v1.validation.InvalidDeserializerOptionsException;
 import org.neo4j.importer.v1.validation.InvalidSpecificationException;
@@ -119,16 +122,17 @@ public class ImportSpecificationDeserializer {
 
         JsonNode json = parse(mapper, rawSpecification);
         json = variableInterpolator.interpolate(json, options);
-        validateSchema(SCHEMA, json);
+        var externalSources = options.getExternalSources();
+        validateSchema(SCHEMA, patchedJson(json, externalSources));
 
-        ImportSpecification specification = deserialize(mapper, json);
+        ImportSpecification specification = deserialize(mapper, json, externalSources);
         validateStatically(specification);
         validateRuntime(specification, options.getNeo4jDistribution());
         return specification;
     }
 
     /**
-     * {@code Options} configures Neo4j distribution validation and variable interpolation.
+     * {@code Options} configures external sources, Neo4j distribution validation and variable interpolation.
      * Both are disabled by default.
      */
     public static final class Options {
@@ -151,11 +155,13 @@ public class ImportSpecificationDeserializer {
                 "$.actions[*].active",
                 "$.actions[?(@.type =~ /^cypher$/i)].query");
         private final Neo4jDistribution neo4jDistribution;
+        private final Set<Source> externalSources;
         private final Map<String, Object> variables;
         private final Set<String> interpolationPaths;
 
         private Options(Builder builder) {
             neo4jDistribution = builder.neo4jDistribution;
+            externalSources = builder.externalSources != null ? Set.copyOf(builder.externalSources) : null;
             interpolationPaths = builder.interpolationEnabled && !builder.variables.isEmpty()
                     ? Set.copyOf(mergePaths(DEFAULT_INTERPOLATION_PATHS, builder.additionalInterpolationPaths))
                     : Set.of();
@@ -168,6 +174,14 @@ public class ImportSpecificationDeserializer {
 
         public Optional<Neo4jDistribution> getNeo4jDistribution() {
             return Optional.ofNullable(neo4jDistribution);
+        }
+
+        /**
+         * Returns sources to use in place of the {@code sources} section in the specification, when configured.
+         * @return externally supplied sources
+         */
+        public Set<Source> getExternalSources() {
+            return externalSources;
         }
 
         public Map<String, Object> getVariables() {
@@ -192,6 +206,7 @@ public class ImportSpecificationDeserializer {
 
         public static final class Builder {
             private Neo4jDistribution neo4jDistribution;
+            private Set<Source> externalSources = Set.of();
             private final Map<String, Object> variables = new LinkedHashMap<>();
             private boolean interpolationEnabled = false;
             private final Set<String> additionalInterpolationPaths = new LinkedHashSet<>();
@@ -203,6 +218,17 @@ public class ImportSpecificationDeserializer {
              */
             public Builder neo4jDistribution(Neo4jDistribution distribution) {
                 neo4jDistribution = Objects.requireNonNull(distribution, "distribution");
+                return this;
+            }
+
+            /**
+             * Uses the supplied sources instead of deserializing the specification's {@code sources} section.
+             * This also allows the section to be omitted from the specification.
+             * @param sources the externally supplied sources
+             * @return this builder
+             */
+            public Builder externalSources(Set<Source> sources) {
+                externalSources = Set.copyOf(Objects.requireNonNull(sources, "sources"));
                 return this;
             }
 
@@ -349,7 +375,11 @@ public class ImportSpecificationDeserializer {
         }
     }
 
-    private static ImportSpecification deserialize(ObjectMapper mapper, JsonNode json) throws SpecificationException {
+    private static ImportSpecification deserialize(ObjectMapper mapper, JsonNode json, Set<Source> externalSources)
+            throws SpecificationException {
+        if (!externalSources.isEmpty()) {
+            return deserializeWithExternalSources(mapper, json, externalSources);
+        }
         try {
             return mapper.treeToValue(json, ImportSpecification.class);
         } catch (JsonProcessingException e) {
@@ -366,6 +396,47 @@ public class ImportSpecificationDeserializer {
                             + "https://github.com/neo4j/import-spec/issues/new and share the specification that caused the issue",
                     e);
         }
+    }
+
+    private static ImportSpecification deserializeWithExternalSources(
+            ObjectMapper mapper, JsonNode json, Set<Source> externalSources) throws SpecificationException {
+        try {
+            Map<String, Object> configuration = json.hasNonNull("config")
+                    ? mapper.convertValue(json.get("config"), new TypeReference<>() {})
+                    : null;
+            var targets = mapper.treeToValue(json.get("targets"), Targets.class);
+            List<Action> actions = json.hasNonNull("actions")
+                    ? mapper.readerForListOf(Action.class).readValue(json.get("actions"))
+                    : null;
+            return new ImportSpecification(
+                    json.get("version").asText(), configuration, List.copyOf(externalSources), targets, actions);
+        } catch (IOException e) {
+            if (e.getCause() instanceof ActionError) {
+                throw new UndeserializableActionException(e.getCause());
+            }
+            throw new UndeserializableSpecificationException(
+                    "The payload cannot be deserialized, despite a successful schema validation.\n"
+                            + "This is likely a bug, please open an issue in "
+                            + "https://github.com/neo4j/import-spec/issues/new and share the specification that caused the issue",
+                    e);
+        } catch (IllegalArgumentException e) {
+            throw new UndeserializableSpecificationException(
+                    "The payload cannot be deserialized, despite a successful schema validation.\n"
+                            + "This is likely a bug, please open an issue in "
+                            + "https://github.com/neo4j/import-spec/issues/new and share the specification that caused the issue",
+                    e);
+        }
+    }
+
+    private static JsonNode patchedJson(JsonNode json, Set<Source> externalSources) {
+        if (externalSources.isEmpty() || !json.isObject()) {
+            return json;
+        }
+        var copy = ((ObjectNode) json).deepCopy();
+        var sources = copy.putArray("sources");
+        externalSources.forEach(
+                source -> sources.addObject().put("type", source.getType()).put("name", source.getName()));
+        return copy;
     }
 
     private static void validateSchema(JsonSchema schema, JsonNode json) throws InvalidSpecificationException {
