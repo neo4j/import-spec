@@ -122,7 +122,7 @@ public class ImportSpecificationDeserializer {
 
         JsonNode json = parse(mapper, rawSpecification);
         json = variableInterpolator.interpolate(json, options);
-        var externalSources = options.getExternalSources().orElse(Set.of());
+        var externalSources = options.getExternalSources();
         validateSchema(SCHEMA, patchedJson(json, externalSources));
 
         ImportSpecification specification = deserialize(mapper, json, externalSources);
@@ -180,8 +180,8 @@ public class ImportSpecificationDeserializer {
          * Returns sources to use in place of the {@code sources} section in the specification, when configured.
          * @return externally supplied sources
          */
-        public Optional<Set<Source>> getExternalSources() {
-            return Optional.ofNullable(externalSources);
+        public Set<Source> getExternalSources() {
+            return externalSources;
         }
 
         public Map<String, Object> getVariables() {
@@ -206,7 +206,7 @@ public class ImportSpecificationDeserializer {
 
         public static final class Builder {
             private Neo4jDistribution neo4jDistribution;
-            private Set<Source> externalSources;
+            private Set<Source> externalSources = Set.of();
             private final Map<String, Object> variables = new LinkedHashMap<>();
             private boolean interpolationEnabled = false;
             private final Set<String> additionalInterpolationPaths = new LinkedHashSet<>();
