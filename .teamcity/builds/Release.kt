@@ -96,7 +96,7 @@ class Release(id: String, name: String, java: JavaVersion = JavaVersion.V_21) :
               dockerImagePlatform = ScriptBuildStep.ImagePlatform.Linux
               dockerImage = java.dockerImage
               dockerRunParameters =
-                  "--volume /var/run/docker.sock:/var/run/docker.sock --volume %teamcity.build.checkoutDir%/signingkeysandbox:/root/.gnupg"
+                  "--volume /var/run/docker.sock:/var/run/docker.sock --volume %teamcity.build.checkoutDir%/signingkeysandbox:/root/.gnupg $TESTCONTAINERS_HOST_DOCKER_ARGS"
             }
 
             setVersion("Set next snapshot version", "%nextSnapshotVersion%")
