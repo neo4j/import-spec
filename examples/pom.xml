@@ -53,6 +53,13 @@
                     <skipIfEmpty>true</skipIfEmpty>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.neo4j.build.plugins</groupId>
+                <artifactId>licensing-maven-plugin</artifactId>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 </project>
