@@ -27,7 +27,7 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
+import org.neo4j.cypherdsl.support.schema_name.SchemaNames;
 import org.neo4j.importer.v1.ImportSpecification;
 import org.neo4j.importer.v1.config.Features;
 import org.neo4j.importer.v1.cypher.SpecSupport.CompositeConstraintDefinition;
@@ -38,7 +38,6 @@ import org.neo4j.importer.v1.targets.PropertyMapping;
 import org.neo4j.importer.v1.targets.PropertyType;
 import org.neo4j.importer.v1.targets.PropertyTypeName;
 import org.neo4j.importer.v1.targets.RelationshipTarget;
-import org.neo4j.cypherdsl.support.schema_name.SchemaNames;
 
 /**
  * CypherStatements provides support for the generation
@@ -50,8 +49,7 @@ public class CypherStatements {
     /**
      * Static class - do not call this
      */
-    private CypherStatements() {
-    }
+    private CypherStatements() {}
 
     /**
      * Generates a Graph Type creation statement corresponding to the graph
@@ -63,7 +61,7 @@ public class CypherStatements {
     public static String generateGraphType(ImportSpecification spec) {
         if (!Features.isGraphTypeEnabled(spec.getConfiguration())) {
             throw new CypherGenerationPreconditionException(
-                "Please set 'enable_graph_type' to true in the 'config' section");
+                    "Please set 'enable_graph_type' to true in the 'config' section");
         }
         var builder = new StringBuilder("ALTER CURRENT GRAPH TYPE SET {");
         var nodeTargetIndex = new AtomicInteger(1);
@@ -103,7 +101,7 @@ public class CypherStatements {
         var properties = propertiesExpression(target);
         var requireExpressions = requireExpressions(variable, compositeConstraintsOf(target));
         return String.format(
-            "(%s%s => %s{%s})%s", variable, primaryLabel, impliedLabels, properties, requireExpressions);
+                "(%s%s => %s{%s})%s", variable, primaryLabel, impliedLabels, properties, requireExpressions);
     }
 
     private static String relationshipExpression(int index, RelationshipTarget target, ImportSpecification spec) {
@@ -114,7 +112,7 @@ public class CypherStatements {
         var endLabel = labelExpression(labels(spec, target.getEndNodeReference()));
         var requireExpressions = requireExpressions(variable, compositeConstraintsOf(target));
         return String.format(
-            "(%s)-[%s%s => {%s}]->(%s)%s", startLabel, variable, relType, properties, endLabel, requireExpressions);
+                "(%s)-[%s%s => {%s}]->(%s)%s", startLabel, variable, relType, properties, endLabel, requireExpressions);
     }
 
     private static String primaryLabelExpression(List<String> labels) {
@@ -139,34 +137,34 @@ public class CypherStatements {
 
     private static String propertiesExpression(EntityTarget target) {
         return target.getProperties().stream()
-            .flatMap(mapping -> {
-                var property = mapping.getTargetProperty();
-                var simpleConstraintTypes = simpleConstraintTypesOf(property, target);
-                if (simpleConstraintTypes.isEmpty()) {
-                    return Stream.empty();
-                }
-                return Stream.of(propertyExpression(mapping, simpleConstraintTypes));
-            })
-            .collect(Collectors.joining(", "));
+                .flatMap(mapping -> {
+                    var property = mapping.getTargetProperty();
+                    var simpleConstraintTypes = simpleConstraintTypesOf(property, target);
+                    if (simpleConstraintTypes.isEmpty()) {
+                        return Stream.empty();
+                    }
+                    return Stream.of(propertyExpression(mapping, simpleConstraintTypes));
+                })
+                .collect(Collectors.joining(", "));
     }
 
     private static String propertyExpression(PropertyMapping mapping, Set<SimpleConstraintType> simpleConstraintTypes) {
         return String.format(
-            "%s :: %s%s%s%s",
-            mapping.getTargetProperty(),
-            simpleConstraintTypes.contains(SimpleConstraintType.TYPED) ? propertyType(mapping) : "ANY",
-            simpleConstraintTypes.contains(SimpleConstraintType.NOT_NULL) ? " NOT NULL" : "",
-            simpleConstraintTypes.contains(SimpleConstraintType.KEY) ? " IS KEY" : "",
-            simpleConstraintTypes.contains(SimpleConstraintType.UNIQUE) ? " IS UNIQUE" : "");
+                "%s :: %s%s%s%s",
+                mapping.getTargetProperty(),
+                simpleConstraintTypes.contains(SimpleConstraintType.TYPED) ? propertyType(mapping) : "ANY",
+                simpleConstraintTypes.contains(SimpleConstraintType.NOT_NULL) ? " NOT NULL" : "",
+                simpleConstraintTypes.contains(SimpleConstraintType.KEY) ? " IS KEY" : "",
+                simpleConstraintTypes.contains(SimpleConstraintType.UNIQUE) ? " IS UNIQUE" : "");
     }
 
     private static String requireExpressions(
-        final String variable, Set<CompositeConstraintDefinition> compositeConstraints) {
+            final String variable, Set<CompositeConstraintDefinition> compositeConstraints) {
         var result = new StringBuilder();
         compositeConstraints.forEach(constraint -> {
             var properties = constraint.getProperties().stream()
-                .map(prop -> String.format("%s.%s", variable, prop))
-                .collect(Collectors.joining(", "));
+                    .map(prop -> String.format("%s.%s", variable, prop))
+                    .collect(Collectors.joining(", "));
             result.append("\n");
             result.append(String.format("\t\tREQUIRE (%s) IS %s", properties, constraint.getType()));
         });
@@ -280,40 +278,36 @@ public class CypherStatements {
             assert property != null;
             var propertyType = property.getTargetPropertyType();
 
-            statements.add("CREATE CONSTRAINT " +
-                sanitize(c.getName()) +
-                nodeConstraintPattern(c.getLabel()) +
-                constraintProperty("n", property.getTargetProperty()) +
-                isType(propertyType.getName(), propertyType));
+            statements.add("CREATE CONSTRAINT " + sanitize(c.getName())
+                    + nodeConstraintPattern(c.getLabel())
+                    + constraintProperty("n", property.getTargetProperty())
+                    + isType(propertyType.getName(), propertyType));
         }
 
         // KEY CONSTRAINT
         for (var c : node.getSchema().getKeyConstraints()) {
-            statements.add("CREATE CONSTRAINT " +
-                sanitize(c.getName()) +
-                nodeConstraintPattern(c.getLabel()) +
-                constraintProperties("n", c.getProperties()) +
-                isKey("NODE") +
-                constraintOptions(c.getOptions()));
+            statements.add("CREATE CONSTRAINT " + sanitize(c.getName())
+                    + nodeConstraintPattern(c.getLabel())
+                    + constraintProperties("n", c.getProperties())
+                    + isKey("NODE")
+                    + constraintOptions(c.getOptions()));
         }
 
         // EXIST CONSTRAINT
         for (var c : node.getSchema().getExistenceConstraints()) {
-            statements.add("CREATE CONSTRAINT " +
-                sanitize(c.getName()) +
-                nodeConstraintPattern(c.getLabel()) +
-                constraintProperty("n", c.getProperty()) +
-                isNotNull);
+            statements.add("CREATE CONSTRAINT " + sanitize(c.getName())
+                    + nodeConstraintPattern(c.getLabel())
+                    + constraintProperty("n", c.getProperty())
+                    + isNotNull);
         }
 
         // UNIQUE CONSTRAINT
         for (var c : node.getSchema().getUniqueConstraints()) {
-            statements.add("CREATE CONSTRAINT " +
-                sanitize(c.getName()) +
-                nodeConstraintPattern(c.getLabel()) +
-                constraintProperties("n", c.getProperties()) +
-                isUnique +
-                constraintOptions(c.getOptions()));
+            statements.add("CREATE CONSTRAINT " + sanitize(c.getName())
+                    + nodeConstraintPattern(c.getLabel())
+                    + constraintProperties("n", c.getProperties())
+                    + isUnique
+                    + constraintOptions(c.getOptions()));
         }
     }
 
@@ -324,40 +318,36 @@ public class CypherStatements {
             assert property != null;
             var propertyType = property.getTargetPropertyType();
 
-            statements.add("CREATE CONSTRAINT " +
-                sanitize(c.getName()) +
-                relationshipConstraintPattern(relationship.getType()) +
-                constraintProperty("r", property.getTargetProperty()) +
-                isType(propertyType.getName(), propertyType));
+            statements.add("CREATE CONSTRAINT " + sanitize(c.getName())
+                    + relationshipConstraintPattern(relationship.getType())
+                    + constraintProperty("r", property.getTargetProperty())
+                    + isType(propertyType.getName(), propertyType));
         }
 
         // KEY CONSTRAINT
         for (var c : relationship.getSchema().getKeyConstraints()) {
-            statements.add("CREATE CONSTRAINT " +
-                sanitize(c.getName()) +
-                relationshipConstraintPattern(relationship.getType()) +
-                constraintProperties("r", c.getProperties()) +
-                isKey("RELATIONSHIP") +
-                constraintOptions(c.getOptions()));
+            statements.add("CREATE CONSTRAINT " + sanitize(c.getName())
+                    + relationshipConstraintPattern(relationship.getType())
+                    + constraintProperties("r", c.getProperties())
+                    + isKey("RELATIONSHIP")
+                    + constraintOptions(c.getOptions()));
         }
 
         // EXIST CONSTRAINT
         for (var c : relationship.getSchema().getExistenceConstraints()) {
-            statements.add("CREATE CONSTRAINT " +
-                sanitize(c.getName()) +
-                relationshipConstraintPattern(relationship.getType()) +
-                constraintProperty("r", c.getProperty()) +
-                isNotNull);
+            statements.add("CREATE CONSTRAINT " + sanitize(c.getName())
+                    + relationshipConstraintPattern(relationship.getType())
+                    + constraintProperty("r", c.getProperty())
+                    + isNotNull);
         }
 
         // UNIQUE CONSTRAINT
         for (var c : relationship.getSchema().getUniqueConstraints()) {
-            statements.add("CREATE CONSTRAINT " +
-                sanitize(c.getName()) +
-                relationshipConstraintPattern(relationship.getType()) +
-                constraintProperties("r", c.getProperties()) +
-                isUnique +
-                constraintOptions(c.getOptions()));
+            statements.add("CREATE CONSTRAINT " + sanitize(c.getName())
+                    + relationshipConstraintPattern(relationship.getType())
+                    + constraintProperties("r", c.getProperties())
+                    + isUnique
+                    + constraintOptions(c.getOptions()));
         }
     }
 
@@ -432,8 +422,8 @@ public class CypherStatements {
             if (entry.getValue() instanceof String) {
                 var value = (String) entry.getValue();
                 sb.append('\'')
-                    .append(value.replace("\\", "\\\\").replace("'", "\\'"))
-                    .append('\'');
+                        .append(value.replace("\\", "\\\\").replace("'", "\\'"))
+                        .append('\'');
             } else {
                 sb.append(entry.getValue());
             }
