@@ -108,6 +108,29 @@ class CypherStatementsTest {
         }
     }
 
+    @Nested
+    class ConstraintStatementTest {
+        @Test
+        void generates_statement_for_simple_spec() throws Exception {
+            var spec = read("/specs/constraints/books-simple.yaml", ImportSpecificationDeserializer::deserialize);
+        }
+
+        @Test
+        void generates_statement_with_options_for_simple_spec() throws Exception {
+            var spec = read("/specs/constraints/books-simple-options.yaml", ImportSpecificationDeserializer::deserialize);
+        }
+
+        @Test
+        void generates_statement_for_composite_spec() throws Exception {
+            var spec = read("/specs/constraints/books-composite.yaml", ImportSpecificationDeserializer::deserialize);
+        }
+
+        @Test
+        void generates_statement_with_options_for_composite_spec() throws Exception {
+            var spec = read("/specs/constraints/books-composite-options.yaml", ImportSpecificationDeserializer::deserialize);
+        }
+    }
+
     private <T> T read(String classpathResource, ThrowingFunction<Reader, T> fn) throws Exception {
         var stream = this.getClass().getResourceAsStream(classpathResource);
         assertThat(stream).isNotNull();

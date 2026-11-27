@@ -1,0 +1,180 @@
+version: '1'
+sources:
+  - name: books-source
+    type: jdbc
+    sql: SELECT * FROM db.books
+  - name: authors-source
+    type: jdbc
+    sql: SELECT * FROM db.authors
+  - name: published-source
+    type: jdbc
+    sql: SELECT author_id, isbn FROM db.published
+targets:
+  nodes:
+    - name: books
+      source: books-source
+      labels:
+        - Book
+      properties:
+        - source_field: book_id
+          target_property: id
+          target_property_type: INTEGER
+        - source_field: isbn
+          target_property: isbn
+          target_property_type: STRING
+        - source_field: title
+          target_property: title
+          target_property_type: STRING
+        - source_field: summary
+          target_property: summary
+          target_property_type: STRING
+      schema:
+        type_constraints:
+          - name: book-id-type
+            label: Book
+            property: id
+          - name: book-isbn-type
+            label: Book
+            property: isbn
+          - name: book-title-type
+            label: Book
+            property: title
+          - name: book-summary-type
+            label: Book
+            property: summary
+        key_constraints:
+          - name: book-id-and-isbn-key
+            label: Book
+            properties:
+              - id
+              - isbn
+        existence_constraints:
+          - name: book-title-must-exist
+            label: Book
+            property: title
+        unique_constraints:
+          - name: book-isbn-and-title-unique
+            label: Book
+            properties:
+              - isbn
+              - title
+    - name: authors
+      source: authors-source
+      labels:
+        - Author
+      properties:
+        - source_field: author_id
+          target_property: id
+          target_property_type: INTEGER
+        - source_field: author_registration_number
+          target_property: registrationNumber
+          target_property_type: INTEGER
+        - source_field: full_name
+          target_property: fullName
+          target_property_type: STRING
+        - source_field: initials
+          target_property: initials
+          target_property_type: STRING
+        - source_field: first_published
+          target_property: firstPublished
+          target_property_type: DATE
+      schema:
+        type_constraints:
+          - name: author-id-type
+            label: Author
+            property: id
+          - name: author-registration-type
+            label: Author
+            property: registrationNumber
+          - name: author-full-name-type
+            label: Author
+            property: fullName
+          - name: author-initials-type
+            label: Author
+            property: initials
+          - name: author-first-published-type
+            label: Author
+            property: firstPublished
+        key_constraints:
+          - name: author-id-and-registration-key
+            label: Author
+            properties:
+              - id
+              - registrationNumber
+        existence_constraints:
+          - name: author-full-name-must-exist
+            label: Author
+            property: fullName
+          - name: author-initials-must-exist
+            label: Author
+            property: initials
+          - name: author-first-published-must-exist
+            label: Author
+            property: firstPublished
+        unique_constraints:
+          - name: author-registration-and-name-unique
+            label: Author
+            properties:
+              - registrationNumber
+              - fullName
+  relationships:
+    - name: published
+      source: published-source
+      type: PUBLISHED
+      start_node_reference:
+        name: authors
+        key_mappings:
+          - source_field: author_id
+            node_property: id
+          - source_field: author_registration_number
+            node_property: registrationNumber
+      end_node_reference:
+        name: books
+        key_mappings:
+          - source_field: book_id
+            node_property: id
+          - source_field: book_isbn
+            node_property: isbn
+      properties:
+        - source_field: issue_id
+          target_property: id
+          target_property_type: INTEGER
+        - source_field: publisher
+          target_property: publisher
+          target_property_type: STRING
+        - source_field: catalog_id
+          target_property: catalogId
+          target_property_type: STRING
+        - source_field: first_issued
+          target_property: firstIssued
+          target_property_type: DATE
+        - source_field: issue_history
+          target_property: history
+          target_property_type: DATE_ARRAY
+      schema:
+        type_constraints:
+          - name: published-issue-id-type
+            property: id
+          - name: published-publisher-type
+            property: publisher
+          - name: published-catalog-type
+            property: catalogId
+          - name: published-first-issued-type
+            property: firstIssued
+          - name: published-history-type
+            property: history
+        key_constraints:
+          - name: puiblished-id-and-publisher-key
+            properties:
+              - id
+              - publisher
+        existence_constraints:
+          - name: published-catalog-id-must-exist
+            property: catalogId
+          - name: published-first-issued-must-exist
+            property: firstIssued
+        unique_constraints:
+          - name: published-publisher-and-catalog-id-unique
+            properties:
+              - publisher
+              - catalogId
