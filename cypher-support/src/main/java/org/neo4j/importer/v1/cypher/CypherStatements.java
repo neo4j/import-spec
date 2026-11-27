@@ -22,6 +22,7 @@ import static org.neo4j.importer.v1.cypher.SpecSupport.simpleConstraintTypesOf;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
@@ -292,7 +293,8 @@ public class CypherStatements {
                 sanitize(c.getName()) +
                 nodeConstraintPattern(c.getLabel()) +
                 constraintProperties("n", c.getProperties()) +
-                isKey("NODE"));
+                isKey("NODE") +
+                constraintOptions(c.getOptions()));
         }
 
         // EXIST CONSTRAINT
@@ -310,7 +312,8 @@ public class CypherStatements {
                 sanitize(c.getName()) +
                 nodeConstraintPattern(c.getLabel()) +
                 constraintProperties("n", c.getProperties()) +
-                isUnique);
+                isUnique +
+                constraintOptions(c.getOptions()));
         }
     }
 
@@ -334,7 +337,8 @@ public class CypherStatements {
                 sanitize(c.getName()) +
                 relationshipConstraintPattern(relationship.getType()) +
                 constraintProperties("r", c.getProperties()) +
-                isKey("RELATIONSHIP"));
+                isKey("RELATIONSHIP") +
+                constraintOptions(c.getOptions()));
         }
 
         // EXIST CONSTRAINT
@@ -352,7 +356,8 @@ public class CypherStatements {
                 sanitize(c.getName()) +
                 relationshipConstraintPattern(relationship.getType()) +
                 constraintProperties("r", c.getProperties()) +
-                isUnique);
+                isUnique +
+                constraintOptions(c.getOptions()));
         }
     }
 
@@ -412,6 +417,32 @@ public class CypherStatements {
     private static final String isUnique = " IS UNIQUE";
 
     private static final String isNotNull = " IS NOT NULL";
+
+    private static String constraintOptions(Map<String, Object> options) {
+        if (options == null || options.isEmpty()) {
+            return "";
+        }
+
+        var sb = new StringBuilder(" OPTIONS { ");
+        var separator = "";
+
+        for (var entry : options.entrySet()) {
+            sb.append(separator).append(entry.getKey()).append(": ");
+
+            if (entry.getValue() instanceof String) {
+                var value = (String) entry.getValue();
+                sb.append('\'')
+                    .append(value.replace("\\", "\\\\").replace("'", "\\'"))
+                    .append('\'');
+            } else {
+                sb.append(entry.getValue());
+            }
+
+            separator = ", ";
+        }
+
+        return sb.append(" }").toString();
+    }
 
     private static String sanitize(String s) {
         var sanitized = SchemaNames.sanitize(s, true);

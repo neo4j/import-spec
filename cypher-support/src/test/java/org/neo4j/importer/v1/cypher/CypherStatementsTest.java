@@ -118,7 +118,6 @@ class CypherStatementsTest {
         @Test
         void generates_statement_for_simple_spec() throws Exception {
             var spec = read(basePath + "books-simple.yaml", ImportSpecificationDeserializer::deserialize);
-
             var result = CypherStatements.generateConstraints(spec);
 
             // spotless:off
@@ -159,27 +158,123 @@ class CypherStatementsTest {
         }
 
         @Test
-        @Disabled
         void generates_statement_with_options_for_simple_spec() throws Exception {
             var spec = read(basePath + "books-simple-options.yaml", ImportSpecificationDeserializer::deserialize);
             var result = CypherStatements.generateConstraints(spec);
-            assertThat(result).isEmpty();
+
+            // spotless:off
+            var expected = List.of(
+                "CREATE CONSTRAINT `book-id-type` IF NOT EXISTS FOR (n:`Book`) REQUIRE n.`id` IS :: INTEGER",
+                "CREATE CONSTRAINT `book-isbn-type` IF NOT EXISTS FOR (n:`Book`) REQUIRE n.`isbn` IS :: STRING",
+                "CREATE CONSTRAINT `book-title-type` IF NOT EXISTS FOR (n:`Book`) REQUIRE n.`title` IS :: STRING",
+                "CREATE CONSTRAINT `book-summary-type` IF NOT EXISTS FOR (n:`Book`) REQUIRE n.`summary` IS :: STRING",
+                "CREATE CONSTRAINT `book-id-key` IF NOT EXISTS FOR (n:`Book`) REQUIRE (n.`id`) IS NODE KEY OPTIONS { indexProvider: 'range-1.0' }",
+                "CREATE CONSTRAINT `book-isbn-must-exist` IF NOT EXISTS FOR (n:`Book`) REQUIRE n.`isbn` IS NOT NULL",
+                "CREATE CONSTRAINT `book-title-must-exist` IF NOT EXISTS FOR (n:`Book`) REQUIRE n.`title` IS NOT NULL",
+                "CREATE CONSTRAINT `book-isbn-unique` IF NOT EXISTS FOR (n:`Book`) REQUIRE (n.`isbn`) IS UNIQUE OPTIONS { indexProvider: 'range-1.0' }",
+                "CREATE CONSTRAINT `author-id-type` IF NOT EXISTS FOR (n:`Author`) REQUIRE n.`id` IS :: INTEGER",
+                "CREATE CONSTRAINT `author-registration-type` IF NOT EXISTS FOR (n:`Author`) REQUIRE n.`registrationNumber` IS :: INTEGER",
+                "CREATE CONSTRAINT `author-full-name-type` IF NOT EXISTS FOR (n:`Author`) REQUIRE n.`fullName` IS :: STRING",
+                "CREATE CONSTRAINT `author-initials-type` IF NOT EXISTS FOR (n:`Author`) REQUIRE n.`initials` IS :: STRING",
+                "CREATE CONSTRAINT `author-first-published-type` IF NOT EXISTS FOR (n:`Author`) REQUIRE n.`firstPublished` IS :: DATE",
+                "CREATE CONSTRAINT `author-id-key` IF NOT EXISTS FOR (n:`Author`) REQUIRE (n.`id`) IS NODE KEY OPTIONS { indexProvider: 'range-1.0' }",
+                "CREATE CONSTRAINT `author-registration-number-must-exist` IF NOT EXISTS FOR (n:`Author`) REQUIRE n.`registrationNumber` IS NOT NULL",
+                "CREATE CONSTRAINT `author-full-name-must-exist` IF NOT EXISTS FOR (n:`Author`) REQUIRE n.`fullName` IS NOT NULL",
+                "CREATE CONSTRAINT `author-initials-must-exist` IF NOT EXISTS FOR (n:`Author`) REQUIRE n.`initials` IS NOT NULL",
+                "CREATE CONSTRAINT `author-first-published-must-exist` IF NOT EXISTS FOR (n:`Author`) REQUIRE n.`firstPublished` IS NOT NULL",
+                "CREATE CONSTRAINT `author-registration-unique` IF NOT EXISTS FOR (n:`Author`) REQUIRE (n.`registrationNumber`) IS UNIQUE OPTIONS { indexProvider: 'range-1.0' }",
+                "CREATE CONSTRAINT `published-issue-id-type` IF NOT EXISTS FOR ()-[r:`PUBLISHED`]-() REQUIRE r.`id` IS :: INTEGER",
+                "CREATE CONSTRAINT `published-publisher-type` IF NOT EXISTS FOR ()-[r:`PUBLISHED`]-() REQUIRE r.`publisher` IS :: STRING",
+                "CREATE CONSTRAINT `published-catalog-type` IF NOT EXISTS FOR ()-[r:`PUBLISHED`]-() REQUIRE r.`catalogId` IS :: STRING",
+                "CREATE CONSTRAINT `published-first-issued-type` IF NOT EXISTS FOR ()-[r:`PUBLISHED`]-() REQUIRE r.`firstIssued` IS :: DATE",
+                "CREATE CONSTRAINT `published-history-type` IF NOT EXISTS FOR ()-[r:`PUBLISHED`]-() REQUIRE r.`history` IS :: LIST<DATE NOT NULL>",
+                "CREATE CONSTRAINT `published-id-key` IF NOT EXISTS FOR ()-[r:`PUBLISHED`]-() REQUIRE (r.`id`) IS RELATIONSHIP KEY OPTIONS { indexProvider: 'range-1.0' }",
+                "CREATE CONSTRAINT `published-publisher-must-exist` IF NOT EXISTS FOR ()-[r:`PUBLISHED`]-() REQUIRE r.`publisher` IS NOT NULL",
+                "CREATE CONSTRAINT `published-catalog-id-must-exist` IF NOT EXISTS FOR ()-[r:`PUBLISHED`]-() REQUIRE r.`catalogId` IS NOT NULL",
+                "CREATE CONSTRAINT `published-first-issued-must-exist` IF NOT EXISTS FOR ()-[r:`PUBLISHED`]-() REQUIRE r.`firstIssued` IS NOT NULL",
+                "CREATE CONSTRAINT `published-catalog-id-unique` IF NOT EXISTS FOR ()-[r:`PUBLISHED`]-() REQUIRE (r.`catalogId`) IS UNIQUE OPTIONS { indexProvider: 'range-1.0' }"
+            );
+            // spotless:on
+
+            assertThat(result).containsExactlyElementsOf(expected);
         }
 
         @Test
-        @Disabled
         void generates_statement_for_composite_spec() throws Exception {
             var spec = read(basePath + "books-composite.yaml", ImportSpecificationDeserializer::deserialize);
             var result = CypherStatements.generateConstraints(spec);
-            assertThat(result).isEmpty();
+
+            // spotless:off
+            var expected = List.of(
+                "CREATE CONSTRAINT `book-id-type` IF NOT EXISTS FOR (n:`Book`) REQUIRE n.`id` IS :: INTEGER",
+                "CREATE CONSTRAINT `book-isbn-type` IF NOT EXISTS FOR (n:`Book`) REQUIRE n.`isbn` IS :: STRING",
+                "CREATE CONSTRAINT `book-title-type` IF NOT EXISTS FOR (n:`Book`) REQUIRE n.`title` IS :: STRING",
+                "CREATE CONSTRAINT `book-summary-type` IF NOT EXISTS FOR (n:`Book`) REQUIRE n.`summary` IS :: STRING",
+                "CREATE CONSTRAINT `book-id-and-isbn-key` IF NOT EXISTS FOR (n:`Book`) REQUIRE (n.`id`, n.`isbn`) IS NODE KEY",
+                "CREATE CONSTRAINT `book-title-must-exist` IF NOT EXISTS FOR (n:`Book`) REQUIRE n.`title` IS NOT NULL",
+                "CREATE CONSTRAINT `book-isbn-and-title-unique` IF NOT EXISTS FOR (n:`Book`) REQUIRE (n.`isbn`, n.`title`) IS UNIQUE",
+                "CREATE CONSTRAINT `author-id-type` IF NOT EXISTS FOR (n:`Author`) REQUIRE n.`id` IS :: INTEGER",
+                "CREATE CONSTRAINT `author-registration-type` IF NOT EXISTS FOR (n:`Author`) REQUIRE n.`registrationNumber` IS :: INTEGER",
+                "CREATE CONSTRAINT `author-full-name-type` IF NOT EXISTS FOR (n:`Author`) REQUIRE n.`fullName` IS :: STRING",
+                "CREATE CONSTRAINT `author-initials-type` IF NOT EXISTS FOR (n:`Author`) REQUIRE n.`initials` IS :: STRING",
+                "CREATE CONSTRAINT `author-first-published-type` IF NOT EXISTS FOR (n:`Author`) REQUIRE n.`firstPublished` IS :: DATE",
+                "CREATE CONSTRAINT `author-id-and-registration-key` IF NOT EXISTS FOR (n:`Author`) REQUIRE (n.`id`, n.`registrationNumber`) IS NODE KEY",
+                "CREATE CONSTRAINT `author-full-name-must-exist` IF NOT EXISTS FOR (n:`Author`) REQUIRE n.`fullName` IS NOT NULL",
+                "CREATE CONSTRAINT `author-initials-must-exist` IF NOT EXISTS FOR (n:`Author`) REQUIRE n.`initials` IS NOT NULL",
+                "CREATE CONSTRAINT `author-first-published-must-exist` IF NOT EXISTS FOR (n:`Author`) REQUIRE n.`firstPublished` IS NOT NULL",
+                "CREATE CONSTRAINT `author-registration-and-name-unique` IF NOT EXISTS FOR (n:`Author`) REQUIRE (n.`registrationNumber`, n.`fullName`) IS UNIQUE",
+                "CREATE CONSTRAINT `published-issue-id-type` IF NOT EXISTS FOR ()-[r:`PUBLISHED`]-() REQUIRE r.`id` IS :: INTEGER",
+                "CREATE CONSTRAINT `published-publisher-type` IF NOT EXISTS FOR ()-[r:`PUBLISHED`]-() REQUIRE r.`publisher` IS :: STRING",
+                "CREATE CONSTRAINT `published-catalog-type` IF NOT EXISTS FOR ()-[r:`PUBLISHED`]-() REQUIRE r.`catalogId` IS :: STRING",
+                "CREATE CONSTRAINT `published-first-issued-type` IF NOT EXISTS FOR ()-[r:`PUBLISHED`]-() REQUIRE r.`firstIssued` IS :: DATE",
+                "CREATE CONSTRAINT `published-history-type` IF NOT EXISTS FOR ()-[r:`PUBLISHED`]-() REQUIRE r.`history` IS :: LIST<DATE NOT NULL>",
+                "CREATE CONSTRAINT `published-id-and-publisher-key` IF NOT EXISTS FOR ()-[r:`PUBLISHED`]-() REQUIRE (r.`id`, r.`publisher`) IS RELATIONSHIP KEY",
+                "CREATE CONSTRAINT `published-catalog-id-must-exist` IF NOT EXISTS FOR ()-[r:`PUBLISHED`]-() REQUIRE r.`catalogId` IS NOT NULL",
+                "CREATE CONSTRAINT `published-first-issued-must-exist` IF NOT EXISTS FOR ()-[r:`PUBLISHED`]-() REQUIRE r.`firstIssued` IS NOT NULL",
+                "CREATE CONSTRAINT `published-publisher-and-catalog-id-unique` IF NOT EXISTS FOR ()-[r:`PUBLISHED`]-() REQUIRE (r.`publisher`, r.`catalogId`) IS UNIQUE"
+            );
+            // spotless:on
+
+            assertThat(result).containsExactlyElementsOf(expected);
         }
 
         @Test
-        @Disabled
         void generates_statement_with_options_for_composite_spec() throws Exception {
             var spec = read(basePath + "books-composite-options.yaml", ImportSpecificationDeserializer::deserialize);
             var result = CypherStatements.generateConstraints(spec);
-            assertThat(result).isEmpty();
+
+            // spotless:off
+            var expected = List.of(
+                "CREATE CONSTRAINT `book-id-type` IF NOT EXISTS FOR (n:`Book`) REQUIRE n.`id` IS :: INTEGER",
+                "CREATE CONSTRAINT `book-isbn-type` IF NOT EXISTS FOR (n:`Book`) REQUIRE n.`isbn` IS :: STRING",
+                "CREATE CONSTRAINT `book-title-type` IF NOT EXISTS FOR (n:`Book`) REQUIRE n.`title` IS :: STRING",
+                "CREATE CONSTRAINT `book-summary-type` IF NOT EXISTS FOR (n:`Book`) REQUIRE n.`summary` IS :: STRING",
+                "CREATE CONSTRAINT `book-id-and-isbn-key` IF NOT EXISTS FOR (n:`Book`) REQUIRE (n.`id`, n.`isbn`) IS NODE KEY OPTIONS { indexProvider: 'range-1.0' }",
+                "CREATE CONSTRAINT `book-title-must-exist` IF NOT EXISTS FOR (n:`Book`) REQUIRE n.`title` IS NOT NULL",
+                "CREATE CONSTRAINT `book-isbn-and-title-unique` IF NOT EXISTS FOR (n:`Book`) REQUIRE (n.`isbn`, n.`title`) IS UNIQUE OPTIONS { indexProvider: 'range-1.0' }",
+                "CREATE CONSTRAINT `author-id-type` IF NOT EXISTS FOR (n:`Author`) REQUIRE n.`id` IS :: INTEGER",
+                "CREATE CONSTRAINT `author-registration-type` IF NOT EXISTS FOR (n:`Author`) REQUIRE n.`registrationNumber` IS :: INTEGER",
+                "CREATE CONSTRAINT `author-full-name-type` IF NOT EXISTS FOR (n:`Author`) REQUIRE n.`fullName` IS :: STRING",
+                "CREATE CONSTRAINT `author-initials-type` IF NOT EXISTS FOR (n:`Author`) REQUIRE n.`initials` IS :: STRING",
+                "CREATE CONSTRAINT `author-first-published-type` IF NOT EXISTS FOR (n:`Author`) REQUIRE n.`firstPublished` IS :: DATE",
+                "CREATE CONSTRAINT `author-id-and-registration-key` IF NOT EXISTS FOR (n:`Author`) REQUIRE (n.`id`, n.`registrationNumber`) IS NODE KEY OPTIONS { indexProvider: 'range-1.0' }",
+                "CREATE CONSTRAINT `author-full-name-must-exist` IF NOT EXISTS FOR (n:`Author`) REQUIRE n.`fullName` IS NOT NULL",
+                "CREATE CONSTRAINT `author-initials-must-exist` IF NOT EXISTS FOR (n:`Author`) REQUIRE n.`initials` IS NOT NULL",
+                "CREATE CONSTRAINT `author-first-published-must-exist` IF NOT EXISTS FOR (n:`Author`) REQUIRE n.`firstPublished` IS NOT NULL",
+                "CREATE CONSTRAINT `author-registration-and-name-unique` IF NOT EXISTS FOR (n:`Author`) REQUIRE (n.`registrationNumber`, n.`fullName`) IS UNIQUE OPTIONS { indexProvider: 'range-1.0' }",
+                "CREATE CONSTRAINT `published-issue-id-type` IF NOT EXISTS FOR ()-[r:`PUBLISHED`]-() REQUIRE r.`id` IS :: INTEGER",
+                "CREATE CONSTRAINT `published-publisher-type` IF NOT EXISTS FOR ()-[r:`PUBLISHED`]-() REQUIRE r.`publisher` IS :: STRING",
+                "CREATE CONSTRAINT `published-catalog-type` IF NOT EXISTS FOR ()-[r:`PUBLISHED`]-() REQUIRE r.`catalogId` IS :: STRING",
+                "CREATE CONSTRAINT `published-first-issued-type` IF NOT EXISTS FOR ()-[r:`PUBLISHED`]-() REQUIRE r.`firstIssued` IS :: DATE",
+                "CREATE CONSTRAINT `published-history-type` IF NOT EXISTS FOR ()-[r:`PUBLISHED`]-() REQUIRE r.`history` IS :: LIST<DATE NOT NULL>",
+                "CREATE CONSTRAINT `published-id-and-publisher-key` IF NOT EXISTS FOR ()-[r:`PUBLISHED`]-() REQUIRE (r.`id`, r.`publisher`) IS RELATIONSHIP KEY OPTIONS { indexProvider: 'range-1.0' }",
+                "CREATE CONSTRAINT `published-catalog-id-must-exist` IF NOT EXISTS FOR ()-[r:`PUBLISHED`]-() REQUIRE r.`catalogId` IS NOT NULL",
+                "CREATE CONSTRAINT `published-first-issued-must-exist` IF NOT EXISTS FOR ()-[r:`PUBLISHED`]-() REQUIRE r.`firstIssued` IS NOT NULL",
+                "CREATE CONSTRAINT `published-publisher-and-catalog-id-unique` IF NOT EXISTS FOR ()-[r:`PUBLISHED`]-() REQUIRE (r.`publisher`, r.`catalogId`) IS UNIQUE OPTIONS { indexProvider: 'range-1.0' }"
+            );
+            // spotless:on
+
+            assertThat(result).containsExactlyElementsOf(expected);
         }
     }
 
