@@ -20,11 +20,15 @@ import static org.neo4j.importer.v1.cypher.SpecSupport.compositeConstraintsOf;
 import static org.neo4j.importer.v1.cypher.SpecSupport.labels;
 import static org.neo4j.importer.v1.cypher.SpecSupport.simpleConstraintTypesOf;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import org.neo4j.cypherdsl.core.Cypher;
+import org.neo4j.cypherdsl.support.schema_name.SchemaNames;
 import org.neo4j.importer.v1.ImportSpecification;
 import org.neo4j.importer.v1.config.Features;
 import org.neo4j.importer.v1.cypher.SpecSupport.CompositeConstraintDefinition;
@@ -50,7 +54,7 @@ public class CypherStatements {
 
     /**
      * Generates a Graph Type creation statement corresponding to the graph
-     * shape described by the provided {@link ImportSpecification} instance
+     * shape described by the provided {@link ImportSpecification} instance.
      *
      * @param spec the import specification
      * @return the Graph Type creation Cypher statement
@@ -243,5 +247,181 @@ public class CypherStatements {
                 return "LIST<ZONED TIME NOT NULL>";
         }
         throw new IllegalArgumentException(String.format("Unsupported property type: %s", propertyType));
+    }
+
+    /**
+     * Generates all the CREATE CONSTRAINT statements corresponding to what is declared by the
+     * provided {@link ImportSpecification} instance.
+     *
+     * @param spec the import specification
+     * @return list of all CREATE CONSTRAINT statements
+     */
+    public static List<String> generateConstraints(ImportSpecification spec) {
+        List<String> statements = new ArrayList<>();
+        var nodes = spec.getTargets().getNodes();
+        var relationships = spec.getTargets().getRelationships();
+
+        for (var node : nodes) {
+            generateNodeConstraints(statements, node);
+        }
+
+        for (var relationship : relationships) {
+            generateRelationshipConstraints(statements, relationship);
+        }
+
+        return statements;
+    }
+
+    private static void generateNodeConstraints(List<String> statements, NodeTarget node) {
+        // TYPE CONSTRAINT
+        for (var c : node.getSchema().getTypeConstraints()) {
+            var property = find(node, c.getProperty());
+            assert property != null;
+            var propertyType = property.getTargetPropertyType();
+
+            statements.add("CREATE CONSTRAINT " + sanitize(c.getName())
+                    + nodeConstraintPattern(c.getLabel())
+                    + constraintProperty("n", property.getTargetProperty())
+                    + isType(propertyType.getName(), propertyType));
+        }
+
+        // KEY CONSTRAINT
+        for (var c : node.getSchema().getKeyConstraints()) {
+            statements.add("CREATE CONSTRAINT " + sanitize(c.getName())
+                    + nodeConstraintPattern(c.getLabel())
+                    + constraintProperties("n", c.getProperties())
+                    + isKey("NODE")
+                    + constraintOptions(c.getOptions()));
+        }
+
+        // EXIST CONSTRAINT
+        for (var c : node.getSchema().getExistenceConstraints()) {
+            statements.add("CREATE CONSTRAINT " + sanitize(c.getName())
+                    + nodeConstraintPattern(c.getLabel())
+                    + constraintProperty("n", c.getProperty())
+                    + isNotNull);
+        }
+
+        // UNIQUE CONSTRAINT
+        for (var c : node.getSchema().getUniqueConstraints()) {
+            statements.add("CREATE CONSTRAINT " + sanitize(c.getName())
+                    + nodeConstraintPattern(c.getLabel())
+                    + constraintProperties("n", c.getProperties())
+                    + isUnique
+                    + constraintOptions(c.getOptions()));
+        }
+    }
+
+    private static void generateRelationshipConstraints(List<String> statements, RelationshipTarget relationship) {
+        // TYPE CONSTRAINT
+        for (var c : relationship.getSchema().getTypeConstraints()) {
+            var property = find(relationship, c.getProperty());
+            assert property != null;
+            var propertyType = property.getTargetPropertyType();
+
+            statements.add("CREATE CONSTRAINT " + sanitize(c.getName())
+                    + relationshipConstraintPattern(relationship.getType())
+                    + constraintProperty("r", property.getTargetProperty())
+                    + isType(propertyType.getName(), propertyType));
+        }
+
+        // KEY CONSTRAINT
+        for (var c : relationship.getSchema().getKeyConstraints()) {
+            statements.add("CREATE CONSTRAINT " + sanitize(c.getName())
+                    + relationshipConstraintPattern(relationship.getType())
+                    + constraintProperties("r", c.getProperties())
+                    + isKey("RELATIONSHIP")
+                    + constraintOptions(c.getOptions()));
+        }
+
+        // EXIST CONSTRAINT
+        for (var c : relationship.getSchema().getExistenceConstraints()) {
+            statements.add("CREATE CONSTRAINT " + sanitize(c.getName())
+                    + relationshipConstraintPattern(relationship.getType())
+                    + constraintProperty("r", c.getProperty())
+                    + isNotNull);
+        }
+
+        // UNIQUE CONSTRAINT
+        for (var c : relationship.getSchema().getUniqueConstraints()) {
+            statements.add("CREATE CONSTRAINT " + sanitize(c.getName())
+                    + relationshipConstraintPattern(relationship.getType())
+                    + constraintProperties("r", c.getProperties())
+                    + isUnique
+                    + constraintOptions(c.getOptions()));
+        }
+    }
+
+    private static PropertyMapping find(EntityTarget entity, String property) {
+        for (int i = 0; i < entity.getProperties().size(); i++) {
+            if (entity.getProperties().get(i).getTargetProperty().equals(property)) {
+                return entity.getProperties().get(i);
+            }
+        }
+        return null;
+    }
+
+    // (n:<label>)
+    private static String nodeConstraintPattern(String label) {
+        return " IF NOT EXISTS FOR (n:" + sanitize(label) + ") REQUIRE ";
+    }
+
+    // ()-[r:<type>]-()
+    private static String relationshipConstraintPattern(String type) {
+        return " IF NOT EXISTS FOR ()-[r:" + sanitize(type) + "]-() REQUIRE ";
+    }
+
+    private static String constraintProperty(String on, String property) {
+        return on + "." + sanitize(property);
+    }
+
+    private static String constraintProperties(String on, List<String> properties) {
+        StringBuilder sb = new StringBuilder("(");
+
+        for (int i = 0; i < properties.size(); i++) {
+            sb.append(constraintProperty(on, properties.get(i)));
+            if (i < properties.size() - 1) {
+                sb.append(", ");
+            }
+        }
+
+        return sb.append(")").toString();
+    }
+
+    // IS :: <type>
+    private static String isType(PropertyTypeName typeName, PropertyType propertyType) {
+        String t;
+        if (typeName.isVector()) {
+            t = vectorPropertyType(typeName, propertyType);
+        } else {
+            t = nonVectorPropertyType(typeName, propertyType);
+        }
+
+        return " IS :: " + t;
+    }
+
+    // IS <key> KEY
+    private static String isKey(String kType) {
+        return " IS " + kType + " KEY";
+    }
+
+    private static final String isUnique = " IS UNIQUE";
+
+    private static final String isNotNull = " IS NOT NULL";
+
+    private static String constraintOptions(Map<String, Object> options) {
+        if (options == null || options.isEmpty()) {
+            return "";
+        }
+
+        return " OPTIONS " + Cypher.literalOf(options).asString();
+    }
+
+    private static String sanitize(String s) {
+        var sanitized = SchemaNames.sanitize(s, true);
+        if (sanitized.isEmpty()) {
+            throw new IllegalArgumentException("Invalid schema name: " + s);
+        }
+        return sanitized.get();
     }
 }
