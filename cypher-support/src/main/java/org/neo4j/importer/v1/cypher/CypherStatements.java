@@ -27,6 +27,7 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import org.neo4j.cypherdsl.core.Cypher;
 import org.neo4j.cypherdsl.support.schema_name.SchemaNames;
 import org.neo4j.importer.v1.ImportSpecification;
 import org.neo4j.importer.v1.config.Features;
@@ -413,25 +414,7 @@ public class CypherStatements {
             return "";
         }
 
-        var sb = new StringBuilder(" OPTIONS { ");
-        var separator = "";
-
-        for (var entry : options.entrySet()) {
-            sb.append(separator).append(entry.getKey()).append(": ");
-
-            if (entry.getValue() instanceof String) {
-                var value = (String) entry.getValue();
-                sb.append('\'')
-                        .append(value.replace("\\", "\\\\").replace("'", "\\'"))
-                        .append('\'');
-            } else {
-                sb.append(entry.getValue());
-            }
-
-            separator = ", ";
-        }
-
-        return sb.append(" }").toString();
+        return " OPTIONS " + Cypher.literalOf(options).asString();
     }
 
     private static String sanitize(String s) {

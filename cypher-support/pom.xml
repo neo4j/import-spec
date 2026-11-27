@@ -16,6 +16,11 @@
         </dependency>
         <dependency>
             <groupId>org.neo4j</groupId>
+            <artifactId>neo4j-cypher-dsl</artifactId>
+            <version>${neo4j.cypherdsl.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.neo4j</groupId>
             <artifactId>neo4j-cypher-dsl-schema-name-support</artifactId>
             <version>${neo4j.cypherdsl.version}</version>
         </dependency>
