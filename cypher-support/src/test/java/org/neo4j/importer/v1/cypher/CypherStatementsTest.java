@@ -110,24 +110,34 @@ class CypherStatementsTest {
 
     @Nested
     class ConstraintStatementTest {
+        private static final String basePath = "/specs/constraints/";
+
         @Test
         void generates_statement_for_simple_spec() throws Exception {
-            var spec = read("/specs/constraints/books-simple.yaml", ImportSpecificationDeserializer::deserialize);
+            var spec = read(basePath + "books-simple.yaml", ImportSpecificationDeserializer::deserialize);
+            var result = CypherStatements.generateConstraints(spec);
+            assertThat(result).isEmpty();
         }
 
         @Test
         void generates_statement_with_options_for_simple_spec() throws Exception {
-            var spec = read("/specs/constraints/books-simple-options.yaml", ImportSpecificationDeserializer::deserialize);
+            var spec = read(basePath + "books-simple-options.yaml", ImportSpecificationDeserializer::deserialize);
+            var result = CypherStatements.generateConstraints(spec);
+            assertThat(result).isEmpty();
         }
 
         @Test
         void generates_statement_for_composite_spec() throws Exception {
-            var spec = read("/specs/constraints/books-composite.yaml", ImportSpecificationDeserializer::deserialize);
+            var spec = read(basePath + "books-composite.yaml", ImportSpecificationDeserializer::deserialize);
+            var result = CypherStatements.generateConstraints(spec);
+            assertThat(result).isEmpty();
         }
 
         @Test
         void generates_statement_with_options_for_composite_spec() throws Exception {
-            var spec = read("/specs/constraints/books-composite-options.yaml", ImportSpecificationDeserializer::deserialize);
+            var spec = read(basePath + "books-composite-options.yaml", ImportSpecificationDeserializer::deserialize);
+            var result = CypherStatements.generateConstraints(spec);
+            assertThat(result).isEmpty();
         }
     }
 

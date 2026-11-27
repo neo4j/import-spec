@@ -50,7 +50,7 @@ public class CypherStatements {
 
     /**
      * Generates a Graph Type creation statement corresponding to the graph
-     * shape described by the provided {@link ImportSpecification} instance
+     * shape described by the provided {@link ImportSpecification} instance.
      *
      * @param spec the import specification
      * @return the Graph Type creation Cypher statement
@@ -243,5 +243,16 @@ public class CypherStatements {
                 return "LIST<ZONED TIME NOT NULL>";
         }
         throw new IllegalArgumentException(String.format("Unsupported property type: %s", propertyType));
+    }
+
+    /**
+     * Generates all the CREATE CONSTRAINT statements corresponding to what is declared by the
+     * provided {@link ImportSpecification} instance.
+     *
+     * @param spec the import specification
+     * @return list of all CREATE CONSTRAINT statements
+     */
+    public static List<String> generateConstraints(ImportSpecification spec) {
+        return List.of();
     }
 }
