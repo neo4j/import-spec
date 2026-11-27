@@ -49,6 +49,7 @@
         <licensing.prepend.text>/license/${license.id}/notice.txt</licensing.prepend.text>
         <maven.compiler.release>11</maven.compiler.release>
         <maven.compiler.testRelease>11</maven.compiler.testRelease>
+        <neo4j.cypherdsl.version>2025.3.6</neo4j.cypherdsl.version>
         <neo4j.driver.6.version>6.3.0</neo4j.driver.6.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>

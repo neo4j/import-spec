@@ -170,7 +170,7 @@ targets:
           - name: published-history-type
             property: history
         key_constraints:
-          - name: puiblished-id-key
+          - name: published-id-key
             properties:
               - id
             options:

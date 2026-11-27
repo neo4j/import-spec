@@ -172,7 +172,7 @@ targets:
           - name: published-history-type
             property: history
         key_constraints:
-          - name: puiblished-id-and-publisher-key
+          - name: published-id-and-publisher-key
             properties:
               - id
               - publisher
